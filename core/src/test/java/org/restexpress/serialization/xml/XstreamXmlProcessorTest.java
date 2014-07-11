@@ -129,7 +129,7 @@ public class XstreamXmlProcessorTest
 		assertNotNull(xml);
 		assertTrue(xml.startsWith("<KnownObject>"));
 		assertTrue(xml.contains("<integer>1</integer>"));
-		assertTrue(xml.contains("<date>1964-12-17T23:30:00.000Z</date>"));
+		assertTrue(xml.contains("<date>1964-12-17T15:30:00.000Z</date>"));
 		assertTrue(xml.contains("<p>something private</p>"));
 		assertTrue(xml.contains("<sa>"));
 		assertTrue(xml.contains("<string>&lt;script&gt;alert(&apos;xss&apos;)&lt;/script&gt;</string>"));
@@ -148,7 +148,7 @@ public class XstreamXmlProcessorTest
 		assertTrue(xml.startsWith("<KnownObject>"));
 		assertTrue(xml.contains("<integer>1</integer>"));
 		assertTrue(xml.contains("<string>&lt;script&gt;alert(&apos;xss&apos;)&lt;/script&gt;</string>"));
-		assertTrue(xml.contains("<date>1964-12-17T23:30:00.000Z</date>"));
+		assertTrue(xml.contains("<date>1964-12-17T15:30:00.000Z</date>"));
 		assertTrue(xml.contains("<p>something private</p>"));
 		assertFalse(xml.contains("<q>"));
 		assertFalse(xml.contains("<sa>"));

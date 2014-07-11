@@ -143,7 +143,7 @@ public class JacksonJsonProcessorTest
 		assertTrue(json.startsWith("{"));
 		assertTrue(json.contains("\"integer\":1"));
 		assertTrue(json.contains("\"string\":\"string value\""));
-		assertTrue(json.contains("\"date\":\"1964-12-17T23:30:00.000Z"));
+		assertTrue(json.contains("\"date\":\"1964-12-17T15:30:00.000Z"));
 		assertTrue(json.contains("\"p\":\"something private"));
 		assertFalse(json.contains("\"q\":"));
 		assertTrue(json.contains("\"sa\":[\"this\",\"is\",\"an\",\"evil\",\"Json\",\"&lt;script&gt;alert('xss')&lt;/script&gt;\"]"));
@@ -160,7 +160,7 @@ public class JacksonJsonProcessorTest
 		assertTrue(json.startsWith("{"));
 		assertTrue(json.contains("\"integer\":1"));
 		assertTrue(json.contains("\"string\":\"&lt;script&gt;alert('xss')&lt;/script&gt;"));
-		assertTrue(json.contains("\"date\":\"1964-12-17T23:30:00.000Z"));
+		assertTrue(json.contains("\"date\":\"1964-12-17T15:30:00.000Z"));
 		assertTrue(json.contains("\"p\":\"something private"));
 		assertFalse(json.contains("\"q\":"));
 		assertFalse(json.contains("\"sa\":"));

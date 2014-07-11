@@ -62,6 +62,7 @@ public class RestExpressServerTest
 	private static final String LITTLE_OS_URL = SERVER_HOST + LITTLE_OS_PATH;
 	private static final String PATTERN_EXCEPTION_STRING = "/strings/exception";
 	private static final String PATTERN_EXCEPTION_LITTLE_O = "/objects/exception";
+	@SuppressWarnings("unused")
 	private static final String URL_EXCEPTION_STRING = SERVER_HOST + PATTERN_EXCEPTION_STRING;
 	private static final String URL_EXCEPTION_LITTLE_O = SERVER_HOST + PATTERN_EXCEPTION_LITTLE_O;
 
@@ -601,7 +602,8 @@ public class RestExpressServerTest
 		request.releaseConnection();
 	}
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
 	public void shouldSerializeListAsWrappedXml()
 	throws Exception
 	{
@@ -649,7 +651,8 @@ public class RestExpressServerTest
 		request.releaseConnection();
 	}
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
 	public void shouldSerializeApplicationXmlJson()
 	throws Exception
 	{

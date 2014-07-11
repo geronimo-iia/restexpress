@@ -256,7 +256,7 @@ public class Request
 
 	public void clearHeaders()
 	{
-		httpRequest.clearHeaders();
+		httpRequest.headers().clear();
 	}
 
 	/**
@@ -274,7 +274,7 @@ public class Request
 	 */
 	public String getHeader(String name)
 	{
-		return httpRequest.getHeader(name);
+		return httpRequest.headers().get(name);
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class Request
 	 */
 	public List<String> getHeaders(String name)
 	{
-		return httpRequest.getHeaders(name);
+		return httpRequest.headers().getAll(name);
 	}
 	
 	/**
@@ -328,7 +328,7 @@ public class Request
 	*/
 	public Set<String> getHeaderNames()
 	{
-		return httpRequest.getHeaderNames();
+		return httpRequest.headers().names();
 	}
 	
 	/**
@@ -341,7 +341,7 @@ public class Request
 	*/
 	public void addHeader(String name, String value)
     {
-		httpRequest.addHeader(name, value);
+		httpRequest.headers().add(name, value);
     }
 	
 	/**
@@ -647,11 +647,11 @@ public class Request
 			{
 				try
                 {
-	                request.addHeader(entry.getKey(), URLDecoder.decode(value, ContentType.ENCODING));
+	                request.headers().add(entry.getKey(), URLDecoder.decode(value, ContentType.ENCODING));
                 }
                 catch (Exception e)
                 {
-	                request.addHeader(entry.getKey(), value);
+	                request.headers().add(entry.getKey(), value);
                 }
 			}
 		}
@@ -668,7 +668,7 @@ public class Request
 	{
 		if (!HttpMethod.POST.equals(request.getMethod())) return;
 
-		String methodString = request.getHeader(Parameters.Query.METHOD_TUNNEL);
+		String methodString = request.headers().get(Parameters.Query.METHOD_TUNNEL);
 
 		if ("PUT".equalsIgnoreCase(methodString) || "DELETE".equalsIgnoreCase(methodString))
 		{

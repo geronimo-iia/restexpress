@@ -44,7 +44,7 @@ public class RequestTest
 	public void initialize()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/foo?param1=bar&param2=blah&yada");
-		httpRequest.addHeader("Host", "testing-host");
+		httpRequest.headers().add("Host", "testing-host");
 		request = new Request(httpRequest, null, null);
 	}
 

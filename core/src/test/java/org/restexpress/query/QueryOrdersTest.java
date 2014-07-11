@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.query;
 
 import static org.junit.Assert.*;
@@ -37,11 +37,9 @@ import org.restexpress.query.QueryOrders;
  * @author toddf
  * @since Jul 27, 2012
  */
-public class QueryOrdersTest
-{
+public class QueryOrdersTest {
 	@Test
-	public void shouldParseQueryString()
-	{
+	public void shouldParseQueryString() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings?sort=-name|description|-createdAt");
 		Request request = new Request(httpRequest, null);
 		QueryOrder o = QueryOrders.parseFrom(request);
@@ -58,10 +56,9 @@ public class QueryOrdersTest
 	}
 
 	@Test
-	public void shouldParseSortHeader()
-	{
+	public void shouldParseSortHeader() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("sort", "-name|description|-createdAt");
+		httpRequest.headers().add("sort", "-name|description|-createdAt");
 		Request request = new Request(httpRequest, null);
 		QueryOrder o = QueryOrders.parseFrom(request);
 		assertTrue(o.isSorted());
@@ -77,12 +74,11 @@ public class QueryOrdersTest
 	}
 
 	@Test
-	public void shouldAllowSupportedSortProperties()
-	{
+	public void shouldAllowSupportedSortProperties() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("sort", "-name|description|-createdAt");
+		httpRequest.headers().add("sort", "-name|description|-createdAt");
 		Request request = new Request(httpRequest, null);
-		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] {"name", "description", "createdAt"}));
+		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] { "name", "description", "createdAt" }));
 		assertTrue(o.isSorted());
 		OCallback callback = new OCallback();
 		o.iterate(callback);
@@ -95,31 +91,27 @@ public class QueryOrdersTest
 		assertTrue(callback.get("createdAt").isDescending());
 	}
 
-	@Test (expected=BadRequestException.class)
-	public void shouldThrowOnInvalidOrderProperty()
-	{
+	@Test(expected = BadRequestException.class)
+	public void shouldThrowOnInvalidOrderProperty() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("sort", "-name|description|-createdAt");
+		httpRequest.headers().add("sort", "-name|description|-createdAt");
 		Request request = new Request(httpRequest, null);
-		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] {"abc", "def", "ghi"}));
+		QueryOrders.parseFrom(request, Arrays.asList(new String[] { "abc", "def", "ghi" }));
 	}
 
 	@Test
-	public void shouldAllowSingleOrder()
-	{
+	public void shouldAllowSingleOrder() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("sort", "abc");
+		httpRequest.headers().add("sort", "abc");
 		Request request = new Request(httpRequest, null);
-		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] {"abc", "def", "ghi"}));
+		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] { "abc", "def", "ghi" }));
 		assertNotNull(o);
 		assertTrue(o.isSorted());
-		o.iterate(new OrderCallback()
-		{
+		o.iterate(new OrderCallback() {
 			private int count = 0;
 
 			@Override
-			public void orderBy(OrderComponent component)
-			{
+			public void orderBy(OrderComponent component) {
 				assertEquals("abc", component.getFieldName());
 				assertTrue(component.isAscending());
 				++count;
@@ -129,20 +121,17 @@ public class QueryOrdersTest
 	}
 
 	@Test
-	public void shouldAllowSingleOrderAtEnd()
-	{
+	public void shouldAllowSingleOrderAtEnd() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("sort", "ghi");
+		httpRequest.headers().add("sort", "ghi");
 		Request request = new Request(httpRequest, null);
-		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] {"abc", "def", "ghi"}));
+		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] { "abc", "def", "ghi" }));
 		assertTrue(o.isSorted());
-		o.iterate(new OrderCallback()
-		{
+		o.iterate(new OrderCallback() {
 			private int count = 0;
 
 			@Override
-			public void orderBy(OrderComponent component)
-			{
+			public void orderBy(OrderComponent component) {
 				assertEquals("ghi", component.getFieldName());
 				assertTrue(component.isAscending());
 				++count;
@@ -152,20 +141,17 @@ public class QueryOrdersTest
 	}
 
 	@Test
-	public void shouldAllowSingleDescendingOrder()
-	{
+	public void shouldAllowSingleDescendingOrder() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("sort", "-abc");
+		httpRequest.headers().add("sort", "-abc");
 		Request request = new Request(httpRequest, null);
-		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] {"abc", "def", "ghi"}));
+		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] { "abc", "def", "ghi" }));
 		assertTrue(o.isSorted());
-		o.iterate(new OrderCallback()
-		{
+		o.iterate(new OrderCallback() {
 			private int count = 0;
 
 			@Override
-			public void orderBy(OrderComponent component)
-			{
+			public void orderBy(OrderComponent component) {
 				assertEquals("abc", component.getFieldName());
 				assertTrue(component.isDescending());
 				++count;
@@ -175,20 +161,17 @@ public class QueryOrdersTest
 	}
 
 	@Test
-	public void shouldAllowSingleDescendingOrderAtEnd()
-	{
+	public void shouldAllowSingleDescendingOrderAtEnd() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("sort", "-ghi");
+		httpRequest.headers().add("sort", "-ghi");
 		Request request = new Request(httpRequest, null);
-		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] {"abc", "def", "ghi"}));
+		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] { "abc", "def", "ghi" }));
 		assertTrue(o.isSorted());
-		o.iterate(new OrderCallback()
-		{
+		o.iterate(new OrderCallback() {
 			private int count = 0;
 
 			@Override
-			public void orderBy(OrderComponent component)
-			{
+			public void orderBy(OrderComponent component) {
 				assertEquals("ghi", component.getFieldName());
 				assertTrue(component.isDescending());
 				++count;
@@ -197,32 +180,28 @@ public class QueryOrdersTest
 		});
 	}
 
-	@Test (expected=BadRequestException.class)
-	public void shouldThrowOnSingleInvalidOrder()
-	{
+	@Test(expected = BadRequestException.class)
+	public void shouldThrowOnSingleInvalidOrder() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("sort", "-something");
+		httpRequest.headers().add("sort", "-something");
 		Request request = new Request(httpRequest, null);
-		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] {"abc", "def", "ghi"}));
+		QueryOrders.parseFrom(request, Arrays.asList(new String[] { "abc", "def", "ghi" }));
 	}
 
 	@Test
-	public void shouldAllowSingleAllowedOrder()
-	{
+	public void shouldAllowSingleAllowedOrder() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("sort", "ghi");
+		httpRequest.headers().add("sort", "ghi");
 		Request request = new Request(httpRequest, null);
-		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] {"ghi"}));
+		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] { "ghi" }));
 		assertNotNull(o);
 		assertTrue(o.isSorted());
 		assertTrue(o.isSorted());
-		o.iterate(new OrderCallback()
-		{
+		o.iterate(new OrderCallback() {
 			private int count = 0;
 
 			@Override
-			public void orderBy(OrderComponent component)
-			{
+			public void orderBy(OrderComponent component) {
 				assertEquals("ghi", component.getFieldName());
 				assertTrue(component.isAscending());
 				++count;
@@ -232,20 +211,17 @@ public class QueryOrdersTest
 	}
 
 	@Test
-	public void shouldAllowSingleDescendingAllowedOrder()
-	{
+	public void shouldAllowSingleDescendingAllowedOrder() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("sort", "-ghi");
+		httpRequest.headers().add("sort", "-ghi");
 		Request request = new Request(httpRequest, null);
-		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] {"ghi"}));
+		QueryOrder o = QueryOrders.parseFrom(request, Arrays.asList(new String[] { "ghi" }));
 		assertTrue(o.isSorted());
-		o.iterate(new OrderCallback()
-		{
+		o.iterate(new OrderCallback() {
 			private int count = 0;
 
 			@Override
-			public void orderBy(OrderComponent component)
-			{
+			public void orderBy(OrderComponent component) {
 				assertEquals("ghi", component.getFieldName());
 				assertTrue(component.isDescending());
 				++count;
@@ -253,26 +229,21 @@ public class QueryOrdersTest
 			}
 		});
 	}
-	
-	private class OCallback
-	implements OrderCallback
-	{
+
+	private class OCallback implements OrderCallback {
 		private Map<String, OrderComponent> ocs = new HashMap<String, OrderComponent>();
 
-        @Override
-        public void orderBy(OrderComponent component)
-        {
-        	ocs.put(component.getFieldName(), component);
-        }
-        
-        public OrderComponent get(String name)
-        {
-        	return ocs.get(name);
-        }
-        
-        public int getCount()
-        {
-        	return ocs.size();
-        }
+		@Override
+		public void orderBy(OrderComponent component) {
+			ocs.put(component.getFieldName(), component);
+		}
+
+		public OrderComponent get(String name) {
+			return ocs.get(name);
+		}
+
+		public int getCount() {
+			return ocs.size();
+		}
 	}
 }

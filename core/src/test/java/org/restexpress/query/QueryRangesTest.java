@@ -38,7 +38,7 @@ public class QueryRangesTest
 	public void shouldParseZeroBasedRange()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("Range", "items=0-24");
+		httpRequest.headers().add("Range", "items=0-24");
 		Request request = new Request(httpRequest, null);
 		QueryRange r = QueryRanges.parseFrom(request);
 		assertEquals(25, r.getLimit());
@@ -50,7 +50,7 @@ public class QueryRangesTest
 	public void shouldHandleNullOffset()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("limit", "5");
+		httpRequest.headers().add("limit", "5");
 		Request request = new Request(httpRequest, null);
 		QueryRange r = QueryRanges.parseFrom(request);
 		assertEquals(5, r.getLimit());
@@ -62,7 +62,7 @@ public class QueryRangesTest
 	public void shouldThrowOnNullLimitWithOffset()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("offset", "25");
+		httpRequest.headers().add("offset", "25");
 		Request request = new Request(httpRequest, null);
 		QueryRanges.parseFrom(request);
 		fail("Should have thrown");
@@ -72,7 +72,7 @@ public class QueryRangesTest
 	public void shouldHandleNullLimitWithDefault()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("offset", "25");
+		httpRequest.headers().add("offset", "25");
 		Request request = new Request(httpRequest, null);
 		QueryRange r = QueryRanges.parseFrom(request, 5);
 		assertEquals(5, r.getLimit());
@@ -84,7 +84,7 @@ public class QueryRangesTest
 	public void shouldThrowExceptionOnNonNumericRange()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("Range", "items=A-24");
+		httpRequest.headers().add("Range", "items=A-24");
 		Request request = new Request(httpRequest, null);
 		QueryRanges.parseFrom(request);
 		fail("Did not throw exception as expected.");
@@ -94,7 +94,7 @@ public class QueryRangesTest
 	public void shouldThrowExceptionOnReversedRange()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("Range", "items=24-23");
+		httpRequest.headers().add("Range", "items=24-23");
 		Request request = new Request(httpRequest, null);
 		QueryRanges.parseFrom(request);
 		fail("Did not throw exception as expected.");
@@ -104,7 +104,7 @@ public class QueryRangesTest
 	public void shouldThrowExceptionOnReversedRangeAroundZero()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("Range", "items=1-0");
+		httpRequest.headers().add("Range", "items=1-0");
 		Request request = new Request(httpRequest, null);
 		QueryRanges.parseFrom(request);
 		fail("Did not throw exception as expected.");
@@ -114,7 +114,7 @@ public class QueryRangesTest
 	public void shouldParseNextPageRange()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("Range", "items=200-299");
+		httpRequest.headers().add("Range", "items=200-299");
 		Request request = new Request(httpRequest, null);
 		QueryRange r = QueryRanges.parseFrom(request);
 		assertEquals(100, r.getLimit());
@@ -126,10 +126,10 @@ public class QueryRangesTest
 	public void shouldFavorQueryStringParameters()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
-		httpRequest.addHeader("Range", "items=0-24");
+		httpRequest.headers().add("Range", "items=0-24");
 		// RestExpress parses the query-string into headers.
-		httpRequest.addHeader("limit", "100");
-		httpRequest.addHeader("offset", "200");
+		httpRequest.headers().add("limit", "100");
+		httpRequest.headers().add("offset", "200");
 		Request request = new Request(httpRequest, null);
 		QueryRange r = QueryRanges.parseFrom(request);
 		assertEquals(100, r.getLimit());

@@ -1,21 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
-	<name>RestExpress-Common</name>
-	<description>Utilities and classes common to all RESTExpress projects.</description>
-	<url>https://github.com/RestExpress/RestExpress-Common</url>
-	<groupId>com.strategicgains</groupId>
-	<artifactId>RestExpress-Common</artifactId>
-	<packaging>jar</packaging>
-
 	<parent>
 		<groupId>com.strategicgains</groupId>
 		<artifactId>restexpress-parent</artifactId>
 		<version>0.10.4-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
+	<artifactId>restexpress-common</artifactId>
+	<packaging>jar</packaging>
+	
+	<name>RestExpress-Common</name>
+	<description>Utilities and classes common to all RESTExpress projects.</description>
+	<url>https://github.com/RestExpress/RestExpress-Common</url>
 
-	<build>
-		<sourceDirectory>src/java</sourceDirectory>
-		<testSourceDirectory>test/java</testSourceDirectory>
-	</build>
 </project>
