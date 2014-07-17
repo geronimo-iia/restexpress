@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.response;
 
 import java.util.List;
@@ -26,47 +26,39 @@ import org.restexpress.serialization.SerializationProcessor;
  * @author toddf
  * @since May 14, 2012
  */
-public class ResponseProcessor
-{
+public class ResponseProcessor {
 	private SerializationProcessor serializer;
 	private ResponseWrapper wrapper;
 
-	public ResponseProcessor(SerializationProcessor serializer, ResponseWrapper wrapper)
-	{
+	public ResponseProcessor(SerializationProcessor serializer, ResponseWrapper wrapper) {
 		super();
 		this.serializer = serializer;
 		this.wrapper = wrapper;
 	}
-	
-	public SerializationProcessor getSerializer()
-	{
+
+	public SerializationProcessor getSerializer() {
 		return serializer;
 	}
-	
-	public ResponseWrapper getWrapper()
-	{
+
+	public ResponseWrapper getWrapper() {
 		return wrapper;
 	}
-	
-	public List<MediaRange> getSupportedMediaRanges()
-	{
+
+	public List<MediaRange> getSupportedMediaRanges() {
 		return serializer.getSupportedMediaRanges();
 	}
-	
-	public <T> T deserialize(Request request, Class<T> type)
-	{
+
+	public <T> T deserialize(Request request, Class<T> type) {
 		return serializer.deserialize(request.getBody(), type);
 	}
 
-	public String serialize(Response response)
-	{
+	public String serialize(Response response) {
 		Object wrapped = wrapper.wrap(response);
-		
-		if (wrapped != null)
-		{
+
+		if (wrapped != null) {
 			return serializer.serialize(wrapped);
 		}
-		
+
 		return null;
 	}
 }

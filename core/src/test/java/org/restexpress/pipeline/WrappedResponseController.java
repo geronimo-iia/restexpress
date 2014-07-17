@@ -15,9 +15,9 @@
 */
 package org.restexpress.pipeline;
 
+import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.exception.NotFoundException;
 
 /**
  * @author toddf

@@ -24,8 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.ContentType;
 import org.restexpress.Response;
-import org.restexpress.exception.HttpSpecificationException;
-import org.restexpress.util.HttpSpecification;
+import org.restexpress.common.exception.HttpSpecificationException;
 
 /**
  * @author toddf

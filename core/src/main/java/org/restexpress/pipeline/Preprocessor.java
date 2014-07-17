@@ -3,7 +3,6 @@
  */
 package org.restexpress.pipeline;
 
-import org.restexpress.Request;
 
 
 /**
@@ -19,5 +18,5 @@ import org.restexpress.Request;
  */
 public interface Preprocessor
 {
-	public void process(Request request);
+	public void process(MessageContext context);
 }

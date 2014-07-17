@@ -12,35 +12,29 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.postprocessor;
 
-import org.restexpress.Request;
-import org.restexpress.Response;
+import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
 
 /**
  * @author toddf
  * @since Jul 2, 2014
  */
-public class TestPostprocessor
-implements Postprocessor
-{
+public class TestPostprocessor implements Postprocessor {
 	private int callCount = 0;
 
 	@Override
-	public void process(Request request, Response response)
-	{
+	public void process(MessageContext context) {
 		++callCount;
 	}
 
-	public int callCount()
-	{
+	public int callCount() {
 		return callCount;
 	}
 
-	public void resetCallCount()
-	{
+	public void resetCallCount() {
 		this.callCount = 0;
 	}
 }

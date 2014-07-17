@@ -44,6 +44,16 @@
 	<!-- PROPERTIES -->
 	<!-- ******************************************************************* -->
 	<properties>
+		<http-specification.version>1.0.1-SNAPSHOT</http-specification.version>
+		<mvel2.version>2.1.9.Final</mvel2.version>
+		<guava.version>17.0</guava.version>
+		<joda-time.version>2.3</joda-time.version>
+		<jackson-datatype-joda.version>2.4.0</jackson-datatype-joda.version>
+		<jackson-datatype-guava.version>2.1.2</jackson-datatype-guava.version>
+		<com.fasterxml.jackson.core.version>2.3.3</com.fasterxml.jackson.core.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<junit.version>4.11</junit.version>
+		<httpclient.version>4.2.5</httpclient.version>
 	</properties>
 
 	<!-- ******************************************************************* -->
@@ -58,17 +68,71 @@
 	<!-- DEPENDENCIES MANAGEMENT -->
 	<!-- ******************************************************************* -->
 	<dependencyManagement>
+
 		<dependencies>
+			<dependency>
+				<groupId>org.intelligents-ia.commons</groupId>
+				<artifactId>http-specification</artifactId>
+				<version>${http-specification.version}</version>
+			</dependency>
+			<!-- GUAVA -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+			<!-- JODA TIME -->
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>${joda-time.version}</version>
+			</dependency>
+
+			<!-- JACKSON -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-joda</artifactId>
+				<version>${jackson-datatype-joda.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-guava</artifactId>
+				<version>${jackson-datatype-guava.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${com.fasterxml.jackson.core.version}</version>
+			</dependency>
+			<!-- LOGGER -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-jcl</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<!-- DEPENDENCIES FOR TESTING -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<type>jar</type>
+				<scope>test</scope>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpclient.version}</version>
+				<type>jar</type>
+				<scope>test</scope>
+			</dependency>
+
 			<dependency>
 				<groupId>com.strategicgains</groupId>
 				<artifactId>DateAdapterJ</artifactId>
 				<version>1.1.2</version>
 			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>2.3.3</version>
-			</dependency>
+
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
 				<artifactId>xstream</artifactId>
@@ -91,25 +155,10 @@
 				<scope>compile</scope>
 				<optional>true</optional>
 			</dependency>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>4.2.5</version>
-				<type>jar</type>
-				<scope>test</scope>
-				<optional>true</optional>
-			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.11</version>
-				<type>jar</type>
-				<scope>test</scope>
-				<optional>true</optional>
-			</dependency>
+		
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -193,4 +242,18 @@
 			</plugin>
 		</plugins>
 	</reporting>
+	
+	<repositories>
+		<repository>
+			<id>intelligents-ia-releases</id>
+			<name>Intelligents-ia releases repository</name>
+			<url>http://mvn.intelligents-ia.com/releases</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>

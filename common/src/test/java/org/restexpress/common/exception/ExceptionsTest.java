@@ -13,40 +13,39 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
 */
-package org.restexpress.exception;
+package org.restexpress.common.exception;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.junit.Test;
-import org.restexpress.exception.ExceptionUtils;
-import org.restexpress.exception.ServiceException;
 
 
 /**
  * @author toddf
  * @since Apr 8, 2011
  */
-public class ExceptionUtilsTest
+public class ExceptionsTest
 {
 	@Test
 	public void shouldHandleNull()
 	{
-		assertNull(ExceptionUtils.findRootCause(null));
+		assertNull(Exceptions.findRootCause(null));
 	}
 	
 	@Test
 	public void shouldReturnSame()
 	{
 		Throwable t = new NullPointerException();
-		assertEquals(t, ExceptionUtils.findRootCause(t));
+		assertEquals(t, Exceptions.findRootCause(t));
 	}
 	
 	@Test
 	public void shouldReturnRoot()
 	{
 		Throwable npe = new NullPointerException("Manually-thrown NullPointerException");
-		Throwable t = new ServiceException(new Exception(npe));
-		assertEquals(npe, ExceptionUtils.findRootCause(t));
+		Throwable t = new HttpRuntimeException(new Exception(npe));
+		assertEquals(npe, Exceptions.findRootCause(t));
 	}
 }

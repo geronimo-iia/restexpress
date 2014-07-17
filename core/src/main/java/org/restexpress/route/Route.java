@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.common.util.StringUtils;
-import org.restexpress.exception.ServiceException;
 import org.restexpress.url.UrlMatch;
 import org.restexpress.url.UrlMatcher;
 
@@ -222,7 +222,7 @@ public abstract class Route
 		}
         catch (Exception e)
         {
-        	throw new ServiceException(e);
+        	throw new HttpRuntimeException(e);
         }
 	}
 }

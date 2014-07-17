@@ -18,6 +18,7 @@ package org.restexpress.query;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
@@ -25,8 +26,6 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.common.query.QueryRange;
-import org.restexpress.exception.BadRequestException;
-import org.restexpress.query.QueryRanges;
 
 /**
  * @author toddf

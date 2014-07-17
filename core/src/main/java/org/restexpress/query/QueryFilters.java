@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.restexpress.Request;
 import org.restexpress.common.query.FilterComponent;
 import org.restexpress.common.query.FilterOperator;
 import org.restexpress.common.query.QueryFilter;
 import org.restexpress.common.util.StringUtils;
-import org.restexpress.exception.BadRequestException;
 
 /**
  * A factory for RestExpress-Common QueryFilter instance, parsing from a Request.

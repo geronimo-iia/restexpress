@@ -3,8 +3,6 @@
  */
 package org.restexpress.pipeline;
 
-import org.restexpress.Request;
-import org.restexpress.Response;
 
 /**
  * Defines the interface for processing that happens after the service is called but
@@ -17,5 +15,5 @@ import org.restexpress.Response;
  */
 public interface Postprocessor
 {
-	public void process(Request request, Response response);
+	public void process(MessageContext context);
 }

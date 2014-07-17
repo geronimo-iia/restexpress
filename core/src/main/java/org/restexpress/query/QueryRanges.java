@@ -19,9 +19,9 @@ package org.restexpress.query;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.restexpress.Request;
 import org.restexpress.common.query.QueryRange;
-import org.restexpress.exception.BadRequestException;
 
 /**
  * A factory for RestExpress-Common QueryRange instances, parsing them from a Request.

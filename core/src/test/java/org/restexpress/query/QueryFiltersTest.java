@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
@@ -31,7 +32,6 @@ import org.restexpress.Request;
 import org.restexpress.common.query.FilterCallback;
 import org.restexpress.common.query.FilterComponent;
 import org.restexpress.common.query.QueryFilter;
-import org.restexpress.exception.BadRequestException;
 
 /**
  * @author toddf

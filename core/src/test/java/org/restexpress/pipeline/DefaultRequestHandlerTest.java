@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
@@ -41,15 +42,9 @@ import org.restexpress.ContentType;
 import org.restexpress.Format;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.exception.BadRequestException;
-import org.restexpress.pipeline.DefaultRequestHandler;
-import org.restexpress.pipeline.MessageObserver;
-import org.restexpress.pipeline.PipelineBuilder;
-import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.response.DefaultHttpResponseWriter;
-import org.restexpress.response.JsendResponseWrapper;
-import org.restexpress.response.RawResponseWrapper;
 import org.restexpress.response.StringBufferHttpResponseWriter;
+import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.route.RouteResolver;
 import org.restexpress.serialization.NullSerializationProvider;
@@ -77,9 +72,9 @@ public class DefaultRequestHandlerTest
 	throws Exception
 	{
 		SerializationProvider provider = new NullSerializationProvider();
-		provider.add(new JacksonJsonProcessor(Format.JSON), new RawResponseWrapper());
-		provider.add(new JacksonJsonProcessor(Format.WRAPPED_JSON), new JsendResponseWrapper());
-		provider.add(new XstreamXmlProcessor(Format.XML), new JsendResponseWrapper());
+		provider.add(new JacksonJsonProcessor(Format.JSON), Wrapper.newRawResponseWrapper());
+		provider.add(new JacksonJsonProcessor(Format.WRAPPED_JSON), Wrapper.newJsendResponseWrapper());
+		provider.add(new XstreamXmlProcessor(Format.XML), Wrapper.newJsendResponseWrapper());
 		provider.alias("dated", Dated.class);
 		provider.setDefaultFormat(Format.WRAPPED_JSON);
 		
@@ -173,8 +168,8 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
-//		System.out.println(httpResponse.toString());
-		assertEquals("{\"code\":200,\"status\":\"success\"}", responseBody.toString());
+
+		assertEquals("{\"status\":\"success\"}", responseBody.toString());
 	}
 
 	@Test
@@ -186,7 +181,7 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
-//		System.out.println(httpResponse.toString());
+
 		assertEquals("\"Todd|Fredrich+was here\"", responseBody.toString());
 	}
 
@@ -199,8 +194,8 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
-//		System.out.println(httpResponse.toString());
-		assertEquals("{\"code\":400,\"status\":\"error\",\"message\":\"foobar'd\",\"data\":\"BadRequestException\"}", responseBody.toString());
+
+		assertEquals("{\"status\":\"error\",\"message\":\"foobar'd\",\"data\":\"BadRequestException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -213,7 +208,7 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
 //		System.out.println(responseBody.toString());
-		assertEquals("{\"code\":400,\"status\":\"error\",\"message\":\"foobar'd\",\"data\":\"BadRequestException\"}", responseBody.toString());
+		assertEquals("{\"status\":\"error\",\"message\":\"foobar'd\",\"data\":\"BadRequestException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -225,9 +220,9 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
-//		System.out.println(httpResponse.toString());
-//		assertEquals("{\"code\":400,\"status\":\"error\",\"message\":\"foobar'd\",\"data\":\"BadRequestException\"}", responseBody.toString());
-		assertEquals("{\"code\":400,\"status\":\"error\",\"message\":\"Requested representation format not supported: %target. Supported formats: json, wjson, xml\",\"data\":\"BadRequestException\"}", responseBody.toString());
+
+//		assertEquals("{\"status\":\"error\",\"message\":\"foobar'd\",\"data\":\"BadRequestException\"}", responseBody.toString());
+		assertEquals("{\"status\":\"error\",\"message\":\"Requested representation format not supported: %target. Supported formats: json, wjson, xml\",\"data\":\"BadRequestException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -239,8 +234,8 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
-//		System.out.println(httpResponse.toString());
-		assertEquals("{\"code\":400,\"status\":\"error\",\"message\":\"Requested representation format not supported: unsupported. Supported formats: json, wjson, xml\",\"data\":\"BadRequestException\"}", responseBody.toString());
+
+		assertEquals("{\"status\":\"error\",\"message\":\"Requested representation format not supported: unsupported. Supported formats: json, wjson, xml\",\"data\":\"BadRequestException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -252,8 +247,8 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
-//		System.out.println(httpResponse.toString());
-		assertEquals("{\"code\":200,\"status\":\"success\"}", responseBody.toString());
+
+		assertEquals("{\"status\":\"success\"}", responseBody.toString());
 	}
 
 	@Test
@@ -265,8 +260,8 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
-//		System.out.println(httpResponse.toString());
-		assertEquals("{\"code\":404,\"status\":\"error\",\"message\":\"Unresolvable URL: http://null/%bar\",\"data\":\"NotFoundException\"}", responseBody.toString());
+
+		assertEquals("{\"status\":\"error\",\"message\":\"Unresolvable URL: http://null/%bar\",\"data\":\"NotFoundException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -277,8 +272,8 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
-//		System.out.println(httpResponse.toString());
-		assertEquals("{\"code\":200,\"status\":\"success\",\"data\":{\"at\":\"2010-12-17T12:00:00.000Z\"}}", responseBody.toString());
+
+		assertEquals("{\"status\":\"success\",\"data\":{\"at\":\"2010-12-17T12:00:00.000Z\"}}", responseBody.toString());
 	}
 
 	@Test
@@ -289,8 +284,8 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
-//		System.out.println(httpResponse.toString());
-		assertEquals("{\"code\":200,\"status\":\"success\",\"data\":{\"at\":\"2010-12-17T12:00:00.000Z\"}}", responseBody.toString());
+
+		assertEquals("{\"status\":\"success\",\"data\":{\"at\":\"2010-12-17T12:00:00.000Z\"}}", responseBody.toString());
 	}
 
 	@Test
@@ -301,9 +296,7 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
-//		System.out.println(httpResponse.toString());
 		assertTrue(responseBody.toString().startsWith("<response>"));
-		assertTrue(responseBody.toString().contains("<code>200</code>"));
 		assertTrue(responseBody.toString().contains("<data class=\"dated\">"));
 		assertTrue(responseBody.toString().contains("<at>2010-12-17T12:00:00.000Z</at>"));
 		assertTrue(responseBody.toString().contains("</data>"));
@@ -318,9 +311,9 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
-//		System.out.println(httpResponse.toString());
+
 		assertTrue(responseBody.toString().startsWith("<response>"));
-		assertTrue(responseBody.toString().contains("<code>200</code>"));
+		
 		assertTrue(responseBody.toString().contains("<data class=\"dated\">"));
 		assertTrue(responseBody.toString().contains("<at>2010-12-17T12:00:00.000Z</at>"));
 		assertTrue(responseBody.toString().contains("</data>"));
@@ -337,7 +330,7 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getExceptionCount());
 //		System.out.println(responseBody.toString());
 		assertTrue(responseBody.toString().startsWith("<response>"));
-		assertTrue(responseBody.toString().contains("<code>404</code>"));
+
 		assertTrue(responseBody.toString().contains("<status>error</status>"));
 		assertTrue(responseBody.toString().contains("<message>Unresolvable URL: http://null/xyzt.xml</message>"));
 		assertTrue(responseBody.toString().endsWith("</response>"));
@@ -351,9 +344,9 @@ public class DefaultRequestHandlerTest
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
-//		System.out.println(httpResponse.toString());
+
 		assertTrue(responseBody.toString().startsWith("<response>"));
-		assertTrue(responseBody.toString().contains("<code>404</code>"));
+
 		assertTrue(responseBody.toString().contains("<status>error</status>"));
 		assertTrue(responseBody.toString().contains("<message>Unresolvable URL: http://null/xyzt?format=xml</message>"));
 		assertTrue(responseBody.toString().endsWith("</response>"));
@@ -630,7 +623,7 @@ public class DefaultRequestHandlerTest
 		private int callCount = 0;
 
         @Override
-        public void process(Request request, Response response)
+        public void process(MessageContext context)
         {
         	++callCount;
         }
@@ -645,9 +638,9 @@ public class DefaultRequestHandlerTest
 	extends NoopPostprocessor
 	{
         @Override
-        public void process(Request request, Response response)
+        public void process(MessageContext context)
         {
-        	super.process(request, response);
+        	super.process(context);
         	throw new RuntimeException("RuntimeException thrown...");
         }
 	}

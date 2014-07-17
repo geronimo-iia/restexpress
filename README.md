@@ -80,6 +80,19 @@ Please see the Kickstart application in examples/kickstart for a complete, runni
 ===================================================================================================
 Change History/Release Notes:
 ---------------------------------------------------------------------------------------------------
+
+0.10.4
+
+* move JsendResult, ErrorResult in common (useful for java client)
+* remove Error id and http code status (duplicated with response.status)
+* Refactor JsendResult to be compliant with JSend http://labs.omniti.com/labs/jsend
+* Use Http standard definition shared between rest express server and java client
+* use MessageContext in pre and post processor (more flexibility to handle response)
+* use HttpRuntimeException 
+* remove ExceptionMapping: server implementation must throw standard Http Exception.
+* refactor Resolver in order to user MessageContext (more flexibility to handle response)
+
+
 Release 0.10.3 - 27 May 2014
 * Change URL Pattern matcher to allow URLs with '?' at the end, but no query-string parameters following it.
 * Changed compiler output version to 1.7 (from 1.6).

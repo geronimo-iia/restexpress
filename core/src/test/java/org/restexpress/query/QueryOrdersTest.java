@@ -15,12 +15,15 @@
  */
 package org.restexpress.query;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
@@ -30,8 +33,6 @@ import org.restexpress.Request;
 import org.restexpress.common.query.OrderCallback;
 import org.restexpress.common.query.OrderComponent;
 import org.restexpress.common.query.QueryOrder;
-import org.restexpress.exception.BadRequestException;
-import org.restexpress.query.QueryOrders;
 
 /**
  * @author toddf

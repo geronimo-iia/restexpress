@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.response;
 
 import org.restexpress.Response;
@@ -21,8 +21,8 @@ import org.restexpress.Response;
  * @author toddf
  * @since Feb 10, 2011
  */
-public interface ResponseWrapper
-{
+public interface ResponseWrapper {
 	public Object wrap(Response response);
+
 	public boolean addsBodyContent(Response response);
 }

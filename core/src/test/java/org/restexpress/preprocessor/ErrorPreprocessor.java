@@ -12,22 +12,19 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.preprocessor;
 
-import org.restexpress.Request;
+import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Preprocessor;
 
 /**
  * @author toddf
  * @since Jul 2, 2014
  */
-public class ErrorPreprocessor
-implements Preprocessor
-{
+public class ErrorPreprocessor implements Preprocessor {
 	@Override
-	public void process(Request request)
-	{
+	public void process(MessageContext context) {
 		throw new RuntimeException("ErrorPreprocessor");
 	}
 }

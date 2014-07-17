@@ -17,33 +17,27 @@
 
 package org.restexpress.common.exception;
 
-
 /**
  * @author toddf
  * @since Nov 20, 2009
  */
-public class ConfigurationException
-extends RuntimeException
-{
-    private static final long serialVersionUID = -4891898485346985591L;
+public class ConfigurationException extends RuntimeException {
+	private static final long serialVersionUID = -4891898485346985591L;
 
-	public ConfigurationException()
-	{
+	public ConfigurationException() {
 	}
 
 	/**
 	 * @param message
 	 */
-	public ConfigurationException(String message)
-	{
+	public ConfigurationException(String message) {
 		super(message);
 	}
 
 	/**
 	 * @param cause
 	 */
-	public ConfigurationException(Throwable cause)
-	{
+	public ConfigurationException(Throwable cause) {
 		super(cause);
 	}
 
@@ -51,8 +45,7 @@ extends RuntimeException
 	 * @param message
 	 * @param cause
 	 */
-	public ConfigurationException(String message, Throwable cause)
-	{
+	public ConfigurationException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

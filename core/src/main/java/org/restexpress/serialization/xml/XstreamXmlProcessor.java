@@ -24,7 +24,7 @@ import java.util.Map;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.restexpress.Format;
-import org.restexpress.domain.JsendResultWrapper;
+import org.restexpress.common.response.JsendResult;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
@@ -53,7 +53,7 @@ extends XmlSerializationProcessor
 		this(new XStream(), format);
 		xstream.registerConverter(new XstreamTimestampConverter());
 		xstream.alias("list", ArrayList.class);
-		xstream.alias("response", JsendResultWrapper.class);
+		xstream.alias("response", JsendResult.class);
 	}
 
 	public XstreamXmlProcessor(XStream xstream, String format)

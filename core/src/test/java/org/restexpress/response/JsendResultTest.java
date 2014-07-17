@@ -13,7 +13,7 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
 */
-package org.restexpress.domain;
+package org.restexpress.response;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,17 +21,18 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
+import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.junit.Test;
 import org.restexpress.Response;
-import org.restexpress.domain.JsendResultWrapper;
-import org.restexpress.exception.ServiceException;
+import org.restexpress.common.response.JsendResult;
+import org.restexpress.common.response.JsendResult.State;
 
 
 /**
  * @author toddf
  * @since May 11, 2011
  */
-public class ResultWrapperTest
+public class JsendResultTest
 {
 	private Response response = new Response();
 
@@ -40,10 +41,9 @@ public class ResultWrapperTest
 	{
 		response.setException(new IOException("An IOException was thrown"));
 		response.setResponseCode(1);
-		JsendResultWrapper w = JsendResultWrapper.fromResponse(response);
+		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
-		assertEquals("fail", w.getStatus());
-		assertEquals(1, w.getCode());
+		assertEquals(State.FAIL.toString(), w.getStatus());
 		assertEquals("An IOException was thrown", w.getMessage());
 		assertEquals(IOException.class.getSimpleName(), w.getData());
 	}
@@ -53,25 +53,23 @@ public class ResultWrapperTest
 	{
 		response.setException(new ArrayIndexOutOfBoundsException("An ArrayIndexOutOfBoundsException was thrown"));
 		response.setResponseCode(2);
-		JsendResultWrapper w = JsendResultWrapper.fromResponse(response);
+		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
-		assertEquals("fail", w.getStatus());
-		assertEquals(2, w.getCode());
+		assertEquals(State.FAIL.toString(), w.getStatus());
 		assertEquals("An ArrayIndexOutOfBoundsException was thrown", w.getMessage());
 		assertEquals(ArrayIndexOutOfBoundsException.class.getSimpleName(), w.getData());
 	}
 
 	@Test
-	public void shouldHandleServiceException()
+	public void shouldHandleHttpRuntimeException()
 	{
-		response.setException(new ServiceException("A ServiceException was thrown"));
+		response.setException(new HttpRuntimeException("A ServiceException was thrown"));
 		response.setResponseCode(3);
-		JsendResultWrapper w = JsendResultWrapper.fromResponse(response);
+		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
-		assertEquals("error", w.getStatus());
-		assertEquals(3, w.getCode());
+		assertEquals(State.ERROR.toString(), w.getStatus());
 		assertEquals("A ServiceException was thrown", w.getMessage());
-		assertEquals(ServiceException.class.getSimpleName(), w.getData());
+		assertEquals(HttpRuntimeException.class.getSimpleName(), w.getData());
 	}
 
 	@Test
@@ -79,10 +77,9 @@ public class ResultWrapperTest
 	{
 		response.setResponseCode(100);
 		response.setBody("Success Body");
-		JsendResultWrapper w = JsendResultWrapper.fromResponse(response);
+		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
-		assertEquals("success", w.getStatus());
-		assertEquals(100, w.getCode());
+		assertEquals(State.SUCCESS.toString(), w.getStatus());
 		assertNull(w.getMessage());
 		assertEquals("Success Body", w.getData());
 	}
@@ -92,10 +89,9 @@ public class ResultWrapperTest
 	{
 		response.setResponseCode(400);
 		response.setBody("Error Body");
-		JsendResultWrapper w = JsendResultWrapper.fromResponse(response);
+		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
-		assertEquals("error", w.getStatus());
-		assertEquals(400, w.getCode());
+		assertEquals(State.ERROR.toString(), w.getStatus());
 		assertNull(w.getMessage());
 		assertEquals("Error Body", w.getData());
 	}
@@ -105,10 +101,9 @@ public class ResultWrapperTest
 	{
 		response.setResponseCode(500);
 		response.setBody("Fail Body");
-		JsendResultWrapper w = JsendResultWrapper.fromResponse(response);
+		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
-		assertEquals("fail", w.getStatus());
-		assertEquals(500, w.getCode());
+		assertEquals(State.FAIL.toString(), w.getStatus());
 		assertNull(w.getMessage());
 		assertEquals("Fail Body", w.getData());
 	}
@@ -117,12 +112,12 @@ public class ResultWrapperTest
 	public void shouldHandleSuccess()
 	{
 		response.setBody("Success Body");
-		JsendResultWrapper w = JsendResultWrapper.fromResponse(response);
+		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
-		assertEquals("success", w.getStatus());
-		assertEquals(200, w.getCode());
+		assertEquals(State.SUCCESS.toString(), w.getStatus());
 		assertNull(w.getMessage());
 		assertEquals("Success Body", w.getData());
 	}
 
 }
+ 

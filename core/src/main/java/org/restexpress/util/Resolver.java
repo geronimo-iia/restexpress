@@ -17,7 +17,7 @@
 
 package org.restexpress.util;
 
-import org.restexpress.Request;
+import org.restexpress.pipeline.MessageContext;
 
 
 /**
@@ -28,5 +28,5 @@ import org.restexpress.Request;
  */
 public interface Resolver<T>
 {
-	public T resolve(Request request);
+	public T resolve(MessageContext context);
 }

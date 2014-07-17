@@ -19,10 +19,10 @@ package org.restexpress.query;
 import java.util.Arrays;
 import java.util.List;
 
+import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.restexpress.Request;
 import org.restexpress.common.query.QueryOrder;
 import org.restexpress.common.util.StringUtils;
-import org.restexpress.exception.BadRequestException;
 
 /**
  * A factory for RestExpress-Common QueryOrder instances, parsing them from a Request.

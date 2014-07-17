@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
+import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -30,7 +31,6 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
-import org.restexpress.exception.BadRequestException;
 
 /**
  * @author toddf

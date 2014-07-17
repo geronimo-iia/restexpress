@@ -12,49 +12,51 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.route;
 
 import java.util.List;
 
+import org.intelligentsia.commons.http.ResponseHeader;
+import org.intelligentsia.commons.http.exception.MethodNotAllowedException;
+import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
-import org.restexpress.exception.MethodNotAllowedException;
-import org.restexpress.exception.NotFoundException;
+import org.restexpress.Response;
+import org.restexpress.pipeline.MessageContext;
 import org.restexpress.util.Resolver;
 
 /**
  * @author toddf
  * @since May 4, 2010
  */
-public class RouteResolver
-implements Resolver<Action>
-{
+public class RouteResolver implements Resolver<Action> {
 	private RouteMapping routeMapping;
-	
-	public RouteResolver(RouteMapping routes)
-	{
+
+	public RouteResolver(RouteMapping routes) {
 		super();
 		this.routeMapping = routes;
 	}
-	
-	public Route getNamedRoute(String name, HttpMethod method)
-	{
+
+	public Route getNamedRoute(String name, HttpMethod method) {
 		return routeMapping.getNamedRoute(name, method);
 	}
-	
+
 	@Override
-	public Action resolve(Request request)
-	{
+	public Action resolve(MessageContext context) {
+		Request request = context.getRequest();
 		Action action = routeMapping.getActionFor(request.getEffectiveHttpMethod(), request.getPath());
-		
-		if (action != null) return action;
+
+		if (action != null)
+			return action;
 
 		List<HttpMethod> allowedMethods = routeMapping.getAllowedMethods(request.getPath());
-
-		if (allowedMethods != null && !allowedMethods.isEmpty())
-		{
-			throw new MethodNotAllowedException(request.getUrl(), allowedMethods);
+		if (allowedMethods != null && !allowedMethods.isEmpty()) {
+			Response response = context.getResponse();
+			for (HttpMethod httpMethod : allowedMethods) {
+				response.addHeader(ResponseHeader.ALLOW.getHeader(), httpMethod.getName());
+			}
+			throw new MethodNotAllowedException(request.getUrl());
 		}
 
 		throw new NotFoundException("Unresolvable URL: " + request.getUrl());

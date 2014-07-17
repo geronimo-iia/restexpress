@@ -12,27 +12,24 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization;
 
-import org.restexpress.response.RawResponseWrapper;
+import org.restexpress.response.Wrapper;
 import org.restexpress.serialization.json.JacksonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
 
-
 /**
- * The default serialization provider that uses Jackson for JSON and XStream for XML serialization/deserialization.
+ * The default serialization provider that uses Jackson for JSON and XStream for
+ * XML serialization/deserialization.
  * 
  * @author toddf
  * @since Jul 18, 2013
  */
-public class DefaultSerializationProvider
-extends AbstractSerializationProvider
-{
-	public DefaultSerializationProvider()
-    {
+public class DefaultSerializationProvider extends AbstractSerializationProvider {
+	public DefaultSerializationProvider() {
 		super();
-		add(new JacksonJsonProcessor(), new RawResponseWrapper(), true);
-		add(new XstreamXmlProcessor(), new RawResponseWrapper());
-    }
+		add(new JacksonJsonProcessor(), Wrapper.newRawResponseWrapper(), true);
+		add(new XstreamXmlProcessor(), Wrapper.newRawResponseWrapper());
+	}
 }
