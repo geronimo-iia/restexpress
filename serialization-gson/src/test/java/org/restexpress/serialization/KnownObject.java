@@ -27,7 +27,7 @@ public class KnownObject {
 	public String string = "string value";
 	@SuppressWarnings("deprecation")
 	public Date date = new Date(64, 11, 17, 16, 30);
-	private final String p = "something private";
+	private String p = "something private";
 	public String[] sa;
 
 	public String getP() {
@@ -36,5 +36,9 @@ public class KnownObject {
 
 	public String getQ() {
 		return "Q(" + p + ")";
+	}
+	
+	public void setP(String p) {
+		this.p = p;
 	}
 }
