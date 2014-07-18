@@ -12,14 +12,22 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization;
 
 /**
+ * {@link Aliasable} define method to add an XML alias.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since Jan 28, 2011
  */
-public interface Aliasable
-{
+public interface Aliasable {
+	/**
+	 * Define an XML alias for the class.
+	 * 
+	 * @param name
+	 * @param theClass
+	 */
 	public void alias(String name, Class<?> theClass);
 }

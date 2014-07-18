@@ -12,16 +12,14 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization;
 
 /**
- * A SerliazationProcessor that supports the aliasing of element names.
+ * A SerializationProcessor that supports the aliasing of element names.
  * 
  * @author toddf
  * @since Jan 28, 2011
  */
-public interface AliasingSerializationProcessor
-extends SerializationProcessor, Aliasable
-{
+public interface AliasingSerializationProcessor extends SerializationProcessor, Aliasable {
 }

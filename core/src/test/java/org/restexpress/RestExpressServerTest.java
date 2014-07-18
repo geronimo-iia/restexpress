@@ -31,9 +31,7 @@ import org.restexpress.postprocessor.TestPostprocessor;
 import org.restexpress.preprocessor.ErrorPreprocessor;
 import org.restexpress.response.Wrapper;
 import org.restexpress.response.Wrapper.JsendResponseWrapper;
-import org.restexpress.serialization.AbstractSerializationProvider;
 import org.restexpress.serialization.DefaultSerializationProvider;
-import org.restexpress.serialization.NullSerializationProvider;
 import org.restexpress.serialization.json.JacksonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
 
@@ -65,7 +63,7 @@ public class RestExpressServerTest {
 	private static final String URL_EXCEPTION_LITTLE_O = SERVER_HOST + PATTERN_EXCEPTION_LITTLE_O;
 
 	private RestExpress server;
-	AbstractSerializationProvider serializer;
+	DefaultSerializationProvider serializer;
 	private HttpClient http = new DefaultHttpClient();
 
 	@Before
@@ -557,7 +555,7 @@ public class RestExpressServerTest {
 
 	@Test
 	public void shouldSerializeApplicationHalJson() throws Exception {
-		AbstractSerializationProvider serializer = new NullSerializationProvider();
+		DefaultSerializationProvider serializer = new DefaultSerializationProvider(Boolean.FALSE);
 		JacksonJsonProcessor jsonProc = new JacksonJsonProcessor();
 		jsonProc.addSupportedMediaTypes(ContentType.HAL_JSON);
 		serializer.add(jsonProc, Wrapper.newErrorResponseWrapper());
@@ -580,35 +578,9 @@ public class RestExpressServerTest {
 		request.releaseConnection();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Test
-	public void shouldSerializeApplicationXmlJson() throws Exception {
-		AbstractSerializationProvider serializer = new NullSerializationProvider();
-		XstreamXmlProcessor xmlProc = new XstreamXmlProcessor();
-		xmlProc.addSupportedMediaTypes(ContentType.HAL_XML);
-		serializer.add(xmlProc, Wrapper.newErrorResponseWrapper());
-		RestExpress.setSerializationProvider(serializer);
-		server.bind(SERVER_PORT);
-
-		HttpGet request = new HttpGet(LITTLE_OS_URL);
-		request.addHeader(HttpHeaders.Names.ACCEPT, "application/hal+xml");
-		HttpResponse response = (HttpResponse) http.execute(request);
-		assertEquals(HttpResponseStatus.OK.getCode(), response.getStatusLine().getStatusCode());
-		HttpEntity entity = response.getEntity();
-		assertTrue(entity.getContentLength() > 0l);
-		assertEquals(ContentType.HAL_XML, entity.getContentType().getValue());
-		Header range = response.getFirstHeader(HttpHeaders.Names.CONTENT_RANGE);
-		assertNotNull(range);
-		assertEquals("items 0-2/3", range.getValue());
-		String entityString = EntityUtils.toString(entity);
-		ArrayList<LittleO> os = serializer.getSerializer(Format.XML).deserialize(entityString, ArrayList.class);
-		verifyList(os.toArray(new LittleO[0]));
-		request.releaseConnection();
-	}
-
 	@Test
 	public void shouldSerializeUnmappedPreprocessorException() throws Exception {
-		AbstractSerializationProvider serializer = new NullSerializationProvider();
+		DefaultSerializationProvider serializer = new DefaultSerializationProvider(Boolean.FALSE);
 		JacksonJsonProcessor jsonProc = new JacksonJsonProcessor();
 		serializer.add(jsonProc, Wrapper.newErrorResponseWrapper(), true);
 		RestExpress.setSerializationProvider(serializer);
@@ -632,7 +604,7 @@ public class RestExpressServerTest {
 
 	@Test
 	public void shouldSerializeMappedPreprocessorException() throws Exception {
-		AbstractSerializationProvider serializer = new NullSerializationProvider();
+		DefaultSerializationProvider serializer = new DefaultSerializationProvider(Boolean.FALSE);
 		JacksonJsonProcessor jsonProc = new JacksonJsonProcessor();
 		serializer.add(jsonProc, Wrapper.newErrorResponseWrapper(), true);
 		RestExpress.setSerializationProvider(serializer);
@@ -656,7 +628,7 @@ public class RestExpressServerTest {
 
 	@Test
 	public void shouldSerializeUnmappedException() throws Exception {
-		AbstractSerializationProvider serializer = new NullSerializationProvider();
+		DefaultSerializationProvider serializer = new DefaultSerializationProvider(Boolean.FALSE);
 		JacksonJsonProcessor jsonProc = new JacksonJsonProcessor();
 		serializer.add(jsonProc, Wrapper.newErrorResponseWrapper(), true);
 		RestExpress.setSerializationProvider(serializer);
@@ -679,7 +651,7 @@ public class RestExpressServerTest {
 
 	@Test
 	public void shouldSerializeMappedException() throws Exception {
-		AbstractSerializationProvider serializer = new NullSerializationProvider();
+		DefaultSerializationProvider serializer = new DefaultSerializationProvider(Boolean.FALSE);
 		JacksonJsonProcessor jsonProc = new JacksonJsonProcessor();
 		serializer.add(jsonProc, Wrapper.newErrorResponseWrapper(), true);
 		RestExpress.setSerializationProvider(serializer);

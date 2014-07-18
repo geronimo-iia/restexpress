@@ -15,6 +15,7 @@
  */
 package org.restexpress.common.response;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 /**
@@ -24,7 +25,7 @@ import java.util.Locale;
  * <ul>
  * <li>Error status illustrates a non-2xx and non-500 response (e.g. validation
  * errors causing a 400, Bad Request).</li>
- * <li>Fail status is essentially a 500< (internal server) error.</li>
+ * <li>Fail status is essentially a 500 (internal server) error.</li>
  * </ul>
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
@@ -32,7 +33,9 @@ import java.util.Locale;
  * @author toddf
  * @since Jan 11, 2011
  */
-public class JsendResult {
+public class JsendResult implements Serializable{
+
+	private static final long serialVersionUID = -1905504337512287014L;
 
 	public enum State {
 		SUCCESS, ERROR, FAIL;

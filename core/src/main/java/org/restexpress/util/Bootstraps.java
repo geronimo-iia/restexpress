@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.util;
 
 import java.util.concurrent.Executors;
@@ -22,14 +22,12 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 /**
  * static helper class to automate getting Netty going
+ * 
  * @author kevwil
  * @since October 1, 2010
  */
-public final class Bootstraps
-{
-	// no instances, just static methods
-	private Bootstraps(){}
-
+public enum Bootstraps {
+	;
 	/**
 	 * Build up a server with NIO channels and default cached thread pools.
 	 * 
@@ -38,31 +36,22 @@ public final class Bootstraps
 	 * @see Executors
 	 * @return An {@link ServerBootstrap} instance.
 	 */
-	public final static ServerBootstrap createServerNioBootstrap()
-	{
-		return new ServerBootstrap(
-			new NioServerSocketChannelFactory(
-				Executors.newCachedThreadPool(),
-				Executors.newCachedThreadPool()));
+	public final static ServerBootstrap createServerNioBootstrap() {
+		return new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
 	}
 
-
 	/**
-	 * Build up a server with NIO channels and default cached thread pools, specifying
-	 * the number of worker threads.
+	 * Build up a server with NIO channels and default cached thread pools,
+	 * specifying the number of worker threads.
 	 * 
-	 * @param workerCount the number of worker threads desired.
+	 * @param workerCount
+	 *            the number of worker threads desired.
 	 * @see ServerBootstrap
 	 * @see NioServerSocketChannelFactory
 	 * @see Executors
 	 * @return An {@link ServerBootstrap} instance.
 	 */
-	public final static ServerBootstrap createServerNioBootstrap(int workerCount)
-	{
-		return new ServerBootstrap(
-			new NioServerSocketChannelFactory(
-				Executors.newCachedThreadPool(),
-				Executors.newCachedThreadPool(),
-				workerCount));
+	public final static ServerBootstrap createServerNioBootstrap(int workerCount) {
+		return new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool(), workerCount));
 	}
 }

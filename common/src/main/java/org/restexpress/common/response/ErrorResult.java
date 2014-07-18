@@ -1,5 +1,7 @@
 package org.restexpress.common.response;
 
+import java.io.Serializable;
+
 import org.intelligentsia.commons.http.exception.Exceptions;
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 
@@ -10,8 +12,9 @@ import org.intelligentsia.commons.http.exception.HttpRuntimeException;
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class ErrorResult {
+public class ErrorResult implements Serializable{
 
+	private static final long serialVersionUID = -3700889923122706476L;
 	private int httpStatus;
 	private String message;
 	private String errorType;

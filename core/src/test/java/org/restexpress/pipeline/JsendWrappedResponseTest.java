@@ -38,7 +38,7 @@ import org.restexpress.response.StringBufferHttpResponseWriter;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.route.RouteResolver;
-import org.restexpress.serialization.NullSerializationProvider;
+import org.restexpress.serialization.DefaultSerializationProvider;
 import org.restexpress.serialization.SerializationProvider;
 import org.restexpress.serialization.json.JacksonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
@@ -57,7 +57,7 @@ public class JsendWrappedResponseTest {
 
 	@Before
 	public void initialize() throws Exception {
-		SerializationProvider provider = new NullSerializationProvider();
+		SerializationProvider provider =  new DefaultSerializationProvider(Boolean.FALSE);
 		provider.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
 		provider.add(new XstreamXmlProcessor(), Wrapper.newJsendResponseWrapper());
 		DummyRoutes routes = new DummyRoutes();

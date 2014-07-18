@@ -21,7 +21,5 @@ package org.restexpress.serialization;
  * @author toddf
  * @since Mar 16, 2010
  */
-public interface SerializationProcessor
-extends Deserializer, Serializer
-{
+public interface SerializationProcessor extends Deserializer, Serializer {
 }

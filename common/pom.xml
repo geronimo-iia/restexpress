@@ -9,11 +9,8 @@
 	</parent>
 	<artifactId>restexpress-common</artifactId>
 	<packaging>jar</packaging>
-
-	<name>RestExpress-Common</name>
-	<description>Utilities and classes common to all RESTExpress projects.</description>
-	<url>https://github.com/RestExpress/RestExpress-Common</url>
-
+	<name>restexpress-common</name>
+	<description>Utilities and classes common to all RESTExpress projects client.</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.intelligents-ia.commons</groupId>

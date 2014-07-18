@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization;
 
 import org.restexpress.Request;
@@ -20,15 +20,20 @@ import org.restexpress.Response;
 import org.restexpress.response.ResponseWrapper;
 
 /**
+ * {@link SerializationProvider} define method of Serializaion provider service.
+ * 
  * @author toddf
  * @since Jul 18, 2013
  */
-public interface SerializationProvider
-extends Aliasable
-{
+public interface SerializationProvider extends Aliasable {
+
 	public void add(SerializationProcessor processor, ResponseWrapper wrapper);
+
 	public void add(SerializationProcessor processor, ResponseWrapper wrapper, boolean isDefault);
+
 	public void setDefaultFormat(String format);
+
 	public SerializationSettings resolveRequest(Request request);
-    public SerializationSettings resolveResponse(Request request, Response response, boolean shouldForce);
+
+	public SerializationSettings resolveResponse(Request request, Response response, boolean shouldForce);
 }

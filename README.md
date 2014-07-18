@@ -81,8 +81,10 @@ Please see the Kickstart application in examples/kickstart for a complete, runni
 Change History/Release Notes:
 ---------------------------------------------------------------------------------------------------
 
-0.10.4
+Current Version 0.10.4
 
+* Merge (Nul/Default/Abstract)SerializationProvider, into one class.
+* extract gson serialization processor in a child module
 * move JsendResult, ErrorResult in common (useful for java client)
 * remove Error id and http code status (duplicated with response.status)
 * Refactor JsendResult to be compliant with JSend http://labs.omniti.com/labs/jsend
@@ -91,7 +93,7 @@ Change History/Release Notes:
 * use HttpRuntimeException 
 * remove ExceptionMapping: server implementation must throw standard Http Exception.
 * refactor Resolver in order to user MessageContext (more flexibility to handle response)
-
+* add few javadoc on methods, classes
 
 Release 0.10.3 - 27 May 2014
 * Change URL Pattern matcher to allow URLs with '?' at the end, but no query-string parameters following it.

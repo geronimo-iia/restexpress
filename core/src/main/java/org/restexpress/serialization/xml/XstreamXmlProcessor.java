@@ -31,76 +31,62 @@ import com.thoughtworks.xstream.converters.SingleValueConverter;
 
 /**
  * The operation of these SerializationProcessor methods MUST match the behavior
- * of those in the DefaultJsonProcessor (and any other serialization processors).
+ * of those in the DefaultJsonProcessor (and any other serialization
+ * processors).
  * 
  * @author toddf
  * @since Mar 16, 2010
  */
-public class XstreamXmlProcessor
-extends XmlSerializationProcessor
-{
+public class XstreamXmlProcessor extends XmlSerializationProcessor {
 	private XStream xstream;
 	private Map<Class<?>, String> aliases = new HashMap<Class<?>, String>();
 	private boolean shouldAutoAlias = true;
-	
-	public XstreamXmlProcessor()
-	{
+
+	public XstreamXmlProcessor() {
 		this(Format.XML);
 	}
 
-	public XstreamXmlProcessor(String format)
-	{
+	public XstreamXmlProcessor(String format) {
 		this(new XStream(), format);
 		xstream.registerConverter(new XstreamTimestampConverter());
 		xstream.alias("list", ArrayList.class);
 		xstream.alias("response", JsendResult.class);
 	}
 
-	public XstreamXmlProcessor(XStream xstream, String format)
-	{
+	public XstreamXmlProcessor(XStream xstream, String format) {
 		super(format);
 		this.xstream = xstream;
 		shouldAutoAlias = false;
 	}
-	
-	protected XStream getXStream()
-	{
+
+	protected XStream getXStream() {
 		return this.xstream;
 	}
-	
-	
-	// SECTION: XML NAME ALIASING
 
 	@Override
-	public void alias(String name, Class<?> type)
-	{
+	public void alias(String name, Class<?> type) {
 		xstream.alias(name, type);
 	}
-	
-	public void registerConverter(SingleValueConverter converter)
-	{
+
+	public void registerConverter(SingleValueConverter converter) {
 		xstream.registerConverter(converter);
 	}
 
-
-	// SECTION: SERIALIZATION PROCESSOR
-
 	@Override
-	public String serialize(Object object)
-	{
-		if (object == null) return "";
+	public String serialize(Object object) {
+		if (object == null)
+			return "";
 
 		return xstream.toXML(object);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(String xml, Class<T> type)
-	{
-		if (xml == null || xml.trim().isEmpty()) return null;
+	public <T> T deserialize(String xml, Class<T> type) {
+		if (xml == null || xml.trim().isEmpty())
+			return null;
 
-		if (shouldAutoAlias)
-		{
+		if (shouldAutoAlias) {
 			addAliasIfNecessary(type);
 		}
 
@@ -109,24 +95,21 @@ extends XmlSerializationProcessor
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(ChannelBuffer xml, Class<T> type)
-	{
-		if (!xml.readable()) return null;
+	public <T> T deserialize(ChannelBuffer xml, Class<T> type) {
+		if (!xml.readable())
+			return null;
 
 		return (T) xstream.fromXML(new ChannelBufferInputStream(xml));
 	}
 
-	private void addAliasIfNecessary(Class<?> type)
-	{
-		if (!aliases.containsKey(type))
-		{
+	private void addAliasIfNecessary(Class<?> type) {
+		if (!aliases.containsKey(type)) {
 			String name = type.getSimpleName().trim();
-			
-			if ("[]".equals(name) || "".equals(name))
-			{
+
+			if ("[]".equals(name) || "".equals(name)) {
 				return;
 			}
-			
+
 			xstream.alias(name, type);
 		}
 	}

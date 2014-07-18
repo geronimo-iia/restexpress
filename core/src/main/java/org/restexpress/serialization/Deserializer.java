@@ -19,14 +19,12 @@ package org.restexpress.serialization;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-
-
 /**
  * @author toddf
  * @since Nov 20, 2009
  */
-public interface Deserializer
-{
+public interface Deserializer {
 	public <T> T deserialize(String string, Class<T> type);
+
 	public <T> T deserialize(ChannelBuffer buffer, Class<T> type);
 }

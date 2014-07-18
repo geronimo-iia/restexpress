@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization.xml;
 
 import java.util.Arrays;
@@ -26,29 +26,24 @@ import org.restexpress.serialization.AbstractSerializationProcessor;
 import org.restexpress.serialization.AliasingSerializationProcessor;
 
 /**
+ * {@link XmlSerializationProcessor} define an abstract XML processor.
+ * 
  * @author toddf
  * @since Jul 18, 2013
  */
-public abstract class XmlSerializationProcessor
-extends AbstractSerializationProcessor
-implements AliasingSerializationProcessor
-{
-	private static final String SUPPORTED_MEDIA_TYPES = StringUtils.join(",",
-		ContentType.XML,
-		"text/xml; charset=" + ContentType.ENCODING);
+public abstract class XmlSerializationProcessor extends AbstractSerializationProcessor implements AliasingSerializationProcessor {
 
-	public XmlSerializationProcessor()
-	{
+	private static final String SUPPORTED_MEDIA_TYPES = StringUtils.join(",", ContentType.XML, "text/xml; charset=" + ContentType.ENCODING);
+
+	public XmlSerializationProcessor() {
 		this(Arrays.asList(Format.XML));
 	}
-	
-	public XmlSerializationProcessor(String format)
-	{
+
+	public XmlSerializationProcessor(String format) {
 		this(Arrays.asList(format));
 	}
 
-	public XmlSerializationProcessor(List<String> supportedFormats)
-	{
+	public XmlSerializationProcessor(List<String> supportedFormats) {
 		super(supportedFormats, MediaTypeParser.parse(SUPPORTED_MEDIA_TYPES));
 	}
 }
