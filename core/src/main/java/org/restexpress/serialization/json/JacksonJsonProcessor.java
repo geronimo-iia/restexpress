@@ -48,7 +48,7 @@ import com.strategicgains.util.date.DateAdapterConstants;
  * @since Mar 16, 2010
  */
 public class JacksonJsonProcessor extends JsonSerializationProcessor {
-	private ObjectMapper mapper;
+	private final ObjectMapper mapper;
 
 	public JacksonJsonProcessor() {
 		this(Format.JSON);
@@ -56,12 +56,8 @@ public class JacksonJsonProcessor extends JsonSerializationProcessor {
 
 	public JacksonJsonProcessor(final String format) {
 		super(format);
-		final SimpleModule module = new SimpleModule();
-		initializeModule(module);
-	}
-
-	public JacksonJsonProcessor(final SimpleModule module) {
-		initialize(module);
+		mapper = initializeMapper(new ObjectMapper())//
+				.registerModule(initializeModule());
 	}
 
 	public JacksonJsonProcessor(final ObjectMapper mapper) {
@@ -69,23 +65,15 @@ public class JacksonJsonProcessor extends JsonSerializationProcessor {
 		this.mapper = mapper;
 	}
 
-	private void initialize(final SimpleModule module) {
-		this.mapper = new ObjectMapper();
-		mapper.registerModule(module);
-		initializeMapper(mapper);
-	}
-
 	/**
 	 * Template method for sub-classes to augment the module with desired
 	 * serializers and/or deserializers. Sub-classes should call super() to get
 	 * default settings.
-	 * 
-	 * @param module
-	 *            a SimpleModule
 	 */
-	protected void initializeModule(final SimpleModule module) {
-		module.addSerializer(Date.class, new JacksonTimepointSerializer()).addSerializer(String.class, new JacksonEncodingStringSerializer()).addDeserializer(Date.class, new JacksonTimepointDeserializer());
-		initialize(module);
+	protected SimpleModule initializeModule() {
+		return new SimpleModule().addSerializer(Date.class, new JacksonTimepointSerializer())//
+				.addSerializer(String.class, new JacksonEncodingStringSerializer())//
+				.addDeserializer(Date.class, new JacksonTimepointDeserializer());
 	}
 
 	/**
@@ -95,23 +83,20 @@ public class JacksonJsonProcessor extends JsonSerializationProcessor {
 	 * @param module
 	 *            a SimpleModule
 	 */
-	protected void initializeMapper(final ObjectMapper mapper) {
-		mapper
+	protected ObjectMapper initializeMapper(final ObjectMapper mapper) {
+		return mapper
 		// .enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
-		.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-
-		// Ignore additional/unknown properties in a payload.
+				.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+				// Ignore additional/unknown properties in a payload.
 				.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-
 				// Only serialize populated properties (do no serialize nulls)
 				.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-
 				// Use fields directly.
 				.setVisibility(PropertyAccessor.FIELD, Visibility.ANY)
-
 				// Ignore accessor and mutator methods (use fields per above).
-				.setVisibility(PropertyAccessor.GETTER, Visibility.NONE).setVisibility(PropertyAccessor.SETTER, Visibility.NONE).setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)
-
+				.setVisibility(PropertyAccessor.GETTER, Visibility.NONE)//
+				.setVisibility(PropertyAccessor.SETTER, Visibility.NONE)//
+				.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)
 				// Set default date output format.
 				.setDateFormat(new SimpleDateFormat(DateAdapterConstants.TIME_POINT_OUTPUT_FORMAT));
 	}

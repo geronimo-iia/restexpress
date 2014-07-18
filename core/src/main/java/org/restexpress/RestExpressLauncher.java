@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.jboss.netty.channel.Channel;
+import org.restexpress.serialization.SerializationProvider;
 import org.restexpress.settings.RestExpressSettings;
 import org.restexpress.settings.Settings;
 
@@ -36,6 +37,9 @@ import org.restexpress.settings.Settings;
  */
 public class RestExpressLauncher implements Runnable {
 
+	/**
+	 * {@link RestExpress} instance.
+	 */
 	private RestExpress restExpress;
 
 	/**
@@ -74,7 +78,15 @@ public class RestExpressLauncher implements Runnable {
 	 * @param settings
 	 */
 	public RestExpressLauncher(RestExpressSettings settings) {
-		restExpress = new RestExpress(settings);
+		server(new RestExpress(settings));
+	}
+
+	public RestExpressLauncher(RestExpressSettings settings, SerializationProvider serializationProvider) {
+		server(new RestExpress(settings, serializationProvider));
+	}
+
+	protected void server(RestExpress restExpress) {
+		this.restExpress = restExpress;
 	}
 
 	protected void initialize() {
@@ -112,11 +124,14 @@ public class RestExpressLauncher implements Runnable {
 	}
 
 	/**
+	 * Instantiate a new {@link RestExpressLauncher} from argument.
 	 * @param args
-	 * @throws IOException
+	 * @param defaultEnvironmentName
+	 * @return a {@link RestExpressLauncher} instance.
+	 * @throws IOException 
 	 */
-	public static int main(String[] args) throws IOException {
-		String environmentName = "restexpress";
+	public static RestExpressLauncher instanciateFrom(String[] args, String defaultEnvironmentName) throws IOException {
+		String environmentName = defaultEnvironmentName;
 		if (args.length > 0) {
 			environmentName = args[0];
 		}
@@ -133,6 +148,16 @@ public class RestExpressLauncher implements Runnable {
 				restExpressLauncher = new RestExpressLauncher();
 			}
 		}
+		return restExpressLauncher;
+	}
+
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
+	public static int main(String[] args) throws IOException {
+		// load from settings
+		RestExpressLauncher restExpressLauncher =  instanciateFrom(args,  "restexpress");
 		// create and run
 		restExpressLauncher.run();
 		return 0;
