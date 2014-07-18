@@ -73,7 +73,6 @@
 	<modules>
 		<module>common</module>
 		<module>core</module>
-		<module>serialization-gson</module>
 		<module>plugins</module>
 	</modules>
 
