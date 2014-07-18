@@ -30,14 +30,14 @@ public class ConfigurationException extends RuntimeException {
 	/**
 	 * @param message
 	 */
-	public ConfigurationException(String message) {
+	public ConfigurationException(final String message) {
 		super(message);
 	}
 
 	/**
 	 * @param cause
 	 */
-	public ConfigurationException(Throwable cause) {
+	public ConfigurationException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -45,7 +45,7 @@ public class ConfigurationException extends RuntimeException {
 	 * @param message
 	 * @param cause
 	 */
-	public ConfigurationException(String message, Throwable cause) {
+	public ConfigurationException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 }

@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.common.query;
 
 import static org.junit.Assert.assertEquals;
@@ -21,92 +21,81 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.restexpress.common.query.QueryRange;
 
 /**
  * @author toddf
  * @since May 24, 2012
  */
-public class QueryRangeTest
-{
+public class QueryRangeTest {
 
-	@Test(expected=IllegalArgumentException.class)
-	public void shouldThrowOnZeroLimitInConstructor()
-	{
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowOnZeroLimitInConstructor() {
 		new QueryRange(1, 0);
 		fail("did not throw");
 	}
 
-	@Test(expected=IllegalArgumentException.class)
-	public void shouldThrowOnZeroLimit()
-	{
-		QueryRange r = new QueryRange();
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowOnZeroLimit() {
+		final QueryRange r = new QueryRange();
 		r.setOffset(1);
 		r.setLimit(0);
 		fail("did not throw");
 	}
 
-	@Test(expected=IllegalArgumentException.class)
-	public void shouldThrowOnNegativeOffset()
-	{
-		QueryRange r = new QueryRange();
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowOnNegativeOffset() {
+		final QueryRange r = new QueryRange();
 		r.setOffset(-1);
 		fail("did not throw");
 	}
 
 	@Test
-	public void shouldCreateZeroBasedRange()
-	{
-		QueryRange r = new QueryRange(0, 25);
+	public void shouldCreateZeroBasedRange() {
+		final QueryRange r = new QueryRange(0, 25);
 		assertEquals(25, r.getLimit());
 		assertEquals(0, r.getStart());
 		assertEquals(24, r.getEnd());
 	}
 
 	@Test
-	public void shouldCopyUninitializedRange()
-	{
-		QueryRange r = new QueryRange();
+	public void shouldCopyUninitializedRange() {
+		final QueryRange r = new QueryRange();
 		assertFalse(r.isInitialized());
-		QueryRange c = new QueryRange(r);
+		final QueryRange c = new QueryRange(r);
 		assertFalse(c.isInitialized());
 		assertEquals(r.getLimit(), c.getLimit());
 		assertEquals(r.getOffset(), r.getOffset());
 	}
 
 	@Test
-	public void shouldCopyPopulatedRange()
-	{
-		QueryRange r = new QueryRange(1, 25);
-		QueryRange c = new QueryRange(r);
+	public void shouldCopyPopulatedRange() {
+		final QueryRange r = new QueryRange(1, 25);
+		final QueryRange c = new QueryRange(r);
 		assertEquals(r.getLimit(), c.getLimit());
 		assertEquals(r.getOffset(), r.getOffset());
 	}
 
 	@Test
-	public void shouldCloneUninitializedRange()
-	{
-		QueryRange r = new QueryRange();
+	public void shouldCloneUninitializedRange() {
+		final QueryRange r = new QueryRange();
 		assertFalse(r.isInitialized());
-		QueryRange c = r.clone();
+		final QueryRange c = r.clone();
 		assertFalse(c.isInitialized());
 		assertEquals(r.getLimit(), c.getLimit());
 		assertEquals(r.getOffset(), r.getOffset());
 	}
 
 	@Test
-	public void shouldClonePopulatedRange()
-	{
-		QueryRange r = new QueryRange(1, 25);
-		QueryRange c = r.clone();
+	public void shouldClonePopulatedRange() {
+		final QueryRange r = new QueryRange(1, 25);
+		final QueryRange c = r.clone();
 		assertEquals(r.getLimit(), c.getLimit());
 		assertEquals(r.getOffset(), r.getOffset());
 	}
 
 	@Test
-	public void shouldHandlePartialInitialization()
-	{
-		QueryRange r = new QueryRange();
+	public void shouldHandlePartialInitialization() {
+		final QueryRange r = new QueryRange();
 		assertFalse(r.isInitialized());
 		assertFalse(r.isValid());
 		r.setOffset(0l);
@@ -118,9 +107,8 @@ public class QueryRangeTest
 	}
 
 	@Test
-	public void shouldCreateNextPageRange()
-	{
-		QueryRange r = new QueryRange(25, 25);
+	public void shouldCreateNextPageRange() {
+		final QueryRange r = new QueryRange(25, 25);
 		assertEquals(25, r.getLimit());
 		assertEquals(25, r.getOffset());
 		assertEquals(25, r.getStart());
@@ -128,9 +116,8 @@ public class QueryRangeTest
 	}
 
 	@Test
-	public void shouldAssembleStringRange()
-	{
-		QueryRange r = new QueryRange(0, 25);
+	public void shouldAssembleStringRange() {
+		final QueryRange r = new QueryRange(0, 25);
 		assertEquals("items 0-24", r.toString());
 
 		r.setStart(1);
@@ -144,7 +131,7 @@ public class QueryRangeTest
 		assertEquals(5, r.getLimit());
 		assertEquals(4, r.getEnd());
 		assertEquals("items 0-4", r.toString());
-		
+
 		r.setStart(15l);
 		r.setLimitViaEnd(19l);
 		assertEquals(5, r.getLimit());
@@ -157,9 +144,8 @@ public class QueryRangeTest
 	}
 
 	@Test
-	public void shouldCreateAsContentRange()
-	{
-		QueryRange r = new QueryRange(0, 25);
+	public void shouldCreateAsContentRange() {
+		final QueryRange r = new QueryRange(0, 25);
 		assertEquals("items 0-24/25", r.asContentRange(25));
 		assertEquals("items 0-24/20", r.asContentRange(20));
 		assertEquals("items 0-24/0", r.asContentRange(0));
@@ -168,9 +154,8 @@ public class QueryRangeTest
 	}
 
 	@Test
-	public void shouldExtendBeyond()
-	{
-		QueryRange r= new QueryRange(0, 3);
+	public void shouldExtendBeyond() {
+		QueryRange r = new QueryRange(0, 3);
 		assertTrue(r.extendsBeyond(0, 0l));
 		assertFalse(r.extendsBeyond(0, 2l));
 		assertFalse(r.extendsBeyond(0, 3l));
@@ -182,7 +167,7 @@ public class QueryRangeTest
 		assertFalse(r.extendsBeyond(2, 3l));
 		assertFalse(r.extendsBeyond(2, 4l));
 
-		r= new QueryRange(2, 5);
+		r = new QueryRange(2, 5);
 		assertTrue(r.extendsBeyond(0, 0l));
 		assertFalse(r.extendsBeyond(0, 5l));
 		assertFalse(r.extendsBeyond(0, 6l));
@@ -195,34 +180,32 @@ public class QueryRangeTest
 	}
 
 	@Test
-	public void shouldSpan()
-	{
-		QueryRange r= new QueryRange(0, 3);
-		assertFalse(r.spans(0,  0l));
-		assertFalse(r.spans(0,  2l));
-		assertFalse(r.spans(0,  3l));
-		assertFalse(r.spans(0,  4l));
-		assertTrue(r.spans(1,  1l));
-		assertTrue(r.spans(2,  2l));
-		assertTrue(r.spans(3,  3l));
-		assertTrue(r.spans(4,  4l));
-		assertFalse(r.spans(4,  3l));
-		assertFalse(r.spans(2,  3l));
-		assertFalse(r.spans(1,  3l));
-		
+	public void shouldSpan() {
+		QueryRange r = new QueryRange(0, 3);
+		assertFalse(r.spans(0, 0l));
+		assertFalse(r.spans(0, 2l));
+		assertFalse(r.spans(0, 3l));
+		assertFalse(r.spans(0, 4l));
+		assertTrue(r.spans(1, 1l));
+		assertTrue(r.spans(2, 2l));
+		assertTrue(r.spans(3, 3l));
+		assertTrue(r.spans(4, 4l));
+		assertFalse(r.spans(4, 3l));
+		assertFalse(r.spans(2, 3l));
+		assertFalse(r.spans(1, 3l));
+
 		r = new QueryRange(2, 5);
-		assertFalse(r.spans(0,  6l));
-		assertFalse(r.spans(0,  7l));
-		assertFalse(r.spans(0,  8l));
-		assertFalse(r.spans(1,  5l));
-		assertFalse(r.spans(2,  5l));
-		assertFalse(r.spans(3,  5l));
+		assertFalse(r.spans(0, 6l));
+		assertFalse(r.spans(0, 7l));
+		assertFalse(r.spans(0, 8l));
+		assertFalse(r.spans(1, 5l));
+		assertFalse(r.spans(2, 5l));
+		assertFalse(r.spans(3, 5l));
 	}
 
 	@Test
-	public void shouldBeOutside()
-	{
-		QueryRange r= new QueryRange(0, 3);
+	public void shouldBeOutside() {
+		QueryRange r = new QueryRange(0, 3);
 		assertFalse(r.isOutside(0, 0l));
 		assertTrue(r.isOutside(0, 1l));
 		assertTrue(r.isOutside(0, 2l));
@@ -235,7 +218,7 @@ public class QueryRangeTest
 		assertFalse(r.isOutside(2, 3l));
 		assertFalse(r.isOutside(3, 3l));
 		assertFalse(r.isOutside(3, 3l));
-		
+
 		r = new QueryRange(2, 5);
 		assertFalse(r.isOutside(0, 0l));
 		assertTrue(r.isOutside(0, 1l));
@@ -252,9 +235,8 @@ public class QueryRangeTest
 	}
 
 	@Test
-	public void shouldBeInside()
-	{
-		QueryRange r= new QueryRange(0, 5);
+	public void shouldBeInside() {
+		QueryRange r = new QueryRange(0, 5);
 		assertFalse(r.isInside(0, 4l));
 		assertFalse(r.isInside(0, 5l));
 		assertFalse(r.isInside(0, 6l));
@@ -272,7 +254,7 @@ public class QueryRangeTest
 		assertTrue(r.isInside(5, 9l));
 		assertTrue(r.isInside(5, 8l));
 		assertTrue(r.isInside(5, 7l));
-		assertFalse(r.isInside(5, 6l));		
+		assertFalse(r.isInside(5, 6l));
 
 		r = new QueryRange(1l, 2);
 		assertTrue(r.isInside(2, 3l));

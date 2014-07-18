@@ -2,7 +2,7 @@ package org.restexpress.common.exception;
 
 public enum Exceptions {
 	;
-	public static Throwable findRootCause(Throwable throwable) {
+	public static Throwable findRootCause(final Throwable throwable) {
 		Throwable cause = throwable;
 		Throwable rootCause = null;
 		while (cause != null) {

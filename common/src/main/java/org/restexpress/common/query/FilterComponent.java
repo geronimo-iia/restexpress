@@ -19,47 +19,39 @@ package org.restexpress.common.query;
  * @author toddf
  * @since Oct 15, 2012
  */
-public class FilterComponent
-{
+public class FilterComponent {
 	private String field;
 	private FilterOperator operator;
 	private Object value;
 
-	public FilterComponent(String field, FilterOperator operator, Object value)
-	{
+	public FilterComponent(final String field, final FilterOperator operator, final Object value) {
 		super();
 		this.field = field;
 		this.operator = operator;
 		this.value = value;
 	}
 
-	public String getField()
-	{
+	public String getField() {
 		return field;
 	}
 
-	public void setField(String field)
-	{
+	public void setField(final String field) {
 		this.field = field;
 	}
-	
-	public FilterOperator getOperator()
-	{
+
+	public FilterOperator getOperator() {
 		return operator;
 	}
-	
-	public void setOperator(FilterOperator operator)
-	{
+
+	public void setOperator(final FilterOperator operator) {
 		this.operator = operator;
 	}
 
-	public Object getValue()
-	{
+	public Object getValue() {
 		return value;
 	}
 
-	public void setValue(String value)
-	{
+	public void setValue(final String value) {
 		this.value = value;
 	}
 }

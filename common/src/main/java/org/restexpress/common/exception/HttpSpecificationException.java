@@ -3,7 +3,7 @@ package org.restexpress.common.exception;
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.intelligentsia.commons.http.status.HttpResponseStatus;
 
-public class HttpSpecificationException  extends HttpRuntimeException{
+public class HttpSpecificationException extends HttpRuntimeException {
 
 	private static final long serialVersionUID = -3390366424725358082L;
 
@@ -11,33 +11,32 @@ public class HttpSpecificationException  extends HttpRuntimeException{
 		super();
 	}
 
-	public HttpSpecificationException(HttpResponseStatus httpResponseStatus, String message, Throwable cause) {
+	public HttpSpecificationException(final HttpResponseStatus httpResponseStatus, final String message, final Throwable cause) {
 		super(httpResponseStatus, message, cause);
 	}
 
-	public HttpSpecificationException(HttpResponseStatus httpResponseStatus, String message) {
+	public HttpSpecificationException(final HttpResponseStatus httpResponseStatus, final String message) {
 		super(httpResponseStatus, message);
 	}
 
-	public HttpSpecificationException(HttpResponseStatus httpResponseStatus, Throwable cause) {
+	public HttpSpecificationException(final HttpResponseStatus httpResponseStatus, final Throwable cause) {
 		super(httpResponseStatus, cause);
 	}
 
-	public HttpSpecificationException(HttpResponseStatus httpResponseStatus) {
+	public HttpSpecificationException(final HttpResponseStatus httpResponseStatus) {
 		super(httpResponseStatus);
 	}
 
-	public HttpSpecificationException(String message, Throwable cause) {
+	public HttpSpecificationException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 
-	public HttpSpecificationException(String message) {
+	public HttpSpecificationException(final String message) {
 		super(message);
 	}
 
-	public HttpSpecificationException(Throwable cause) {
+	public HttpSpecificationException(final Throwable cause) {
 		super(cause);
 	}
 
-	
 }

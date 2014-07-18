@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.common.query;
 
 import static org.junit.Assert.assertEquals;
@@ -20,31 +20,23 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.restexpress.common.query.FilterCallback;
-import org.restexpress.common.query.FilterComponent;
-import org.restexpress.common.query.FilterOperator;
-import org.restexpress.common.query.QueryFilter;
 
 /**
  * @author toddf
  * @since Jul 27, 2012
  */
-public class QueryFilterTest
-{
-	
+public class QueryFilterTest {
+
 	@Test
-	public void shouldAddFilterCriteria()
-	{
-		QueryFilter f = new QueryFilter();
+	public void shouldAddFilterCriteria() {
+		final QueryFilter f = new QueryFilter();
 		assertFalse(f.hasFilters());
 		f.addCriteria("test", FilterOperator.CONTAINS, "something");
 		assertTrue(f.hasFilters());
-		
-		f.iterate(new FilterCallback()
-		{
+
+		f.iterate(new FilterCallback() {
 			@Override
-			public void filterOn(FilterComponent component)
-			{
+			public void filterOn(final FilterComponent component) {
 				assertEquals("test", component.getField());
 				assertEquals("something", component.getValue());
 			}

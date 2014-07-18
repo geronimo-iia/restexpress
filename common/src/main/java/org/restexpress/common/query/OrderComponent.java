@@ -20,30 +20,25 @@ package org.restexpress.common.query;
  * @author toddf
  * @since May 25, 2011
  */
-public class OrderComponent
-{
-	private boolean isDescending;
-	private String fieldName;
-	
-	public OrderComponent(String fieldName, boolean isDescending)
-	{
+public class OrderComponent {
+	private final boolean isDescending;
+	private final String fieldName;
+
+	public OrderComponent(final String fieldName, final boolean isDescending) {
 		super();
 		this.isDescending = isDescending;
 		this.fieldName = fieldName;
 	}
-	
-	public boolean isAscending()
-	{
+
+	public boolean isAscending() {
 		return !isDescending;
 	}
-	
-	public boolean isDescending()
-	{
+
+	public boolean isDescending() {
 		return isDescending;
 	}
-	
-	public String getFieldName()
-	{
+
+	public String getFieldName() {
 		return fieldName;
 	}
 }

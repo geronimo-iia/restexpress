@@ -16,7 +16,6 @@
  */
 package org.restexpress.common.query;
 
-
 /**
  * Supports the concept of 'pagination' via request 'Range' header or 'limit'
  * and 'offset' parameters.
@@ -51,9 +50,7 @@ package org.restexpress.common.query;
  * @author toddf
  * @since Apr 11, 2011
  */
-public class QueryRange
-implements Cloneable
-{
+public class QueryRange implements Cloneable {
 	// SECTION: INSTANCE VARIABLES
 
 	private Long offset = null;
@@ -61,20 +58,17 @@ implements Cloneable
 
 	// SECTION: CONSTRUCTORS
 
-	public QueryRange()
-	{
+	public QueryRange() {
 		super();
 	}
 
-	public QueryRange(QueryRange that)
-	{
+	public QueryRange(final QueryRange that) {
 		super();
 		this.offset = that.offset;
 		this.limit = that.limit;
 	}
 
-	public QueryRange(long offset, int limit)
-	{
+	public QueryRange(final long offset, final int limit) {
 		super();
 		setOffset(offset);
 		setLimit(limit);
@@ -83,15 +77,15 @@ implements Cloneable
 	// SECTION: ACCESSORS / MUTATORS
 
 	/**
-	 * Returns an 'end' value calculated from the offset and limit values
-	 * set on this QueryRange. If there is no limit, end is calculated to
-	 * be the 'offset' value.
+	 * Returns an 'end' value calculated from the offset and limit values set on
+	 * this QueryRange. If there is no limit, end is calculated to be the
+	 * 'offset' value.
 	 * 
-	 * @return the computed end value of the range, or offset if there is no limit set.
+	 * @return the computed end value of the range, or offset if there is no
+	 *         limit set.
 	 */
-	public long getEnd()
-	{
-		return (hasLimit() ? (getOffset() + getLimit() - 1) : getOffset());
+	public long getEnd() {
+		return (hasLimit() ? ((getOffset() + getLimit()) - 1) : getOffset());
 	}
 
 	/**
@@ -99,8 +93,7 @@ implements Cloneable
 	 * 
 	 * @return the limit of this QueryRange, or zero.
 	 */
-	public int getLimit()
-	{
+	public int getLimit() {
 		return (hasLimit() ? limit.intValue() : 0);
 	}
 
@@ -109,82 +102,84 @@ implements Cloneable
 	 * 
 	 * @return true if a limit is set
 	 */
-	public boolean hasLimit()
-	{
+	public boolean hasLimit() {
 		return (limit != null);
 	}
 
 	/**
-	 * Set the query limit, which represents the maximum number of results returned
-	 * in a query.
+	 * Set the query limit, which represents the maximum number of results
+	 * returned in a query.
 	 * 
-	 * @param value an integer > zero
-	 * @throws IllegalArgumentException if the limit is less-than zero
+	 * @param value
+	 *            an integer > zero
+	 * @throws IllegalArgumentException
+	 *             if the limit is less-than zero
 	 */
-	public void setLimit(int value)
-	{
-		if (value <= 0) throw new IllegalArgumentException("limit must be > 0");
+	public void setLimit(final int value) {
+		if (value <= 0) {
+			throw new IllegalArgumentException("limit must be > 0");
+		}
 
 		this.limit = Integer.valueOf(value);
 	}
 
 	/**
-	 * Sets the limit of this range by calculating the difference between
-	 * the already-set offset and the given 'end' value.
-	 *
+	 * Sets the limit of this range by calculating the difference between the
+	 * already-set offset and the given 'end' value.
+	 * 
 	 * @param value
-	 * @throws IllegalArgumentException if no offset is set or if end is less-than offset, which would cause a negative limit.
+	 * @throws IllegalArgumentException
+	 *             if no offset is set or if end is less-than offset, which
+	 *             would cause a negative limit.
 	 */
-	public void setLimitViaEnd(long value)
-	{
-		if (!hasOffset()) throw new IllegalArgumentException("Setting 'end' requires 'offset' to be set first");
+	public void setLimitViaEnd(final long value) {
+		if (!hasOffset()) {
+			throw new IllegalArgumentException("Setting 'end' requires 'offset' to be set first");
+		}
 
-		setLimit((int) (value - getOffset() + 1));
+		setLimit((int) ((value - getOffset()) + 1));
 	}
 
 	/**
 	 * getStart() is a synonym for getOffset().
 	 */
-	public long getStart()
-	{
+	public long getStart() {
 		return getOffset();
 	}
-	
+
 	/**
 	 * setStart() is a synonym for setOffset().
 	 * 
 	 * @param value
 	 */
-	public void setStart(long value)
-	{
+	public void setStart(final long value) {
 		setOffset(value);
 	}
 
-	public long getOffset()
-	{
+	public long getOffset() {
 		return (hasOffset() ? offset.intValue() : 0);
 	}
 
-	public boolean hasOffset()
-	{
+	public boolean hasOffset() {
 		return (offset != null);
 	}
 
-	public void setOffset(long value)
-	{
-		if (value < 0) throw new IllegalArgumentException("offset must be >= 0");
+	public void setOffset(final long value) {
+		if (value < 0) {
+			throw new IllegalArgumentException("offset must be >= 0");
+		}
 
 		this.offset = Long.valueOf(value);
 	}
 
 	/**
-	 * Returns true if setLimit(int) and setOffset(long) were both called successfully,
-	 * or the constructor QueryRange(long, int) was successfully called.
+	 * Returns true if setLimit(int) and setOffset(long) were both called
+	 * successfully, or the constructor QueryRange(long, int) was successfully
+	 * called.
 	 * 
 	 * @return true if both a limit and offset are set.
 	 */
-	public boolean isInitialized()
-	{
+	public boolean isInitialized() {
 		return hasLimit() && hasOffset();
 	}
 
@@ -193,16 +188,12 @@ implements Cloneable
 	 * 
 	 * @return true if the range is valid
 	 */
-	public boolean isValid()
-	{
-		return (isInitialized()
-			&& (getOffset() >= 0)
-			&& (getLimit() >= 0));
+	public boolean isValid() {
+		return (isInitialized() && (getOffset() >= 0) && (getLimit() >= 0));
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return assembleString().toString();
 	}
 
@@ -215,61 +206,46 @@ implements Cloneable
 	 * No range checking is performed. It is therefore, the caller's
 	 * responsibility to ensure that maxItems is greater-than the end value.
 	 * 
-	 * @param maxItems the maximum number of items available.
+	 * @param maxItems
+	 *            the maximum number of items available.
 	 * @return a String of the form "items <first>-<last>/<max>"
 	 */
-	public String asContentRange(long maxItems)
-	{
-		return assembleString()
-			.append("/")
-			.append(maxItems)
-			.toString();
+	public String asContentRange(final long maxItems) {
+		return assembleString().append("/").append(maxItems).toString();
 	}
 
-	private StringBuffer assembleString()
-	{
-		return new StringBuffer("items ")
-			.append(getOffset())
-			.append("-")
-		    .append(getEnd());
+	private StringBuffer assembleString() {
+		return new StringBuffer("items ").append(getOffset()).append("-").append(getEnd());
 	}
 
 	// SECTION: COLLECTION SIZE RANGE CHECKING
 
-	public boolean isOutside(int size, long count)
-	{
-		return (size == 0 && count > 0);
+	public boolean isOutside(final int size, final long count) {
+		return ((size == 0) && (count > 0));
 	}
 
-    public boolean extendsBeyond(int size, long count)
-    {
-	    return (count == 0 && getEnd() > 0) || (size > 0 && getEnd() > (count - 1));
-    }
+	public boolean extendsBeyond(final int size, final long count) {
+		return ((count == 0) && (getEnd() > 0)) || ((size > 0) && (getEnd() > (count - 1)));
+	}
 
-    public boolean spans(int size, long count)
-    {
-	    return (size == count && count > 0);
-    }
+	public boolean spans(final int size, final long count) {
+		return ((size == count) && (count > 0));
+	}
 
-    public boolean isInside(int size, long count)
-    {
-	    return (size > 0 && getEnd() < count && !spans(size, count));
-    }
-    
-    // SECTION: CLONEABLE
-    
-    @Override
-    public QueryRange clone()
-    {
-    	try
-        {
-	        return (QueryRange) super.clone();
-        }
-        catch (CloneNotSupportedException e)
-        {
-	        e.printStackTrace();
-        }
-    	
-    	return new QueryRange(this);
-    }
+	public boolean isInside(final int size, final long count) {
+		return ((size > 0) && (getEnd() < count) && !spans(size, count));
+	}
+
+	// SECTION: CLONEABLE
+
+	@Override
+	public QueryRange clone() {
+		try {
+			return (QueryRange) super.clone();
+		} catch (final CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+
+		return new QueryRange(this);
+	}
 }

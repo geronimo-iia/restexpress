@@ -12,21 +12,13 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.common.query;
 
 /**
  * @author toddf
  * @since Dec 10, 2012
  */
-public enum FilterOperator
-{
-	EQUALS,
-	NOT_EQUALS,
-	STARTS_WITH,
-	CONTAINS,
-	LESS_THAN,
-	LESS_THAN_OR_EQUAL_TO,
-	GREATER_THAN,
-	GREATER_THAN_OR_EQUAL_TO
+public enum FilterOperator {
+	EQUALS, NOT_EQUALS, STARTS_WITH, CONTAINS, LESS_THAN, LESS_THAN_OR_EQUAL_TO, GREATER_THAN, GREATER_THAN_OR_EQUAL_TO
 }

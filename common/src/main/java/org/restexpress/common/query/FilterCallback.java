@@ -17,16 +17,16 @@
 package org.restexpress.common.query;
 
 /**
- * Called by QueryFilter.iterate() at query construction time to modify the persistence query
- * (or other query) to reduce the number of results returned.
+ * Called by QueryFilter.iterate() at query construction time to modify the
+ * persistence query (or other query) to reduce the number of results returned.
  * 
  * @author toddf
  * @since May 25, 2011
  */
-public interface FilterCallback
-{
+public interface FilterCallback {
 	/**
-	 * @param component a FilterComponent 
+	 * @param component
+	 *            a FilterComponent
 	 */
 	void filterOn(FilterComponent component);
 }

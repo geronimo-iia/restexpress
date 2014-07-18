@@ -33,13 +33,14 @@ import java.util.Locale;
  * @author toddf
  * @since Jan 11, 2011
  */
-public class JsendResult implements Serializable{
+public class JsendResult implements Serializable {
 
 	private static final long serialVersionUID = -1905504337512287014L;
 
 	public enum State {
 		SUCCESS, ERROR, FAIL;
 
+		@Override
 		public String toString() {
 			return super.toString().toLowerCase(Locale.US);
 		};
@@ -53,7 +54,7 @@ public class JsendResult implements Serializable{
 		super();
 	}
 
-	public JsendResult(State status, String errorMessage, Object data) {
+	public JsendResult(final State status, final String errorMessage, final Object data) {
 		super();
 		this.status = status.toString();
 		this.message = errorMessage;

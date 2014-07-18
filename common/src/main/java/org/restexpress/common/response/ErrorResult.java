@@ -5,14 +5,13 @@ import java.io.Serializable;
 import org.intelligentsia.commons.http.exception.Exceptions;
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 
-
 /**
  * ErrorResult is a wrapper class to deal with restexpress error return.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class ErrorResult implements Serializable{
+public class ErrorResult implements Serializable {
 
 	private static final long serialVersionUID = -3700889923122706476L;
 	private int httpStatus;
@@ -23,7 +22,7 @@ public class ErrorResult implements Serializable{
 		super();
 	}
 
-	public ErrorResult(int httpStatusCode, String message, String errorType) {
+	public ErrorResult(final int httpStatusCode, final String message, final String errorType) {
 		super();
 		this.httpStatus = httpStatusCode;
 		this.message = message;
@@ -41,6 +40,5 @@ public class ErrorResult implements Serializable{
 	public String toString() {
 		return "ErrorResult {httpStatusCode=\"" + httpStatus + "\", message=\"" + message + "\", errorType=\"" + errorType + "\"}";
 	}
-	
-	
+
 }
