@@ -1,3 +1,22 @@
+/**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
+ *
+ */
 /*
     Copyright 2010, Strategic Gains, Inc.
 
@@ -26,14 +45,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.Flags;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.common.util.StringUtils;
-import org.restexpress.exception.ServiceException;
 import org.restexpress.url.UrlMatch;
 import org.restexpress.url.UrlMatcher;
-
 
 /**
  * A Route is an immutable relationship between a URL pattern and a REST
@@ -42,32 +61,21 @@ import org.restexpress.url.UrlMatcher;
  * @author toddf
  * @since May 4, 2010
  */
-public abstract class Route
-{
-	// SECTION: INSTANCE VARIABLES
+public abstract class Route {
 
-	private UrlMatcher urlMatcher;
-	private Object controller;
-	private Method action;
-	private HttpMethod method;
+	private final UrlMatcher urlMatcher;
+	private final Object controller;
+	private final Method action;
+	private final HttpMethod method;
 	private boolean shouldSerializeResponse = true;
-	private String name;
-	private String baseUrl;
-	private List<String> supportedFormats = new ArrayList<String>();
-	private String defaultFormat;
-	private Set<String> flags = new HashSet<String>();
-	private Map<String, Object> parameters = new HashMap<String, Object>();
+	private final String name;
+	private final String baseUrl;
+	private final List<String> supportedFormats = new ArrayList<String>();
+	private final Set<Flags> flags = new HashSet<>();
+	private final Map<String, Object> parameters = new HashMap<String, Object>();
 
-	// SECTION: CONSTRUCTORS
-
-	/**
-	 * @param urlMatcher
-	 * @param controller
-	 */
-	public Route(UrlMatcher urlMatcher, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse,
-		String name, List<String> supportedFormats, String defaultFormat, Set<String> flags, Map<String, Object> parameters,
-		String baseUrl)
-	{
+	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+			final Map<String, Object> parameters, final String baseUrl) {
 		super();
 		this.urlMatcher = urlMatcher;
 		this.controller = controller;
@@ -77,152 +85,113 @@ public abstract class Route
 		this.shouldSerializeResponse = shouldSerializeResponse;
 		this.name = name;
 		this.supportedFormats.addAll(supportedFormats);
-		this.defaultFormat = defaultFormat;
 		this.flags.addAll(flags);
 		this.parameters.putAll(parameters);
 		this.baseUrl = baseUrl;
 	}
-	
-	public boolean isFlagged(String flag)
-	{
+
+	public boolean isFlagged(final Flags flag) {
 		return flags.contains(flag);
 	}
-	
-	public boolean hasParameter(String name)
-	{
+
+	public boolean hasParameter(final String name) {
 		return (getParameter(name) != null);
 	}
 
-	public Object getParameter(String name)
-	{
+	public Object getParameter(final String name) {
 		return parameters.get(name);
 	}
-	
-	public Method getAction()
-	{
+
+	public Method getAction() {
 		return action;
 	}
-	
-	public Object getController()
-	{
+
+	public Object getController() {
 		return controller;
 	}
-	
-	public HttpMethod getMethod()
-	{
+
+	public HttpMethod getMethod() {
 		return method;
 	}
-	
-	public String getName()
-	{
+
+	public String getName() {
 		return name;
 	}
-	
-	public boolean hasName()
-	{
-		return (getName() != null && !getName().trim().isEmpty());
+
+	public boolean hasName() {
+		return ((getName() != null) && !getName().trim().isEmpty());
 	}
 
-	public String getBaseUrl()
-	{
+	public String getBaseUrl() {
 		return (baseUrl == null ? StringUtils.EMPTY_STRING : baseUrl);
 	}
 
 	/**
-	 * Returns the base URL + the URL pattern.  Useful in creating links.
+	 * Returns the base URL + the URL pattern. Useful in creating links.
 	 * 
 	 * @return a string URL pattern containing the base URL.
 	 */
-	public String getFullPattern()
-	{
+	public String getFullPattern() {
 		return getBaseUrl() + getPattern();
 	}
 
 	/**
-	 * Returns the URL pattern without any '.{format}' at the end.  In essence, a 'short' URL pattern.
+	 * Returns the URL pattern without any '.{format}' at the end. In essence, a
+	 * 'short' URL pattern.
 	 * 
 	 * @return a URL pattern
 	 */
-	public String getPattern()
-	{
+	public String getPattern() {
 		return urlMatcher.getPattern();
 	}
-	
-	public boolean shouldSerializeResponse()
-	{
+
+	public boolean shouldSerializeResponse() {
 		return shouldSerializeResponse;
 	}
 
-    public Collection<String> getSupportedFormats()
-    {
-	    return Collections.unmodifiableList(supportedFormats);
-    }
-	
-	public boolean hasSupportedFormats()
-	{
+	public Collection<String> getSupportedFormats() {
+		return Collections.unmodifiableList(supportedFormats);
+	}
+
+	public boolean hasSupportedFormats() {
 		return (!supportedFormats.isEmpty());
 	}
-	
-	public void addAllSupportedFormats(List<String> formats)
-	{
+
+	public void addAllSupportedFormats(final List<String> formats) {
 		supportedFormats.addAll(formats);
 	}
-	
-	public void addSupportedFormat(String format)
-	{
-		if (!supportsFormat(format))
-		{
+
+	public void addSupportedFormat(final String format) {
+		if (!supportsFormat(format)) {
 			supportedFormats.add(format);
 		}
 	}
 
-	public boolean supportsFormat(String format)
-	{
+	public boolean supportsFormat(final String format) {
 		return supportedFormats.contains(format);
 	}
-	
-	public String getDefaultFormat()
-	{
-		return defaultFormat;
-	}
-	
-	public boolean hasDefaultFormat()
-	{
-		return defaultFormat != null;
-	}
 
-	public UrlMatch match(String url)
-	{
+	public UrlMatch match(final String url) {
 		return urlMatcher.match(url);
 	}
-	
-	public List<String> getUrlParameters()
-	{
+
+	public List<String> getUrlParameters() {
 		return urlMatcher.getParameterNames();
 	}
 
-	public Object invoke(Request request, Response response)
-	{
-		try
-        {
-	        return action.invoke(controller, request, response);
-        }
-		catch (InvocationTargetException e)
-		{
-			Throwable cause = e.getCause();
-			
-			if (RuntimeException.class.isAssignableFrom(cause.getClass()))
-			{
+	public Object invoke(final Request request, final Response response) {
+		try {
+			return action.invoke(controller, request, response);
+		} catch (final InvocationTargetException e) {
+			final Throwable cause = e.getCause();
+
+			if (RuntimeException.class.isAssignableFrom(cause.getClass())) {
 				throw (RuntimeException) e.getCause();
-			}
-			else
-			{
+			} else {
 				throw new RuntimeException(cause);
 			}
+		} catch (final Exception e) {
+			throw new HttpRuntimeException(e);
 		}
-        catch (Exception e)
-        {
-        	throw new ServiceException(e);
-        }
 	}
 }

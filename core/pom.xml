@@ -8,18 +8,16 @@
 	</parent>
 	<artifactId>restexpress</artifactId>
 	<packaging>jar</packaging>
-	<name>RestExpress</name>
+	<name>restexpress</name>
 	<description>Internet scale, high-performance RESTful Services in Java</description>
 	<url>https://github.com/RestExpress/RestExpress</url>
-
-
-
-
+	<properties>
+		<license.header.path>../header.txt</license.header.path>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
 			<artifactId>restexpress-common</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
@@ -42,16 +40,9 @@
 			<artifactId>encoder</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 </project>

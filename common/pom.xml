@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.strategicgains</groupId>
@@ -8,9 +9,15 @@
 	</parent>
 	<artifactId>restexpress-common</artifactId>
 	<packaging>jar</packaging>
-	
-	<name>RestExpress-Common</name>
-	<description>Utilities and classes common to all RESTExpress projects.</description>
-	<url>https://github.com/RestExpress/RestExpress-Common</url>
-
+	<name>restexpress-common</name>
+	<description>Utilities and classes common to all RESTExpress projects client.</description>
+	<properties>
+		<license.header.path>../header.txt</license.header.path>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.intelligents-ia.commons</groupId>
+			<artifactId>http-specification</artifactId>
+		</dependency>
+	</dependencies>
 </project>

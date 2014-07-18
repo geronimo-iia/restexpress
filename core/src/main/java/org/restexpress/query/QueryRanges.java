@@ -1,37 +1,40 @@
-/*
- * Copyright 2011, Strategic Gains, Inc.
+/**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ *          http://www.apache.org/licenses/LICENSE-2.0
  *
- * You may obtain a copy of the License at
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package org.restexpress.query;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.restexpress.Request;
 import org.restexpress.common.query.QueryRange;
-import org.restexpress.exception.BadRequestException;
 
 /**
- * A factory for RestExpress-Common QueryRange instances, parsing them from a Request.
+ * A factory for RestExpress-Common QueryRange instances, parsing them from a
+ * Request.
  * 
  * @author toddf
  * @since Apr 11, 2011
  * @see org.restexpress.common.query.QueryRange
  */
-public abstract class QueryRanges
-{
+public abstract class QueryRanges {
 	// SECTION: CONSTANTS
 
 	private static final String LIMIT_HEADER_NAME = "limit";
@@ -47,13 +50,16 @@ public abstract class QueryRanges
 	 * providing a default maximum offset if the request contains no range
 	 * criteria.
 	 * 
-	 * @param request the current request
-	 * @param limit the default limit, used if the request contains no range criteria
-	 * @return a QueryRange instance, defaulting to 0 to (limit - 1). Never null.
+	 * @param request
+	 *            the current request
+	 * @param limit
+	 *            the default limit, used if the request contains no range
+	 *            criteria
+	 * @return a QueryRange instance, defaulting to 0 to (limit - 1). Never
+	 *         null.
 	 */
-	public static QueryRange parseFrom(Request request, int limit)
-	{
-		QueryRange range = new QueryRange();
+	public static QueryRange parseFrom(final Request request, final int limit) {
+		final QueryRange range = new QueryRange();
 		range.setOffset(0l);
 		range.setLimit(limit);
 		parseInto(request, range);
@@ -63,23 +69,21 @@ public abstract class QueryRanges
 	/**
 	 * Create a QueryRange instance from the current RestExpress request.
 	 * 
-	 * @param request the current request
+	 * @param request
+	 *            the current request
 	 * @return a QueryRange instance. Never null.
 	 */
-	public static QueryRange parseFrom(Request request)
-	{
-		QueryRange range = new QueryRange();
+	public static QueryRange parseFrom(final Request request) {
+		final QueryRange range = new QueryRange();
 		parseInto(request, range);
 		return range;
 	}
 
-	private static void parseInto(Request request, QueryRange range)
-	{
-		String limit = request.getHeader(LIMIT_HEADER_NAME);
-		String offset = request.getHeader(OFFSET_HEADER_NAME);
+	private static void parseInto(final Request request, final QueryRange range) {
+		final String limit = request.getHeader(LIMIT_HEADER_NAME);
+		final String offset = request.getHeader(OFFSET_HEADER_NAME);
 
-		if (!parseLimitAndOffset(limit, offset, range))
-		{
+		if (!parseLimitAndOffset(limit, offset, range)) {
 			parseRangeHeader(request, range);
 		}
 	}
@@ -90,31 +94,24 @@ public abstract class QueryRanges
 	 * @param range
 	 * @return
 	 */
-	private static boolean parseLimitAndOffset(String limit, String offset, QueryRange range)
-	{
+	private static boolean parseLimitAndOffset(final String limit, final String offset, final QueryRange range) {
 		boolean hasLimit = false;
 		boolean hasOffset = false;
 
-		if (limit != null && !limit.trim().isEmpty())
-		{
+		if ((limit != null) && !limit.trim().isEmpty()) {
 			hasLimit = true;
 			range.setLimit(Integer.parseInt(limit));
 		}
 
-		if (offset != null && !offset.trim().isEmpty())
-		{
+		if ((offset != null) && !offset.trim().isEmpty()) {
 			hasOffset = true;
 			range.setOffset(Long.parseLong(offset));
-		}
-		else if (hasLimit)
-		{
+		} else if (hasLimit) {
 			range.setOffset(0l);
 		}
 
-		if (hasLimit || hasOffset)
-		{
-			if (!range.isValid())
-			{
+		if (hasLimit || hasOffset) {
+			if (!range.isValid()) {
 				throw new BadRequestException("Invalid 'limit' and 'offset' parameters: limit=" + limit + " offset=" + offset);
 			}
 
@@ -124,31 +121,24 @@ public abstract class QueryRanges
 		return false;
 	}
 
-	private static void parseRangeHeader(Request request, QueryRange range)
-	{
-		String rangeHeader = request.getHeader(RANGE_HEADER_NAME);
+	private static void parseRangeHeader(final Request request, final QueryRange range) {
+		final String rangeHeader = request.getHeader(RANGE_HEADER_NAME);
 
-		if (rangeHeader != null && !rangeHeader.trim().isEmpty())
-		{
-			Matcher matcher = ITEMS_HEADER_PATTERN.matcher(rangeHeader);
+		if ((rangeHeader != null) && !rangeHeader.trim().isEmpty()) {
+			final Matcher matcher = ITEMS_HEADER_PATTERN.matcher(rangeHeader);
 
-			if (!matcher.matches())
-			{
+			if (!matcher.matches()) {
 				throw new BadRequestException("Unparseable 'Range' header.  Expecting items=[start]-[end] was: " + rangeHeader);
 			}
-			
-			try
-			{
+
+			try {
 				range.setOffset(Long.parseLong(matcher.group(1)));
 				range.setLimitViaEnd(Long.parseLong(matcher.group(2)));
-			}
-			catch(IllegalArgumentException e)
-			{
+			} catch (final IllegalArgumentException e) {
 				throw new BadRequestException("Invalid 'Range' header.  Expecting 'items=[start]-[end]'  was: " + rangeHeader);
 			}
 
-			if (!range.isValid())
-			{
+			if (!range.isValid()) {
 				throw new BadRequestException("Invalid 'Range' header.  Expecting 'items=[start]-[end]'  was: " + rangeHeader);
 			}
 		}

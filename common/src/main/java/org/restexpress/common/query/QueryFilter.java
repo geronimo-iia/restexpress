@@ -1,18 +1,21 @@
-/*
- * Copyright 2011, Strategic Gains, Inc.
+/**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ *          http://www.apache.org/licenses/LICENSE-2.0
  *
- * You may obtain a copy of the License at
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package org.restexpress.common.query;
 
@@ -20,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Supports the concept of filtering a result based on the 'filter' query parameter.
- * a list of field name/value pairs separated by a vertical bar ('|') and the field name
- * separated from the value with two colons ('::').
+ * Supports the concept of filtering a result based on the 'filter' query
+ * parameter. a list of field name/value pairs separated by a vertical bar ('|')
+ * and the field name separated from the value with two colons ('::').
  * <p/>
  * To filter on name: ?filter=name::todd
  * <p/>
@@ -31,17 +34,14 @@ import java.util.List;
  * @author toddf
  * @since Apr 12, 2011
  */
-public class QueryFilter
-{
+public class QueryFilter {
 	private List<FilterComponent> filters;
-	
-	public QueryFilter()
-	{
+
+	public QueryFilter() {
 		super();
 	}
 
-	public QueryFilter(List<FilterComponent> filters)
-	{
+	public QueryFilter(final List<FilterComponent> filters) {
 		this();
 		this.filters = new ArrayList<FilterComponent>(filters);
 	}
@@ -49,14 +49,14 @@ public class QueryFilter
 	/**
 	 * Add a filter criteria to this QueryFilter instance.
 	 * 
-	 * @param name the property name to filter on.  Cannot be null.
-	 * @param value the value to match.  Cannot be null.
+	 * @param name
+	 *            the property name to filter on. Cannot be null.
+	 * @param value
+	 *            the value to match. Cannot be null.
 	 * @return a reference to this QueryFilter to facilitate method chaining.
 	 */
-	public QueryFilter addCriteria(String name, FilterOperator operator, Object value)
-	{
-		if (filters == null)
-		{
+	public QueryFilter addCriteria(final String name, final FilterOperator operator, final Object value) {
+		if (filters == null) {
 			filters = new ArrayList<FilterComponent>();
 		}
 
@@ -65,27 +65,28 @@ public class QueryFilter
 	}
 
 	/**
-	 * Returns true if this QueryFilter instance would affect the query (has effective filters).
+	 * Returns true if this QueryFilter instance would affect the query (has
+	 * effective filters).
 	 * 
 	 * @return true if filters exist within this QueryFilter instance
 	 */
-	public boolean hasFilters()
-	{
-		return (filters != null && !filters.isEmpty());
+	public boolean hasFilters() {
+		return ((filters != null) && !filters.isEmpty());
 	}
-	
-	/**
-	 * Iterate the filter criteria within this QueryFilter, invoking the FilterCallback
-	 * to presumably construct a query.
-	 * 
-	 * @param callback a FilterCallback instance
-	 */
-	public void iterate(FilterCallback callback)
-	{
-		if (callback == null || !hasFilters()) return;
 
-		for (FilterComponent filterComponent : filters)
-		{
+	/**
+	 * Iterate the filter criteria within this QueryFilter, invoking the
+	 * FilterCallback to presumably construct a query.
+	 * 
+	 * @param callback
+	 *            a FilterCallback instance
+	 */
+	public void iterate(final FilterCallback callback) {
+		if ((callback == null) || !hasFilters()) {
+			return;
+		}
+
+		for (final FilterComponent filterComponent : filters) {
 			callback.filterOn(filterComponent);
 		}
 	}

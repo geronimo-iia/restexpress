@@ -1,3 +1,22 @@
+/**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
+ *
+ */
 /*
     Copyright 2011, Strategic Gains, Inc.
 
@@ -22,40 +41,31 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.Flags;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteBuilder;
-import org.restexpress.settings.RouteDefaults;
 
 /**
  * @author toddf
  * @since Jan 13, 2011
  */
-public class ParameterizedRouteBuilder
-extends RouteBuilder
-{
-	private List<String> aliases = new ArrayList<String>();
+public class ParameterizedRouteBuilder extends RouteBuilder {
+	private final List<String> aliases = new ArrayList<String>();
 
 	/**
 	 * @param uri
 	 * @param controller
 	 * @param routeType
 	 */
-	public ParameterizedRouteBuilder(String uri, Object controller,
-	    RouteDefaults defaults)
-	{
-		super(uri, controller, defaults);
+	public ParameterizedRouteBuilder(final String uri, final Object controller) {
+		super(uri, controller);
 	}
 
 	@Override
-	protected Route newRoute(String pattern, Object controller, Method action,
-	    HttpMethod method, boolean shouldSerializeResponse, String name,
-	    List<String> supportedFormats, String defaultFormat, Set<String> flags,
-	    Map<String, Object> parameters, String baseUrl)
-	{
-		ParameterizedRoute r = new ParameterizedRoute(pattern, controller, action, method,
-		    shouldSerializeResponse, name, supportedFormats, defaultFormat,
-		    flags, parameters, baseUrl);
+	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+			final Map<String, Object> parameters, final String baseUrl) {
+		final ParameterizedRoute r = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
 		r.addAliases(aliases);
 		return r;
 	}
@@ -67,13 +77,12 @@ extends RouteBuilder
 	 * the method. Parameter nodes that are missing from the alias will not be
 	 * available in the action method.
 	 * 
-	 * @param uri the alias URI.
+	 * @param uri
+	 *            the alias URI.
 	 * @return the ParameterizedRouteBuilder instance (this).
 	 */
-	public ParameterizedRouteBuilder alias(String uri)
-	{
-		if (!aliases.contains(uri))
-		{
+	public ParameterizedRouteBuilder alias(final String uri) {
+		if (!aliases.contains(uri)) {
 			aliases.add(uri);
 		}
 
@@ -81,24 +90,21 @@ extends RouteBuilder
 	}
 
 	@Override
-	public RouteMetadata asMetadata()
-	{
-		RouteMetadata metadata = super.asMetadata();
+	public RouteMetadata asMetadata() {
+		final RouteMetadata metadata = super.asMetadata();
 
-		for (String alias : aliases)
-		{
+		for (final String alias : aliases) {
 			metadata.addAlias(alias);
 		}
 
 		return metadata;
 	}
 
-	protected String toRegexPattern(String uri)
-	{
+	@Override
+	protected String toRegexPattern(final String uri) {
 		String pattern = uri;
 
-		if (pattern != null && !pattern.startsWith("/"))
-		{
+		if ((pattern != null) && !pattern.startsWith("/")) {
 			pattern = "/" + pattern;
 		}
 

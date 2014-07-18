@@ -1,3 +1,22 @@
+/**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
+ *
+ */
 package org.restexpress.route;
 
 import static org.junit.Assert.assertEquals;
@@ -13,97 +32,81 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.route.Route;
-import org.restexpress.route.RouteDeclaration;
-import org.restexpress.route.RouteMapping;
-import org.restexpress.settings.RouteDefaults;
 
 /**
  * @author toddf
  * @since Sep 27, 2010
  */
-public class RouteDeclarationTest
-{
-    private static final String RAH_ROUTE_NAME = "POST_ONLY";
+public class RouteDeclarationTest {
+	private static final String RAH_ROUTE_NAME = "POST_ONLY";
 	private static RouteDeclaration routeDeclarations;
-    private static RouteMapping routeMapping;
-	
+	private static RouteMapping routeMapping;
+
 	@BeforeClass
-	public static void setUpBeforeClass()
-	throws Exception
-	{
+	public static void setUpBeforeClass() throws Exception {
 		routeDeclarations = new Routes();
 		((Routes) routeDeclarations).defineRoutes();
-		routeMapping = routeDeclarations.createRouteMapping(new RouteDefaults());
+		routeMapping = routeDeclarations.createRouteMapping();
 	}
-	
+
 	@Test
-	public void testGetRoutesForNullMethod()
-	{
+	public void testGetRoutesForNullMethod() {
 		routeMapping.getRoutesFor(null);
 	}
-	
+
 	@Test
-	public void testGetRoutesForGetMethod()
-	{
+	public void testGetRoutesForGetMethod() {
 		List<Route> r = routeMapping.getRoutesFor(HttpMethod.GET);
 		assertNotNull(r);
 		assertFalse(r.isEmpty());
 		assertEquals(4, r.size());
 	}
-	
+
 	@Test
-	public void testGetRoutesForPutMethod()
-	{
+	public void testGetRoutesForPutMethod() {
 		List<Route> r = routeMapping.getRoutesFor(HttpMethod.PUT);
 		assertNotNull(r);
 		assertFalse(r.isEmpty());
 		assertEquals(1, r.size());
 	}
-	
+
 	@Test
-	public void testGetRoutesForPostMethod()
-	{
+	public void testGetRoutesForPostMethod() {
 		List<Route> r = routeMapping.getRoutesFor(HttpMethod.POST);
 		assertNotNull(r);
 		assertFalse(r.isEmpty());
 		assertEquals(3, r.size());
 	}
-	
+
 	@Test
-	public void testGetRoutesForDeleteMethod()
-	{
+	public void testGetRoutesForDeleteMethod() {
 		List<Route> r = routeMapping.getRoutesFor(HttpMethod.DELETE);
 		assertNotNull(r);
 		assertFalse(r.isEmpty());
 		assertEquals(1, r.size());
 	}
-	
+
 	@Test
-	public void testGetRoutesForHeadMethod()
-	{
+	public void testGetRoutesForHeadMethod() {
 		List<Route> r = routeMapping.getRoutesFor(HttpMethod.HEAD);
 		assertNotNull(r);
 		assertTrue(r.isEmpty());
 	}
 
 	@Test
-	public void testGetNullNamedRoute()
-	{
+	public void testGetNullNamedRoute() {
 		Route r = routeMapping.getNamedRoute(null, HttpMethod.GET);
 		assertNull(r);
 	}
 
 	@Test
-	public void shouldReturnNullForNamedRouteWithWrongMethod()
-	{
+	public void shouldReturnNullForNamedRouteWithWrongMethod() {
 		Route r = routeMapping.getNamedRoute(RAH_ROUTE_NAME, HttpMethod.GET);
 		assertNull(r);
 	}
 
 	@Test
-	public void shouldGetReplyToNamedRoute()
-	{
+	public void shouldGetReplyToNamedRoute() {
 		Route r = routeMapping.getNamedRoute(RAH_ROUTE_NAME, HttpMethod.POST);
 		assertNotNull(r);
 		assertEquals(RAH_ROUTE_NAME, r.getName());
@@ -111,8 +114,7 @@ public class RouteDeclarationTest
 	}
 
 	@Test
-	public void shouldGetCRUDReadNamedRoute()
-	{
+	public void shouldGetCRUDReadNamedRoute() {
 		Route r = routeMapping.getNamedRoute("CRUD_ROUTE", HttpMethod.GET);
 		assertNotNull(r);
 		assertEquals("CRUD_ROUTE", r.getName());
@@ -120,8 +122,7 @@ public class RouteDeclarationTest
 	}
 
 	@Test
-	public void shouldGetCRUDCreateNamedRoute()
-	{
+	public void shouldGetCRUDCreateNamedRoute() {
 		Route r = routeMapping.getNamedRoute("CRUD_ROUTE", HttpMethod.POST);
 		assertNotNull(r);
 		assertEquals("CRUD_ROUTE", r.getName());
@@ -129,8 +130,7 @@ public class RouteDeclarationTest
 	}
 
 	@Test
-	public void shouldGetCRUDUpdateNamedRoute()
-	{
+	public void shouldGetCRUDUpdateNamedRoute() {
 		Route r = routeMapping.getNamedRoute("CRUD_ROUTE", HttpMethod.PUT);
 		assertNotNull(r);
 		assertEquals("CRUD_ROUTE", r.getName());
@@ -138,8 +138,7 @@ public class RouteDeclarationTest
 	}
 
 	@Test
-	public void shouldGetCRUDDeleteNamedRoute()
-	{
+	public void shouldGetCRUDDeleteNamedRoute() {
 		Route r = routeMapping.getNamedRoute("CRUD_ROUTE", HttpMethod.DELETE);
 		assertNotNull(r);
 		assertEquals("CRUD_ROUTE", r.getName());
@@ -147,8 +146,7 @@ public class RouteDeclarationTest
 	}
 
 	@Test
-	public void shouldFindGetMethod()
-	{
+	public void shouldFindGetMethod() {
 		List<HttpMethod> methods = routeMapping.getAllowedMethods("/foo/bar/42.json");
 		assertNotNull(methods);
 		assertEquals(1, methods.size());
@@ -156,17 +154,15 @@ public class RouteDeclarationTest
 	}
 
 	@Test
-	public void shouldFindPostMethod()
-	{
+	public void shouldFindPostMethod() {
 		List<HttpMethod> methods = routeMapping.getAllowedMethods("/foo.json");
 		assertNotNull(methods);
 		assertEquals(1, methods.size());
 		assertEquals(HttpMethod.POST, methods.get(0));
 	}
-	
+
 	@Test
-	public void shouldFindMultipleMethods()
-	{
+	public void shouldFindMultipleMethods() {
 		List<HttpMethod> methods = routeMapping.getAllowedMethods("/foo/foo42.json");
 		assertNotNull(methods);
 		assertEquals(4, methods.size());
@@ -176,86 +172,58 @@ public class RouteDeclarationTest
 		assertTrue(methods.contains(HttpMethod.DELETE));
 	}
 
-	private static class Routes
-	extends RouteDeclaration
-	{
+	private static class Routes extends RouteDeclaration {
 		private InnerService service;
-		private RouteDefaults defaults = new RouteDefaults();
-		
-		public Routes()
-		{
+
+		public Routes() {
 			super();
 			service = new InnerService();
 		}
 
-        public void defineRoutes()
-        {
-    		uri("/foo/bar/{barId}.{format}", service, defaults)
-    			.action("readBar", HttpMethod.GET);
+		public void defineRoutes() {
+			uri("/foo/bar/{barId}.{format}", service).action("readBar", HttpMethod.GET);
 
-    		uri("/foo/bat/{batId}.{format}", service, defaults)
-    			.action("readBat", HttpMethod.GET);
+			uri("/foo/bat/{batId}.{format}", service).action("readBat", HttpMethod.GET);
 
-    		uri("/foo.{format}", service, defaults)
-    			.method(HttpMethod.POST);
+			uri("/foo.{format}", service).method(HttpMethod.POST);
 
-    		uri("/foo/{fooId}.{format}", service, defaults)
-    			.name("CRUD_ROUTE");
+			uri("/foo/{fooId}.{format}", service).name("CRUD_ROUTE");
 
-    		uri("/foo/rah/{rahId}.{format}", service, defaults)
-    			.action("createRah", HttpMethod.POST)
-    			.name(RAH_ROUTE_NAME);
+			uri("/foo/rah/{rahId}.{format}", service).action("createRah", HttpMethod.POST).name(RAH_ROUTE_NAME);
 
-    		uri("/foo/yada/{yadaId}.{format}", service, defaults)
-    			.action("readYada", HttpMethod.GET);
-        }
+			uri("/foo/yada/{yadaId}.{format}", service).action("readYada", HttpMethod.GET);
+		}
 	}
-	
-	private static class InnerService
-	{
-		@SuppressWarnings("unused")
-        public Object create(Request request, Response response)
-		{
+
+	public static class InnerService {
+
+		public Object create(Request request, Response response) {
 			return null;
 		}
 
-		@SuppressWarnings("unused")
-        public Object read(Request request, Response response)
-		{
+		public Object read(Request request, Response response) {
 			return null;
 		}
 
-		@SuppressWarnings("unused")
-        public void update(Request request, Response response)
-		{
+		public void update(Request request, Response response) {
 		}
 
-		@SuppressWarnings("unused")
-		public void delete(Request request, Response response)
-		{
+		public void delete(Request request, Response response) {
 		}
 
-		@SuppressWarnings("unused")
-		public Object createRah(Request request, Response response)
-		{
+		public Object createRah(Request request, Response response) {
 			return null;
 		}
 
-		@SuppressWarnings("unused")
-		public Object readBar(Request request, Response response)
-		{
+		public Object readBar(Request request, Response response) {
 			return null;
 		}
 
-		@SuppressWarnings("unused")
-		public Object readBat(Request request, Response response)
-		{
+		public Object readBat(Request request, Response response) {
 			return null;
 		}
 
-		@SuppressWarnings("unused")
-		public Object readYada(Request request, Response response)
-		{
+		public Object readYada(Request request, Response response) {
 			return null;
 		}
 	}

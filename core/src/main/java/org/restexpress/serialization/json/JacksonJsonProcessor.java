@@ -1,20 +1,22 @@
-/*
- * Copyright 2010-2013, Strategic Gains, Inc.
+/**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ *          http://www.apache.org/licenses/LICENSE-2.0
  *
- * You may obtain a copy of the License at
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
-
 package org.restexpress.serialization.json;
 
 import java.io.IOException;
@@ -47,131 +49,88 @@ import com.strategicgains.util.date.DateAdapterConstants;
  * @author toddf
  * @since Mar 16, 2010
  */
-public class JacksonJsonProcessor
-extends JsonSerializationProcessor
-{
-	private ObjectMapper mapper;
+public class JacksonJsonProcessor extends JsonSerializationProcessor {
+	private final ObjectMapper mapper;
 
-	public JacksonJsonProcessor()
-	{
+	public JacksonJsonProcessor() {
 		this(Format.JSON);
 	}
 
-	public JacksonJsonProcessor(String format)
-	{
+	public JacksonJsonProcessor(final String format) {
 		super(format);
-		SimpleModule module = new SimpleModule();
-		initializeModule(module);
+		mapper = initializeMapper(new ObjectMapper())//
+				.registerModule(initializeModule());
 	}
 
-	public JacksonJsonProcessor(SimpleModule module)
-	{
-		initialize(module);
-	}
-
-	public JacksonJsonProcessor(ObjectMapper mapper)
-	{
+	public JacksonJsonProcessor(final ObjectMapper mapper) {
 		super();
 		this.mapper = mapper;
 	}
 
-	private void initialize(SimpleModule module)
-	{
-		this.mapper = new ObjectMapper();
-		mapper.registerModule(module);
-		initializeMapper(mapper);
-	}
-
 	/**
 	 * Template method for sub-classes to augment the module with desired
-	 * serializers and/or deserializers.  Sub-classes should call super()
-	 * to get default settings.
-	 * 
-	 * @param module a SimpleModule
+	 * serializers and/or deserializers. Sub-classes should call super() to get
+	 * default settings.
 	 */
-	protected void initializeModule(SimpleModule module)
-    {
-		module
-			.addSerializer(Date.class, new JacksonTimepointSerializer())
-			.addSerializer(String.class, new JacksonEncodingStringSerializer())
-			.addDeserializer(Date.class, new JacksonTimepointDeserializer());
-		initialize(module);
-    }
+	protected SimpleModule initializeModule() {
+		return new SimpleModule().addSerializer(Date.class, new JacksonTimepointSerializer())//
+				.addSerializer(String.class, new JacksonEncodingStringSerializer())//
+				.addDeserializer(Date.class, new JacksonTimepointDeserializer());
+	}
 
 	/**
 	 * Template method for sub-classes to augment the mapper with desired
-	 * settings.  Sub-classes should call super() to get default settings.
+	 * settings. Sub-classes should call super() to get default settings.
 	 * 
-	 * @param module a SimpleModule
+	 * @param module
+	 *            a SimpleModule
 	 */
-	protected void initializeMapper(ObjectMapper mapper)
-    {
-		mapper
-//			.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
-			.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-
-			// Ignore additional/unknown properties in a payload.
-			.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-			
-			// Only serialize populated properties (do no serialize nulls)
-			.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-			
-			// Use fields directly.
-			.setVisibility(PropertyAccessor.FIELD, Visibility.ANY)
-			
-			// Ignore accessor and mutator methods (use fields per above).
-			.setVisibility(PropertyAccessor.GETTER, Visibility.NONE)
-			.setVisibility(PropertyAccessor.SETTER, Visibility.NONE)
-			.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)
-			
-			// Set default date output format.
-			.setDateFormat(new SimpleDateFormat(DateAdapterConstants.TIME_POINT_OUTPUT_FORMAT));
-    }
+	protected ObjectMapper initializeMapper(final ObjectMapper mapper) {
+		return mapper
+		// .enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
+				.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+				// Ignore additional/unknown properties in a payload.
+				.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+				// Only serialize populated properties (do no serialize nulls)
+				.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+				// Use fields directly.
+				.setVisibility(PropertyAccessor.FIELD, Visibility.ANY)
+				// Ignore accessor and mutator methods (use fields per above).
+				.setVisibility(PropertyAccessor.GETTER, Visibility.NONE)//
+				.setVisibility(PropertyAccessor.SETTER, Visibility.NONE)//
+				.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)
+				// Set default date output format.
+				.setDateFormat(new SimpleDateFormat(DateAdapterConstants.TIME_POINT_OUTPUT_FORMAT));
+	}
 
 	@Override
-	public <T> T deserialize(String string, Class<T> type)
-	{
-		try
-		{
-			return (string == null || string.trim().isEmpty() ? null : mapper.readValue(string, type));
-		}
-		catch (JsonProcessingException e)
-		{
+	public <T> T deserialize(final String string, final Class<T> type) {
+		try {
+			return ((string == null) || string.trim().isEmpty() ? null : mapper.readValue(string, type));
+		} catch (final JsonProcessingException e) {
 			throw new DeserializationException(e);
-		}
-		catch (IOException e)
-		{
+		} catch (final IOException e) {
 			throw new DeserializationException(e);
 		}
 	}
 
 	@Override
-	public <T> T deserialize(ChannelBuffer buffer, Class<T> type)
-	{
-		try
-		{
-			
-			return (buffer == null || buffer.readableBytes() == 0 ? null : mapper.readValue(new InputStreamReader(new ChannelBufferInputStream(buffer), ContentType.CHARSET), type));
-		}
-		catch (JsonProcessingException e)
-		{
+	public <T> T deserialize(final ChannelBuffer buffer, final Class<T> type) {
+		try {
+
+			return ((buffer == null) || (buffer.readableBytes() == 0) ? null : mapper.readValue(new InputStreamReader(new ChannelBufferInputStream(buffer), ContentType.CHARSET), type));
+		} catch (final JsonProcessingException e) {
 			throw new DeserializationException(e);
-		}
-		catch (IOException e)
-		{
+		} catch (final IOException e) {
 			throw new DeserializationException(e);
 		}
 	}
 
 	@Override
-	public String serialize(Object object)
-	{
-		try
-		{
+	public String serialize(final Object object) {
+		try {
 			return (object == null ? "" : mapper.writeValueAsString(object));
-		}
-		catch (JsonProcessingException e)
-		{
+		} catch (final JsonProcessingException e) {
 			throw new SerializationException(e);
 		}
 	}
