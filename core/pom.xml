@@ -8,13 +8,9 @@
 	</parent>
 	<artifactId>restexpress</artifactId>
 	<packaging>jar</packaging>
-	<name>RestExpress</name>
+	<name>restexpress</name>
 	<description>Internet scale, high-performance RESTful Services in Java</description>
 	<url>https://github.com/RestExpress/RestExpress</url>
-
-
-
-
 	<dependencies>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
@@ -41,12 +37,7 @@
 			<groupId>org.owasp.encoder</groupId>
 			<artifactId>encoder</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
+	
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>

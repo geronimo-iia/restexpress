@@ -20,13 +20,13 @@ import org.restexpress.serialization.json.GsonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
 
 /**
- * A serialization provider that uses Gson for JSON and XStream for XML
+ * A serialization provider that uses Gson for JSON and Xstream fro XML
  * serialization/deserialization.
  * 
  * @author toddf
  * @since Jul 18, 2013
  */
-public class GsonSerializationProvider extends AbstractSerializationProvider {
+public class GsonSerializationProvider extends DefaultSerializationProvider {
 	public GsonSerializationProvider() {
 		super();
 		add(new GsonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
