@@ -42,7 +42,6 @@ import org.restexpress.serialization.DefaultSerializationProvider;
 import org.restexpress.serialization.SerializationProvider;
 import org.restexpress.serialization.json.JacksonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
-import org.restexpress.settings.RouteDefaults;
 
 /**
  * @author toddf
@@ -57,12 +56,12 @@ public class JsendWrappedResponseTest {
 
 	@Before
 	public void initialize() throws Exception {
-		SerializationProvider provider =  new DefaultSerializationProvider(Boolean.FALSE);
+		SerializationProvider provider = new DefaultSerializationProvider(Boolean.FALSE);
 		provider.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
 		provider.add(new XstreamXmlProcessor(), Wrapper.newJsendResponseWrapper());
 		DummyRoutes routes = new DummyRoutes();
 		routes.defineRoutes();
-		messageHandler = new DefaultRequestHandler(new RouteResolver(routes.createRouteMapping(new RouteDefaults())), provider, new DefaultHttpResponseWriter(), false);
+		messageHandler = new DefaultRequestHandler(new RouteResolver(routes.createRouteMapping()), provider, new DefaultHttpResponseWriter(), false);
 		observer = new WrappedResponseObserver();
 		messageHandler.addMessageObserver(observer);
 		httpResponse = new StringBuffer();
@@ -442,20 +441,19 @@ public class JsendWrappedResponseTest {
 
 	public class DummyRoutes extends RouteDeclaration {
 		private Object controller = new WrappedResponseController();
-		private RouteDefaults defaults = new RouteDefaults();
 
 		public void defineRoutes() {
-			uri("/normal_get.{format}", controller, defaults).action("normalGetAction", HttpMethod.GET);
+			uri("/normal_get.{format}", controller).action("normalGetAction", HttpMethod.GET);
 
-			uri("/normal_put.{format}", controller, defaults).action("normalPutAction", HttpMethod.PUT);
+			uri("/normal_put.{format}", controller).action("normalPutAction", HttpMethod.PUT);
 
-			uri("/normal_post.{format}", controller, defaults).action("normalPostAction", HttpMethod.POST);
+			uri("/normal_post.{format}", controller).action("normalPostAction", HttpMethod.POST);
 
-			uri("/normal_delete.{format}", controller, defaults).action("normalDeleteAction", HttpMethod.DELETE);
+			uri("/normal_delete.{format}", controller).action("normalDeleteAction", HttpMethod.DELETE);
 
-			uri("/not_found.{format}", controller, defaults).action("notFoundAction", HttpMethod.GET);
+			uri("/not_found.{format}", controller).action("notFoundAction", HttpMethod.GET);
 
-			uri("/null_pointer.{format}", controller, defaults).action("nullPointerAction", HttpMethod.GET);
+			uri("/null_pointer.{format}", controller).action("nullPointerAction", HttpMethod.GET);
 		}
 	}
 }

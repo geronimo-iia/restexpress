@@ -31,7 +31,7 @@ public class DefaultShutdownHook extends Thread {
 
 	@Override
 	public void run() {
-		System.out.println(server.getName() + " server detected JVM shutdown...");
+		System.out.println(server.settings().serverSettings().getName() + " server detected JVM shutdown...");
 		server.shutdown();
 	}
 }

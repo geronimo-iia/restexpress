@@ -51,7 +51,6 @@ import org.restexpress.serialization.DefaultSerializationProvider;
 import org.restexpress.serialization.SerializationProvider;
 import org.restexpress.serialization.json.JacksonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
-import org.restexpress.settings.RouteDefaults;
 
 /**
  * @author toddf
@@ -77,7 +76,7 @@ public class DefaultRequestHandlerTest {
 
 		DummyRoutes routes = new DummyRoutes();
 		routes.defineRoutes();
-		messageHandler = new DefaultRequestHandler(new RouteResolver(routes.createRouteMapping(new RouteDefaults())), provider, new DefaultHttpResponseWriter(), false);
+		messageHandler = new DefaultRequestHandler(new RouteResolver(routes.createRouteMapping()), provider, new DefaultHttpResponseWriter(), false);
 		observer = new DummyObserver();
 		messageHandler.addMessageObserver(observer);
 		responseBody = new StringBuffer();
@@ -420,26 +419,26 @@ public class DefaultRequestHandlerTest {
 
 	public class DummyRoutes extends RouteDeclaration {
 		private Object controller = new FooBarController();
-		private RouteDefaults defaults = new RouteDefaults();
+
 
 		public void defineRoutes() {
-			uri("/foo.{format}", controller, defaults).action("fooAction", HttpMethod.GET);
+			uri("/foo.{format}", controller).action("fooAction", HttpMethod.GET);
 
-			uri("/foo/{userPhrase}.{format}", controller, defaults).action("verifyUrlDecodedParameters", HttpMethod.GET);
+			uri("/foo/{userPhrase}.{format}", controller).action("verifyUrlDecodedParameters", HttpMethod.GET);
 
-			uri("/bar.{format}", controller, defaults).action("barAction", HttpMethod.GET);
+			uri("/bar.{format}", controller).action("barAction", HttpMethod.GET);
 
-			uri("/date.{format}", controller, defaults).action("dateAction", HttpMethod.GET);
+			uri("/date.{format}", controller).action("dateAction", HttpMethod.GET);
 
-			uri("/unserializedDefault", controller, defaults).action("unserializedDefault", HttpMethod.GET);
+			uri("/unserializedDefault", controller).action("unserializedDefault", HttpMethod.GET);
 
-			uri("/unserialized", controller, defaults).action("unserializedAction", HttpMethod.GET);
+			uri("/unserialized", controller).action("unserializedAction", HttpMethod.GET);
 
-			uri("/unserializedToo", controller, defaults).action("contentHeaderAction", HttpMethod.GET);
+			uri("/unserializedToo", controller).action("contentHeaderAction", HttpMethod.GET);
 
-			uri("/serializedString.{format}", controller, defaults).action("serializedStringAction", HttpMethod.GET);
+			uri("/serializedString.{format}", controller).action("serializedStringAction", HttpMethod.GET);
 
-			uri("/setBodyAction.html", controller, defaults).action("setBodyAction", HttpMethod.GET).format(Format.HTML);
+			uri("/setBodyAction.html", controller).action("setBodyAction", HttpMethod.GET).format(Format.HTML);
 		}
 	}
 

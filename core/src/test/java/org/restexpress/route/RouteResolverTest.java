@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.pipeline.MessageContext;
-import org.restexpress.settings.RouteDefaults;
 
 /**
  * @author toddf
@@ -48,7 +47,7 @@ public class RouteResolverTest {
 	public static void setUpBeforeClass() throws Exception {
 		routeDeclarations = new Routes();
 		((Routes) routeDeclarations).defineRoutes();
-		routeMapping = routeDeclarations.createRouteMapping(new RouteDefaults());
+		routeMapping = routeDeclarations.createRouteMapping();
 		resolver = new RouteResolver(routeMapping);
 	}
 
@@ -243,7 +242,6 @@ public class RouteResolverTest {
 
 	private static class Routes extends RouteDeclaration {
 		private InnerService service;
-		private RouteDefaults defaults = new RouteDefaults();
 
 		public Routes() {
 			super();
@@ -251,34 +249,30 @@ public class RouteResolverTest {
 		}
 
 		public void defineRoutes() {
-			uri("/foo/bar/{barId}.{format}", service, defaults).alias("/bar/{barId}.{format}").name("BAR_CRUD_ROUTE").action("readBar", HttpMethod.GET);
+			uri("/foo/bar/{barId}.{format}", service).alias("/bar/{barId}.{format}").name("BAR_CRUD_ROUTE").action("readBar", HttpMethod.GET);
 
-			uri("/foo.{format}", service, defaults).alias("/yada/yada.{format}").method(HttpMethod.POST);
+			uri("/foo.{format}", service).alias("/yada/yada.{format}").method(HttpMethod.POST);
 
-			uri("/foo/{fooId}.{format}", service, defaults).alias("/blah/foo/{fooId}.{format}").name("CRUD_ROUTE");
+			uri("/foo/{fooId}.{format}", service).alias("/blah/foo/{fooId}.{format}").name("CRUD_ROUTE");
 		}
 	}
 
-	private static class InnerService {
-		@SuppressWarnings("unused")
+	public static class InnerService {
+
 		public Object create(Request request, Response response) {
 			return null;
 		}
 
-		@SuppressWarnings("unused")
 		public Object read(Request request, Response response) {
 			return null;
 		}
 
-		@SuppressWarnings("unused")
 		public void update(Request request, Response response) {
 		}
 
-		@SuppressWarnings("unused")
 		public void delete(Request request, Response response) {
 		}
 
-		@SuppressWarnings("unused")
 		public Object readBar(Request request, Response response) {
 			return null;
 		}

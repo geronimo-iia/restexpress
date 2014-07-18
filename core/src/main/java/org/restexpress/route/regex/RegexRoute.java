@@ -30,29 +30,14 @@ import org.restexpress.url.UrlRegex;
  * @since Jan 7, 2011
  */
 public class RegexRoute extends Route {
-	/**
-	 * @param urlMatcher
-	 * @param controller
-	 * @param action
-	 * @param method
-	 * @param shouldSerializeResponse
-	 * @param name
-	 */
-	public RegexRoute(final UrlRegex urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
-			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
-		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
+
+	public RegexRoute(final UrlRegex urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+			final Map<String, Object> parameters, final String baseUrl) {
+		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
 	}
 
-	/**
-	 * @param urlPattern
-	 * @param controller
-	 * @param action
-	 * @param method
-	 * @param shouldSerializeResponse
-	 * @param name
-	 */
-	public RegexRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
-			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
-		this(new UrlRegex(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
+	public RegexRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+			final Map<String, Object> parameters, final String baseUrl) {
+		this(new UrlRegex(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
 	}
 }

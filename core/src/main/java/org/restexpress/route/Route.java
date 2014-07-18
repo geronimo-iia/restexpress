@@ -43,7 +43,6 @@ import org.restexpress.url.UrlMatcher;
  * @since May 4, 2010
  */
 public abstract class Route {
-	// SECTION: INSTANCE VARIABLES
 
 	private final UrlMatcher urlMatcher;
 	private final Object controller;
@@ -53,18 +52,11 @@ public abstract class Route {
 	private final String name;
 	private final String baseUrl;
 	private final List<String> supportedFormats = new ArrayList<String>();
-	private final String defaultFormat;
 	private final Set<Flags> flags = new HashSet<>();
 	private final Map<String, Object> parameters = new HashMap<String, Object>();
 
-	// SECTION: CONSTRUCTORS
-
-	/**
-	 * @param urlMatcher
-	 * @param controller
-	 */
-	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
-			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
+	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+			final Map<String, Object> parameters, final String baseUrl) {
 		super();
 		this.urlMatcher = urlMatcher;
 		this.controller = controller;
@@ -74,7 +66,6 @@ public abstract class Route {
 		this.shouldSerializeResponse = shouldSerializeResponse;
 		this.name = name;
 		this.supportedFormats.addAll(supportedFormats);
-		this.defaultFormat = defaultFormat;
 		this.flags.addAll(flags);
 		this.parameters.putAll(parameters);
 		this.baseUrl = baseUrl;
@@ -159,14 +150,6 @@ public abstract class Route {
 
 	public boolean supportsFormat(final String format) {
 		return supportedFormats.contains(format);
-	}
-
-	public String getDefaultFormat() {
-		return defaultFormat;
-	}
-
-	public boolean hasDefaultFormat() {
-		return defaultFormat != null;
 	}
 
 	public UrlMatch match(final String url) {

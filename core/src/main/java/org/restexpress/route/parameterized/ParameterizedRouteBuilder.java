@@ -26,7 +26,6 @@ import org.restexpress.Flags;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteBuilder;
-import org.restexpress.settings.RouteDefaults;
 
 /**
  * @author toddf
@@ -40,14 +39,14 @@ public class ParameterizedRouteBuilder extends RouteBuilder {
 	 * @param controller
 	 * @param routeType
 	 */
-	public ParameterizedRouteBuilder(final String uri, final Object controller, final RouteDefaults defaults) {
-		super(uri, controller, defaults);
+	public ParameterizedRouteBuilder(final String uri, final Object controller) {
+		super(uri, controller);
 	}
 
 	@Override
-	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
-			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
-		final ParameterizedRoute r = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
+	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+			final Map<String, Object> parameters, final String baseUrl) {
+		final ParameterizedRoute r = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
 		r.addAliases(aliases);
 		return r;
 	}

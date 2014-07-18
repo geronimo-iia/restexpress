@@ -16,7 +16,6 @@
 package org.restexpress;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 
@@ -30,9 +29,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.junit.Test;
-import org.restexpress.Request;
-import org.restexpress.Response;
-import org.restexpress.RestExpress;
 
 
 /**
@@ -45,7 +41,6 @@ public class RestExpressTest
 	private static final int TEST_PORT = 8901;
 	private static final String TEST_URL = "http://localhost:" + TEST_PORT + TEST_PATH;
 
-	private RestExpress server = new RestExpress();
 
 //	@Test
 //	public void shouldUseDefaults()
@@ -139,13 +134,8 @@ public class RestExpressTest
 //		
 //		assertTrue(rp == server.getResponseProcessors().get(Format.XML));
 //	}
-	
-	@Test
-	public void shouldNotUseSystemOut()
-	{
-		server.noSystemOut();
-		assertFalse(server.shouldUseSystemOut());
-	}
+
+
 
 	@Test
 	public void shouldCallDefaultMethods()

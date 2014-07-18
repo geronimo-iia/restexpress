@@ -49,9 +49,8 @@ import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
 import org.restexpress.serialization.DefaultSerializationProvider;
 import org.restexpress.serialization.SerializationProvider;
-import org.restexpress.settings.RouteDefaults;
-import org.restexpress.settings.ServerSettings;
-import org.restexpress.settings.SocketSettings;
+import org.restexpress.settings.RestExpressSettings;
+import org.restexpress.settings.Settings;
 import org.restexpress.util.Bootstraps;
 import org.restexpress.util.Callback;
 import org.restexpress.util.DefaultShutdownHook;
@@ -61,63 +60,37 @@ import org.restexpress.util.DefaultShutdownHook;
  * RouteDeclaration. By default: port is 8081, serialization format is JSON,
  * supported formats are JSON and XML.
  * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  */
 public class RestExpress {
+
 	private static final ChannelGroup allChannels = new DefaultChannelGroup("RestExpress");
 
-	public static final String DEFAULT_NAME = "RestExpress";
-	public static final int DEFAULT_PORT = 8081;
+	/**
+	 * {@link RestExpressSettings} instance.
+	 */
+	private final RestExpressSettings settings;
 
 	private SerializationProvider serializationProvider = null;
 
 	private ServerBootstrap bootstrap;
-	private final SocketSettings socketSettings = new SocketSettings();
-	private final ServerSettings serverSettings = new ServerSettings();
-	private final RouteDefaults routeDefaults = new RouteDefaults();
-	private boolean enforceHttpSpec = false;
-	private boolean useSystemOut;
 
-	private final List<MessageObserver> messageObservers = new ArrayList<MessageObserver>();
-	private final List<Preprocessor> preprocessors = new ArrayList<Preprocessor>();
-	private final List<Postprocessor> postprocessors = new ArrayList<Postprocessor>();
-	private final List<Postprocessor> finallyProcessors = new ArrayList<Postprocessor>();
-	private final List<Plugin> plugins = new ArrayList<Plugin>();
-	private final RouteDeclaration routeDeclarations = new RouteDeclaration();
+	private final List<MessageObserver> messageObservers;
+	private final List<Preprocessor> preprocessors;
+	private final List<Postprocessor> postprocessors;
+	private final List<Postprocessor> finallyProcessors;
+	private final List<Plugin> plugins;
+
+	private final RouteDeclaration routeDeclarations;
+
 	private SSLContext sslContext = null;
-
-	/**
-	 * Change the default behavior for serialization. If no
-	 * SerializationProcessor is set, default of DefaultSerializationProcessor
-	 * is used, which uses Jackson for JSON, XStream for XML.
-	 * 
-	 * @param provider
-	 *            a SerializationProvider instance.
-	 */
-	public RestExpress setSerializationProvider(final SerializationProvider provider) {
-		serializationProvider = provider;
-		return this;
-	}
-
-	/**
-	 * Returns {@link SerializationProvider} or create a
-	 * {@link DefaultSerializationProvider} if none was set.
-	 * 
-	 * @return {@link SerializationProvider} instance.
-	 */
-	public SerializationProvider getSerializationProvider() {
-		if (serializationProvider == null) {
-			serializationProvider = new DefaultSerializationProvider();
-		}
-		return serializationProvider;
-	}
 
 	/**
 	 * Create a new RestExpress service. By default, RestExpress uses port 8081.
 	 * Supports JSON, and XML, providing JSEND-style wrapped responses. And
-	 * displays some messages on System.out. These can be altered with the
-	 * setPort(), noJson(), noXml(), noSystemOut(), and useRawResponses() DSL
-	 * modifiers, respectively, as needed.
+	 * displays some messages on System.out. These can be altered with the with
+	 * settings().
 	 * 
 	 * <p/>
 	 * The default input and output format for messages is JSON. To change that,
@@ -134,14 +107,69 @@ public class RestExpress {
 	 * SerializationProcessor) method, creating your own instance of
 	 * SerializationProcessor as necessary.
 	 * 
-	 * @param routes
-	 *            a RouteDeclaration that declares the URL routes that this
-	 *            service supports.
 	 */
 	public RestExpress() {
+		this(Settings.defaultRestExpressSettings());
+	}
+
+	/**
+	 * Build a new instance of {@link RestExpress}.
+	 * 
+	 * @param settings
+	 */
+	public RestExpress(RestExpressSettings settings) {
+		this(settings, new DefaultSerializationProvider(Boolean.TRUE));
+	}
+
+	/**
+	 * Build a new instance of {@link RestExpress}.
+	 * 
+	 * @param settings
+	 *            {@link RestExpressSettings} to use.
+	 * @param serializationProvider
+	 *            {@link SerializationProvider} to use.
+	 */
+	public RestExpress(RestExpressSettings settings, SerializationProvider serializationProvider) {
 		super();
-		setName(DEFAULT_NAME);
-		useSystemOut();
+		if (settings == null)
+			throw new NullPointerException("RestExpressSettings can not be null");
+		if (serializationProvider == null)
+			throw new NullPointerException("SerializationProvider can not be null");
+		this.settings = settings;
+		this.serializationProvider = serializationProvider;
+		messageObservers = new ArrayList<MessageObserver>();
+		preprocessors = new ArrayList<Preprocessor>();
+		postprocessors = new ArrayList<Postprocessor>();
+		finallyProcessors = new ArrayList<Postprocessor>();
+		plugins = new ArrayList<Plugin>();
+		routeDeclarations = new RouteDeclaration();
+	}
+
+	/**
+	 * @return {@link RestExpressSettings} instance.
+	 */
+	public RestExpressSettings settings() {
+		return settings;
+	}
+
+	/**
+	 * Change the default behavior for serialization. If no
+	 * SerializationProcessor is set, default of DefaultSerializationProcessor
+	 * is used, which uses Jackson for JSON, XStream for XML.
+	 * 
+	 * @param provider
+	 *            a SerializationProvider instance.
+	 */
+	public RestExpress setSerializationProvider(final SerializationProvider provider) {
+		serializationProvider = provider;
+		return this;
+	}
+
+	/**
+	 * @return {@link SerializationProvider} instance.
+	 */
+	public SerializationProvider getSerializationProvider() {
+		return serializationProvider;
 	}
 
 	public RestExpress setSSLContext(final SSLContext sslContext) {
@@ -153,50 +181,10 @@ public class RestExpress {
 		return sslContext;
 	}
 
-	public String getBaseUrl() {
-		return routeDefaults.getBaseUrl();
-	}
-
-	public RestExpress setBaseUrl(final String baseUrl) {
-		routeDefaults.setBaseUrl(baseUrl);
-		return this;
-	}
-
-	/**
-	 * Get the name of this RestExpress service.
-	 * 
-	 * @return a String representing the name of this service suite.
-	 */
-	public String getName() {
-		return serverSettings.getName();
-	}
-
-	/**
-	 * Set the name of this RestExpress service suite.
-	 * 
-	 * @param name
-	 *            the name.
-	 * @return the RestExpress instance to facilitate DSL-style method chaining.
-	 */
-	public RestExpress setName(final String name) {
-		serverSettings.setName(name);
-		return this;
-	}
-
-	public int getPort() {
-		return serverSettings.getPort();
-	}
-
-	public RestExpress setPort(final int port) {
-		serverSettings.setPort(port);
-		return this;
-	}
-
 	public RestExpress addMessageObserver(final MessageObserver observer) {
 		if (!messageObservers.contains(observer)) {
 			messageObservers.add(observer);
 		}
-
 		return this;
 	}
 
@@ -216,7 +204,6 @@ public class RestExpress {
 		if (!preprocessors.contains(processor)) {
 			preprocessors.add(processor);
 		}
-
 		return this;
 	}
 
@@ -238,7 +225,6 @@ public class RestExpress {
 		if (!postprocessors.contains(processor)) {
 			postprocessors.add(processor);
 		}
-
 		return this;
 	}
 
@@ -266,162 +252,11 @@ public class RestExpress {
 		if (!finallyProcessors.contains(processor)) {
 			finallyProcessors.add(processor);
 		}
-
 		return this;
 	}
 
 	public List<Postprocessor> getFinallyProcessors() {
 		return Collections.unmodifiableList(finallyProcessors);
-	}
-
-	public boolean shouldUseSystemOut() {
-		return useSystemOut;
-	}
-
-	public RestExpress setUseSystemOut(final boolean useSystemOut) {
-		this.useSystemOut = useSystemOut;
-		return this;
-	}
-
-	public RestExpress setEnforceHttpSpec(final boolean enforceHttpSpec) {
-		this.enforceHttpSpec = enforceHttpSpec;
-		return this;
-	}
-
-	public RestExpress enforceHttpSpec() {
-		setEnforceHttpSpec(true);
-		return this;
-	}
-
-	public RestExpress useSystemOut() {
-		setUseSystemOut(true);
-		return this;
-	}
-
-	public RestExpress noSystemOut() {
-		setUseSystemOut(false);
-		return this;
-	}
-
-	public boolean useTcpNoDelay() {
-		return socketSettings.useTcpNoDelay();
-	}
-
-	public RestExpress setUseTcpNoDelay(final boolean useTcpNoDelay) {
-		socketSettings.setUseTcpNoDelay(useTcpNoDelay);
-		return this;
-	}
-
-	public boolean useKeepAlive() {
-		return serverSettings.isKeepAlive();
-	}
-
-	public RestExpress setKeepAlive(final boolean useKeepAlive) {
-		serverSettings.setKeepAlive(useKeepAlive);
-		return this;
-	}
-
-	public boolean shouldReuseAddress() {
-		return serverSettings.isReuseAddress();
-	}
-
-	public RestExpress setReuseAddress(final boolean reuseAddress) {
-		serverSettings.setReuseAddress(reuseAddress);
-		return this;
-	}
-
-	public int getSoLinger() {
-		return socketSettings.getSoLinger();
-	}
-
-	public RestExpress setSoLinger(final int soLinger) {
-		socketSettings.setSoLinger(soLinger);
-		return this;
-	}
-
-	public int getReceiveBufferSize() {
-		return socketSettings.getReceiveBufferSize();
-	}
-
-	public RestExpress setReceiveBufferSize(final int receiveBufferSize) {
-		socketSettings.setReceiveBufferSize(receiveBufferSize);
-		return this;
-	}
-
-	public int getConnectTimeoutMillis() {
-		return socketSettings.getConnectTimeoutMillis();
-	}
-
-	public RestExpress setConnectTimeoutMillis(final int connectTimeoutMillis) {
-		socketSettings.setConnectTimeoutMillis(connectTimeoutMillis);
-		return this;
-	}
-
-	/**
-	 * Return the number of requested NIO/HTTP-handling worker threads.
-	 * 
-	 * @return the number of requested worker threads.
-	 */
-	public int getIoThreadCount() {
-		return serverSettings.getIoThreadCount();
-	}
-
-	/**
-	 * Set the number of NIO/HTTP-handling worker threads. This value controls
-	 * the number of simultaneous connections the application can handle.
-	 * 
-	 * The default (if this value is not set, or set to zero) is the Netty
-	 * default, which is 2 times the number of processors (or cores).
-	 * 
-	 * @param value
-	 *            the number of desired NIO worker threads.
-	 * @return the RestExpress instance.
-	 */
-	public RestExpress setIoThreadCount(final int value) {
-		serverSettings.setIoThreadCount(value);
-		return this;
-	}
-
-	/**
-	 * Returns the number of background request-handling (executor) threads.
-	 * 
-	 * @return the number of executor threads.
-	 */
-	public int getExecutorThreadCount() {
-		return serverSettings.getExecutorThreadPoolSize();
-	}
-
-	/**
-	 * Set the number of background request-handling (executor) threads. This
-	 * value controls the number of simultaneous blocking requests that the
-	 * server can handle. For longer-running requests, a higher number may be
-	 * indicated.
-	 * 
-	 * For VERY short-running requests, a value of zero will cause no background
-	 * threads to be created, causing all processing to occur in the NIO
-	 * (front-end) worker thread.
-	 * 
-	 * @param value
-	 *            the number of executor threads to create.
-	 * @return the RestExpress instance.
-	 */
-	public RestExpress setExecutorThreadCount(final int value) {
-		serverSettings.setExecutorThreadPoolSize(value);
-		return this;
-	}
-
-	/**
-	 * Set the maximum length of the content in a request. If the length of the
-	 * content exceeds this value, the server closes the connection immediately
-	 * without sending a response.
-	 * 
-	 * @param size
-	 *            the maximum size in bytes.
-	 * @return the RestExpress instance.
-	 */
-	public RestExpress setMaxContentSize(final int size) {
-		serverSettings.setMaxContentSize(size);
-		return this;
 	}
 
 	/**
@@ -435,10 +270,6 @@ public class RestExpress {
 		routeDeclarations.iterateRouteBuilders(callback);
 	}
 
-	public Channel bind() {
-		return bind((getPort() > 0 ? getPort() : DEFAULT_PORT));
-	}
-
 	/**
 	 * Build a default request handler. Used instead of bind() so it may be used
 	 * injected into any existing Netty pipeline.
@@ -447,7 +278,9 @@ public class RestExpress {
 	 */
 	public ChannelHandler buildRequestHandler() {
 		// Set up the event pipeline factory.
-		final DefaultRequestHandler requestHandler = new DefaultRequestHandler(createRouteResolver(), getSerializationProvider(), new DefaultHttpResponseWriter(), enforceHttpSpec);
+		final DefaultRequestHandler requestHandler = new DefaultRequestHandler(new RouteResolver(routeDeclarations.createRouteMapping()), //
+				getSerializationProvider(), //
+				new DefaultHttpResponseWriter(), settings.serverSettings().isEnforceHttpSpec());
 
 		// Add MessageObservers to the request handler here, if desired...
 		requestHandler.addMessageObserver(messageObservers.toArray(new MessageObserver[0]));
@@ -466,46 +299,53 @@ public class RestExpress {
 	 * 
 	 * @return Channel
 	 */
+	public Channel bind() {
+		return bind(settings.serverSettings().getPort());
+	}
+
+	/**
+	 * The last call in the building of a RestExpress server, bind() causes
+	 * Netty to bind to the listening address and process incoming messages.
+	 * 
+	 * @param port
+	 * @return Channel
+	 */
 	public Channel bind(final int port) {
-		setPort(port);
+		settings.serverSettings().setPort(port);
 
 		// Configure the server.
-		if (getIoThreadCount() == 0) {
+		if (settings.serverSettings().getIoThreadCount() == 0) {
 			bootstrap = Bootstraps.createServerNioBootstrap();
 		} else {
-			bootstrap = Bootstraps.createServerNioBootstrap(getIoThreadCount());
+			bootstrap = Bootstraps.createServerNioBootstrap(settings.serverSettings().getIoThreadCount());
 		}
 
 		final ChannelHandler requestHandler = buildRequestHandler();
 
-		final PipelineBuilder pf = new PipelineBuilder().addRequestHandler(requestHandler).setSSLContext(sslContext).setMaxContentLength(serverSettings.getMaxContentSize());
+		final PipelineBuilder pf = new PipelineBuilder().addRequestHandler(requestHandler).setSSLContext(sslContext).setMaxContentLength(settings.serverSettings().getMaxContentSize());
 
-		if (getExecutorThreadCount() > 0) {
-			final ExecutionHandler executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(getExecutorThreadCount(), 0, 0));
+		if (settings.serverSettings().getExecutorThreadPoolSize() > 0) {
+			final ExecutionHandler executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(settings.serverSettings().getExecutorThreadPoolSize(), 0, 0));
 			pf.setExecutionHandler(executionHandler);
 		}
 
 		bootstrap.setPipelineFactory(pf);
-		setBootstrapOptions();
+		bootstrap.setOption("child.tcpNoDelay", settings.socketSettings().useTcpNoDelay());
+		bootstrap.setOption("child.keepAlive", settings.serverSettings().isKeepAlive());
+		bootstrap.setOption("reuseAddress", settings.serverSettings().isReuseAddress());
+		bootstrap.setOption("child.soLinger", settings.socketSettings().getSoLinger());
+		bootstrap.setOption("connectTimeoutMillis", settings.socketSettings().getConnectTimeoutMillis());
+		bootstrap.setOption("receiveBufferSize", settings.socketSettings().getReceiveBufferSize());
 
 		// Bind and start to accept incoming connections.
-		if (shouldUseSystemOut()) {
-			System.out.println(getName() + " server listening on port " + port);
+		if (settings.serverSettings().isUseSystemOut()) {
+			System.out.println(settings.serverSettings().getName() + " server listening on port " + port);
 		}
 
 		final Channel channel = bootstrap.bind(new InetSocketAddress(port));
 		allChannels.add(channel);
 		bindPlugins();
 		return channel;
-	}
-
-	private void setBootstrapOptions() {
-		bootstrap.setOption("child.tcpNoDelay", useTcpNoDelay());
-		bootstrap.setOption("child.keepAlive", serverSettings.isKeepAlive());
-		bootstrap.setOption("reuseAddress", shouldReuseAddress());
-		bootstrap.setOption("child.soLinger", getSoLinger());
-		bootstrap.setOption("connectTimeoutMillis", getConnectTimeoutMillis());
-		bootstrap.setOption("receiveBufferSize", getReceiveBufferSize());
 	}
 
 	/**
@@ -541,21 +381,14 @@ public class RestExpress {
 	}
 
 	/**
-	 * @return
-	 */
-	private RouteResolver createRouteResolver() {
-		return new RouteResolver(routeDeclarations.createRouteMapping(routeDefaults));
-	}
-
-	/**
 	 * Retrieve metadata about the routes in this RestExpress server.
 	 * 
 	 * @return ServerMetadata instance.
 	 */
 	public ServerMetadata getRouteMetadata() {
 		final ServerMetadata m = new ServerMetadata();
-		m.setName(getName());
-		m.setPort(getPort());
+		m.setName(settings.serverSettings().getName());
+		m.setPort(settings.serverSettings().getPort());
 		// TODO: create a good substitute for this...
 		// m.setDefaultFormat(getDefaultFormat());
 		// m.addAllSupportedFormats(getResponseProcessors().keySet());
@@ -583,7 +416,7 @@ public class RestExpress {
 				final RouteMetadata route = routeBuilder.asMetadata();
 
 				if (route.getName() != null) {
-					urlsByName.put(route.getName(), getBaseUrl() + route.getUri().getPattern().replace(".{format}", ""));
+					urlsByName.put(route.getName(), settings.serverSettings().getBaseUrl() + route.getUri().getPattern().replace(".{format}", ""));
 				}
 			}
 		});
@@ -639,13 +472,25 @@ public class RestExpress {
 		}
 	}
 
-	// SECTION: ROUTE CREATION
-
+	/**
+	 * Create a route.
+	 * 
+	 * @param uriPattern
+	 * @param controller
+	 * @return {@link ParameterizedRouteBuilder}.
+	 */
 	public ParameterizedRouteBuilder uri(final String uriPattern, final Object controller) {
-		return routeDeclarations.uri(uriPattern, controller, routeDefaults);
+		return routeDeclarations.uri(uriPattern, controller);
 	}
 
+	/**
+	 * Create a route.
+	 * 
+	 * @param uriPattern
+	 * @param controller
+	 * @return {@link RegexRouteBuilder}.
+	 */
 	public RegexRouteBuilder regex(final String uriPattern, final Object controller) {
-		return routeDeclarations.regex(uriPattern, controller, routeDefaults);
+		return routeDeclarations.regex(uriPattern, controller);
 	}
 }

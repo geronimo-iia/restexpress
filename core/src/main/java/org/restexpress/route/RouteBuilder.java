@@ -23,7 +23,6 @@ import org.restexpress.Response;
 import org.restexpress.common.exception.ConfigurationException;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.UriMetadata;
-import org.restexpress.settings.RouteDefaults;
 
 /**
  * Builds a route for a single URI. If a URI is given with no methods or
@@ -54,12 +53,9 @@ public abstract class RouteBuilder {
 		ACTION_MAPPING.put(OPTIONS, OPTION_ACTION_NAME);
 	}
 
-	// SECTION: INSTANCE VARIABLES
-
 	private final String uri;
 	private List<HttpMethod> methods = new ArrayList<HttpMethod>();
 	private final List<String> supportedFormats = new ArrayList<String>();
-	private String defaultFormat = null;
 	private final Map<HttpMethod, String> actionNames = new HashMap<HttpMethod, String>();
 	private final Object controller;
 	private boolean shouldSerializeResponse = true;
@@ -77,12 +73,28 @@ public abstract class RouteBuilder {
 	 * @param controller
 	 *            the POJO service controller.
 	 */
-	public RouteBuilder(final String uri, final Object controller, final RouteDefaults defaults) {
+	public RouteBuilder(final String uri, final Object controller) {
 		super();
 		this.uri = uri;
 		this.controller = controller;
-		applyDefaults(defaults);
 	}
+
+	/**
+	 * Child builder must implements this method.
+	 * 
+	 * @param pattern
+	 * @param controller
+	 * @param action
+	 * @param method
+	 * @param shouldSerializeResponse
+	 * @param name
+	 * @param supportedFormats
+	 * @param flags
+	 * @param parameters
+	 * @param baseUrl
+	 * @return
+	 */
+	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, Set<Flags> flags, Map<String, Object> parameters, String baseUrl);
 
 	/**
 	 * Map a service method name (action) to a particular HTTP method (e.g. GET,
@@ -186,11 +198,6 @@ public abstract class RouteBuilder {
 		return this;
 	}
 
-	public RouteBuilder defaultFormat(final String format) {
-		this.defaultFormat = format;
-		return this;
-	}
-
 	/**
 	 * Flags are boolean settings that are created at route definition time.
 	 * These flags can be used to pass booleans to preprocessors, controllers,
@@ -260,7 +267,7 @@ public abstract class RouteBuilder {
 			}
 
 			final Method action = determineActionMethod(controller, actionName);
-			routes.add(newRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl));
+			routes.add(newRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl));
 		}
 
 		return routes;
@@ -274,7 +281,6 @@ public abstract class RouteBuilder {
 		final RouteMetadata metadata = new RouteMetadata();
 		metadata.setName(name);
 		metadata.setSerialized(shouldSerializeResponse);
-		metadata.setDefaultFormat(defaultFormat);
 		metadata.addAllSupportedFormats(supportedFormats);
 		metadata.setBaseUrl(baseUrl);
 
@@ -289,25 +295,6 @@ public abstract class RouteBuilder {
 		metadata.setUri(uriMeta);
 		return metadata;
 	}
-
-	// SECTION: UTILITY - SUBSCLASSES
-
-	/**
-	 * @param pattern
-	 * @param controller
-	 * @param action
-	 * @param method
-	 * @param shouldSerializeResponse
-	 * @param name
-	 * @param supportedFormats
-	 * @param defaultFormat
-	 * @param flags
-	 * @param parameters
-	 * @param baseUrl
-	 * @return
-	 */
-	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags,
-			Map<String, Object> parameters, String baseUrl);
 
 	// SECTION: UTILITY - PRIVATE
 
@@ -333,15 +320,4 @@ public abstract class RouteBuilder {
 		}
 	}
 
-	/**
-	 * @param defaults
-	 */
-	protected void applyDefaults(final RouteDefaults defaults) {
-		if (defaults == null) {
-			return;
-		}
-
-		defaultFormat(defaults.getDefaultFormat());
-		baseUrl(defaults.getBaseUrl());
-	}
 }

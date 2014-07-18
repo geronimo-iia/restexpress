@@ -32,15 +32,12 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
-import org.restexpress.pipeline.DefaultRequestHandler;
-import org.restexpress.pipeline.PipelineBuilder;
 import org.restexpress.response.DefaultHttpResponseWriter;
 import org.restexpress.response.StringBufferHttpResponseWriter;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.route.RouteResolver;
 import org.restexpress.serialization.DefaultSerializationProvider;
 import org.restexpress.serialization.SerializationProvider;
-import org.restexpress.settings.RouteDefaults;
 
 /**
  * @author toddf
@@ -58,7 +55,7 @@ public class RawWrappedResponseTest {
 		SerializationProvider resolver = new DefaultSerializationProvider();
 		DummyRoutes routes = new DummyRoutes();
 		routes.defineRoutes();
-		messageHandler = new DefaultRequestHandler(new RouteResolver(routes.createRouteMapping(new RouteDefaults())), resolver, new DefaultHttpResponseWriter(), true);
+		messageHandler = new DefaultRequestHandler(new RouteResolver(routes.createRouteMapping()), resolver, new DefaultHttpResponseWriter(), true);
 		observer = new WrappedResponseObserver();
 		messageHandler.addMessageObserver(observer);
 		httpResponse = new StringBuffer();
@@ -421,24 +418,23 @@ public class RawWrappedResponseTest {
 
 	public class DummyRoutes extends RouteDeclaration {
 		private Object controller = new WrappedResponseController();
-		private RouteDefaults defaults = new RouteDefaults();
 
 		public void defineRoutes() {
-			uri("/normal_get.{format}", controller, defaults).action("normalGetAction", HttpMethod.GET);
+			uri("/normal_get.{format}", controller).action("normalGetAction", HttpMethod.GET);
 
-			uri("/normal_put.{format}", controller, defaults).action("normalPutAction", HttpMethod.PUT);
+			uri("/normal_put.{format}", controller).action("normalPutAction", HttpMethod.PUT);
 
-			uri("/normal_post.{format}", controller, defaults).action("normalPostAction", HttpMethod.POST);
+			uri("/normal_post.{format}", controller).action("normalPostAction", HttpMethod.POST);
 
-			uri("/normal_delete.{format}", controller, defaults).action("normalDeleteAction", HttpMethod.DELETE);
+			uri("/normal_delete.{format}", controller).action("normalDeleteAction", HttpMethod.DELETE);
 
-			uri("/no_content_delete.{format}", controller, defaults).action("noContentDeleteAction", HttpMethod.DELETE);
+			uri("/no_content_delete.{format}", controller).action("noContentDeleteAction", HttpMethod.DELETE);
 
-			uri("/no_content_with_body_delete.{format}", controller, defaults).action("noContentWithBodyDeleteAction", HttpMethod.DELETE);
+			uri("/no_content_with_body_delete.{format}", controller).action("noContentWithBodyDeleteAction", HttpMethod.DELETE);
 
-			uri("/not_found.{format}", controller, defaults).action("notFoundAction", HttpMethod.GET);
+			uri("/not_found.{format}", controller).action("notFoundAction", HttpMethod.GET);
 
-			uri("/null_pointer.{format}", controller, defaults).action("nullPointerAction", HttpMethod.GET);
+			uri("/null_pointer.{format}", controller).action("nullPointerAction", HttpMethod.GET);
 		}
 	}
 }

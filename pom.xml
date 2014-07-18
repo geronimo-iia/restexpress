@@ -50,7 +50,7 @@
 	<!-- PROPERTIES -->
 	<!-- ******************************************************************* -->
 	<properties>
-		<http-specification.version>1.0.1-SNAPSHOT</http-specification.version>
+		<http-specification.version>1.0.1</http-specification.version>
 		<mvel2.version>2.1.9.Final</mvel2.version>
 		<guava.version>17.0</guava.version>
 		<joda-time.version>2.3</joda-time.version>
@@ -69,6 +69,7 @@
 		<module>common</module>
 		<module>core</module>
 		<module>serialization-gson</module>
+		<module>plugins</module>
 	</modules>
 
 	<!-- ******************************************************************* -->

@@ -82,22 +82,28 @@ Change History/Release Notes:
 ---------------------------------------------------------------------------------------------------
 
 Current Version 0.10.4
+---------------------------
 
+* Add RestExpressSettings definition and json I/O loader utilities (see Settings)
+* Remove route default class (default format could be use with a Format class)
 * Merge (Nul/Default/Abstract)SerializationProvider, into one class.
-* extract gson serialization processor in a child module
-* move JsendResult, ErrorResult in common (useful for java client)
-* remove Error id and http code status (duplicated with response.status)
+* Extract gson serialization processor in a child module
+* Move JsendResult, ErrorResult in common (useful for java client)
+* Remove Error id and http code status (duplicated with response.status)
 * Refactor JsendResult to be compliant with JSend http://labs.omniti.com/labs/jsend
 * Use Http standard definition shared between rest express server and java client
-* use MessageContext in pre and post processor (more flexibility to handle response)
-* use HttpRuntimeException 
-* remove ExceptionMapping: server implementation must throw standard Http Exception.
-* refactor Resolver in order to user MessageContext (more flexibility to handle response)
-* add few javadoc on methods, classes
-* refactor XML alias definition. All alias must be declared either on dedicated processor, or after "add" with SerializationProvider
-* remove SerializationProvider static memeber on RestExpress.
+* Use MessageContext in pre and post processor (more flexibility to handle response)
+* Use HttpRuntimeException from org.intelligents-ia.common:http-specification
+* Temove ExceptionMapping: server implementation must throw standard Http Exception.
+* Refactor Resolver in order to user MessageContext (more flexibility to handle response)
+* Add few javadoc on methods, classes
+* Refactor XML alias definition. All alias must be declared either on dedicated processor, or after "add" with SerializationProvider
+* Remove SerializationProvider static member on RestExpress.
+* Add RestExpressLauncher (main class) to quickly launch a RestExpress server instance
+* Add plugins module
 
 Release 0.10.3 - 27 May 2014
+---------------------------
 * Change URL Pattern matcher to allow URLs with '?' at the end, but no query-string parameters following it.
 * Changed compiler output version to 1.7 (from 1.6).
 * Added SSL support (from Clark Hobbie).

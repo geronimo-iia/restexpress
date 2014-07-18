@@ -24,7 +24,6 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Flags;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteBuilder;
-import org.restexpress.settings.RouteDefaults;
 
 /**
  * @author toddf
@@ -36,23 +35,14 @@ public class RegexRouteBuilder extends RouteBuilder {
 	 * @param controller
 	 * @param routeType
 	 */
-	public RegexRouteBuilder(final String uri, final Object controller, final RouteDefaults defaults) {
-		super(uri, controller, defaults);
+	public RegexRouteBuilder(final String uri, final Object controller) {
+		super(uri, controller);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.strategicgains.restexpress.route.RouteBuilder#newRoute(java.lang.
-	 * String, java.lang.Object, java.lang.reflect.Method,
-	 * org.jboss.netty.handler.codec.http.HttpMethod, boolean, java.lang.String,
-	 * java.util.List, java.lang.String)
-	 */
 	@Override
-	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
+	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats,
 			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
-		return new RegexRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
+		return new RegexRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
 	}
 
 	@Override

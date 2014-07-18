@@ -33,30 +33,14 @@ import org.restexpress.url.UrlPattern;
 public class ParameterizedRoute extends Route {
 	private UrlPattern[] aliases;
 
-	/**
-	 * @param urlMatcher
-	 * @param controller
-	 * @param action
-	 * @param method
-	 * @param shouldSerializeResponse
-	 * @param name
-	 */
-	public ParameterizedRoute(final UrlPattern urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats,
-			final String defaultFormat, final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
-		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
+	public ParameterizedRoute(final UrlPattern urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+			final Map<String, Object> parameters, final String baseUrl) {
+		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
 	}
 
-	/**
-	 * @param urlPattern
-	 * @param controller
-	 * @param action
-	 * @param method
-	 * @param shouldSerializeResponse
-	 * @param name
-	 */
-	public ParameterizedRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
-			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
-		this(new UrlPattern(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
+	public ParameterizedRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+			final Map<String, Object> parameters, final String baseUrl) {
+		this(new UrlPattern(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
 	}
 
 	public void addAliases(final List<String> uris) {
