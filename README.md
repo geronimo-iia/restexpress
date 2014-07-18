@@ -102,6 +102,8 @@ Current Version 0.10.4
 * Add RestExpressLauncher (main class) to quickly launch a RestExpress server instance
 * Add plugins module
 * refactor Jackson Object mapper instantiation in order to be able to customize it without extends JacksonJsonProcessor
+* add plugin airdock: define controller life cycle, entry point, runtime discovery
+* default serialization configuration can be controlled by ServerSettings.
 
 Release 0.10.3 - 27 May 2014
 ---------------------------

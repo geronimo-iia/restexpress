@@ -10,4 +10,16 @@
 	<artifactId>restexpress-plugins</artifactId>
 	<packaging>pom</packaging>
 	<description>Plugins modules</description>
+	<properties>
+		<license.header.path>../header.txt</license.header.path>
+	</properties>
+	<modules>
+		<module>airdock</module>
+	</modules>
+	<dependencies>
+		<dependency>
+			<groupId>com.strategicgains</groupId>
+			<artifactId>restexpress</artifactId>
+		</dependency>
+	</dependencies>
 </project>

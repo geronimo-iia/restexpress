@@ -38,6 +38,7 @@ package org.restexpress.settings;
 import java.io.Serializable;
 
 import org.restexpress.ContentType;
+import org.restexpress.serialization.DefaultSerializationProvider;
 
 /**
  * {@link ServerSettings} group all server settings.
@@ -81,6 +82,14 @@ public class ServerSettings implements Serializable {
 	private String defaultFormat = ContentType.JSON;
 
 	/**
+	 * If true (per default it is) serialization provider use Jackson for Json,
+	 * Xstream for xml, and raw response wrapper.
+	 * 
+	 * @see DefaultSerializationProvider for more information.
+	 */
+	private boolean useDefaultSerializationConfiguration = Boolean.TRUE;
+
+	/**
 	 * Build a new instance.
 	 */
 	public ServerSettings() {
@@ -93,6 +102,15 @@ public class ServerSettings implements Serializable {
 
 	public ServerSettings setName(final String name) {
 		this.name = name;
+		return this;
+	}
+
+	public boolean isUseDefaultSerializationConfiguration() {
+		return useDefaultSerializationConfiguration;
+	}
+
+	public ServerSettings setUseDefaultSerializationConfiguration(final boolean useDefaultSerializationConfiguration) {
+		this.useDefaultSerializationConfiguration = useDefaultSerializationConfiguration;
 		return this;
 	}
 
@@ -174,6 +192,7 @@ public class ServerSettings implements Serializable {
 	public int getMaxContentSize() {
 		return maxContentSize;
 	}
+
 	/**
 	 * Set the maximum length of the content in a request. If the length of the
 	 * content exceeds this value, the server closes the connection immediately

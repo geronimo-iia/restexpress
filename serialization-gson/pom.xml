@@ -15,7 +15,6 @@
 		<dependency>
 			<groupId>com.strategicgains</groupId>
 			<artifactId>restexpress</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.strategicgains</groupId>

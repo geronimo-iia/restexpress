@@ -118,7 +118,7 @@ public class RestExpress {
 	 * @param settings
 	 */
 	public RestExpress(RestExpressSettings settings) {
-		this(settings, new DefaultSerializationProvider(Boolean.TRUE));
+		this(settings, new DefaultSerializationProvider(settings.serverSettings().isUseDefaultSerializationConfiguration()));
 	}
 
 	/**
