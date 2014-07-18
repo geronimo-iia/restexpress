@@ -72,6 +72,7 @@ public class DefaultRequestHandlerTest {
 		provider.add(new JacksonJsonProcessor(Format.WRAPPED_JSON), Wrapper.newJsendResponseWrapper());
 		provider.add(new XstreamXmlProcessor(Format.XML), Wrapper.newJsendResponseWrapper());
 		provider.alias("dated", Dated.class);
+
 		provider.setDefaultFormat(Format.WRAPPED_JSON);
 
 		DummyRoutes routes = new DummyRoutes();

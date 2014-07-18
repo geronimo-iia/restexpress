@@ -352,17 +352,6 @@ public class RestExpress {
 	}
 
 	/**
-	 * 
-	 * @param elementName
-	 * @param theClass
-	 * @return
-	 */
-	public RestExpress alias(String elementName, Class<?> theClass) {
-		routeDefaults.addXmlAlias(elementName, theClass);
-		return this;
-	}
-
-	/**
 	 * Return the number of requested NIO/HTTP-handling worker threads.
 	 * 
 	 * @return the number of requested worker threads.

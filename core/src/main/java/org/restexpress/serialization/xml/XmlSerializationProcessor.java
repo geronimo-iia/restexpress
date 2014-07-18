@@ -23,15 +23,17 @@ import org.restexpress.Format;
 import org.restexpress.common.util.StringUtils;
 import org.restexpress.contenttype.MediaTypeParser;
 import org.restexpress.serialization.AbstractSerializationProcessor;
-import org.restexpress.serialization.AliasingSerializationProcessor;
+import org.restexpress.serialization.Aliasable;
+import org.restexpress.serialization.SerializationProcessor;
 
 /**
- * {@link XmlSerializationProcessor} define an abstract XML processor.
+ * {@link XmlSerializationProcessor} define an abstract XML processor and
+ * implements {@link Aliasable} and {@link SerializationProcessor}.
  * 
  * @author toddf
  * @since Jul 18, 2013
  */
-public abstract class XmlSerializationProcessor extends AbstractSerializationProcessor implements AliasingSerializationProcessor {
+public abstract class XmlSerializationProcessor extends AbstractSerializationProcessor implements Aliasable, SerializationProcessor {
 
 	private static final String SUPPORTED_MEDIA_TYPES = StringUtils.join(",", ContentType.XML, "text/xml; charset=" + ContentType.ENCODING);
 

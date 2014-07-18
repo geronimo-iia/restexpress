@@ -87,8 +87,7 @@ public class RestExpressServerTest {
 		server.uri(PATTERN_EXCEPTION_LITTLE_O, objectTestController).action("throwException", HttpMethod.GET);
 		server.addMessageObserver(new SimpleConsoleLogMessageObserver());
 
-		server.alias("littleObject", LittleO.class);
-		// server.alias("list", ArrayList.class);
+		serializer.alias("littleObject", LittleO.class);
 	}
 
 	@After
