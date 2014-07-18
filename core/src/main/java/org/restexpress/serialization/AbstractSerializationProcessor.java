@@ -28,8 +28,8 @@ import org.restexpress.contenttype.MediaTypeParser;
  */
 public abstract class AbstractSerializationProcessor implements SerializationProcessor {
 	
-	private List<String> supportedFormats = new ArrayList<String>();
-	private List<MediaRange> supportedMediaRanges = new ArrayList<MediaRange>();
+	private final List<String> supportedFormats = new ArrayList<String>();
+	private final List<MediaRange> supportedMediaRanges = new ArrayList<MediaRange>();
 
 	public AbstractSerializationProcessor() {
 		super();

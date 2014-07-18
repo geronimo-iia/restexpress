@@ -47,6 +47,7 @@ import org.restexpress.route.Route;
  * Use of this preprocessor assumes you'll implement an authorization
  * preprocessor that validates the username and password.
  * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since Feb 28, 2013
  */
@@ -74,7 +75,7 @@ public class HttpBasicAuthenticationPreprocessor implements Preprocessor {
 		Request request = context.getRequest();
 		Route route = request.getResolvedRoute();
 
-		if (route != null && (route.isFlagged(Flags.Auth.PUBLIC_ROUTE) || route.isFlagged(Flags.Auth.NO_AUTHENTICATION))) {
+		if (route != null && (route.isFlagged(Flags.PUBLIC_ROUTE) || route.isFlagged(Flags.NO_AUTHENTICATION))) {
 			return;
 		}
 

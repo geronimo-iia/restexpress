@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.Flags;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.common.util.StringUtils;
@@ -55,7 +56,7 @@ public abstract class Route
 	private String baseUrl;
 	private List<String> supportedFormats = new ArrayList<String>();
 	private String defaultFormat;
-	private Set<String> flags = new HashSet<String>();
+	private Set<Flags> flags = new HashSet<>();
 	private Map<String, Object> parameters = new HashMap<String, Object>();
 
 	// SECTION: CONSTRUCTORS
@@ -65,7 +66,7 @@ public abstract class Route
 	 * @param controller
 	 */
 	public Route(UrlMatcher urlMatcher, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse,
-		String name, List<String> supportedFormats, String defaultFormat, Set<String> flags, Map<String, Object> parameters,
+		String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags, Map<String, Object> parameters,
 		String baseUrl)
 	{
 		super();
@@ -83,7 +84,7 @@ public abstract class Route
 		this.baseUrl = baseUrl;
 	}
 	
-	public boolean isFlagged(String flag)
+	public boolean isFlagged(Flags flag)
 	{
 		return flags.contains(flag);
 	}

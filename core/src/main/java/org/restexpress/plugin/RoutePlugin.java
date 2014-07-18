@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.plugin;
 
 import java.util.ArrayList;
@@ -21,64 +21,53 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.restexpress.Flags;
 import org.restexpress.route.RouteBuilder;
 
 /**
  * Adds some convenience methods to AbstractPlugin for plugins that create
- * internal routes. RoutePlugin enables the concept of flags and parameters 
- * on those routes.
- * </p>
- * Essentially, you want to be sure to call applyFlags(RouteBuilder) and
- * applyParameters(RouteBuilder) for each RouteBuilder created internally.
+ * internal routes. RoutePlugin enables the concept of flags and parameters on
+ * those routes. </p> Essentially, you want to be sure to call
+ * applyFlags(RouteBuilder) and applyParameters(RouteBuilder) for each
+ * RouteBuilder created internally.
  * 
  * @author toddf
  * @since Mar 27, 2014
  */
-public abstract class RoutePlugin
-extends AbstractPlugin
-{
-	private List<String> flags = new ArrayList<String>();
+public abstract class RoutePlugin extends AbstractPlugin {
+	private List<Flags> flags = new ArrayList<>();
 	private Map<String, Object> parameters = new HashMap<String, Object>();
 
-	public RoutePlugin()
-	{
+	public RoutePlugin() {
 		super();
 	}
 
 	// RouteBuilder route augmentation delegates.
 
-	public RoutePlugin flag(String flagValue)
-	{
-		if (!flags.contains(flagValue))
-		{
+	public RoutePlugin flag(Flags flagValue) {
+		if (!flags.contains(flagValue)) {
 			flags.add(flagValue);
 		}
 
 		return this;
 	}
 
-	public RoutePlugin parameter(String name, Object value)
-	{
-		if (!parameters.containsKey(name))
-		{
+	public RoutePlugin parameter(String name, Object value) {
+		if (!parameters.containsKey(name)) {
 			parameters.put(name, value);
 		}
 
 		return this;
 	}
 
-	void applyFlags(RouteBuilder routeBuilder)
-	{
-		for (String flag : flags)
-		{
+	void applyFlags(RouteBuilder routeBuilder) {
+		for (Flags flag : flags) {
 			routeBuilder.flag(flag);
 		}
 	}
 
-	void applyParameters(RouteBuilder routeBuilder)
-	{
-		for (Entry<String, Object> entry : parameters.entrySet())
-		{
+	void applyParameters(RouteBuilder routeBuilder) {
+		for (Entry<String, Object> entry : parameters.entrySet()) {
 			routeBuilder.parameter(entry.getKey(), entry.getValue());
 		}
 	}

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.Flags;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.common.exception.ConfigurationException;
@@ -66,7 +67,7 @@ public abstract class RouteBuilder
 	private boolean shouldSerializeResponse = true;
 	private String name;
 	private String baseUrl;
-	private Set<String> flags = new HashSet<String>();
+	private Set<Flags> flags = new HashSet<>();
 	private Map<String, Object> parameters = new HashMap<String, Object>();
 	
 	/**
@@ -203,7 +204,7 @@ public abstract class RouteBuilder
 	 * @param flagValue the name of the flag.
 	 * @return this RouteBuilder to facilitate method chaining.
 	 */
-	public RouteBuilder flag(String flagValue)
+	public RouteBuilder flag(Flags flagValue)
 	{
 		flags.add(flagValue);
 		return this;
@@ -318,7 +319,7 @@ public abstract class RouteBuilder
      */
     protected abstract Route newRoute(String pattern, Object controller, Method action,
     	HttpMethod method, boolean shouldSerializeResponse,
-    	String name, List<String> supportedFormats, String defaultFormat, Set<String> flags,
+    	String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags,
     	Map<String, Object> parameters, String baseUrl);
 
 

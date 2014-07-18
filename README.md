@@ -106,6 +106,7 @@ Release 0.10.3 - 27 May 2014
 * Fixed issue with QueryOrders.enforceAllowedProperties() threw erroneous exceptions.
 * Added JacksonEncodingStringSerializer (including it in JacksonJsonProcessor) to outbound HTML Entity encode for possible XSS attacks.
 * Updated to Jackson-Databind 2.3.3 (from 2.1.4).
+* refactor Flag as enum
 
 Release 0.10.2 - 3 Apr 2014
 ---------------------------

@@ -534,7 +534,7 @@ public class Request
 	 * @param flag the name of a flag.
 	 * @return true if the request contains the named flag, otherwise false.
 	 */
-	public boolean isFlagged(String flag)
+	public boolean isFlagged(Flags flag)
 	{
 		return resolvedRoute.isFlagged(flag);
 	}

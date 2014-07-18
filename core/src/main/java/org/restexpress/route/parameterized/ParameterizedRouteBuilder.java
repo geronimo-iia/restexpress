@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.Flags;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteBuilder;
@@ -31,9 +32,7 @@ import org.restexpress.settings.RouteDefaults;
  * @author toddf
  * @since Jan 13, 2011
  */
-public class ParameterizedRouteBuilder
-extends RouteBuilder
-{
+public class ParameterizedRouteBuilder extends RouteBuilder {
 	private List<String> aliases = new ArrayList<String>();
 
 	/**
@@ -41,21 +40,14 @@ extends RouteBuilder
 	 * @param controller
 	 * @param routeType
 	 */
-	public ParameterizedRouteBuilder(String uri, Object controller,
-	    RouteDefaults defaults)
-	{
+	public ParameterizedRouteBuilder(String uri, Object controller, RouteDefaults defaults) {
 		super(uri, controller, defaults);
 	}
 
 	@Override
-	protected Route newRoute(String pattern, Object controller, Method action,
-	    HttpMethod method, boolean shouldSerializeResponse, String name,
-	    List<String> supportedFormats, String defaultFormat, Set<String> flags,
-	    Map<String, Object> parameters, String baseUrl)
-	{
-		ParameterizedRoute r = new ParameterizedRoute(pattern, controller, action, method,
-		    shouldSerializeResponse, name, supportedFormats, defaultFormat,
-		    flags, parameters, baseUrl);
+	protected Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags, Map<String, Object> parameters,
+			String baseUrl) {
+		ParameterizedRoute r = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
 		r.addAliases(aliases);
 		return r;
 	}
@@ -67,13 +59,12 @@ extends RouteBuilder
 	 * the method. Parameter nodes that are missing from the alias will not be
 	 * available in the action method.
 	 * 
-	 * @param uri the alias URI.
+	 * @param uri
+	 *            the alias URI.
 	 * @return the ParameterizedRouteBuilder instance (this).
 	 */
-	public ParameterizedRouteBuilder alias(String uri)
-	{
-		if (!aliases.contains(uri))
-		{
+	public ParameterizedRouteBuilder alias(String uri) {
+		if (!aliases.contains(uri)) {
 			aliases.add(uri);
 		}
 
@@ -81,24 +72,20 @@ extends RouteBuilder
 	}
 
 	@Override
-	public RouteMetadata asMetadata()
-	{
+	public RouteMetadata asMetadata() {
 		RouteMetadata metadata = super.asMetadata();
 
-		for (String alias : aliases)
-		{
+		for (String alias : aliases) {
 			metadata.addAlias(alias);
 		}
 
 		return metadata;
 	}
 
-	protected String toRegexPattern(String uri)
-	{
+	protected String toRegexPattern(String uri) {
 		String pattern = uri;
 
-		if (pattern != null && !pattern.startsWith("/"))
-		{
+		if (pattern != null && !pattern.startsWith("/")) {
 			pattern = "/" + pattern;
 		}
 

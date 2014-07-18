@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.route.parameterized;
 
 import java.lang.reflect.Method;
@@ -21,79 +21,70 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.Flags;
 import org.restexpress.route.Route;
 import org.restexpress.url.UrlMatch;
 import org.restexpress.url.UrlPattern;
-
 
 /**
  * @author toddf
  * @since Jan 7, 2011
  */
-public class ParameterizedRoute
-extends Route
-{
+public class ParameterizedRoute extends Route {
 	private UrlPattern[] aliases;
 
 	/**
-     * @param urlMatcher
-     * @param controller
-     * @param action
-     * @param method
-     * @param shouldSerializeResponse
-     * @param name
-     */
-    public ParameterizedRoute(UrlPattern urlMatcher, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse,
-    	String name, List<String> supportedFormats, String defaultFormat, Set<String> flags, Map<String, Object> parameters, String baseUrl)
-    {
-	    super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
-    }
+	 * @param urlMatcher
+	 * @param controller
+	 * @param action
+	 * @param method
+	 * @param shouldSerializeResponse
+	 * @param name
+	 */
+	public ParameterizedRoute(UrlPattern urlMatcher, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags,
+			Map<String, Object> parameters, String baseUrl) {
+		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
+	}
 
-    /**
-     * @param urlPattern
-     * @param controller
-     * @param action
-     * @param method
-     * @param shouldSerializeResponse
-     * @param name
-     */
-    public ParameterizedRoute(String urlPattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse,
-    	String name, List<String> supportedFormats, String defaultFormat, Set<String> flags, Map<String, Object> parameters, String baseUrl)
-    {
-	    this(new UrlPattern(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
-    }
+	/**
+	 * @param urlPattern
+	 * @param controller
+	 * @param action
+	 * @param method
+	 * @param shouldSerializeResponse
+	 * @param name
+	 */
+	public ParameterizedRoute(String urlPattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags,
+			Map<String, Object> parameters, String baseUrl) {
+		this(new UrlPattern(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
+	}
 
-    public void addAliases(List<String> uris)
-    {
-    	if (uris == null) return;
-    	
-    	aliases = new UrlPattern[uris.size()];
-    	int i = 0;
+	public void addAliases(List<String> uris) {
+		if (uris == null)
+			return;
 
-    	for (String uri : uris)
-    	{
-    		aliases[i++] = new UrlPattern(uri);
-    	}
-    }
+		aliases = new UrlPattern[uris.size()];
+		int i = 0;
 
-    @Override
-    public UrlMatch match(String url)
-    {
-    	UrlMatch match = super.match(url);
-    	
-    	if (match == null && aliases != null)
-    	{
-    		for (UrlPattern alias : aliases)
-    		{
-    			match = alias.match(url);
-    			
-    			if (match != null)
-    			{
-    				break;
-    			}
-    		}
-    	}
+		for (String uri : uris) {
+			aliases[i++] = new UrlPattern(uri);
+		}
+	}
 
-    	return match;
-    }
+	@Override
+	public UrlMatch match(String url) {
+		UrlMatch match = super.match(url);
+
+		if (match == null && aliases != null) {
+			for (UrlPattern alias : aliases) {
+				match = alias.match(url);
+
+				if (match != null) {
+					break;
+				}
+			}
+		}
+
+		return match;
+	}
 }

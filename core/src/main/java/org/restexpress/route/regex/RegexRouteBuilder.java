@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.Flags;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteBuilder;
 import org.restexpress.settings.RouteDefaults;
@@ -29,17 +30,13 @@ import org.restexpress.settings.RouteDefaults;
  * @author toddf
  * @since Jan 13, 2011
  */
-public class RegexRouteBuilder
-extends RouteBuilder
-{
+public class RegexRouteBuilder extends RouteBuilder {
 	/**
 	 * @param uri
 	 * @param controller
 	 * @param routeType
 	 */
-	public RegexRouteBuilder(String uri, Object controller,
-	    RouteDefaults defaults)
-	{
+	public RegexRouteBuilder(String uri, Object controller, RouteDefaults defaults) {
 		super(uri, controller, defaults);
 	}
 
@@ -53,19 +50,14 @@ extends RouteBuilder
 	 * java.util.List, java.lang.String)
 	 */
 	@Override
-	protected Route newRoute(String pattern, Object controller, Method action,
-	    HttpMethod method, boolean shouldSerializeResponse, String name,
-	    List<String> supportedFormats, String defaultFormat, Set<String> flags,
-	    Map<String, Object> parameters, String baseUrl)
-	{
-		return new RegexRoute(pattern, controller, action, method,
-		    shouldSerializeResponse, name, supportedFormats, defaultFormat,
-		    flags, parameters, baseUrl);
+	protected Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags, Map<String, Object> parameters,
+			String baseUrl) {
+		return new RegexRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
 	}
 
-	protected String toRegexPattern(String uri)
-    {
-		// do not modify the uri, since the caller is building their own regex and is ON THEIR OWN... :-)
+	protected String toRegexPattern(String uri) {
+		// do not modify the uri, since the caller is building their own regex
+		// and is ON THEIR OWN... :-)
 		return uri;
-    }
+	}
 }
