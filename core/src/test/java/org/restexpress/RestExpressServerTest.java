@@ -72,7 +72,7 @@ public class RestExpressServerTest {
 		serializer = new DefaultSerializationProvider();
 		serializer.add(new JacksonJsonProcessor(Format.WRAPPED_JSON), new JsendResponseWrapper());
 		serializer.add(new XstreamXmlProcessor(Format.WRAPPED_XML), new JsendResponseWrapper());
-		RestExpress.setSerializationProvider(serializer);
+		server.setSerializationProvider(serializer);
 		StringTestController stringTestController = new StringTestController();
 		ObjectTestController objectTestController = new ObjectTestController();
 
@@ -558,7 +558,7 @@ public class RestExpressServerTest {
 		JacksonJsonProcessor jsonProc = new JacksonJsonProcessor();
 		jsonProc.addSupportedMediaTypes(ContentType.HAL_JSON);
 		serializer.add(jsonProc, Wrapper.newErrorResponseWrapper());
-		RestExpress.setSerializationProvider(serializer);
+		server.setSerializationProvider(serializer);
 		server.bind(SERVER_PORT);
 
 		HttpGet request = new HttpGet(LITTLE_OS_URL);
@@ -582,7 +582,7 @@ public class RestExpressServerTest {
 		DefaultSerializationProvider serializer = new DefaultSerializationProvider(Boolean.FALSE);
 		JacksonJsonProcessor jsonProc = new JacksonJsonProcessor();
 		serializer.add(jsonProc, Wrapper.newErrorResponseWrapper(), true);
-		RestExpress.setSerializationProvider(serializer);
+		server.setSerializationProvider(serializer);
 		server.addPreprocessor(new ErrorPreprocessor());
 		server.bind(SERVER_PORT);
 
@@ -606,7 +606,7 @@ public class RestExpressServerTest {
 		DefaultSerializationProvider serializer = new DefaultSerializationProvider(Boolean.FALSE);
 		JacksonJsonProcessor jsonProc = new JacksonJsonProcessor();
 		serializer.add(jsonProc, Wrapper.newErrorResponseWrapper(), true);
-		RestExpress.setSerializationProvider(serializer);
+		server.setSerializationProvider(serializer);
 		server.addPreprocessor(new ErrorPreprocessor());
 		server.bind(SERVER_PORT);
 
@@ -630,7 +630,7 @@ public class RestExpressServerTest {
 		DefaultSerializationProvider serializer = new DefaultSerializationProvider(Boolean.FALSE);
 		JacksonJsonProcessor jsonProc = new JacksonJsonProcessor();
 		serializer.add(jsonProc, Wrapper.newErrorResponseWrapper(), true);
-		RestExpress.setSerializationProvider(serializer);
+		server.setSerializationProvider(serializer);
 		server.bind(SERVER_PORT);
 
 		HttpGet request = new HttpGet(URL_EXCEPTION_LITTLE_O);
@@ -653,7 +653,7 @@ public class RestExpressServerTest {
 		DefaultSerializationProvider serializer = new DefaultSerializationProvider(Boolean.FALSE);
 		JacksonJsonProcessor jsonProc = new JacksonJsonProcessor();
 		serializer.add(jsonProc, Wrapper.newErrorResponseWrapper(), true);
-		RestExpress.setSerializationProvider(serializer);
+		server.setSerializationProvider(serializer);
 		server.bind(SERVER_PORT);
 
 		HttpGet request = new HttpGet(URL_EXCEPTION_LITTLE_O);

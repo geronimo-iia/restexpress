@@ -69,7 +69,7 @@ public class RestExpress {
 	public static final String DEFAULT_NAME = "RestExpress";
 	public static final int DEFAULT_PORT = 8081;
 
-	private static SerializationProvider SERIALIZATION_PROVIDER = null;
+	private SerializationProvider serializationProvider = null;
 
 	private ServerBootstrap bootstrap;
 	private SocketSettings socketSettings = new SocketSettings();
@@ -94,16 +94,22 @@ public class RestExpress {
 	 * @param provider
 	 *            a SerializationProvider instance.
 	 */
-	public static void setSerializationProvider(SerializationProvider provider) {
-		SERIALIZATION_PROVIDER = provider;
+	public RestExpress setSerializationProvider(SerializationProvider provider) {
+		serializationProvider = provider;
+		return this;
 	}
 
-	public static SerializationProvider getSerializationProvider() {
-		if (SERIALIZATION_PROVIDER == null) {
-			SERIALIZATION_PROVIDER = new DefaultSerializationProvider();
+	/**
+	 * Returns {@link SerializationProvider} or create a
+	 * {@link DefaultSerializationProvider} if none was set.
+	 * 
+	 * @return {@link SerializationProvider} instance.
+	 */
+	public SerializationProvider getSerializationProvider() {
+		if (serializationProvider == null) {
+			serializationProvider = new DefaultSerializationProvider();
 		}
-
-		return SERIALIZATION_PROVIDER;
+		return serializationProvider;
 	}
 
 	/**
