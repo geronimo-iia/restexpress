@@ -11,6 +11,9 @@
 	<packaging>jar</packaging>
 	<name>restexpress-common</name>
 	<description>Utilities and classes common to all RESTExpress projects client.</description>
+	<properties>
+		<license.header.path>../header.txt</license.header.path>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.intelligents-ia.commons</groupId>

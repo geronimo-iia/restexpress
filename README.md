@@ -104,6 +104,7 @@ Current Version 0.10.4
 * refactor Jackson Object mapper instantiation in order to be able to customize it without extends JacksonJsonProcessor
 * add plugin airdock: define controller life cycle, entry point, runtime discovery
 * default serialization configuration can be controlled by ServerSettings.
+* update maven parent pom (version in properties, license plugin, ...)
 
 Release 0.10.3 - 27 May 2014
 ---------------------------
