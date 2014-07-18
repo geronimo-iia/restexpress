@@ -21,14 +21,14 @@ import java.util.List;
 
 import org.restexpress.contenttype.MediaRange;
 
-
 /**
  * @author toddf
  * @since Nov 20, 2009
  */
-public interface Serializer
-{
+public interface Serializer {
 	public String serialize(Object object);
+
 	public List<MediaRange> getSupportedMediaRanges();
+
 	public List<String> getSupportedFormats();
 }

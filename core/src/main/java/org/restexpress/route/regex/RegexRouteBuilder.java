@@ -36,7 +36,7 @@ public class RegexRouteBuilder extends RouteBuilder {
 	 * @param controller
 	 * @param routeType
 	 */
-	public RegexRouteBuilder(String uri, Object controller, RouteDefaults defaults) {
+	public RegexRouteBuilder(final String uri, final Object controller, final RouteDefaults defaults) {
 		super(uri, controller, defaults);
 	}
 
@@ -50,12 +50,13 @@ public class RegexRouteBuilder extends RouteBuilder {
 	 * java.util.List, java.lang.String)
 	 */
 	@Override
-	protected Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags, Map<String, Object> parameters,
-			String baseUrl) {
+	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
+			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
 		return new RegexRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
 	}
 
-	protected String toRegexPattern(String uri) {
+	@Override
+	protected String toRegexPattern(final String uri) {
 		// do not modify the uri, since the caller is building their own regex
 		// and is ON THEIR OWN... :-)
 		return uri;

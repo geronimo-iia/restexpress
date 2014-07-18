@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.plugin;
 
 import org.restexpress.RestExpress;
@@ -21,28 +21,28 @@ import org.restexpress.RestExpress;
  * @author toddf
  * @since Jul 20, 2011
  */
-public interface Plugin
-{
+public interface Plugin {
 	/**
-	 * Called to register this plugin with the RestExpress server.
-	 * Within this method, pre/post-processors can be created, as
-	 * well as routes injected.
+	 * Called to register this plugin with the RestExpress server. Within this
+	 * method, pre/post-processors can be created, as well as routes injected.
 	 * 
 	 * @param server
 	 * @return a Plugin reference so plugin commands can be chained.
 	 */
 	public Plugin register(RestExpress server);
-	
+
 	/**
 	 * Called during RestExpress.bind(), after all resources have been allocated
 	 * to enable this plugin to access such details as route metadata, etc.
 	 * 
-	 * @param server the fully-bound RestExpress server.
+	 * @param server
+	 *            the fully-bound RestExpress server.
 	 */
 	public void bind(RestExpress server);
-	
+
 	/**
-	 * Called during RestExpress.shutdown() to release resources held by this plugin.
+	 * Called during RestExpress.shutdown() to release resources held by this
+	 * plugin.
 	 */
 	public void shutdown(RestExpress server);
 }

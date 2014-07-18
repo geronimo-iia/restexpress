@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization.json;
 
 import java.io.IOException;
@@ -32,33 +32,24 @@ import com.strategicgains.util.date.Iso8601TimepointAdapter;
  * @author toddf
  * @since Dec 16, 2010
  */
-public class JacksonTimepointDeserializer
-extends JsonDeserializer<Date>
-{
-	private DateAdapter adapter;
+public class JacksonTimepointDeserializer extends JsonDeserializer<Date> {
+	private final DateAdapter adapter;
 
-	public JacksonTimepointDeserializer()
-	{
+	public JacksonTimepointDeserializer() {
 		this(new Iso8601TimepointAdapter());
 	}
 
-	public JacksonTimepointDeserializer(DateAdapter adapter)
-	{
+	public JacksonTimepointDeserializer(final DateAdapter adapter) {
 		super();
 		this.adapter = adapter;
 	}
 
 	@Override
-    public Date deserialize(JsonParser parser, DeserializationContext context)
-    throws IOException, JsonProcessingException
-    {
-		try
-        {
-	        return adapter.parse(parser.getText());
-        }
-        catch (ParseException e)
-        {
-        	throw new DeserializationException(e);
-        }
-    }
+	public Date deserialize(final JsonParser parser, final DeserializationContext context) throws IOException, JsonProcessingException {
+		try {
+			return adapter.parse(parser.getText());
+		} catch (final ParseException e) {
+			throw new DeserializationException(e);
+		}
+	}
 }

@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.url;
 
 import java.util.Collections;
@@ -22,55 +22,50 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * Contains the results of a UrlPattern.match() call, reflecting the match outcome
- * and containing any parameter values, if applicable.
+ * Contains the results of a UrlPattern.match() call, reflecting the match
+ * outcome and containing any parameter values, if applicable.
  * 
- * <p/>UrlMatch is immutable.
+ * <p/>
+ * UrlMatch is immutable.
  * 
  * @author toddf
  * @since Apr 29, 2010
  */
-public class UrlMatch
-{
+public class UrlMatch {
 	/**
 	 * Parameter values parsed from the URL during the match.
 	 */
-	private Map<String, String>parameters = new HashMap<String, String>();
+	private final Map<String, String> parameters = new HashMap<String, String>();
 
-	
 	// SECTION: CONSTRUCTOR
 
-	public UrlMatch(Map<String, String> parameters)
-	{
+	public UrlMatch(final Map<String, String> parameters) {
 		super();
 
-		if (parameters != null)
-		{
+		if (parameters != null) {
 			this.parameters.putAll(parameters);
 		}
 	}
 
-	
 	// SECTION: ACCESSORS
 
 	/**
 	 * Retrieves a parameter value parsed from the URL during the match.
 	 * 
-	 * @param name the name of a parameter for which to retrieve the value.
+	 * @param name
+	 *            the name of a parameter for which to retrieve the value.
 	 * @return the parameter value from the URL, or null if not present.
 	 */
-	public String get(String name)
-	{
+	public String get(final String name) {
 		return parameters.get(name);
 	}
-	
+
 	/**
 	 * Retrieves the parameter entries as a set.
 	 * 
 	 * @return a Set of Map entries (by String, String).
 	 */
-	public Set<Entry<String, String>> parameterSet()
-	{
+	public Set<Entry<String, String>> parameterSet() {
 		return Collections.unmodifiableSet(parameters.entrySet());
 	}
 }

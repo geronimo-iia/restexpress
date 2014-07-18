@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.domain.metadata;
 
 import java.util.ArrayList;
@@ -23,46 +23,39 @@ import java.util.List;
  * @author toddf
  * @since Feb 14, 2011
  */
-public class UriMetadata
-{
-	private String pattern;
+public class UriMetadata {
+	private final String pattern;
 	private List<String> parameters;
 
-	public UriMetadata(String uri)
-	{
+	public UriMetadata(final String uri) {
 		super();
 		this.pattern = uri;
 	}
 
-	public String getPattern()
-	{
+	public String getPattern() {
 		return pattern;
 	}
-	
-	public List<String> getParameters()
-	{
+
+	public List<String> getParameters() {
 		return parameters;
 	}
-	
-	public void addParameter(String parameter)
-	{
-		if (parameters == null)
-		{
+
+	public void addParameter(final String parameter) {
+		if (parameters == null) {
 			parameters = new ArrayList<String>();
 		}
 
-		if (!parameters.contains(parameter))
-		{
+		if (!parameters.contains(parameter)) {
 			parameters.add(parameter);
 		}
 	}
-	
-	public void addAllParameters(Collection<String> parameters)
-	{
-		if (parameters == null) return;
 
-		for (String parameter : parameters)
-		{
+	public void addAllParameters(final Collection<String> parameters) {
+		if (parameters == null) {
+			return;
+		}
+
+		for (final String parameter : parameters) {
 			addParameter(parameter);
 		}
 	}

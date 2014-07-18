@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization.json;
 
 import java.io.IOException;
@@ -29,26 +29,20 @@ import com.strategicgains.util.date.TimestampAdapter;
  * @author toddf
  * @since Dec 16, 2010
  */
-public class JacksonTimepointSerializer
-extends JsonSerializer<Date>
-{
-	private DateAdapter adapter;
+public class JacksonTimepointSerializer extends JsonSerializer<Date> {
+	private final DateAdapter adapter;
 
-	public JacksonTimepointSerializer()
-	{
+	public JacksonTimepointSerializer() {
 		this(new TimestampAdapter());
 	}
 
-	public JacksonTimepointSerializer(DateAdapter adapter)
-	{
+	public JacksonTimepointSerializer(final DateAdapter adapter) {
 		super();
 		this.adapter = adapter;
 	}
 
 	@Override
-    public void serialize(Date date, JsonGenerator gen, SerializerProvider sp)
-    throws IOException, JsonProcessingException
-    {
+	public void serialize(final Date date, final JsonGenerator gen, final SerializerProvider sp) throws IOException, JsonProcessingException {
 		gen.writeString(adapter.format(date));
-    }
+	}
 }

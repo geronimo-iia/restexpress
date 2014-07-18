@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.url;
 
 import java.util.HashMap;
@@ -25,53 +25,44 @@ import java.util.regex.Pattern;
  * @author toddf
  * @since Jan 7, 2011
  */
-public class UrlRegex
-implements UrlMatcher
-{
-    public static final String PARAMETER_PREFIX = "regexGroup";
+public class UrlRegex implements UrlMatcher {
+	public static final String PARAMETER_PREFIX = "regexGroup";
 
-    private Pattern pattern;
-	
-	public UrlRegex(String regex)
-	{
+	private Pattern pattern;
+
+	public UrlRegex(final String regex) {
 		this(Pattern.compile(regex));
 	}
-	
-	public UrlRegex(Pattern pattern)
-	{
+
+	public UrlRegex(final Pattern pattern) {
 		super();
 		setPattern(pattern);
 	}
-	
-	public String getPattern()
-	{
+
+	@Override
+	public String getPattern() {
 		return pattern.pattern();
 	}
-	
-	private void setPattern(Pattern pattern)
-	{
+
+	private void setPattern(final Pattern pattern) {
 		this.pattern = pattern;
 	}
 
-    @Override
-    public List<String> getParameterNames()
-    {
-	    return null;
-    }
+	@Override
+	public List<String> getParameterNames() {
+		return null;
+	}
 
 	@Override
-	public boolean matches(String url)
-	{
+	public boolean matches(final String url) {
 		return (match(url) != null);
 	}
 
 	@Override
-	public UrlMatch match(String url)
-	{
-		Matcher matcher = pattern.matcher(url);
+	public UrlMatch match(final String url) {
+		final Matcher matcher = pattern.matcher(url);
 
-		if (matcher.matches())
-		{
+		if (matcher.matches()) {
 			return new UrlMatch(extractParameters(matcher));
 		}
 
@@ -82,22 +73,20 @@ implements UrlMatcher
 	 * Extracts parameter values from a Matcher instance.
 	 * 
 	 * @param matcher
-	 * @return a Map containing parameter values indexed by their corresponding parameter name.
+	 * @return a Map containing parameter values indexed by their corresponding
+	 *         parameter name.
 	 */
-	private Map<String, String> extractParameters(Matcher matcher)
-    {
-	    Map<String, String> values = new HashMap<String, String>();
-	    
-	    for (int i = 0; i < matcher.groupCount(); i++)
-	    {
-	    	String value = matcher.group(i + 1);
-	    	
-	    	if (value != null)
-	    	{
-	    		values.put(PARAMETER_PREFIX + i, value);
-	    	}
-	    }
+	private Map<String, String> extractParameters(final Matcher matcher) {
+		final Map<String, String> values = new HashMap<String, String>();
 
-	    return values;
-    }
+		for (int i = 0; i < matcher.groupCount(); i++) {
+			final String value = matcher.group(i + 1);
+
+			if (value != null) {
+				values.put(PARAMETER_PREFIX + i, value);
+			}
+		}
+
+		return values;
+	}
 }

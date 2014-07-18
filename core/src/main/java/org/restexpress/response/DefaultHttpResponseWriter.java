@@ -23,8 +23,8 @@ import org.restexpress.util.HttpSpecification;
  */
 public class DefaultHttpResponseWriter implements HttpResponseWriter {
 	@Override
-	public void write(ChannelHandlerContext ctx, Request request, Response response) {
-		HttpResponse httpResponse = new DefaultHttpResponse(request.getHttpVersion(), response.getResponseStatus());
+	public void write(final ChannelHandlerContext ctx, final Request request, final Response response) {
+		final HttpResponse httpResponse = new DefaultHttpResponse(request.getHttpVersion(), response.getResponseStatus());
 		addHeaders(response, httpResponse);
 
 		if (response.hasBody() && HttpSpecification.isContentAllowed(response)) {
@@ -62,9 +62,9 @@ public class DefaultHttpResponseWriter implements HttpResponseWriter {
 	 * @param response
 	 * @param httpResponse
 	 */
-	private void addHeaders(Response response, HttpResponse httpResponse) {
-		for (String name : response.getHeaderNames()) {
-			for (String value : response.getHeaders(name)) {
+	private void addHeaders(final Response response, final HttpResponse httpResponse) {
+		for (final String name : response.getHeaderNames()) {
+			for (final String value : response.getHeaders(name)) {
 				httpResponse.headers().add(name, value);
 			}
 		}

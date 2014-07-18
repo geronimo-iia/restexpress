@@ -46,18 +46,18 @@ import org.restexpress.util.HttpSpecification;
 public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 	// SECTION: INSTANCE VARIABLES
 
-	private RouteResolver routeResolver;
-	private SerializationProvider serializationProvider;
+	private final RouteResolver routeResolver;
+	private final SerializationProvider serializationProvider;
 	private HttpResponseWriter responseWriter;
-	private List<Preprocessor> preprocessors = new ArrayList<Preprocessor>();
-	private List<Postprocessor> postprocessors = new ArrayList<Postprocessor>();
-	private List<Postprocessor> finallyProcessors = new ArrayList<Postprocessor>();
-	private List<MessageObserver> messageObservers = new ArrayList<MessageObserver>();
+	private final List<Preprocessor> preprocessors = new ArrayList<Preprocessor>();
+	private final List<Postprocessor> postprocessors = new ArrayList<Postprocessor>();
+	private final List<Postprocessor> finallyProcessors = new ArrayList<Postprocessor>();
+	private final List<MessageObserver> messageObservers = new ArrayList<MessageObserver>();
 	private boolean shouldEnforceHttpSpec = true;
 
 	// SECTION: CONSTRUCTORS
 
-	public DefaultRequestHandler(RouteResolver routeResolver, SerializationProvider serializationProvider, HttpResponseWriter responseWriter, boolean enforceHttpSpec) {
+	public DefaultRequestHandler(final RouteResolver routeResolver, final SerializationProvider serializationProvider, final HttpResponseWriter responseWriter, final boolean enforceHttpSpec) {
 		super();
 		this.routeResolver = routeResolver;
 		this.serializationProvider = serializationProvider;
@@ -67,8 +67,8 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 
 	// SECTION: MUTATORS
 
-	public void addMessageObserver(MessageObserver... observers) {
-		for (MessageObserver observer : observers) {
+	public void addMessageObserver(final MessageObserver... observers) {
+		for (final MessageObserver observer : observers) {
 			if (!messageObservers.contains(observer)) {
 				messageObservers.add(observer);
 			}
@@ -79,22 +79,22 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 		return this.responseWriter;
 	}
 
-	public void setResponseWriter(HttpResponseWriter writer) {
+	public void setResponseWriter(final HttpResponseWriter writer) {
 		this.responseWriter = writer;
 	}
 
 	// SECTION: SIMPLE-CHANNEL-UPSTREAM-HANDLER
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent event) throws Exception {
-		MessageContext context = createInitialContext(ctx, event);
+	public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent event) throws Exception {
+		final MessageContext context = createInitialContext(ctx, event);
 
 		try {
 			notifyReceived(context);
 			resolveRoute(context);
 			resolveResponseProcessor(context);
 			invokePreprocessors(preprocessors, context);
-			Object result = context.getAction().invoke(context.getRequest(), context.getResponse());
+			final Object result = context.getAction().invoke(context.getRequest(), context.getResponse());
 
 			if (result != null) {
 				context.getResponse().setBody(result);
@@ -106,32 +106,32 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 			invokeFinallyProcessors(finallyProcessors, context);
 			writeResponse(ctx, context);
 			notifySuccess(context);
-		} catch (Throwable t) {
+		} catch (final Throwable t) {
 			handleRestExpressException(ctx, t);
 		} finally {
 			notifyComplete(context);
 		}
 	}
 
-	private void resolveResponseProcessor(MessageContext context) {
-		SerializationSettings s = serializationProvider.resolveResponse(context.getRequest(), context.getResponse(), false);
+	private void resolveResponseProcessor(final MessageContext context) {
+		final SerializationSettings s = serializationProvider.resolveResponse(context.getRequest(), context.getResponse(), false);
 		context.setSerializationSettings(s);
 	}
 
 	/**
 	 * @param context
 	 */
-	private void enforceHttpSpecification(MessageContext context) {
+	private void enforceHttpSpecification(final MessageContext context) {
 		if (shouldEnforceHttpSpec) {
 			HttpSpecification.enforce(context.getResponse());
 		}
 	}
 
-	private void handleRestExpressException(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		MessageContext context = (MessageContext) ctx.getAttachment();
+	private void handleRestExpressException(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+		final MessageContext context = (MessageContext) ctx.getAttachment();
 		Throwable rootCause = cause;
 		if (HttpRuntimeException.class.isAssignableFrom(cause.getClass())) {
-			HttpRuntimeException httpRuntimeException = (HttpRuntimeException) cause;
+			final HttpRuntimeException httpRuntimeException = (HttpRuntimeException) cause;
 			context.setHttpStatus(HttpResponseStatus.valueOf(httpRuntimeException.getHttpResponseStatus().getCode()));
 		} else {
 			rootCause = Exceptions.findRootCause(cause);
@@ -146,15 +146,15 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent event) throws Exception {
+	public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent event) throws Exception {
 		try {
-			MessageContext messageContext = (MessageContext) ctx.getAttachment();
+			final MessageContext messageContext = (MessageContext) ctx.getAttachment();
 
 			if (messageContext != null) {
 				messageContext.setException(event.getCause());
 				notifyException(messageContext);
 			}
-		} catch (Throwable t) {
+		} catch (final Throwable t) {
 			System.err.print("DefaultRequestHandler.exceptionCaught() threw an exception.");
 			t.printStackTrace();
 		} finally {
@@ -162,16 +162,16 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 		}
 	}
 
-	private MessageContext createInitialContext(ChannelHandlerContext ctx, MessageEvent event) {
-		Request request = createRequest(event, ctx);
-		Response response = createResponse();
-		MessageContext context = new MessageContext(request, response);
+	private MessageContext createInitialContext(final ChannelHandlerContext ctx, final MessageEvent event) {
+		final Request request = createRequest(event, ctx);
+		final Response response = createResponse();
+		final MessageContext context = new MessageContext(request, response);
 		ctx.setAttachment(context);
 		return context;
 	}
 
-	private void resolveRoute(MessageContext context) {
-		Action action = routeResolver.resolve(context);
+	private void resolveRoute(final MessageContext context) {
+		final Action action = routeResolver.resolve(context);
 		context.setAction(action);
 	}
 
@@ -179,8 +179,8 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 	 * @param request
 	 * @param response
 	 */
-	private void notifyReceived(MessageContext context) {
-		for (MessageObserver observer : messageObservers) {
+	private void notifyReceived(final MessageContext context) {
+		for (final MessageObserver observer : messageObservers) {
 			observer.onReceived(context.getRequest(), context.getResponse());
 		}
 	}
@@ -189,8 +189,8 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 	 * @param request
 	 * @param response
 	 */
-	private void notifyComplete(MessageContext context) {
-		for (MessageObserver observer : messageObservers) {
+	private void notifyComplete(final MessageContext context) {
+		for (final MessageObserver observer : messageObservers) {
 			observer.onComplete(context.getRequest(), context.getResponse());
 		}
 	}
@@ -202,10 +202,10 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 	 * @param request
 	 * @param response
 	 */
-	private void notifyException(MessageContext context) {
-		Throwable exception = context.getException();
+	private void notifyException(final MessageContext context) {
+		final Throwable exception = context.getException();
 
-		for (MessageObserver observer : messageObservers) {
+		for (final MessageObserver observer : messageObservers) {
 			observer.onException(exception, context.getRequest(), context.getResponse());
 		}
 	}
@@ -214,48 +214,48 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 	 * @param request
 	 * @param response
 	 */
-	private void notifySuccess(MessageContext context) {
-		for (MessageObserver observer : messageObservers) {
+	private void notifySuccess(final MessageContext context) {
+		for (final MessageObserver observer : messageObservers) {
 			observer.onSuccess(context.getRequest(), context.getResponse());
 		}
 	}
 
-	public void addPreprocessor(Preprocessor handler) {
+	public void addPreprocessor(final Preprocessor handler) {
 		if (!preprocessors.contains(handler)) {
 			preprocessors.add(handler);
 		}
 	}
 
-	public void addPostprocessor(Postprocessor handler) {
+	public void addPostprocessor(final Postprocessor handler) {
 		if (!postprocessors.contains(handler)) {
 			postprocessors.add(handler);
 		}
 	}
 
-	public void addFinallyProcessor(Postprocessor handler) {
+	public void addFinallyProcessor(final Postprocessor handler) {
 		if (!finallyProcessors.contains(handler)) {
 			finallyProcessors.add(handler);
 		}
 	}
 
-	private void invokePreprocessors(List<Preprocessor> processors, MessageContext context) {
-		for (Preprocessor handler : processors) {
+	private void invokePreprocessors(final List<Preprocessor> processors, final MessageContext context) {
+		for (final Preprocessor handler : processors) {
 			handler.process(context);
 		}
 		context.getRequest().getBody().resetReaderIndex();
 	}
 
-	private void invokePostprocessors(List<Postprocessor> processors, MessageContext context) {
-		for (Postprocessor handler : processors) {
+	private void invokePostprocessors(final List<Postprocessor> processors, final MessageContext context) {
+		for (final Postprocessor handler : processors) {
 			handler.process(context);
 		}
 	}
 
-	private void invokeFinallyProcessors(List<Postprocessor> processors, MessageContext context) {
-		for (Postprocessor handler : processors) {
+	private void invokeFinallyProcessors(final List<Postprocessor> processors, final MessageContext context) {
+		for (final Postprocessor handler : processors) {
 			try {
 				handler.process(context);
-			} catch (Throwable t) {
+			} catch (final Throwable t) {
 				t.printStackTrace(System.err);
 			}
 		}
@@ -265,7 +265,7 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 	 * @param request
 	 * @return
 	 */
-	private Request createRequest(MessageEvent event, ChannelHandlerContext context) {
+	private Request createRequest(final MessageEvent event, final ChannelHandlerContext context) {
 		return new Request(event, routeResolver, serializationProvider);
 	}
 
@@ -281,12 +281,12 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 	 * @param message
 	 * @return
 	 */
-	private void writeResponse(ChannelHandlerContext ctx, MessageContext context) {
+	private void writeResponse(final ChannelHandlerContext ctx, final MessageContext context) {
 		getResponseWriter().write(ctx, context.getRequest(), context.getResponse());
 	}
 
-	private void serializeResponse(MessageContext context, boolean force) {
-		Response response = context.getResponse();
+	private void serializeResponse(final MessageContext context, final boolean force) {
+		final Response response = context.getResponse();
 
 		if (HttpSpecification.isContentTypeAllowed(response)) {
 			SerializationSettings settings = null;
@@ -299,7 +299,7 @@ public class DefaultRequestHandler extends SimpleChannelUpstreamHandler {
 
 			if (settings != null) {
 				if (response.isSerialized()) {
-					String serialized = settings.serialize(response);
+					final String serialized = settings.serialize(response);
 
 					if (serialized != null) {
 						response.setBody(serialized);

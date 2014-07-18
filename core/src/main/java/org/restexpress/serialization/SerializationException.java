@@ -30,14 +30,14 @@ public class SerializationException extends RuntimeException {
 	/**
 	 * @param message
 	 */
-	public SerializationException(String message) {
+	public SerializationException(final String message) {
 		super(message);
 	}
 
 	/**
 	 * @param cause
 	 */
-	public SerializationException(Throwable cause) {
+	public SerializationException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -45,7 +45,7 @@ public class SerializationException extends RuntimeException {
 	 * @param message
 	 * @param cause
 	 */
-	public SerializationException(String message, Throwable cause) {
+	public SerializationException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 }

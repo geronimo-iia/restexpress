@@ -38,8 +38,8 @@ public class RegexRoute extends Route {
 	 * @param shouldSerializeResponse
 	 * @param name
 	 */
-	public RegexRoute(UrlRegex urlMatcher, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags, Map<String, Object> parameters,
-			String baseUrl) {
+	public RegexRoute(final UrlRegex urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
+			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
 		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
 	}
 
@@ -51,8 +51,8 @@ public class RegexRoute extends Route {
 	 * @param shouldSerializeResponse
 	 * @param name
 	 */
-	public RegexRoute(String urlPattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags, Map<String, Object> parameters,
-			String baseUrl) {
+	public RegexRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
+			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
 		this(new UrlRegex(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
 	}
 }

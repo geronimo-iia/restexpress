@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.plugin;
 
 import org.restexpress.RestExpress;
@@ -21,73 +21,62 @@ import org.restexpress.RestExpress;
  * @author toddf
  * @since Jul 20, 2011
  */
-public abstract class AbstractPlugin
-implements Plugin
-{
+public abstract class AbstractPlugin implements Plugin {
 	private boolean isRegistered;
 
 	@Override
-	public AbstractPlugin register(RestExpress server)
-	{
-		if (!isRegistered())
-		{
+	public AbstractPlugin register(final RestExpress server) {
+		if (!isRegistered()) {
 			setRegistered(true);
 			server.registerPlugin(this);
 		}
 
 		return this;
 	}
-	
+
 	@Override
-	public void bind(RestExpress server)
-	{
+	public void bind(final RestExpress server) {
 		// default behavior is to do nothing.
 	}
 
 	@Override
-	public void shutdown(RestExpress server)
-	{
+	public void shutdown(final RestExpress server) {
 		// default behavior is to do essentially nothing.
 		setRegistered(false);
 	}
 
 	/**
-	 * This AbstractPlugin is assumed to be equal to other when:
-	 * 1) This class is assignable from other and<br/>
+	 * This AbstractPlugin is assumed to be equal to other when: 1) This class
+	 * is assignable from other and<br/>
 	 * 2) other has the same simple class name.
 	 */
 	@Override
-	public boolean equals(Object other)
-	{
-		if (AbstractPlugin.class.isAssignableFrom(other.getClass()))
-		{
+	public boolean equals(final Object other) {
+		if (AbstractPlugin.class.isAssignableFrom(other.getClass())) {
 			return equals((AbstractPlugin) other);
 		}
 
 		return false;
 	}
-	
-	public boolean equals(AbstractPlugin plugin)
-	{
+
+	public boolean equals(final AbstractPlugin plugin) {
 		return this.getClass().getSimpleName().equals(plugin.getClass().getSimpleName());
 	}
 
 	/**
-	 * Generates a hash code based on the class of this instance.  All instances
+	 * Generates a hash code based on the class of this instance. All instances
 	 * of the same class will have the same hash code.
 	 */
-	public int hashCode()
-	{
+	@Override
+	public int hashCode() {
 		return this.getClass().hashCode() ^ 17;
 	}
-	
-	protected boolean isRegistered()
-	{
+
+	protected boolean isRegistered() {
 		return isRegistered;
 	}
-	
-	protected void setRegistered(boolean value)
-	{
+
+	protected void setRegistered(final boolean value) {
 		this.isRegistered = value;
 	}
 }

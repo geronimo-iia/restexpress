@@ -12,14 +12,13 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.util;
 
 /**
  * @author toddf
  * @since Jun 14, 2013
  */
-public interface Callback<T>
-{
+public interface Callback<T> {
 	public void process(T object);
 }

@@ -50,9 +50,9 @@ import org.restexpress.serialization.xml.XstreamXmlProcessor;
  */
 public class DefaultSerializationProvider implements SerializationProvider {
 
-	private Map<String, ResponseProcessor> processorsByFormat = new HashMap<String, ResponseProcessor>();
-	private Map<String, ResponseProcessor> processorsByMediaType = new HashMap<String, ResponseProcessor>();
-	private List<MediaRange> supportedMediaRanges = new ArrayList<MediaRange>();
+	private final Map<String, ResponseProcessor> processorsByFormat = new HashMap<String, ResponseProcessor>();
+	private final Map<String, ResponseProcessor> processorsByMediaType = new HashMap<String, ResponseProcessor>();
+	private final List<MediaRange> supportedMediaRanges = new ArrayList<MediaRange>();
 	private ResponseProcessor defaultProcessor;
 
 	/**
@@ -72,22 +72,24 @@ public class DefaultSerializationProvider implements SerializationProvider {
 	 *            default format, XstreamXmlProcessor for XML, and a
 	 *            {@link RawResponseWrapper}.
 	 */
-	public DefaultSerializationProvider(boolean addDefault) {
+	public DefaultSerializationProvider(final boolean addDefault) {
 		if (addDefault) {
 			add(new JacksonJsonProcessor(), Wrapper.newRawResponseWrapper(), true);
 			add(new XstreamXmlProcessor(), Wrapper.newRawResponseWrapper());
 		}
 	}
 
-	public void add(SerializationProcessor processor, ResponseWrapper wrapper) {
+	@Override
+	public void add(final SerializationProcessor processor, final ResponseWrapper wrapper) {
 		add(processor, wrapper, false);
 	}
 
-	public void add(SerializationProcessor processor, ResponseWrapper wrapper, boolean isDefault) {
+	@Override
+	public void add(final SerializationProcessor processor, final ResponseWrapper wrapper, final boolean isDefault) {
 		addMediaRanges(processor.getSupportedMediaRanges());
-		ResponseProcessor responseProcessor = new ResponseProcessor(processor, wrapper);
+		final ResponseProcessor responseProcessor = new ResponseProcessor(processor, wrapper);
 
-		for (String format : processor.getSupportedFormats()) {
+		for (final String format : processor.getSupportedFormats()) {
 			if (processorsByFormat.containsKey(format)) {
 				throw new ConfigurationException("Duplicate supported format: " + format);
 			}
@@ -95,8 +97,8 @@ public class DefaultSerializationProvider implements SerializationProvider {
 			processorsByFormat.put(format, responseProcessor);
 		}
 
-		for (MediaRange mediaRange : processor.getSupportedMediaRanges()) {
-			String mediaType = mediaRange.asMediaType();
+		for (final MediaRange mediaRange : processor.getSupportedMediaRanges()) {
+			final String mediaType = mediaRange.asMediaType();
 
 			if (!processorsByMediaType.containsKey(mediaType)) {
 				processorsByMediaType.put(mediaRange.asMediaType(), responseProcessor);
@@ -109,8 +111,8 @@ public class DefaultSerializationProvider implements SerializationProvider {
 	}
 
 	@Override
-	public void setDefaultFormat(String format) {
-		ResponseProcessor processor = processorsByFormat.get(format);
+	public void setDefaultFormat(final String format) {
+		final ResponseProcessor processor = processorsByFormat.get(format);
 
 		if (processor == null) {
 			throw new RuntimeException("No serialization processor found for requested response format: " + format);
@@ -126,8 +128,8 @@ public class DefaultSerializationProvider implements SerializationProvider {
 	 * @param format
 	 * @return
 	 */
-	public SerializationProcessor getSerializer(String format) {
-		ResponseProcessor p = processorsByFormat.get(format);
+	public SerializationProcessor getSerializer(final String format) {
+		final ResponseProcessor p = processorsByFormat.get(format);
 
 		if (p != null) {
 			return p.getSerializer();
@@ -137,9 +139,9 @@ public class DefaultSerializationProvider implements SerializationProvider {
 	}
 
 	@Override
-	public SerializationSettings resolveRequest(Request request) {
+	public SerializationSettings resolveRequest(final Request request) {
 		ResponseProcessor processor = null;
-		String format = request.getFormat();
+		final String format = request.getFormat();
 
 		if (format != null) {
 			processor = processorsByFormat.get(format);
@@ -150,8 +152,8 @@ public class DefaultSerializationProvider implements SerializationProvider {
 		}
 
 		if (processor == null) {
-			List<MediaRange> requestedMediaRanges = MediaTypeParser.parse(request.getHeader(HttpHeaders.Names.CONTENT_TYPE));
-			String bestMatch = MediaTypeParser.getBestMatch(supportedMediaRanges, requestedMediaRanges);
+			final List<MediaRange> requestedMediaRanges = MediaTypeParser.parse(request.getHeader(HttpHeaders.Names.CONTENT_TYPE));
+			final String bestMatch = MediaTypeParser.getBestMatch(supportedMediaRanges, requestedMediaRanges);
 
 			if (bestMatch != null) {
 				processor = processorsByMediaType.get(bestMatch);
@@ -166,7 +168,7 @@ public class DefaultSerializationProvider implements SerializationProvider {
 	}
 
 	@Override
-	public SerializationSettings resolveResponse(Request request, Response response, boolean shouldForce) {
+	public SerializationSettings resolveResponse(final Request request, final Response response, final boolean shouldForce) {
 		String bestMatch = null;
 		ResponseProcessor processor = null;
 		String format = request.getFormat();
@@ -186,7 +188,7 @@ public class DefaultSerializationProvider implements SerializationProvider {
 		}
 
 		if (processor == null) {
-			List<MediaRange> requestedMediaRanges = MediaTypeParser.parse(request.getHeader(HttpHeaders.Names.ACCEPT));
+			final List<MediaRange> requestedMediaRanges = MediaTypeParser.parse(request.getHeader(HttpHeaders.Names.ACCEPT));
 			bestMatch = MediaTypeParser.getBestMatch(supportedMediaRanges, requestedMediaRanges);
 
 			if (bestMatch != null) {
@@ -205,8 +207,8 @@ public class DefaultSerializationProvider implements SerializationProvider {
 	}
 
 	@Override
-	public void alias(String name, Class<?> type) {
-		for (ResponseProcessor processor : processorsByFormat.values()) {
+	public void alias(final String name, final Class<?> type) {
+		for (final ResponseProcessor processor : processorsByFormat.values()) {
 			if (Aliasable.class.isAssignableFrom(processor.getSerializer().getClass())) {
 				((Aliasable) processor.getSerializer()).alias(name, type);
 			}
@@ -215,25 +217,26 @@ public class DefaultSerializationProvider implements SerializationProvider {
 
 	// SECTION: CONVENIENCE/SUPPORT
 
-	private void addMediaRanges(List<MediaRange> mediaRanges) {
-		if (mediaRanges == null)
+	private void addMediaRanges(final List<MediaRange> mediaRanges) {
+		if (mediaRanges == null) {
 			return;
+		}
 
-		for (MediaRange mediaRange : mediaRanges) {
+		for (final MediaRange mediaRange : mediaRanges) {
 			if (!supportedMediaRanges.contains(mediaRange)) {
 				supportedMediaRanges.add(mediaRange);
 			}
 		}
 	}
 
-	private boolean exceptionOccurredBeforeRouteResolution(String format, Response response) {
-		return format == null && response.hasException();
+	private boolean exceptionOccurredBeforeRouteResolution(final String format, final Response response) {
+		return (format == null) && response.hasException();
 	}
 
-	private String parseFormatFromUrl(String url) {
-		int queryDelimiterIndex = url.indexOf('?');
-		String path = (queryDelimiterIndex > 0 ? url.substring(0, queryDelimiterIndex) : url);
-		int formatDelimiterIndex = path.lastIndexOf('.');
+	private String parseFormatFromUrl(final String url) {
+		final int queryDelimiterIndex = url.indexOf('?');
+		final String path = (queryDelimiterIndex > 0 ? url.substring(0, queryDelimiterIndex) : url);
+		final int formatDelimiterIndex = path.lastIndexOf('.');
 		return (formatDelimiterIndex > 0 ? path.substring(formatDelimiterIndex + 1) : null);
 	}
 

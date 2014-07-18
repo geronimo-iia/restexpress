@@ -41,11 +41,11 @@ public abstract class XmlSerializationProcessor extends AbstractSerializationPro
 		this(Arrays.asList(Format.XML));
 	}
 
-	public XmlSerializationProcessor(String format) {
+	public XmlSerializationProcessor(final String format) {
 		this(Arrays.asList(format));
 	}
 
-	public XmlSerializationProcessor(List<String> supportedFormats) {
+	public XmlSerializationProcessor(final List<String> supportedFormats) {
 		super(supportedFormats, MediaTypeParser.parse(SUPPORTED_MEDIA_TYPES));
 	}
 }

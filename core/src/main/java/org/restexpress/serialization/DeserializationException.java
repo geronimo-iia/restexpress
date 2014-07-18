@@ -21,28 +21,23 @@ package org.restexpress.serialization;
  * @author toddf
  * @since Nov 20, 2009
  */
-public class DeserializationException
-extends RuntimeException
-{
-    private static final long serialVersionUID = 4563135167976559696L;
+public class DeserializationException extends RuntimeException {
+	private static final long serialVersionUID = 4563135167976559696L;
 
-	public DeserializationException()
-	{
+	public DeserializationException() {
 	}
 
 	/**
 	 * @param message
 	 */
-	public DeserializationException(String message)
-	{
+	public DeserializationException(final String message) {
 		super(message);
 	}
 
 	/**
 	 * @param cause
 	 */
-	public DeserializationException(Throwable cause)
-	{
+	public DeserializationException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -50,8 +45,7 @@ extends RuntimeException
 	 * @param message
 	 * @param cause
 	 */
-	public DeserializationException(String message, Throwable cause)
-	{
+	public DeserializationException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 }

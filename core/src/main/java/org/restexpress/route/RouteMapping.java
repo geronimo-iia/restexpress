@@ -33,25 +33,23 @@ import org.restexpress.url.UrlMatch;
  * @author toddf
  * @since May 21, 2010
  */
-public class RouteMapping
-{
+public class RouteMapping {
 	// SECTION: INSTANCE VARIABLES
 
-	private Map<HttpMethod, List<Route>> routes;
-	private List<Route> deleteRoutes = new ArrayList<Route>();
-	private List<Route> getRoutes = new ArrayList<Route>();
-	private List<Route> postRoutes = new ArrayList<Route>();
-	private List<Route> putRoutes = new ArrayList<Route>();
-	private List<Route> optionRoutes = new ArrayList<Route>();
-	private List<Route> headRoutes = new ArrayList<Route>();
+	private final Map<HttpMethod, List<Route>> routes;
+	private final List<Route> deleteRoutes = new ArrayList<Route>();
+	private final List<Route> getRoutes = new ArrayList<Route>();
+	private final List<Route> postRoutes = new ArrayList<Route>();
+	private final List<Route> putRoutes = new ArrayList<Route>();
+	private final List<Route> optionRoutes = new ArrayList<Route>();
+	private final List<Route> headRoutes = new ArrayList<Route>();
 
-	private Map<String, Map<HttpMethod, Route>> routesByName = new HashMap<String, Map<HttpMethod, Route>>();
-	private Map<String, List<Route>> routesByPattern = new LinkedHashMap<String, List<Route>>();
+	private final Map<String, Map<HttpMethod, Route>> routesByName = new HashMap<String, Map<HttpMethod, Route>>();
+	private final Map<String, List<Route>> routesByPattern = new LinkedHashMap<String, List<Route>>();
 
 	// SECTION: CONSTRUCTOR
 
-	public RouteMapping()
-	{
+	public RouteMapping() {
 		super();
 		routes = new HashMap<HttpMethod, List<Route>>();
 		routes.put(HttpMethod.DELETE, deleteRoutes);
@@ -61,7 +59,6 @@ public class RouteMapping
 		routes.put(HttpMethod.HEAD, headRoutes);
 		routes.put(HttpMethod.OPTIONS, optionRoutes);
 	}
-
 
 	// SECTION: UTILITY - PUBLIC
 
@@ -73,12 +70,10 @@ public class RouteMapping
 	 *            the HTTP method (GET, PUT, POST, DELETE) for which to retrieve
 	 *            the routes.
 	 */
-	public List<Route> getRoutesFor(HttpMethod method)
-	{
-		List<Route> routesFor = routes.get(method);
+	public List<Route> getRoutesFor(final HttpMethod method) {
+		final List<Route> routesFor = routes.get(method);
 
-		if (routesFor == null)
-		{
+		if (routesFor == null) {
 			return Collections.emptyList();
 		}
 
@@ -86,68 +81,67 @@ public class RouteMapping
 	}
 
 	/**
-	 * Attempts to match the path and method to an appropriate Route, returning an
-	 * Action instance if a match is found.  Returns null if no match is found.
+	 * Attempts to match the path and method to an appropriate Route, returning
+	 * an Action instance if a match is found. Returns null if no match is
+	 * found.
 	 * 
 	 * @param method
 	 *            the HTTP method (GET, PUT, POST, DELETE) for which to retrieve
 	 *            the routes.
-	 * @param path the path portion of the url to match.
+	 * @param path
+	 *            the path portion of the url to match.
 	 * @return a new Action or null, if the path/method combination don't match.
 	 */
-	public Action getActionFor(HttpMethod method, String path)
-	{
-		for (Route route : routes.get(method))
-		{
-			UrlMatch match = route.match(path);
+	public Action getActionFor(final HttpMethod method, final String path) {
+		for (final Route route : routes.get(method)) {
+			final UrlMatch match = route.match(path);
 
-			if (match != null)
-			{
+			if (match != null) {
 				return new Action(route, match);
 			}
 		}
-		
+
 		return null;
 	}
 
 	/**
 	 * Returns a list of Route instances that the given path resolves to.
 	 * 
-	 * @param path the path portion of the URL (e.g. after the domain and port).
+	 * @param path
+	 *            the path portion of the URL (e.g. after the domain and port).
 	 * @return A list of Route instances matching the given path. Never null.
 	 */
-	public List<Route> getMatchingRoutes(String path)
-	{
-		for (List<Route> patternRoutes : routesByPattern.values())
-		{
-			if (patternRoutes.get(0).match(path) != null)
-			{
+	public List<Route> getMatchingRoutes(final String path) {
+		for (final List<Route> patternRoutes : routesByPattern.values()) {
+			if (patternRoutes.get(0).match(path) != null) {
 				return Collections.unmodifiableList(patternRoutes);
 			}
 		}
-		
+
 		return Collections.emptyList();
 	}
 
 	/**
 	 * Returns the supported HTTP methods for the given URL path.
 	 * 
-	 * @param path the path portion of the URL (e.g. after the domain and port).
-	 * @return A list of appropriate HTTP methods for the given path. Never null.
+	 * @param path
+	 *            the path portion of the URL (e.g. after the domain and port).
+	 * @return A list of appropriate HTTP methods for the given path. Never
+	 *         null.
 	 */
-	public List<HttpMethod> getAllowedMethods(String path)
-	{
-		List<Route> matchingRoutes = getMatchingRoutes(path);
-		
-		if (matchingRoutes.isEmpty()) return Collections.emptyList();
+	public List<HttpMethod> getAllowedMethods(final String path) {
+		final List<Route> matchingRoutes = getMatchingRoutes(path);
 
-		List<HttpMethod> methods = new ArrayList<HttpMethod>();
+		if (matchingRoutes.isEmpty()) {
+			return Collections.emptyList();
+		}
 
-		for (Route route : matchingRoutes)
-		{
+		final List<HttpMethod> methods = new ArrayList<HttpMethod>();
+
+		for (final Route route : matchingRoutes) {
 			methods.add(route.getMethod());
 		}
-		
+
 		return methods;
 	}
 
@@ -158,18 +152,15 @@ public class RouteMapping
 	 * @param name
 	 * @return
 	 */
-	public Route getNamedRoute(String name, HttpMethod method)
-	{
-		Map<HttpMethod, Route> routesByMethod = routesByName.get(name);
+	public Route getNamedRoute(final String name, final HttpMethod method) {
+		final Map<HttpMethod, Route> routesByMethod = routesByName.get(name);
 
-		if (routesByMethod == null)
-		{
+		if (routesByMethod == null) {
 			return null;
 		}
 
 		return routesByMethod.get(method);
 	}
-
 
 	// SECTION: UTILITY
 
@@ -177,43 +168,36 @@ public class RouteMapping
 	 * @param method
 	 * @param route
 	 */
-	public void addRoute(Route route)
-	{
+	public void addRoute(final Route route) {
 		routes.get(route.getMethod()).add(route);
 		addByPattern(route);
 
-		if (route.hasName())
-		{
+		if (route.hasName()) {
 			addNamedRoute(route);
 		}
 	}
 
-
 	// SECTION: UTILITY - PRIVATE
 
-	private void addNamedRoute(Route route)
-	{
+	private void addNamedRoute(final Route route) {
 		Map<HttpMethod, Route> routesByMethod = routesByName.get(route.getName());
 
-		if (routesByMethod == null)
-		{
+		if (routesByMethod == null) {
 			routesByMethod = new HashMap<HttpMethod, Route>();
 			routesByName.put(route.getName(), routesByMethod);
 		}
 
 		routesByMethod.put(route.getMethod(), route);
 	}
-	
-	private void addByPattern(Route route)
-	{
+
+	private void addByPattern(final Route route) {
 		List<Route> urlRoutes = routesByPattern.get(route.getPattern());
-		
-		if (urlRoutes == null)
-		{
+
+		if (urlRoutes == null) {
 			urlRoutes = new ArrayList<Route>();
 			routesByPattern.put(route.getPattern(), urlRoutes);
 		}
-		
+
 		urlRoutes.add(route);
 	}
 }

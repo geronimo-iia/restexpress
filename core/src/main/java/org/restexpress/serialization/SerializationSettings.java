@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization;
 
 import org.jboss.netty.handler.codec.http.HttpHeaders;
@@ -24,40 +24,33 @@ import org.restexpress.response.ResponseProcessor;
  * @author toddf
  * @since Jul 23, 2013
  */
-public class SerializationSettings
-{
-	private String mediaType;
-	private ResponseProcessor processor;
-	
-	public SerializationSettings(String mediaType, ResponseProcessor processor)
-	{
+public class SerializationSettings {
+	private final String mediaType;
+	private final ResponseProcessor processor;
+
+	public SerializationSettings(final String mediaType, final ResponseProcessor processor) {
 		super();
 		this.mediaType = mediaType;
 		this.processor = processor;
 	}
 
-	public String getMediaType()
-    {
+	public String getMediaType() {
 		return mediaType;
-    }
+	}
 
-	public ResponseProcessor getResponseProcessor()
-    {
+	public ResponseProcessor getResponseProcessor() {
 		return processor;
-    }
-	
-	public <T> T deserialize(Request request, Class<T> type)
-	{
+	}
+
+	public <T> T deserialize(final Request request, final Class<T> type) {
 		return processor.deserialize(request, type);
 	}
-	
-    public String serialize(Response response)
-    {
-		if (!response.hasHeader(HttpHeaders.Names.CONTENT_TYPE))
-		{
+
+	public String serialize(final Response response) {
+		if (!response.hasHeader(HttpHeaders.Names.CONTENT_TYPE)) {
 			response.setContentType(mediaType);
 		}
 
 		return processor.serialize(response);
-    }
+	}
 }

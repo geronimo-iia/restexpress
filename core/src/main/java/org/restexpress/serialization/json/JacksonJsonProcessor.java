@@ -47,36 +47,29 @@ import com.strategicgains.util.date.DateAdapterConstants;
  * @author toddf
  * @since Mar 16, 2010
  */
-public class JacksonJsonProcessor
-extends JsonSerializationProcessor
-{
+public class JacksonJsonProcessor extends JsonSerializationProcessor {
 	private ObjectMapper mapper;
 
-	public JacksonJsonProcessor()
-	{
+	public JacksonJsonProcessor() {
 		this(Format.JSON);
 	}
 
-	public JacksonJsonProcessor(String format)
-	{
+	public JacksonJsonProcessor(final String format) {
 		super(format);
-		SimpleModule module = new SimpleModule();
+		final SimpleModule module = new SimpleModule();
 		initializeModule(module);
 	}
 
-	public JacksonJsonProcessor(SimpleModule module)
-	{
+	public JacksonJsonProcessor(final SimpleModule module) {
 		initialize(module);
 	}
 
-	public JacksonJsonProcessor(ObjectMapper mapper)
-	{
+	public JacksonJsonProcessor(final ObjectMapper mapper) {
 		super();
 		this.mapper = mapper;
 	}
 
-	private void initialize(SimpleModule module)
-	{
+	private void initialize(final SimpleModule module) {
 		this.mapper = new ObjectMapper();
 		mapper.registerModule(module);
 		initializeMapper(mapper);
@@ -84,94 +77,73 @@ extends JsonSerializationProcessor
 
 	/**
 	 * Template method for sub-classes to augment the module with desired
-	 * serializers and/or deserializers.  Sub-classes should call super()
-	 * to get default settings.
+	 * serializers and/or deserializers. Sub-classes should call super() to get
+	 * default settings.
 	 * 
-	 * @param module a SimpleModule
+	 * @param module
+	 *            a SimpleModule
 	 */
-	protected void initializeModule(SimpleModule module)
-    {
-		module
-			.addSerializer(Date.class, new JacksonTimepointSerializer())
-			.addSerializer(String.class, new JacksonEncodingStringSerializer())
-			.addDeserializer(Date.class, new JacksonTimepointDeserializer());
+	protected void initializeModule(final SimpleModule module) {
+		module.addSerializer(Date.class, new JacksonTimepointSerializer()).addSerializer(String.class, new JacksonEncodingStringSerializer()).addDeserializer(Date.class, new JacksonTimepointDeserializer());
 		initialize(module);
-    }
+	}
 
 	/**
 	 * Template method for sub-classes to augment the mapper with desired
-	 * settings.  Sub-classes should call super() to get default settings.
+	 * settings. Sub-classes should call super() to get default settings.
 	 * 
-	 * @param module a SimpleModule
+	 * @param module
+	 *            a SimpleModule
 	 */
-	protected void initializeMapper(ObjectMapper mapper)
-    {
+	protected void initializeMapper(final ObjectMapper mapper) {
 		mapper
-//			.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
-			.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+		// .enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
+		.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
 
-			// Ignore additional/unknown properties in a payload.
-			.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-			
-			// Only serialize populated properties (do no serialize nulls)
-			.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-			
-			// Use fields directly.
-			.setVisibility(PropertyAccessor.FIELD, Visibility.ANY)
-			
-			// Ignore accessor and mutator methods (use fields per above).
-			.setVisibility(PropertyAccessor.GETTER, Visibility.NONE)
-			.setVisibility(PropertyAccessor.SETTER, Visibility.NONE)
-			.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)
-			
-			// Set default date output format.
-			.setDateFormat(new SimpleDateFormat(DateAdapterConstants.TIME_POINT_OUTPUT_FORMAT));
-    }
+		// Ignore additional/unknown properties in a payload.
+				.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+
+				// Only serialize populated properties (do no serialize nulls)
+				.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+
+				// Use fields directly.
+				.setVisibility(PropertyAccessor.FIELD, Visibility.ANY)
+
+				// Ignore accessor and mutator methods (use fields per above).
+				.setVisibility(PropertyAccessor.GETTER, Visibility.NONE).setVisibility(PropertyAccessor.SETTER, Visibility.NONE).setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)
+
+				// Set default date output format.
+				.setDateFormat(new SimpleDateFormat(DateAdapterConstants.TIME_POINT_OUTPUT_FORMAT));
+	}
 
 	@Override
-	public <T> T deserialize(String string, Class<T> type)
-	{
-		try
-		{
-			return (string == null || string.trim().isEmpty() ? null : mapper.readValue(string, type));
-		}
-		catch (JsonProcessingException e)
-		{
+	public <T> T deserialize(final String string, final Class<T> type) {
+		try {
+			return ((string == null) || string.trim().isEmpty() ? null : mapper.readValue(string, type));
+		} catch (final JsonProcessingException e) {
 			throw new DeserializationException(e);
-		}
-		catch (IOException e)
-		{
+		} catch (final IOException e) {
 			throw new DeserializationException(e);
 		}
 	}
 
 	@Override
-	public <T> T deserialize(ChannelBuffer buffer, Class<T> type)
-	{
-		try
-		{
-			
-			return (buffer == null || buffer.readableBytes() == 0 ? null : mapper.readValue(new InputStreamReader(new ChannelBufferInputStream(buffer), ContentType.CHARSET), type));
-		}
-		catch (JsonProcessingException e)
-		{
+	public <T> T deserialize(final ChannelBuffer buffer, final Class<T> type) {
+		try {
+
+			return ((buffer == null) || (buffer.readableBytes() == 0) ? null : mapper.readValue(new InputStreamReader(new ChannelBufferInputStream(buffer), ContentType.CHARSET), type));
+		} catch (final JsonProcessingException e) {
 			throw new DeserializationException(e);
-		}
-		catch (IOException e)
-		{
+		} catch (final IOException e) {
 			throw new DeserializationException(e);
 		}
 	}
 
 	@Override
-	public String serialize(Object object)
-	{
-		try
-		{
+	public String serialize(final Object object) {
+		try {
 			return (object == null ? "" : mapper.writeValueAsString(object));
-		}
-		catch (JsonProcessingException e)
-		{
+		} catch (final JsonProcessingException e) {
 			throw new SerializationException(e);
 		}
 	}

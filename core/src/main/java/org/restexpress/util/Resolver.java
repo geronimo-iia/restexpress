@@ -19,14 +19,13 @@ package org.restexpress.util;
 
 import org.restexpress.pipeline.MessageContext;
 
-
 /**
- * A Resolver is responsible for determining which object is appropriate for a given request.
+ * A Resolver is responsible for determining which object is appropriate for a
+ * given request.
  * 
  * @author toddf
  * @since Nov 20, 2009
  */
-public interface Resolver<T>
-{
+public interface Resolver<T> {
 	public T resolve(MessageContext context);
 }

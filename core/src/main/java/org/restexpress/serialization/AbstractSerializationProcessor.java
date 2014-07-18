@@ -27,7 +27,7 @@ import org.restexpress.contenttype.MediaTypeParser;
  * @since Jul 18, 2013
  */
 public abstract class AbstractSerializationProcessor implements SerializationProcessor {
-	
+
 	private final List<String> supportedFormats = new ArrayList<String>();
 	private final List<MediaRange> supportedMediaRanges = new ArrayList<MediaRange>();
 
@@ -35,13 +35,13 @@ public abstract class AbstractSerializationProcessor implements SerializationPro
 		super();
 	}
 
-	public AbstractSerializationProcessor(List<String> supportedFormats, List<MediaRange> supportedMediaRanges) {
+	public AbstractSerializationProcessor(final List<String> supportedFormats, final List<MediaRange> supportedMediaRanges) {
 		super();
 		setSupportedFormats(supportedFormats);
 		setSupportedMediaRanges(supportedMediaRanges);
 	}
 
-	public AbstractSerializationProcessor addSupportedFormat(String format) {
+	public AbstractSerializationProcessor addSupportedFormat(final String format) {
 		if (!supportedFormats.contains(format)) {
 			supportedFormats.add(format);
 		}
@@ -54,7 +54,7 @@ public abstract class AbstractSerializationProcessor implements SerializationPro
 		return Collections.unmodifiableList(supportedFormats);
 	}
 
-	public void setSupportedFormats(List<String> supportedFormats) {
+	public void setSupportedFormats(final List<String> supportedFormats) {
 		this.supportedFormats.clear();
 		this.supportedFormats.addAll(supportedFormats);
 	}
@@ -67,18 +67,18 @@ public abstract class AbstractSerializationProcessor implements SerializationPro
 	 *            a Media Types string, containing possibly more-than one media
 	 *            type
 	 */
-	public void addSupportedMediaTypes(String mediaTypes) {
+	public void addSupportedMediaTypes(final String mediaTypes) {
 		addSupportedMediaRanges(MediaTypeParser.parse(mediaTypes));
 	}
 
-	public void addSupportedMediaRange(MediaRange mediaRange) {
+	public void addSupportedMediaRange(final MediaRange mediaRange) {
 		if (!supportedMediaRanges.contains(mediaRange)) {
 			supportedMediaRanges.add(mediaRange);
 		}
 	}
 
-	public void addSupportedMediaRanges(List<MediaRange> mediaRanges) {
-		for (MediaRange mediaRange : mediaRanges) {
+	public void addSupportedMediaRanges(final List<MediaRange> mediaRanges) {
+		for (final MediaRange mediaRange : mediaRanges) {
 			addSupportedMediaRange(mediaRange);
 		}
 	}
@@ -88,7 +88,7 @@ public abstract class AbstractSerializationProcessor implements SerializationPro
 		return supportedMediaRanges;
 	}
 
-	public void setSupportedMediaRanges(List<MediaRange> mediaRanges) {
+	public void setSupportedMediaRanges(final List<MediaRange> mediaRanges) {
 		supportedMediaRanges.clear();
 		supportedMediaRanges.addAll(mediaRanges);
 	}

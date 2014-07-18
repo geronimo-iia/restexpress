@@ -51,7 +51,7 @@ public enum Bootstraps {
 	 * @see Executors
 	 * @return An {@link ServerBootstrap} instance.
 	 */
-	public final static ServerBootstrap createServerNioBootstrap(int workerCount) {
+	public final static ServerBootstrap createServerNioBootstrap(final int workerCount) {
 		return new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool(), workerCount));
 	}
 }

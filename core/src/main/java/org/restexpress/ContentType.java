@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress;
 
 import java.nio.charset.Charset;
@@ -21,8 +21,7 @@ import java.nio.charset.Charset;
  * @author toddf
  * @since Jan 19, 2011
  */
-public abstract class ContentType
-{
+public abstract class ContentType {
 	public static final String ENCODING = "UTF-8";
 	public static final Charset CHARSET = Charset.forName(ENCODING);
 
@@ -35,9 +34,8 @@ public abstract class ContentType
 	public static final String TEXT_PLAIN = "text/plain; charset=" + ENCODING;
 	public static final String TEXT_JAVASCRIPT = "text/javascript; charset=" + ENCODING;
 	public static final String XML = "application/xml; charset=" + ENCODING;
-	
-	private ContentType()
-	{
+
+	private ContentType() {
 		// prevents instantiation.
 	}
 }

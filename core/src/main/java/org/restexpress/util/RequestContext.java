@@ -32,22 +32,22 @@ import java.util.Map;
  * <p>
  * The Request class requires JDK 1.6 or above.
  * </p>
- * <p>It's best to cleanup after the request by removing the values set by that request,
- * since all threads are pooled and re-used. This can be accomplished by calling
- * <code>RequestContext.clear()</code> in a Postprocessor implementation.
+ * <p>
+ * It's best to cleanup after the request by removing the values set by that
+ * request, since all threads are pooled and re-used. This can be accomplished
+ * by calling <code>RequestContext.clear()</code> in a Postprocessor
+ * implementation.
  * </p>
  * 
  * @author toddf
  * @since Feb 17, 2014
  */
-public class RequestContext
-{
+public class RequestContext {
 	final static RequestContext RC = new RequestContext();
 
-	private ThreadLocal<Map<String, Object>> tlm;
+	private final ThreadLocal<Map<String, Object>> tlm;
 
-	private RequestContext()
-	{
+	private RequestContext() {
 		tlm = new ThreadLocal<Map<String, Object>>();
 	}
 
@@ -59,8 +59,7 @@ public class RequestContext
 	 * If the current thread does not have a context map it is created as a side
 	 * effect.
 	 */
-	public static void put(String key, Object o)
-	{
+	public static void put(final String key, final Object o) {
 		RC._put(key, o);
 	}
 
@@ -70,16 +69,14 @@ public class RequestContext
 	 * <p>
 	 * This method has no side effects.
 	 */
-	public static Object get(String key)
-	{
+	public static Object get(final String key) {
 		return RC._get(key);
 	}
 
 	/**
 	 * Remove the the context identified by the <code>key</code> parameter.
 	 */
-	public static void remove(String key)
-	{
+	public static void remove(final String key) {
 		RC._remove(key);
 	}
 
@@ -87,28 +84,23 @@ public class RequestContext
 	 * Get the current thread's RequestContext as a Map. This method is intended
 	 * to only be used internally.
 	 */
-	public static Map<String, Object> getContext()
-	{
+	public static Map<String, Object> getContext() {
 		return RC._getContext();
 	}
 
 	/**
 	 * Remove all values from the thread's RequestContext.
 	 */
-	public static void clear()
-	{
+	public static void clear() {
 		RC._clear();
 	}
 
-
 	// SECTION: MUTATORS - INTERNAL, PRIVATE
 
-	private void _put(String key, Object o)
-	{
+	private void _put(final String key, final Object o) {
 		Map<String, Object> m = tlm.get();
 
-		if (m == null)
-		{
+		if (m == null) {
 			m = new Hashtable<String, Object>();
 			tlm.set(m);
 		}
@@ -116,36 +108,32 @@ public class RequestContext
 		m.put(key, o);
 	}
 
-	private Object _get(String key)
-	{
-		Map<String, Object> m = tlm.get();
+	private Object _get(final String key) {
+		final Map<String, Object> m = tlm.get();
 
 		return (m == null ? null : m.get(key));
 	}
 
-	private void _remove(String key)
-	{
-		Map<String, Object> m = tlm.get();
+	private void _remove(final String key) {
+		final Map<String, Object> m = tlm.get();
 
-		if (m != null)
-		{
+		if (m != null) {
 			m.remove(key);
 
-			if (m.isEmpty()) _clear();
+			if (m.isEmpty()) {
+				_clear();
+			}
 		}
 	}
 
-	private Map<String, Object> _getContext()
-	{
+	private Map<String, Object> _getContext() {
 		return tlm.get();
 	}
 
-	private void _clear()
-	{
-		Map<String, Object> m = tlm.get();
+	private void _clear() {
+		final Map<String, Object> m = tlm.get();
 
-		if (m != null)
-		{
+		if (m != null) {
 			m.clear();
 			tlm.remove();
 		}

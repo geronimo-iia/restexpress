@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.pipeline;
 
 import org.restexpress.Request;
@@ -22,51 +22,48 @@ import org.restexpress.Response;
  * @author toddf
  * @since Dec 15, 2010
  */
-public class MessageObserver
-{
+public class MessageObserver {
 	/**
-	 * Sent when a message is received, after the request and response are created.
-	 * Useful for initiating start timers, etc.
+	 * Sent when a message is received, after the request and response are
+	 * created. Useful for initiating start timers, etc.
 	 * 
-     * @param request
-     * @param response
-     */
-    protected void onReceived(Request request, Response response)
-    {
-	    // default behavior is to do nothing.
-    }
+	 * @param request
+	 * @param response
+	 */
+	protected void onReceived(final Request request, final Response response) {
+		// default behavior is to do nothing.
+	}
 
 	/**
-	 * Sent when an exception occurs in a route, but before the response is written.
+	 * Sent when an exception occurs in a route, but before the response is
+	 * written.
 	 * 
-     * @param exception
-     * @param request
-     * @param response
-     */
-    protected void onException(Throwable exception, Request request, Response response)
-    {
-	    // default behavior is to do nothing.
-    }
+	 * @param exception
+	 * @param request
+	 * @param response
+	 */
+	protected void onException(final Throwable exception, final Request request, final Response response) {
+		// default behavior is to do nothing.
+	}
 
 	/**
 	 * Sent after a response is successfully written.
 	 * 
-     * @param request
-     * @param response
-     */
-    protected void onSuccess(Request request, Response response)
-    {
-	    // default behavior is to do nothing.
-    }
+	 * @param request
+	 * @param response
+	 */
+	protected void onSuccess(final Request request, final Response response) {
+		// default behavior is to do nothing.
+	}
 
 	/**
-	 * Sent after either an exception or successful response is written from a route.
+	 * Sent after either an exception or successful response is written from a
+	 * route.
 	 * 
-     * @param request
-     * @param response
-     */
-    protected void onComplete(Request request, Response response)
-    {
-	    // default behavior is to do nothing.
-    }
+	 * @param request
+	 * @param response
+	 */
+	protected void onComplete(final Request request, final Response response) {
+		// default behavior is to do nothing.
+	}
 }

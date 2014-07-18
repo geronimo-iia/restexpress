@@ -55,7 +55,7 @@ public class HttpBasicAuthenticationPreprocessor implements Preprocessor {
 	public static final String X_AUTHENTICATED_USER = "X-AuthenticatedUser";
 	public static final String X_AUTHENTICATED_PASSWORD = "X-AuthenticatedPassword";
 
-	private String realm;
+	private final String realm;
 
 	/**
 	 * Utilize HTTP Basic Authentication with the given realm returned on an
@@ -65,30 +65,30 @@ public class HttpBasicAuthenticationPreprocessor implements Preprocessor {
 	 *            any value to identify the secure area and may used by HTTP
 	 *            clients to manage passwords.
 	 */
-	public HttpBasicAuthenticationPreprocessor(String realm) {
+	public HttpBasicAuthenticationPreprocessor(final String realm) {
 		super();
 		this.realm = realm;
 	}
 
 	@Override
-	public void process(MessageContext context) {
-		Request request = context.getRequest();
-		Route route = request.getResolvedRoute();
+	public void process(final MessageContext context) {
+		final Request request = context.getRequest();
+		final Route route = request.getResolvedRoute();
 
-		if (route != null && (route.isFlagged(Flags.PUBLIC_ROUTE) || route.isFlagged(Flags.NO_AUTHENTICATION))) {
+		if ((route != null) && (route.isFlagged(Flags.PUBLIC_ROUTE) || route.isFlagged(Flags.NO_AUTHENTICATION))) {
 			return;
 		}
 
-		String authorization = request.getHeader(HttpHeaders.Names.AUTHORIZATION);
+		final String authorization = request.getHeader(HttpHeaders.Names.AUTHORIZATION);
 
-		if (authorization == null || !authorization.startsWith("Basic ")) {
+		if ((authorization == null) || !authorization.startsWith("Basic ")) {
 			throw newUnauthorizedException(context);
 		}
 
-		String[] pieces = authorization.split(" ");
-		byte[] bytes = DatatypeConverter.parseBase64Binary(pieces[1]);
-		String credentials = new String(bytes);
-		String[] parts = credentials.split(":");
+		final String[] pieces = authorization.split(" ");
+		final byte[] bytes = DatatypeConverter.parseBase64Binary(pieces[1]);
+		final String credentials = new String(bytes);
+		final String[] parts = credentials.split(":");
 
 		if (parts.length < 2) {
 			throw newUnauthorizedException(context);
@@ -104,7 +104,7 @@ public class HttpBasicAuthenticationPreprocessor implements Preprocessor {
 	 * @param context
 	 * @return {@link UnauthorizedException} instance.
 	 */
-	private UnauthorizedException newUnauthorizedException(MessageContext context) {
+	private UnauthorizedException newUnauthorizedException(final MessageContext context) {
 		context.getResponse().addHeader(ResponseHeader.WWW_AUTHENTICATE.getHeader(), "Basic realm=\"" + realm + "\"");
 		return new UnauthorizedException("Authentication required");
 	}

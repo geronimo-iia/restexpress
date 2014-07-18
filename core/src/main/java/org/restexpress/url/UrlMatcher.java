@@ -12,20 +12,21 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.url;
 
 import java.util.List;
-
 
 /**
  * @author toddf
  * @since Jan 7, 2011
  */
-public interface UrlMatcher
-{
+public interface UrlMatcher {
 	public boolean matches(String url);
+
 	public UrlMatch match(String url);
+
 	public String getPattern();
-    public List<String> getParameterNames();
+
+	public List<String> getParameterNames();
 }

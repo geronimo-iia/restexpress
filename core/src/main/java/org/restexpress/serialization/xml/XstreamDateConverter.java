@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization.xml;
 
 import java.text.ParseException;
@@ -25,47 +25,37 @@ import com.thoughtworks.xstream.converters.SingleValueConverter;
  * @author toddf
  * @since Dec 16, 2010
  */
-public class XstreamDateConverter
-implements SingleValueConverter
-{
-	private DateAdapter adapter;
+public class XstreamDateConverter implements SingleValueConverter {
+	private final DateAdapter adapter;
 
-	public XstreamDateConverter()
-	{
+	public XstreamDateConverter() {
 		this(new DateAdapter());
 	}
 
-	public XstreamDateConverter(DateAdapter adapter)
-	{
+	public XstreamDateConverter(final DateAdapter adapter) {
 		super();
 		this.adapter = adapter;
 	}
 
-    @Override
-    @SuppressWarnings("rawtypes")
-    public boolean canConvert(Class aClass)
-    {
-	    return Date.class.isAssignableFrom(aClass);
-    }
+	@Override
+	@SuppressWarnings("rawtypes")
+	public boolean canConvert(final Class aClass) {
+		return Date.class.isAssignableFrom(aClass);
+	}
 
-    @Override
-    public Object fromString(String value)
-    {
-	    try
-        {
-	        return adapter.parse(value);
-        }
-        catch (ParseException e)
-        {
-	        e.printStackTrace();
-        }
-        
-        return null;
-    }
+	@Override
+	public Object fromString(final String value) {
+		try {
+			return adapter.parse(value);
+		} catch (final ParseException e) {
+			e.printStackTrace();
+		}
 
-    @Override
-    public String toString(Object date)
-    {
-	    return adapter.format((Date) date);
-    }
+		return null;
+	}
+
+	@Override
+	public String toString(final Object date) {
+		return adapter.format((Date) date);
+	}
 }

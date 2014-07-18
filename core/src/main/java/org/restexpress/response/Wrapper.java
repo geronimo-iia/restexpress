@@ -30,12 +30,12 @@ public enum Wrapper {
 	 */
 	public static class JsendResponseWrapper implements ResponseWrapper {
 		@Override
-		public Object wrap(Response response) {
+		public Object wrap(final Response response) {
 			if (response.hasException()) {
-				Throwable exception = response.getException();
-				Throwable rootCause = Exceptions.findRootCause(exception);
-				String message = (rootCause != null ? rootCause.getMessage() : exception.getMessage());
-				String causeName = (rootCause != null ? rootCause.getClass().getSimpleName() : exception.getClass().getSimpleName());
+				final Throwable exception = response.getException();
+				final Throwable rootCause = Exceptions.findRootCause(exception);
+				final String message = (rootCause != null ? rootCause.getMessage() : exception.getMessage());
+				final String causeName = (rootCause != null ? rootCause.getClass().getSimpleName() : exception.getClass().getSimpleName());
 
 				if (HttpRuntimeException.class.isAssignableFrom(exception.getClass())) {
 					return new JsendResult(State.ERROR, message, causeName);
@@ -43,18 +43,18 @@ public enum Wrapper {
 
 				return new JsendResult(State.FAIL, message, causeName);
 			}
-			int code = response.getResponseStatus().getCode();
-			if (code >= 400 && code < 500) {
+			final int code = response.getResponseStatus().getCode();
+			if ((code >= 400) && (code < 500)) {
 				return new JsendResult(State.ERROR, null, response.getBody());
 			}
-			if (code >= 500 && code < 600) {
+			if ((code >= 500) && (code < 600)) {
 				return new JsendResult(State.FAIL, null, response.getBody());
 			}
 			return new JsendResult(State.SUCCESS, null, response.getBody());
 		}
 
 		@Override
-		public boolean addsBodyContent(Response response) {
+		public boolean addsBodyContent(final Response response) {
 			return true;
 		}
 
@@ -68,12 +68,12 @@ public enum Wrapper {
 	 */
 	public static class ErrorResponseWrapper implements ResponseWrapper {
 		@Override
-		public Object wrap(Response response) {
+		public Object wrap(final Response response) {
 			if (addsBodyContent(response)) {
 				if (response.hasException()) {
-					Throwable exception = response.getException();
-					Throwable rootCause = Exceptions.findRootCause(exception);
-					String message = (rootCause != null ? rootCause.getMessage() : exception.getMessage());
+					final Throwable exception = response.getException();
+					final Throwable rootCause = Exceptions.findRootCause(exception);
+					final String message = (rootCause != null ? rootCause.getMessage() : exception.getMessage());
 					String causeName = null;
 					causeName = (rootCause != null ? rootCause.getClass().getSimpleName() : exception.getClass().getSimpleName());
 					return new ErrorResult(response.getResponseStatus().getCode(), message, causeName);
@@ -85,12 +85,12 @@ public enum Wrapper {
 		}
 
 		@Override
-		public boolean addsBodyContent(Response response) {
+		public boolean addsBodyContent(final Response response) {
 			if (response.hasException()) {
 				return true;
 			}
-			int code = response.getResponseStatus().getCode();
-			return (code >= 400 && code < 600);
+			final int code = response.getResponseStatus().getCode();
+			return ((code >= 400) && (code < 600));
 		}
 
 	}
@@ -105,7 +105,7 @@ public enum Wrapper {
 	 */
 	public static class RawResponseWrapper implements ResponseWrapper {
 		@Override
-		public Object wrap(Response response) {
+		public Object wrap(final Response response) {
 			if (!response.hasException()) {
 				return response.getBody();
 			}
@@ -114,7 +114,7 @@ public enum Wrapper {
 		}
 
 		@Override
-		public boolean addsBodyContent(Response response) {
+		public boolean addsBodyContent(final Response response) {
 			return false;
 		}
 	}

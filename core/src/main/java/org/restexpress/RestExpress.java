@@ -72,18 +72,18 @@ public class RestExpress {
 	private SerializationProvider serializationProvider = null;
 
 	private ServerBootstrap bootstrap;
-	private SocketSettings socketSettings = new SocketSettings();
-	private ServerSettings serverSettings = new ServerSettings();
-	private RouteDefaults routeDefaults = new RouteDefaults();
+	private final SocketSettings socketSettings = new SocketSettings();
+	private final ServerSettings serverSettings = new ServerSettings();
+	private final RouteDefaults routeDefaults = new RouteDefaults();
 	private boolean enforceHttpSpec = false;
 	private boolean useSystemOut;
 
-	private List<MessageObserver> messageObservers = new ArrayList<MessageObserver>();
-	private List<Preprocessor> preprocessors = new ArrayList<Preprocessor>();
-	private List<Postprocessor> postprocessors = new ArrayList<Postprocessor>();
-	private List<Postprocessor> finallyProcessors = new ArrayList<Postprocessor>();
-	private List<Plugin> plugins = new ArrayList<Plugin>();
-	private RouteDeclaration routeDeclarations = new RouteDeclaration();
+	private final List<MessageObserver> messageObservers = new ArrayList<MessageObserver>();
+	private final List<Preprocessor> preprocessors = new ArrayList<Preprocessor>();
+	private final List<Postprocessor> postprocessors = new ArrayList<Postprocessor>();
+	private final List<Postprocessor> finallyProcessors = new ArrayList<Postprocessor>();
+	private final List<Plugin> plugins = new ArrayList<Plugin>();
+	private final RouteDeclaration routeDeclarations = new RouteDeclaration();
 	private SSLContext sslContext = null;
 
 	/**
@@ -94,7 +94,7 @@ public class RestExpress {
 	 * @param provider
 	 *            a SerializationProvider instance.
 	 */
-	public RestExpress setSerializationProvider(SerializationProvider provider) {
+	public RestExpress setSerializationProvider(final SerializationProvider provider) {
 		serializationProvider = provider;
 		return this;
 	}
@@ -144,7 +144,7 @@ public class RestExpress {
 		useSystemOut();
 	}
 
-	public RestExpress setSSLContext(SSLContext sslContext) {
+	public RestExpress setSSLContext(final SSLContext sslContext) {
 		this.sslContext = sslContext;
 		return this;
 	}
@@ -157,7 +157,7 @@ public class RestExpress {
 		return routeDefaults.getBaseUrl();
 	}
 
-	public RestExpress setBaseUrl(String baseUrl) {
+	public RestExpress setBaseUrl(final String baseUrl) {
 		routeDefaults.setBaseUrl(baseUrl);
 		return this;
 	}
@@ -178,7 +178,7 @@ public class RestExpress {
 	 *            the name.
 	 * @return the RestExpress instance to facilitate DSL-style method chaining.
 	 */
-	public RestExpress setName(String name) {
+	public RestExpress setName(final String name) {
 		serverSettings.setName(name);
 		return this;
 	}
@@ -187,12 +187,12 @@ public class RestExpress {
 		return serverSettings.getPort();
 	}
 
-	public RestExpress setPort(int port) {
+	public RestExpress setPort(final int port) {
 		serverSettings.setPort(port);
 		return this;
 	}
 
-	public RestExpress addMessageObserver(MessageObserver observer) {
+	public RestExpress addMessageObserver(final MessageObserver observer) {
 		if (!messageObservers.contains(observer)) {
 			messageObservers.add(observer);
 		}
@@ -212,7 +212,7 @@ public class RestExpress {
 	 * @param processor
 	 * @return
 	 */
-	public RestExpress addPreprocessor(Preprocessor processor) {
+	public RestExpress addPreprocessor(final Preprocessor processor) {
 		if (!preprocessors.contains(processor)) {
 			preprocessors.add(processor);
 		}
@@ -234,7 +234,7 @@ public class RestExpress {
 	 * @param processor
 	 * @return
 	 */
-	public RestExpress addPostprocessor(Postprocessor processor) {
+	public RestExpress addPostprocessor(final Postprocessor processor) {
 		if (!postprocessors.contains(processor)) {
 			postprocessors.add(processor);
 		}
@@ -262,7 +262,7 @@ public class RestExpress {
 	 * @param processor
 	 * @return RestExpress for method chaining.
 	 */
-	public RestExpress addFinallyProcessor(Postprocessor processor) {
+	public RestExpress addFinallyProcessor(final Postprocessor processor) {
 		if (!finallyProcessors.contains(processor)) {
 			finallyProcessors.add(processor);
 		}
@@ -278,12 +278,12 @@ public class RestExpress {
 		return useSystemOut;
 	}
 
-	public RestExpress setUseSystemOut(boolean useSystemOut) {
+	public RestExpress setUseSystemOut(final boolean useSystemOut) {
 		this.useSystemOut = useSystemOut;
 		return this;
 	}
 
-	public RestExpress setEnforceHttpSpec(boolean enforceHttpSpec) {
+	public RestExpress setEnforceHttpSpec(final boolean enforceHttpSpec) {
 		this.enforceHttpSpec = enforceHttpSpec;
 		return this;
 	}
@@ -307,7 +307,7 @@ public class RestExpress {
 		return socketSettings.useTcpNoDelay();
 	}
 
-	public RestExpress setUseTcpNoDelay(boolean useTcpNoDelay) {
+	public RestExpress setUseTcpNoDelay(final boolean useTcpNoDelay) {
 		socketSettings.setUseTcpNoDelay(useTcpNoDelay);
 		return this;
 	}
@@ -316,7 +316,7 @@ public class RestExpress {
 		return serverSettings.isKeepAlive();
 	}
 
-	public RestExpress setKeepAlive(boolean useKeepAlive) {
+	public RestExpress setKeepAlive(final boolean useKeepAlive) {
 		serverSettings.setKeepAlive(useKeepAlive);
 		return this;
 	}
@@ -325,7 +325,7 @@ public class RestExpress {
 		return serverSettings.isReuseAddress();
 	}
 
-	public RestExpress setReuseAddress(boolean reuseAddress) {
+	public RestExpress setReuseAddress(final boolean reuseAddress) {
 		serverSettings.setReuseAddress(reuseAddress);
 		return this;
 	}
@@ -334,7 +334,7 @@ public class RestExpress {
 		return socketSettings.getSoLinger();
 	}
 
-	public RestExpress setSoLinger(int soLinger) {
+	public RestExpress setSoLinger(final int soLinger) {
 		socketSettings.setSoLinger(soLinger);
 		return this;
 	}
@@ -343,7 +343,7 @@ public class RestExpress {
 		return socketSettings.getReceiveBufferSize();
 	}
 
-	public RestExpress setReceiveBufferSize(int receiveBufferSize) {
+	public RestExpress setReceiveBufferSize(final int receiveBufferSize) {
 		socketSettings.setReceiveBufferSize(receiveBufferSize);
 		return this;
 	}
@@ -352,7 +352,7 @@ public class RestExpress {
 		return socketSettings.getConnectTimeoutMillis();
 	}
 
-	public RestExpress setConnectTimeoutMillis(int connectTimeoutMillis) {
+	public RestExpress setConnectTimeoutMillis(final int connectTimeoutMillis) {
 		socketSettings.setConnectTimeoutMillis(connectTimeoutMillis);
 		return this;
 	}
@@ -377,7 +377,7 @@ public class RestExpress {
 	 *            the number of desired NIO worker threads.
 	 * @return the RestExpress instance.
 	 */
-	public RestExpress setIoThreadCount(int value) {
+	public RestExpress setIoThreadCount(final int value) {
 		serverSettings.setIoThreadCount(value);
 		return this;
 	}
@@ -405,7 +405,7 @@ public class RestExpress {
 	 *            the number of executor threads to create.
 	 * @return the RestExpress instance.
 	 */
-	public RestExpress setExecutorThreadCount(int value) {
+	public RestExpress setExecutorThreadCount(final int value) {
 		serverSettings.setExecutorThreadPoolSize(value);
 		return this;
 	}
@@ -419,7 +419,7 @@ public class RestExpress {
 	 *            the maximum size in bytes.
 	 * @return the RestExpress instance.
 	 */
-	public RestExpress setMaxContentSize(int size) {
+	public RestExpress setMaxContentSize(final int size) {
 		serverSettings.setMaxContentSize(size);
 		return this;
 	}
@@ -431,7 +431,7 @@ public class RestExpress {
 	 * @param callback
 	 *            a Callback implementor.
 	 */
-	public void iterateRouteBuilders(Callback<RouteBuilder> callback) {
+	public void iterateRouteBuilders(final Callback<RouteBuilder> callback) {
 		routeDeclarations.iterateRouteBuilders(callback);
 	}
 
@@ -447,7 +447,7 @@ public class RestExpress {
 	 */
 	public ChannelHandler buildRequestHandler() {
 		// Set up the event pipeline factory.
-		DefaultRequestHandler requestHandler = new DefaultRequestHandler(createRouteResolver(), getSerializationProvider(), new DefaultHttpResponseWriter(), enforceHttpSpec);
+		final DefaultRequestHandler requestHandler = new DefaultRequestHandler(createRouteResolver(), getSerializationProvider(), new DefaultHttpResponseWriter(), enforceHttpSpec);
 
 		// Add MessageObservers to the request handler here, if desired...
 		requestHandler.addMessageObserver(messageObservers.toArray(new MessageObserver[0]));
@@ -466,7 +466,7 @@ public class RestExpress {
 	 * 
 	 * @return Channel
 	 */
-	public Channel bind(int port) {
+	public Channel bind(final int port) {
 		setPort(port);
 
 		// Configure the server.
@@ -476,12 +476,12 @@ public class RestExpress {
 			bootstrap = Bootstraps.createServerNioBootstrap(getIoThreadCount());
 		}
 
-		ChannelHandler requestHandler = buildRequestHandler();
+		final ChannelHandler requestHandler = buildRequestHandler();
 
-		PipelineBuilder pf = new PipelineBuilder().addRequestHandler(requestHandler).setSSLContext(sslContext).setMaxContentLength(serverSettings.getMaxContentSize());
+		final PipelineBuilder pf = new PipelineBuilder().addRequestHandler(requestHandler).setSSLContext(sslContext).setMaxContentLength(serverSettings.getMaxContentSize());
 
 		if (getExecutorThreadCount() > 0) {
-			ExecutionHandler executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(getExecutorThreadCount(), 0, 0));
+			final ExecutionHandler executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(getExecutorThreadCount(), 0, 0));
 			pf.setExecutionHandler(executionHandler);
 		}
 
@@ -493,7 +493,7 @@ public class RestExpress {
 			System.out.println(getName() + " server listening on port " + port);
 		}
 
-		Channel channel = bootstrap.bind(new InetSocketAddress(port));
+		final Channel channel = bootstrap.bind(new InetSocketAddress(port));
 		allChannels.add(channel);
 		bindPlugins();
 		return channel;
@@ -521,7 +521,7 @@ public class RestExpress {
 		do {
 			try {
 				Thread.sleep(300);
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				interrupted = true;
 			}
 		} while (!interrupted);
@@ -534,7 +534,7 @@ public class RestExpress {
 	 * awaitShutdown() instead.
 	 */
 	public void shutdown() {
-		ChannelGroupFuture future = allChannels.close();
+		final ChannelGroupFuture future = allChannels.close();
 		future.awaitUninterruptibly();
 		shutdownPlugins();
 		bootstrap.getFactory().releaseExternalResources();
@@ -553,7 +553,7 @@ public class RestExpress {
 	 * @return ServerMetadata instance.
 	 */
 	public ServerMetadata getRouteMetadata() {
-		ServerMetadata m = new ServerMetadata();
+		final ServerMetadata m = new ServerMetadata();
 		m.setName(getName());
 		m.setPort(getPort());
 		// TODO: create a good substitute for this...
@@ -579,8 +579,8 @@ public class RestExpress {
 
 		iterateRouteBuilders(new Callback<RouteBuilder>() {
 			@Override
-			public void process(RouteBuilder routeBuilder) {
-				RouteMetadata route = routeBuilder.asMetadata();
+			public void process(final RouteBuilder routeBuilder) {
+				final RouteMetadata route = routeBuilder.asMetadata();
 
 				if (route.getName() != null) {
 					urlsByName.put(route.getName(), getBaseUrl() + route.getUri().getPattern().replace(".{format}", ""));
@@ -591,7 +591,7 @@ public class RestExpress {
 		return urlsByName;
 	}
 
-	public RestExpress registerPlugin(Plugin plugin) {
+	public RestExpress registerPlugin(final Plugin plugin) {
 		if (!plugins.contains(plugin)) {
 			plugins.add(plugin);
 			plugin.register(this);
@@ -601,13 +601,13 @@ public class RestExpress {
 	}
 
 	private void bindPlugins() {
-		for (Plugin plugin : plugins) {
+		for (final Plugin plugin : plugins) {
 			plugin.bind(this);
 		}
 	}
 
 	private void shutdownPlugins() {
-		for (Plugin plugin : plugins) {
+		for (final Plugin plugin : plugins) {
 			plugin.shutdown(this);
 		}
 	}
@@ -615,8 +615,8 @@ public class RestExpress {
 	/**
 	 * @param requestHandler
 	 */
-	private void addPreprocessors(DefaultRequestHandler requestHandler) {
-		for (Preprocessor processor : getPreprocessors()) {
+	private void addPreprocessors(final DefaultRequestHandler requestHandler) {
+		for (final Preprocessor processor : getPreprocessors()) {
 			requestHandler.addPreprocessor(processor);
 		}
 	}
@@ -624,8 +624,8 @@ public class RestExpress {
 	/**
 	 * @param requestHandler
 	 */
-	private void addPostprocessors(DefaultRequestHandler requestHandler) {
-		for (Postprocessor processor : getPostprocessors()) {
+	private void addPostprocessors(final DefaultRequestHandler requestHandler) {
+		for (final Postprocessor processor : getPostprocessors()) {
 			requestHandler.addPostprocessor(processor);
 		}
 	}
@@ -633,19 +633,19 @@ public class RestExpress {
 	/**
 	 * @param requestHandler
 	 */
-	private void addFinallyProcessors(DefaultRequestHandler requestHandler) {
-		for (Postprocessor processor : getFinallyProcessors()) {
+	private void addFinallyProcessors(final DefaultRequestHandler requestHandler) {
+		for (final Postprocessor processor : getFinallyProcessors()) {
 			requestHandler.addFinallyProcessor(processor);
 		}
 	}
 
 	// SECTION: ROUTE CREATION
 
-	public ParameterizedRouteBuilder uri(String uriPattern, Object controller) {
+	public ParameterizedRouteBuilder uri(final String uriPattern, final Object controller) {
 		return routeDeclarations.uri(uriPattern, controller, routeDefaults);
 	}
 
-	public RegexRouteBuilder regex(String uriPattern, Object controller) {
+	public RegexRouteBuilder regex(final String uriPattern, final Object controller) {
 		return routeDeclarations.regex(uriPattern, controller, routeDefaults);
 	}
 }

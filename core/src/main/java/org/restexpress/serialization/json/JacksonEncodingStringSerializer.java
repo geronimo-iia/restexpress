@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization.json;
 
 import java.io.IOException;
@@ -25,19 +25,16 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * Output encodes JSON string values to reduce the possibility of XSS (Cross-Site Scripting) attacks.
+ * Output encodes JSON string values to reduce the possibility of XSS
+ * (Cross-Site Scripting) attacks.
  * 
  * @author toddf
  * @since Apr 28, 2014
  */
-public class JacksonEncodingStringSerializer
-extends JsonSerializer<String>
-{
+public class JacksonEncodingStringSerializer extends JsonSerializer<String> {
 
 	@Override
-    public void serialize(String value, JsonGenerator jgen, SerializerProvider provider)
-    throws IOException, JsonProcessingException
-    {
+	public void serialize(final String value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException, JsonProcessingException {
 		jgen.writeString(Encode.forXmlContent(value));
-    }
+	}
 }

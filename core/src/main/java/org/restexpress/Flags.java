@@ -35,7 +35,7 @@ public enum Flags {
 
 	private String value;
 
-	private Flags(String value) {
+	private Flags(final String value) {
 		this.value = value;
 	}
 

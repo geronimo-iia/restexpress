@@ -19,50 +19,41 @@ package org.restexpress.settings;
  * @author toddf
  * @since May 31, 2012
  */
-public class SocketSettings
-{
+public class SocketSettings {
 	private boolean useTcpNoDelay = true;
 	private int soLinger = -1; // disabled by default
 	private int receiveBufferSize = 262140; // Java default
 	private int connectTimeoutMillis = 10000; // netty default
 
-	public boolean useTcpNoDelay()
-	{
+	public boolean useTcpNoDelay() {
 		return useTcpNoDelay;
 	}
 
-	public void setUseTcpNoDelay(boolean useTcpNoDelay)
-	{
+	public void setUseTcpNoDelay(final boolean useTcpNoDelay) {
 		this.useTcpNoDelay = useTcpNoDelay;
 	}
 
-	public int getSoLinger()
-	{
+	public int getSoLinger() {
 		return soLinger;
 	}
 
-	public void setSoLinger(int soLinger)
-	{
+	public void setSoLinger(final int soLinger) {
 		this.soLinger = soLinger;
 	}
 
-	public int getReceiveBufferSize()
-	{
+	public int getReceiveBufferSize() {
 		return receiveBufferSize;
 	}
 
-	public void setReceiveBufferSize(int receiveBufferSize)
-	{
+	public void setReceiveBufferSize(final int receiveBufferSize) {
 		this.receiveBufferSize = receiveBufferSize;
 	}
 
-	public int getConnectTimeoutMillis()
-	{
+	public int getConnectTimeoutMillis() {
 		return connectTimeoutMillis;
 	}
 
-	public void setConnectTimeoutMillis(int connectTimeoutMillis)
-	{
+	public void setConnectTimeoutMillis(final int connectTimeoutMillis) {
 		this.connectTimeoutMillis = connectTimeoutMillis;
 	}
 

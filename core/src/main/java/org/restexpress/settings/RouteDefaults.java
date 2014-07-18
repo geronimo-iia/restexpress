@@ -31,7 +31,7 @@ public class RouteDefaults {
 		return baseUrl;
 	}
 
-	public void setBaseUrl(String baseUrl) {
+	public void setBaseUrl(final String baseUrl) {
 		this.baseUrl = baseUrl;
 	}
 
@@ -39,7 +39,7 @@ public class RouteDefaults {
 		return defaultFormat;
 	}
 
-	public void setDefaultFormat(String defaultFormat) {
+	public void setDefaultFormat(final String defaultFormat) {
 		this.defaultFormat = defaultFormat;
 	}
 

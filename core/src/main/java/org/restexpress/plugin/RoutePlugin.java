@@ -35,8 +35,8 @@ import org.restexpress.route.RouteBuilder;
  * @since Mar 27, 2014
  */
 public abstract class RoutePlugin extends AbstractPlugin {
-	private List<Flags> flags = new ArrayList<>();
-	private Map<String, Object> parameters = new HashMap<String, Object>();
+	private final List<Flags> flags = new ArrayList<>();
+	private final Map<String, Object> parameters = new HashMap<String, Object>();
 
 	public RoutePlugin() {
 		super();
@@ -44,7 +44,7 @@ public abstract class RoutePlugin extends AbstractPlugin {
 
 	// RouteBuilder route augmentation delegates.
 
-	public RoutePlugin flag(Flags flagValue) {
+	public RoutePlugin flag(final Flags flagValue) {
 		if (!flags.contains(flagValue)) {
 			flags.add(flagValue);
 		}
@@ -52,7 +52,7 @@ public abstract class RoutePlugin extends AbstractPlugin {
 		return this;
 	}
 
-	public RoutePlugin parameter(String name, Object value) {
+	public RoutePlugin parameter(final String name, final Object value) {
 		if (!parameters.containsKey(name)) {
 			parameters.put(name, value);
 		}
@@ -60,14 +60,14 @@ public abstract class RoutePlugin extends AbstractPlugin {
 		return this;
 	}
 
-	void applyFlags(RouteBuilder routeBuilder) {
-		for (Flags flag : flags) {
+	void applyFlags(final RouteBuilder routeBuilder) {
+		for (final Flags flag : flags) {
 			routeBuilder.flag(flag);
 		}
 	}
 
-	void applyParameters(RouteBuilder routeBuilder) {
-		for (Entry<String, Object> entry : parameters.entrySet()) {
+	void applyParameters(final RouteBuilder routeBuilder) {
+		for (final Entry<String, Object> entry : parameters.entrySet()) {
 			routeBuilder.parameter(entry.getKey(), entry.getValue());
 		}
 	}

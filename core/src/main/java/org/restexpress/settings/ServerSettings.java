@@ -19,8 +19,7 @@ package org.restexpress.settings;
  * @author toddf
  * @since May 31, 2012
  */
-public class ServerSettings
-{
+public class ServerSettings {
 	private static final int DEFAULT_IO_THREAD_COUNT = 0;
 	private static final int DEFAULT_EXECUTOR_THREAD_POOL_SIZE = 10;
 	private static final int DEFAULT_MAX_CONTENT_SIZE = 25600;
@@ -37,77 +36,65 @@ public class ServerSettings
 	// Zero (0) indicates to use the Netty default.
 	private int ioThreadCount = DEFAULT_IO_THREAD_COUNT;
 
-	// This controls the size of the thread pool for back-end executors.  In essence,
-	// this is the number of blocking requests the application can process simultaneously.
+	// This controls the size of the thread pool for back-end executors. In
+	// essence,
+	// this is the number of blocking requests the application can process
+	// simultaneously.
 	private int executorThreadPoolSize = DEFAULT_EXECUTOR_THREAD_POOL_SIZE;
 
-	public String getName()
-	{
+	public String getName() {
 		return name;
 	}
 
-	public void setName(String name)
-	{
+	public void setName(final String name) {
 		this.name = name;
 	}
 
-	public boolean isKeepAlive()
-	{
+	public boolean isKeepAlive() {
 		return keepAlive;
 	}
 
-	public void setKeepAlive(boolean isKeepAlive)
-	{
+	public void setKeepAlive(final boolean isKeepAlive) {
 		this.keepAlive = isKeepAlive;
 	}
 
-	public boolean isReuseAddress()
-	{
+	public boolean isReuseAddress() {
 		return reuseAddress;
 	}
 
-	public void setReuseAddress(boolean reuseAddress)
-	{
+	public void setReuseAddress(final boolean reuseAddress) {
 		this.reuseAddress = reuseAddress;
 	}
 
-	public int getIoThreadCount()
-	{
+	public int getIoThreadCount() {
 		return ioThreadCount;
 	}
 
-	public void setIoThreadCount(int ioThreadCount)
-	{
+	public void setIoThreadCount(final int ioThreadCount) {
 		this.ioThreadCount = ioThreadCount;
 	}
 
-	public int getExecutorThreadPoolSize()
-	{
+	public int getExecutorThreadPoolSize() {
 		return executorThreadPoolSize;
 	}
 
-	public void setExecutorThreadPoolSize(int executorThreadCount)
-	{
+	public void setExecutorThreadPoolSize(final int executorThreadCount) {
 		this.executorThreadPoolSize = executorThreadCount;
 	}
-	
-	public int getPort()
-	{
+
+	public int getPort() {
 		return port;
 	}
-	
-	public void setPort(int port)
-	{
+
+	public void setPort(final int port) {
 		this.port = port;
 	}
 
-	public int getMaxContentSize()
-    {
-	    return maxContentSize;
-    }
+	public int getMaxContentSize() {
+		return maxContentSize;
+	}
 
-	public void setMaxContentSize(int maxContentSize)
-    {
-	    this.maxContentSize = maxContentSize;
-    }
+	public void setMaxContentSize(final int maxContentSize) {
+		this.maxContentSize = maxContentSize;
+	}
 }

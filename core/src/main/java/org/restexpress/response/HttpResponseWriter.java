@@ -11,7 +11,6 @@ import org.restexpress.Response;
  * @author toddf
  * @since Aug 26, 2010
  */
-public interface HttpResponseWriter
-{
+public interface HttpResponseWriter {
 	public void write(ChannelHandlerContext ctx, Request request, Response response);
 }

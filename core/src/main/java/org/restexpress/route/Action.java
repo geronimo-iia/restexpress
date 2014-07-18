@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.route;
 
 import java.util.Collection;
@@ -26,33 +26,29 @@ import org.restexpress.url.UrlMatch;
  * @author toddf
  * @since July 30, 2010
  */
-public class Action
-{
-	private Route route;
-	private UrlMatch match;
-	
-	public Action(Route route, UrlMatch match)
-	{
+public class Action {
+	private final Route route;
+	private final UrlMatch match;
+
+	public Action(final Route route, final UrlMatch match) {
 		super();
 		this.route = route;
 		this.match = match;
 	}
 
-	public Route getRoute()
-	{
+	public Route getRoute() {
 		return route;
 	}
-	
+
 	/**
 	 * Returns whether the underlying Route should serialize the response.
 	 * 
 	 * @return
 	 */
-	public boolean shouldSerializeResponse()
-	{
+	public boolean shouldSerializeResponse() {
 		return getRoute().shouldSerializeResponse();
 	}
-    
+
 	/**
 	 * Invokes the underlying Route, returning the result of the call, if any.
 	 * 
@@ -60,24 +56,22 @@ public class Action
 	 * @param response
 	 * @return
 	 */
-    public Object invoke(Request request, Response response)
-    {
-    	return getRoute().invoke(request, response);
-    }
+	public Object invoke(final Request request, final Response response) {
+		return getRoute().invoke(request, response);
+	}
 
-    /**
-     * Retrieves the parameters from the URL match.  These are used as Request headers
-     * before invocation of the route.
-     * 
-     * @return a Collection of Map Entry name/value pairs to be used for headers.
-     */
-    public Collection<Entry<String, String>> getParameters()
-    {
-    	return match.parameterSet();
-    }
-    
-    public String getParameter(String key)
-    {
-    	return match.get(key);
-    }
+	/**
+	 * Retrieves the parameters from the URL match. These are used as Request
+	 * headers before invocation of the route.
+	 * 
+	 * @return a Collection of Map Entry name/value pairs to be used for
+	 *         headers.
+	 */
+	public Collection<Entry<String, String>> getParameters() {
+		return match.parameterSet();
+	}
+
+	public String getParameter(final String key) {
+		return match.get(key);
+	}
 }

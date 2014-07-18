@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.util;
 
 import org.restexpress.RestExpress;
@@ -21,19 +21,16 @@ import org.restexpress.RestExpress;
  * @author toddf
  * @since Feb 1, 2011
  */
-public class DefaultShutdownHook
-extends Thread
-{
-	private RestExpress server;
-	
-	public DefaultShutdownHook(RestExpress server)
-	{
+public class DefaultShutdownHook extends Thread {
+	private final RestExpress server;
+
+	public DefaultShutdownHook(final RestExpress server) {
 		super();
 		this.server = server;
 	}
 
-	public void run()
-	{
+	@Override
+	public void run() {
 		System.out.println(server.getName() + " server detected JVM shutdown...");
 		server.shutdown();
 	}

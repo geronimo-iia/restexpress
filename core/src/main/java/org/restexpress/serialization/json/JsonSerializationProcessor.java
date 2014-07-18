@@ -12,7 +12,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.serialization.json;
 
 import java.util.Arrays;
@@ -28,26 +28,18 @@ import org.restexpress.serialization.AbstractSerializationProcessor;
  * @author toddf
  * @since Jul 18, 2013
  */
-public abstract class JsonSerializationProcessor
-extends AbstractSerializationProcessor
-{
-	private static final String SUPPORTED_MEDIA_TYPES = StringUtils.join(",",
-		ContentType.JSON,
-		ContentType.JAVASCRIPT,
-		ContentType.TEXT_JAVASCRIPT);
+public abstract class JsonSerializationProcessor extends AbstractSerializationProcessor {
+	private static final String SUPPORTED_MEDIA_TYPES = StringUtils.join(",", ContentType.JSON, ContentType.JAVASCRIPT, ContentType.TEXT_JAVASCRIPT);
 
-	public JsonSerializationProcessor()
-	{
+	public JsonSerializationProcessor() {
 		this(Format.JSON);
 	}
 
-	public JsonSerializationProcessor(String format)
-	{
+	public JsonSerializationProcessor(final String format) {
 		this(Arrays.asList(format));
 	}
 
-	public JsonSerializationProcessor(List<String> supportedFormats)
-	{
+	public JsonSerializationProcessor(final List<String> supportedFormats) {
 		super(supportedFormats, MediaTypeParser.parse(SUPPORTED_MEDIA_TYPES));
 	}
 }

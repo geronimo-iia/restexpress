@@ -31,29 +31,30 @@ import org.restexpress.util.Resolver;
  * @since May 4, 2010
  */
 public class RouteResolver implements Resolver<Action> {
-	private RouteMapping routeMapping;
+	private final RouteMapping routeMapping;
 
-	public RouteResolver(RouteMapping routes) {
+	public RouteResolver(final RouteMapping routes) {
 		super();
 		this.routeMapping = routes;
 	}
 
-	public Route getNamedRoute(String name, HttpMethod method) {
+	public Route getNamedRoute(final String name, final HttpMethod method) {
 		return routeMapping.getNamedRoute(name, method);
 	}
 
 	@Override
-	public Action resolve(MessageContext context) {
-		Request request = context.getRequest();
-		Action action = routeMapping.getActionFor(request.getEffectiveHttpMethod(), request.getPath());
+	public Action resolve(final MessageContext context) {
+		final Request request = context.getRequest();
+		final Action action = routeMapping.getActionFor(request.getEffectiveHttpMethod(), request.getPath());
 
-		if (action != null)
+		if (action != null) {
 			return action;
+		}
 
-		List<HttpMethod> allowedMethods = routeMapping.getAllowedMethods(request.getPath());
-		if (allowedMethods != null && !allowedMethods.isEmpty()) {
-			Response response = context.getResponse();
-			for (HttpMethod httpMethod : allowedMethods) {
+		final List<HttpMethod> allowedMethods = routeMapping.getAllowedMethods(request.getPath());
+		if ((allowedMethods != null) && !allowedMethods.isEmpty()) {
+			final Response response = context.getResponse();
+			for (final HttpMethod httpMethod : allowedMethods) {
 				response.addHeader(ResponseHeader.ALLOW.getHeader(), httpMethod.getName());
 			}
 			throw new MethodNotAllowedException(request.getUrl());

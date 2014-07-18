@@ -33,21 +33,21 @@ import org.restexpress.settings.RouteDefaults;
  * @since Jan 13, 2011
  */
 public class ParameterizedRouteBuilder extends RouteBuilder {
-	private List<String> aliases = new ArrayList<String>();
+	private final List<String> aliases = new ArrayList<String>();
 
 	/**
 	 * @param uri
 	 * @param controller
 	 * @param routeType
 	 */
-	public ParameterizedRouteBuilder(String uri, Object controller, RouteDefaults defaults) {
+	public ParameterizedRouteBuilder(final String uri, final Object controller, final RouteDefaults defaults) {
 		super(uri, controller, defaults);
 	}
 
 	@Override
-	protected Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags, Map<String, Object> parameters,
-			String baseUrl) {
-		ParameterizedRoute r = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
+	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
+			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
+		final ParameterizedRoute r = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
 		r.addAliases(aliases);
 		return r;
 	}
@@ -63,7 +63,7 @@ public class ParameterizedRouteBuilder extends RouteBuilder {
 	 *            the alias URI.
 	 * @return the ParameterizedRouteBuilder instance (this).
 	 */
-	public ParameterizedRouteBuilder alias(String uri) {
+	public ParameterizedRouteBuilder alias(final String uri) {
 		if (!aliases.contains(uri)) {
 			aliases.add(uri);
 		}
@@ -73,19 +73,20 @@ public class ParameterizedRouteBuilder extends RouteBuilder {
 
 	@Override
 	public RouteMetadata asMetadata() {
-		RouteMetadata metadata = super.asMetadata();
+		final RouteMetadata metadata = super.asMetadata();
 
-		for (String alias : aliases) {
+		for (final String alias : aliases) {
 			metadata.addAlias(alias);
 		}
 
 		return metadata;
 	}
 
-	protected String toRegexPattern(String uri) {
+	@Override
+	protected String toRegexPattern(final String uri) {
 		String pattern = uri;
 
-		if (pattern != null && !pattern.startsWith("/")) {
+		if ((pattern != null) && !pattern.startsWith("/")) {
 			pattern = "/" + pattern;
 		}
 

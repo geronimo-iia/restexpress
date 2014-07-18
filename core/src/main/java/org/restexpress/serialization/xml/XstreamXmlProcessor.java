@@ -38,22 +38,22 @@ import com.thoughtworks.xstream.converters.SingleValueConverter;
  * @since Mar 16, 2010
  */
 public class XstreamXmlProcessor extends XmlSerializationProcessor {
-	private XStream xstream;
-	private Map<Class<?>, String> aliases = new HashMap<Class<?>, String>();
+	private final XStream xstream;
+	private final Map<Class<?>, String> aliases = new HashMap<Class<?>, String>();
 	private boolean shouldAutoAlias = true;
 
 	public XstreamXmlProcessor() {
 		this(Format.XML);
 	}
 
-	public XstreamXmlProcessor(String format) {
+	public XstreamXmlProcessor(final String format) {
 		this(new XStream(), format);
 		xstream.registerConverter(new XstreamTimestampConverter());
 		xstream.alias("list", ArrayList.class);
 		xstream.alias("response", JsendResult.class);
 	}
 
-	public XstreamXmlProcessor(XStream xstream, String format) {
+	public XstreamXmlProcessor(final XStream xstream, final String format) {
 		super(format);
 		this.xstream = xstream;
 		shouldAutoAlias = false;
@@ -64,27 +64,29 @@ public class XstreamXmlProcessor extends XmlSerializationProcessor {
 	}
 
 	@Override
-	public void alias(String name, Class<?> type) {
+	public void alias(final String name, final Class<?> type) {
 		xstream.alias(name, type);
 	}
 
-	public void registerConverter(SingleValueConverter converter) {
+	public void registerConverter(final SingleValueConverter converter) {
 		xstream.registerConverter(converter);
 	}
 
 	@Override
-	public String serialize(Object object) {
-		if (object == null)
+	public String serialize(final Object object) {
+		if (object == null) {
 			return "";
+		}
 
 		return xstream.toXML(object);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(String xml, Class<T> type) {
-		if (xml == null || xml.trim().isEmpty())
+	public <T> T deserialize(final String xml, final Class<T> type) {
+		if ((xml == null) || xml.trim().isEmpty()) {
 			return null;
+		}
 
 		if (shouldAutoAlias) {
 			addAliasIfNecessary(type);
@@ -95,16 +97,17 @@ public class XstreamXmlProcessor extends XmlSerializationProcessor {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(ChannelBuffer xml, Class<T> type) {
-		if (!xml.readable())
+	public <T> T deserialize(final ChannelBuffer xml, final Class<T> type) {
+		if (!xml.readable()) {
 			return null;
+		}
 
 		return (T) xstream.fromXML(new ChannelBufferInputStream(xml));
 	}
 
-	private void addAliasIfNecessary(Class<?> type) {
+	private void addAliasIfNecessary(final Class<?> type) {
 		if (!aliases.containsKey(type)) {
-			String name = type.getSimpleName().trim();
+			final String name = type.getSimpleName().trim();
 
 			if ("[]".equals(name) || "".equals(name)) {
 				return;

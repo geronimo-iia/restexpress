@@ -12,17 +12,17 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress;
 
 /**
- * Some helpful constants for possible values of the {format} specifier in routes.
+ * Some helpful constants for possible values of the {format} specifier in
+ * routes.
  * 
  * @author toddf
  * @since Jan 19, 2011
  */
-public abstract class Format
-{
+public abstract class Format {
 	// PRIMARY FORMATS
 
 	public static final String CSS = "css";
@@ -31,14 +31,12 @@ public abstract class Format
 	public static final String JSON = "json";
 	public static final String XML = "xml";
 
-
 	// ALTERNATIVE/SPECIALIZED FORMATS
 
 	public static final String WRAPPED_JSON = "wjson";
 	public static final String WRAPPED_XML = "wxml";
 
-	private Format()
-	{
+	private Format() {
 		// prevents instantiation.
 	}
 }

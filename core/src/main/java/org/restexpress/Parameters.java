@@ -12,9 +12,8 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress;
-
 
 /**
  * Constants for built-in RestExpress parameters on routes.
@@ -22,21 +21,17 @@ package org.restexpress;
  * @author toddf
  * @since Jan 19, 2011
  */
-public abstract class Parameters
-{
-	public static final class Cache
-	{
+public abstract class Parameters {
+	public static final class Cache {
 		public static final String MAX_AGE = "max.age";
 	}
 
-	public static final class Query
-	{
+	public static final class Query {
 		public static final String METHOD_TUNNEL = "_method";
 		public static final String FORMAT = "format";
 	}
-	
-	private Parameters()
-	{
+
+	private Parameters() {
 		// prevents instantiation.
 	}
 }

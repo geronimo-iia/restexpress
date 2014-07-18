@@ -27,10 +27,10 @@ import org.restexpress.serialization.SerializationProcessor;
  * @since May 14, 2012
  */
 public class ResponseProcessor {
-	private SerializationProcessor serializer;
-	private ResponseWrapper wrapper;
+	private final SerializationProcessor serializer;
+	private final ResponseWrapper wrapper;
 
-	public ResponseProcessor(SerializationProcessor serializer, ResponseWrapper wrapper) {
+	public ResponseProcessor(final SerializationProcessor serializer, final ResponseWrapper wrapper) {
 		super();
 		this.serializer = serializer;
 		this.wrapper = wrapper;
@@ -48,12 +48,12 @@ public class ResponseProcessor {
 		return serializer.getSupportedMediaRanges();
 	}
 
-	public <T> T deserialize(Request request, Class<T> type) {
+	public <T> T deserialize(final Request request, final Class<T> type) {
 		return serializer.deserialize(request.getBody(), type);
 	}
 
-	public String serialize(Response response) {
-		Object wrapped = wrapper.wrap(response);
+	public String serialize(final Response response) {
+		final Object wrapped = wrapper.wrap(response);
 
 		if (wrapped != null) {
 			return serializer.serialize(wrapped);

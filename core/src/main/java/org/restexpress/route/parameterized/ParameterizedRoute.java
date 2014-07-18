@@ -41,8 +41,8 @@ public class ParameterizedRoute extends Route {
 	 * @param shouldSerializeResponse
 	 * @param name
 	 */
-	public ParameterizedRoute(UrlPattern urlMatcher, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags,
-			Map<String, Object> parameters, String baseUrl) {
+	public ParameterizedRoute(final UrlPattern urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats,
+			final String defaultFormat, final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
 		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
 	}
 
@@ -54,29 +54,30 @@ public class ParameterizedRoute extends Route {
 	 * @param shouldSerializeResponse
 	 * @param name
 	 */
-	public ParameterizedRoute(String urlPattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, String defaultFormat, Set<Flags> flags,
-			Map<String, Object> parameters, String baseUrl) {
+	public ParameterizedRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final String defaultFormat,
+			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
 		this(new UrlPattern(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, defaultFormat, flags, parameters, baseUrl);
 	}
 
-	public void addAliases(List<String> uris) {
-		if (uris == null)
+	public void addAliases(final List<String> uris) {
+		if (uris == null) {
 			return;
+		}
 
 		aliases = new UrlPattern[uris.size()];
 		int i = 0;
 
-		for (String uri : uris) {
+		for (final String uri : uris) {
 			aliases[i++] = new UrlPattern(uri);
 		}
 	}
 
 	@Override
-	public UrlMatch match(String url) {
+	public UrlMatch match(final String url) {
 		UrlMatch match = super.match(url);
 
-		if (match == null && aliases != null) {
-			for (UrlPattern alias : aliases) {
+		if ((match == null) && (aliases != null)) {
+			for (final UrlPattern alias : aliases) {
 				match = alias.match(url);
 
 				if (match != null) {
