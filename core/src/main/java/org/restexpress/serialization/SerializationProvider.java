@@ -28,8 +28,25 @@ import org.restexpress.response.ResponseWrapper;
  */
 public interface SerializationProvider extends Aliasable {
 
+	/**
+	 * Add a SerializationProcessor to this SerializationProvider, along with
+	 * ResponseWrapper to use to alter/format responses.
+	 * 
+	 * @param processor
+	 * @param wrapper
+	 */
 	public void add(SerializationProcessor processor, ResponseWrapper wrapper);
 
+	/**
+	 * Add a SerializationProcessor to this SerializationProvider, along with
+	 * ResponseWrapper to use to alter/format responses. If isDefault is true,
+	 * this SerializationProcessor is used when Content-Type negotiation fails
+	 * or format is not specified in the URL.
+	 * 
+	 * @param processor
+	 * @param wrapper
+	 * @param isDefault
+	 */
 	public void add(SerializationProcessor processor, ResponseWrapper wrapper, boolean isDefault);
 
 	public void setDefaultFormat(String format);

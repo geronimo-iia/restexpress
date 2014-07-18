@@ -79,27 +79,10 @@ public class DefaultSerializationProvider implements SerializationProvider {
 		}
 	}
 
-	/**
-	 * Add a SerializationProcessor to this SerializationProvider, along with
-	 * ResponseWrapper to use to alter/format responses.
-	 * 
-	 * @param processor
-	 * @param wrapper
-	 */
 	public void add(SerializationProcessor processor, ResponseWrapper wrapper) {
 		add(processor, wrapper, false);
 	}
 
-	/**
-	 * Add a SerializationProcessor to this SerializationProvider, along with
-	 * ResponseWrapper to use to alter/format responses. If isDefault is true,
-	 * this SerializationProcessor is used when Content-Type negotiation fails
-	 * or format is not specified in the URL.
-	 * 
-	 * @param processor
-	 * @param wrapper
-	 * @param isDefault
-	 */
 	public void add(SerializationProcessor processor, ResponseWrapper wrapper, boolean isDefault) {
 		addMediaRanges(processor.getSupportedMediaRanges());
 		ResponseProcessor responseProcessor = new ResponseProcessor(processor, wrapper);
@@ -221,12 +204,7 @@ public class DefaultSerializationProvider implements SerializationProvider {
 		return new SerializationSettings(bestMatch, processor);
 	}
 
-	/**
-	 * Assign this alias to the provided list of {@link Aliasable}.
-	 * 
-	 * @param list
-	 *            list of {@link Aliasable}.
-	 */
+	@Override
 	public void alias(String name, Class<?> type) {
 		for (ResponseProcessor processor : processorsByFormat.values()) {
 			if (Aliasable.class.isAssignableFrom(processor.getSerializer().getClass())) {
