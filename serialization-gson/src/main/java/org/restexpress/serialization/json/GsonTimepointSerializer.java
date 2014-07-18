@@ -20,16 +20,14 @@ package org.restexpress.serialization.json;
 import com.strategicgains.util.date.TimestampAdapter;
 
 /**
- * A GSON serializer for Date instances represented (and to be presented) as a timestamps (dates with time component).
+ * A GSON serializer for Date instances represented (and to be presented) as a
+ * timestamps (dates with time component).
  * 
  * @author toddf
  * @since Nov 13, 2009
  */
-public class GsonTimepointSerializer
-extends GsonDateSerializer
-{
-	public GsonTimepointSerializer()
-	{
+public class GsonTimepointSerializer extends GsonDateSerializer {
+	public GsonTimepointSerializer() {
 		super(new TimestampAdapter());
 	}
 }

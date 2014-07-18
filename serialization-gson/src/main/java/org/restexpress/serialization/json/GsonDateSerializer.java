@@ -32,7 +32,8 @@ import com.google.gson.JsonSerializer;
 import com.strategicgains.util.date.DateAdapter;
 
 /**
- * A GSON serializer for Date instances represented (and to be presented) as a date (without time component).
+ * A GSON serializer for Date instances represented (and to be presented) as a
+ * date (without time component).
  * 
  * @author Todd Fredrich
  * @since Nov 13, 2009
@@ -40,45 +41,34 @@ import com.strategicgains.util.date.DateAdapter;
  * @see JsonDeserializer
  * @see InstanceCreator
  */
-public class GsonDateSerializer
-implements GsonSerializer<Date>
-{
-	private DateAdapter adapter;
-	
-	public GsonDateSerializer()
-	{
+public class GsonDateSerializer implements GsonSerializer<Date> {
+	private final DateAdapter adapter;
+
+	public GsonDateSerializer() {
 		this(new DateAdapter());
 	}
-	
-	public GsonDateSerializer(DateAdapter adapter)
-	{
+
+	public GsonDateSerializer(final DateAdapter adapter) {
 		super();
 		this.adapter = adapter;
 	}
-	
-    @Override
-    public Date deserialize(JsonElement json, Type typeOf, JsonDeserializationContext context)
-    throws JsonParseException
-    {
-    	try
-        {
-	        return adapter.parse(json.getAsJsonPrimitive().getAsString());
-        }
-        catch (ParseException e)
-        {
-        	throw new JsonParseException(e);
-        }
-    }
 
-    @Override
-    public JsonElement serialize(Date date, Type typeOf, JsonSerializationContext context)
-    {
-    	return new JsonPrimitive(adapter.format(date));
-    }
+	@Override
+	public Date deserialize(final JsonElement json, final Type typeOf, final JsonDeserializationContext context) throws JsonParseException {
+		try {
+			return adapter.parse(json.getAsJsonPrimitive().getAsString());
+		} catch (final ParseException e) {
+			throw new JsonParseException(e);
+		}
+	}
 
-    @Override
-    public Date createInstance(Type typeOf)
-    {
-    	return new Date();
-    }
+	@Override
+	public JsonElement serialize(final Date date, final Type typeOf, final JsonSerializationContext context) {
+		return new JsonPrimitive(adapter.format(date));
+	}
+
+	@Override
+	public Date createInstance(final Type typeOf) {
+		return new Date();
+	}
 }

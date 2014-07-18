@@ -25,7 +25,5 @@ import com.google.gson.JsonSerializer;
  * @author toddf
  * @since Nov 13, 2009
  */
-public interface GsonSerializer<T>
-extends JsonDeserializer<T>, JsonSerializer<T>, InstanceCreator<T>
-{
+public interface GsonSerializer<T> extends JsonDeserializer<T>, JsonSerializer<T>, InstanceCreator<T> {
 }
