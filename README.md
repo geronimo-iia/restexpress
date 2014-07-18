@@ -94,6 +94,7 @@ Current Version 0.10.4
 * remove ExceptionMapping: server implementation must throw standard Http Exception.
 * refactor Resolver in order to user MessageContext (more flexibility to handle response)
 * add few javadoc on methods, classes
+* refactor XML alias definition. All alias must be declared either on dedicated processor, or after "add" with SerializationProvider
 
 Release 0.10.3 - 27 May 2014
 * Change URL Pattern matcher to allow URLs with '?' at the end, but no query-string parameters following it.

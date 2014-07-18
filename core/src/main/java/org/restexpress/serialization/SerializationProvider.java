@@ -20,7 +20,8 @@ import org.restexpress.Response;
 import org.restexpress.response.ResponseWrapper;
 
 /**
- * {@link SerializationProvider} define method of Serializaion provider service.
+ * {@link SerializationProvider} define method of Serialization provider
+ * service.
  * 
  * @author toddf
  * @since Jul 18, 2013
@@ -36,4 +37,5 @@ public interface SerializationProvider extends Aliasable {
 	public SerializationSettings resolveRequest(Request request);
 
 	public SerializationSettings resolveResponse(Request request, Response response, boolean shouldForce);
+
 }

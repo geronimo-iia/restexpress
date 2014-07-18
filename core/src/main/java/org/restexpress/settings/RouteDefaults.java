@@ -12,56 +12,35 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/
+ */
 package org.restexpress.settings;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.restexpress.ContentType;
-import org.restexpress.serialization.AliasingSerializationProcessor;
 
 /**
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since May 31, 2012
  */
-public class RouteDefaults
-{
+public class RouteDefaults {
 	private String defaultFormat = ContentType.JSON;
-	private Map<String, Class<?>> xmlAliases = new HashMap<String, Class<?>>();
 	private String baseUrl;
 
-	public String getBaseUrl()
-	{
+	public String getBaseUrl() {
 		return baseUrl;
 	}
 
-	public void setBaseUrl(String baseUrl)
-	{
+	public void setBaseUrl(String baseUrl) {
 		this.baseUrl = baseUrl;
 	}
 
-	public String getDefaultFormat()
-	{
+	public String getDefaultFormat() {
 		return defaultFormat;
 	}
 
-	public void setDefaultFormat(String defaultFormat)
-	{
+	public void setDefaultFormat(String defaultFormat) {
 		this.defaultFormat = defaultFormat;
 	}
-	
-	public void addXmlAlias(String elementName, Class<?> classToAlias)
-	{
-		xmlAliases.put(elementName, classToAlias);
-	}
 
-	public void setXmlAliases(AliasingSerializationProcessor processor)
-	{
-		for (Entry<String, Class<?>> entry : xmlAliases.entrySet())
-		{
-			processor.alias(entry.getKey(), entry.getValue());
-		}
-	}
 }

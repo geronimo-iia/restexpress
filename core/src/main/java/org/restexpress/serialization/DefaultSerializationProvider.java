@@ -42,7 +42,7 @@ import org.restexpress.serialization.xml.XstreamXmlProcessor;
  * 
  * By default, this instance use {@link JacksonJsonProcessor} for json as
  * default format, XstreamXmlProcessor for XML, and a {@link RawResponseWrapper}
- *
+ * 
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
@@ -54,7 +54,6 @@ public class DefaultSerializationProvider implements SerializationProvider {
 	private Map<String, ResponseProcessor> processorsByMediaType = new HashMap<String, ResponseProcessor>();
 	private List<MediaRange> supportedMediaRanges = new ArrayList<MediaRange>();
 	private ResponseProcessor defaultProcessor;
-	private List<Alias> aliases = new ArrayList<Alias>();
 
 	/**
 	 * Build a new instance of {@link DefaultSerializationProvider} with
@@ -104,7 +103,6 @@ public class DefaultSerializationProvider implements SerializationProvider {
 	public void add(SerializationProcessor processor, ResponseWrapper wrapper, boolean isDefault) {
 		addMediaRanges(processor.getSupportedMediaRanges());
 		ResponseProcessor responseProcessor = new ResponseProcessor(processor, wrapper);
-		assignAliases(responseProcessor);
 
 		for (String format : processor.getSupportedFormats()) {
 			if (processorsByFormat.containsKey(format)) {
@@ -125,15 +123,6 @@ public class DefaultSerializationProvider implements SerializationProvider {
 		if (isDefault) {
 			defaultProcessor = responseProcessor;
 		}
-	}
-
-	@Override
-	public void alias(String name, Class<?> type) {
-		Alias a = new Alias(name, type);
-		if (!aliases.contains(a)) {
-			aliases.add(a);
-		}
-		assignAlias(a);
 	}
 
 	@Override
@@ -233,19 +222,17 @@ public class DefaultSerializationProvider implements SerializationProvider {
 	}
 
 	/**
-	 * Find all {@link Aliasable} {@link SerializationProcessor}.
+	 * Assign this alias to the provided list of {@link Aliasable}.
 	 * 
-	 * @return a {@link List} of {@link Aliasable}
-	 *         {@link SerializationProcessor}.
+	 * @param list
+	 *            list of {@link Aliasable}.
 	 */
-	public List<Aliasable> findAliasableSerializationProcessor() {
-		List<Aliasable> result = new ArrayList<>();
+	public void alias(String name, Class<?> type) {
 		for (ResponseProcessor processor : processorsByFormat.values()) {
 			if (Aliasable.class.isAssignableFrom(processor.getSerializer().getClass())) {
-				result.add((Aliasable) processor.getSerializer());
+				((Aliasable) processor.getSerializer()).alias(name, type);
 			}
 		}
-		return result;
 	}
 
 	// SECTION: CONVENIENCE/SUPPORT
@@ -261,22 +248,6 @@ public class DefaultSerializationProvider implements SerializationProvider {
 		}
 	}
 
-	private void assignAlias(Alias a) {
-		for (ResponseProcessor processor : processorsByFormat.values()) {
-			if (Aliasable.class.isAssignableFrom(processor.getSerializer().getClass())) {
-				((Aliasable) processor.getSerializer()).alias(a.name, a.type);
-			}
-		}
-	}
-
-	private void assignAliases(ResponseProcessor processor) {
-		if (Aliasable.class.isAssignableFrom(processor.getSerializer().getClass())) {
-			for (Alias a : aliases) {
-				((Aliasable) processor).alias(a.name, a.type);
-			}
-		}
-	}
-
 	private boolean exceptionOccurredBeforeRouteResolution(String format, Response response) {
 		return format == null && response.hasException();
 	}
@@ -288,50 +259,4 @@ public class DefaultSerializationProvider implements SerializationProvider {
 		return (formatDelimiterIndex > 0 ? path.substring(formatDelimiterIndex + 1) : null);
 	}
 
-	/**
-	 * {@link Alias} define XML alias.
-	 * 
-	 */
-	private static class Alias {
-		private final String name;
-		private final Class<?> type;
-
-		public Alias(String name, Class<?> type) {
-			super();
-			this.name = name;
-			this.type = type;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((name == null) ? 0 : name.hashCode());
-			result = prime * result + ((type == null) ? 0 : type.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Alias other = (Alias) obj;
-			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
-				return false;
-			if (type == null) {
-				if (other.type != null)
-					return false;
-			} else if (!type.equals(other.type))
-				return false;
-			return true;
-		}
-
-	}
 }
