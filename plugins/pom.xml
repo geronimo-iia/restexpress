@@ -16,6 +16,7 @@
 	<modules>
 		<module>airdock</module>
 		<module>gson</module>
+		<module>route</module>
 	</modules>
 	<dependencies>
 		<dependency>
