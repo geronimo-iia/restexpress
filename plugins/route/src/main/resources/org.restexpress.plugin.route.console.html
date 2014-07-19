@@ -1,0 +1,50 @@
+<html>
+<head></head>
+<body>
+	<h1>@{server.name}</h1>
+	<p>&nbsp;</p>
+	<h2>Information</h2>
+	<ul>
+		<li>name: @{server.name}</li>
+		<li>port: @{server.port}</li>
+		<li>Supported Formats: @if{server.supportedFormats !=
+			null}@foreach{item : server.supportedFormats}@{item}@end{', '}@end{}</li>
+		<li>Default Format: @{server.defaultFormat != null ?
+			server.defaultFormat : ""}</li>
+		<li>Self: <a href="/routes/metadata">metadata</a></li>
+	</ul>
+	<p>&nbsp;</p>
+	<h2>Routes</h2>
+	<table>
+		<thead>
+			<tr>
+				<td>Name</td>
+				<td>URI</td>
+				<td>Aliases</td>
+				<td>Methods</td>
+				<td>Serialized</td>
+				<td>Base URL</td>
+				<td>Supported Formats</td>
+				<td>Default Format</td>
+			</tr>
+		</thead>
+		@foreach{route : server.routes}
+		<tr>
+			<td>@{route.name}<br>Self: <a href="/routes/@{route.name}/metadata">metadata</a></td>
+			<td>@{route.uri.pattern}@if{route.uri.parameters !=null}<br />Parameters: @foreach{item
+				:route.uri.parameters}@{item}@end{', '}@end{}</td>
+			<td>@if{route.aliases !=null}@foreach{item
+				:route.aliases}@{item}@end{', '}@end{}</td>
+			<td>@if{route.methods !=null}@foreach{item
+				:route.methods}@{item}@end{', '}@end{}</td>
+			<td>@{route.serialized}</td>
+			<td>@{route.baseUrl != null ? route.baseUrl  : "" }</td>
+			<td>@if{route.supportedFormats !=
+			null}@foreach{item : route.supportedFormats}@{item}@end{', '}@end{}</td>
+			<td>@{route.defaultFormat != null ? route.defaultFormat : ""}</td>
+		</tr>
+		@end{}
+	</table>
+	<p>&nbsp;</p>
+</body>
+</html>

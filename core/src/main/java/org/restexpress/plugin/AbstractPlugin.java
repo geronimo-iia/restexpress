@@ -49,7 +49,6 @@ public abstract class AbstractPlugin implements Plugin {
 			setRegistered(true);
 			server.registerPlugin(this);
 		}
-
 		return this;
 	}
 
@@ -74,7 +73,6 @@ public abstract class AbstractPlugin implements Plugin {
 		if (AbstractPlugin.class.isAssignableFrom(other.getClass())) {
 			return equals((AbstractPlugin) other);
 		}
-
 		return false;
 	}
 

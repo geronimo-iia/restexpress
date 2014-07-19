@@ -12,5 +12,8 @@ This plugins "com.strategicgains:restexpress-plugins-airdock" define:
 For an example of how it can work, see in test file SampleControllerTest.
 
 
-		
+TODO
+----
+
+* Add plugin declaration into Entry point
 		
