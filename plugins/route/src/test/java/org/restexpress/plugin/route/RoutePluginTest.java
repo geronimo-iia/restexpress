@@ -52,29 +52,28 @@ public class RoutePluginTest {
 		httpClient = null;
 	}
 
-
 	@Test
 	public void testGetAllRoute() throws IOException {
 		HttpGet getRequest = new HttpGet(launcher.server().settings().serverSettings().getBaseUrl() + "/routes/metadata");
 		final HttpResponse response = httpClient.execute(getRequest);
 		assertEquals(200, response.getStatusLine().getStatusCode());
 	}
-	
 
 	@Test
 	public void testGetSingle() throws IOException {
 		HttpGet getRequest = new HttpGet(launcher.server().settings().serverSettings().getBaseUrl() + "/routes/single.route.metadata/metadata.json");
 		final HttpResponse response = httpClient.execute(getRequest);
-		assertEquals(200, response.getStatusLine().getStatusCode());;
+		assertEquals(200, response.getStatusLine().getStatusCode());
+		;
 	}
-	
+
 	@Test
 	public void testGetSingleDidNotExist() throws IOException {
 		HttpGet getRequest = new HttpGet(launcher.server().settings().serverSettings().getBaseUrl() + "/routes/NOROUTE/metadata.json");
 		final HttpResponse response = httpClient.execute(getRequest);
 		assertEquals(404, response.getStatusLine().getStatusCode());
 	}
-	
+
 	@Test
 	public void testGetConsole() throws IOException {
 		HttpGet getRequest = new HttpGet(launcher.server().settings().serverSettings().getBaseUrl() + "/routes");
@@ -83,4 +82,5 @@ public class RoutePluginTest {
 		// System.err.println(new Scanner(response.getEntity().getContent(),
 		// "UTF-8").useDelimiter("\\A").next());
 	}
+
 }
