@@ -1,0 +1,24 @@
+
+Pom and managment
+change scm tag in parent pom
+change groupIp
+clean up remote branch
+reuse iia parent pom
+
+
+Todo code:
+
+find a good way to deal with supported format & default, and avoir copy of list/set
+
+-> interrogation service provider
+
+
+change Parameters and Format with enum
+
+Add Format class (enum and is default)
+Use it for configuration
+
+extraire la notion de resolver
+
+format = mime/type
+extention mapping

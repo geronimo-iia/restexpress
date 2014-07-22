@@ -5,22 +5,25 @@
 		<groupId>com.strategicgains</groupId>
 		<artifactId>restexpress-parent</artifactId>
 		<version>0.10.4-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>restexpress-plugins</artifactId>
-	<packaging>pom</packaging>
-	<description>Plugins modules</description>
+	<artifactId>restexpress</artifactId>
+	<packaging>jar</packaging>
+	<name>restexpress</name>
+	<description>Internet scale, high-performance RESTful Services in Java</description>
+	<url>https://github.com/RestExpress/RestExpress</url>
 	<properties>
 		<license.header.path>../header.txt</license.header.path>
 	</properties>
-	<modules>
-		<module>gson</module>
-		<module>route</module>
-	</modules>
 	<dependencies>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress</artifactId>
+			<artifactId>restexpress-core</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

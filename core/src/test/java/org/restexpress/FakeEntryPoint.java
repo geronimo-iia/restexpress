@@ -17,40 +17,29 @@
  *        under the License.
  *
  */
-package org.restexpress.plugin.airdock;
+package org.restexpress;
 
 
 /**
- * Controller define life cycle of all Controller.
+ * FakeEntryPoint implements {@link RestExpressEntryPoint} 
+ * 
+ * This entry point is declared inside file
+ * META-INF/services/org.restexpress.RestExpressEntryPoint.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- * 
  */
-public class Controller {
+public class FakeEntryPoint implements RestExpressEntryPoint {
 
-	public Controller() {
+	/**
+	 * Build a new instance of {@link FakeEntryPoint}.
+	 */
+	public FakeEntryPoint() {
 		super();
 	}
 
-	public String name() {
-		return getClass().getSimpleName();
-	}
-
-	/**
-	 * Register route on server
-	 * 
-	 * @param context
-	 *            an {@link Context} instance.
-	 */
-	public void initialize(Context context) {
-		// nothing to do here
-	}
-
-	/**
-	 * Destroy all Resources
-	 */
-	public void destroy() {
-		// nothing to do here
+	@Override
+	public void onLoad(RestExpress restExpress) throws RuntimeException {
+		restExpress.context().put("TEST", Boolean.TRUE);
 	}
 
 }

@@ -18,31 +18,41 @@
  *
  */
 /*
-    Copyright 2011, Strategic Gains, Inc.
+ Copyright 2011, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.plugin;
 
 import org.restexpress.RestExpress;
 
 /**
+ * {@link AbstractPlugin} implements basic functionality of {@link Plugin}.
+ * 
  * @author toddf
  * @since Jul 20, 2011
  */
 public abstract class AbstractPlugin implements Plugin {
+	/**
+	 * Registered flag.
+	 */
 	private boolean isRegistered;
 
+	/**
+	 * Register this instance onto {@link RestExpress}.
+	 * 
+	 * @see org.restexpress.plugin.Plugin#register(org.restexpress.RestExpress)
+	 */
 	@Override
 	public AbstractPlugin register(final RestExpress server) {
 		if (!isRegistered()) {

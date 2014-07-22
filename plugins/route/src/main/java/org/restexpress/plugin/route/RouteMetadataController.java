@@ -15,12 +15,12 @@ import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
 
 /**
- * RouteController.
+ * RouteMetadataController.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class RouteController {
+public class RouteMetadataController {
 	/**
 	 * {@link ServerMetadata} instance.
 	 */
@@ -35,9 +35,9 @@ public class RouteController {
 	private CompiledTemplate console;
 
 	/**
-	 * Build a new instance of {@link RouteController}.
+	 * Build a new instance of {@link RouteMetadataController}.
 	 */
-	public RouteController() {
+	public RouteMetadataController() {
 		super();
 	}
 
@@ -56,7 +56,7 @@ public class RouteController {
 				routeMetadata.put(routeInfo.getName().toLowerCase(Locale.US), routeInfo);
 			}
 		}
-		
+
 		// load template
 		console = TemplateCompiler.compileTemplate(getClass().getClassLoader().getResourceAsStream("org.restexpress.plugin.route.console.html"));
 		if (console == null)
@@ -92,16 +92,16 @@ public class RouteController {
 	 * @param request
 	 * @param response
 	 * @return {@link ServerMetadata}
+	 * @throws NotFoundException
+	 *             if route can not be found
 	 */
-	public ServerMetadata getSingleRoute(Request request, Response response) {
+	public ServerMetadata getSingleRoute(Request request, Response response) throws NotFoundException {
 		String routeName = request.getHeader("routeName", "Route name must be provided");
 		RouteMetadata routeInfo = routeMetadata.get(routeName.toLowerCase(Locale.US));
 		if (routeInfo == null) {
 			throw new NotFoundException("Route name not found: " + routeName);
 		}
-		ServerMetadata results = serverMetadata.copyRootData();
-		results.addRoute(routeInfo);
-		return results;
+		return new ServerMetadata(serverMetadata, routeInfo);
 	}
 
 	/**

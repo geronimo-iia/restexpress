@@ -117,7 +117,6 @@ public class JacksonJsonProcessor extends JsonSerializationProcessor {
 	@Override
 	public <T> T deserialize(final ChannelBuffer buffer, final Class<T> type) {
 		try {
-
 			return ((buffer == null) || (buffer.readableBytes() == 0) ? null : mapper.readValue(new InputStreamReader(new ChannelBufferInputStream(buffer), ContentType.CHARSET), type));
 		} catch (final JsonProcessingException e) {
 			throw new DeserializationException(e);

@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.restexpress.Flags;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteBuilder;
 
@@ -60,7 +59,7 @@ public class RegexRouteBuilder extends RouteBuilder {
 
 	@Override
 	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats,
-			final Set<Flags> flags, final Map<String, Object> parameters, final String baseUrl) {
+			final Set<String> flags, final Map<String, Object> parameters, final String baseUrl) {
 		return new RegexRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
 	}
 

@@ -36,6 +36,7 @@ import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import org.restexpress.context.ServerContext;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
 import org.restexpress.pipeline.DefaultRequestHandler;
@@ -74,6 +75,11 @@ public class RestExpress {
 	 * {@link RestExpressSettings} instance.
 	 */
 	private final RestExpressSettings settings;
+
+	/**
+	 * {@link ServerContext} instance.
+	 */
+	private final ServerContext context;
 
 	private SerializationProvider serializationProvider = null;
 
@@ -146,6 +152,7 @@ public class RestExpress {
 		finallyProcessors = new ArrayList<Postprocessor>();
 		plugins = new ArrayList<Plugin>();
 		routeDeclarations = new RouteDeclaration();
+		context = new ServerContext();
 	}
 
 	/**
@@ -153,6 +160,13 @@ public class RestExpress {
 	 */
 	public RestExpressSettings settings() {
 		return settings;
+	}
+
+	/**
+	 * @return {@link ServerContext} instance.
+	 */
+	public ServerContext context() {
+		return context;
 	}
 
 	/**
@@ -171,19 +185,34 @@ public class RestExpress {
 	/**
 	 * @return {@link SerializationProvider} instance.
 	 */
-	public SerializationProvider getSerializationProvider() {
+	public SerializationProvider serializationProvider() {
 		return serializationProvider;
 	}
 
+	/**
+	 * Sets SSL context.
+	 * 
+	 * @param sslContext
+	 * @return {@link RestExpress} instance.
+	 */
 	public RestExpress setSSLContext(final SSLContext sslContext) {
 		this.sslContext = sslContext;
 		return this;
 	}
 
+	/**
+	 * @return {@link SSLContext} instance.
+	 */
 	public SSLContext getSSLContext() {
 		return sslContext;
 	}
 
+	/**
+	 * Adds a {@link MessageObserver} if not ever added.
+	 * 
+	 * @param observer
+	 * @return {@link RestExpress} instance.
+	 */
 	public RestExpress addMessageObserver(final MessageObserver observer) {
 		if (!messageObservers.contains(observer)) {
 			messageObservers.add(observer);
@@ -191,7 +220,10 @@ public class RestExpress {
 		return this;
 	}
 
-	public List<MessageObserver> getMessageObservers() {
+	/**
+	 * @return an unmodifiable {@link List} of {@link MessageObserver}.
+	 */
+	public List<MessageObserver> messageObservers() {
 		return Collections.unmodifiableList(messageObservers);
 	}
 
@@ -210,7 +242,10 @@ public class RestExpress {
 		return this;
 	}
 
-	public List<Preprocessor> getPreprocessors() {
+	/**
+	 * @return an unmodifiable {@link List} of {@link Preprocessor}.
+	 */
+	public List<Preprocessor> preprocessors() {
 		return Collections.unmodifiableList(preprocessors);
 	}
 
@@ -231,7 +266,10 @@ public class RestExpress {
 		return this;
 	}
 
-	public List<Postprocessor> getPostprocessors() {
+	/**
+	 * @return an unmodifiable {@link List} of {@link Postprocessor}.
+	 */
+	public List<Postprocessor> postprocessors() {
 		return Collections.unmodifiableList(postprocessors);
 	}
 
@@ -258,7 +296,10 @@ public class RestExpress {
 		return this;
 	}
 
-	public List<Postprocessor> getFinallyProcessors() {
+	/**
+	 * @return an unmodifiable {@link List} of finally {@link Postprocessor}.
+	 */
+	public List<Postprocessor> finallyProcessors() {
 		return Collections.unmodifiableList(finallyProcessors);
 	}
 
@@ -282,16 +323,24 @@ public class RestExpress {
 	public ChannelHandler buildRequestHandler() {
 		// Set up the event pipeline factory.
 		final DefaultRequestHandler requestHandler = new DefaultRequestHandler(new RouteResolver(routeDeclarations.createRouteMapping()), //
-				getSerializationProvider(), //
+				serializationProvider(), //
 				new DefaultHttpResponseWriter(), settings.serverSettings().isEnforceHttpSpec());
 
 		// Add MessageObservers to the request handler here, if desired...
 		requestHandler.addMessageObserver(messageObservers.toArray(new MessageObserver[0]));
 
-		// Add pre/post processors to the request handler here...
-		addPreprocessors(requestHandler);
-		addPostprocessors(requestHandler);
-		addFinallyProcessors(requestHandler);
+		// Add pre processors to the request handler here...
+		for (final Preprocessor processor : preprocessors()) {
+			requestHandler.addPreprocessor(processor);
+		}
+		// Add post processors to the request handler here...
+		for (final Postprocessor processor : postprocessors()) {
+			requestHandler.addPostprocessor(processor);
+		}
+		// Add finally post processors to the request handler here...
+		for (final Postprocessor processor : finallyProcessors()) {
+			requestHandler.addFinallyProcessor(processor);
+		}
 
 		return requestHandler;
 	}
@@ -347,7 +396,12 @@ public class RestExpress {
 
 		final Channel channel = bootstrap.bind(new InetSocketAddress(port));
 		allChannels.add(channel);
-		bindPlugins();
+
+		// bind all plugins
+		for (final Plugin plugin : plugins) {
+			plugin.bind(this);
+		}
+
 		return channel;
 	}
 
@@ -379,8 +433,12 @@ public class RestExpress {
 	public void shutdown() {
 		final ChannelGroupFuture future = allChannels.close();
 		future.awaitUninterruptibly();
-		shutdownPlugins();
+		// shut down all plugins
+		for (final Plugin plugin : plugins) {
+			plugin.shutdown(this);
+		}
 		bootstrap.getFactory().releaseExternalResources();
+		context.clear();
 	}
 
 	/**
@@ -389,14 +447,13 @@ public class RestExpress {
 	 * @return ServerMetadata instance.
 	 */
 	public ServerMetadata getRouteMetadata() {
-		final ServerMetadata m = new ServerMetadata();
-		m.setName(settings.serverSettings().getName());
-		m.setPort(settings.serverSettings().getPort());
-		// TODO: create a good substitute for this...
-		// m.setDefaultFormat(getDefaultFormat());
-		// m.addAllSupportedFormats(getResponseProcessors().keySet());
-		m.addAllRoutes(routeDeclarations.getMetadata());
-		return m;
+		final ServerMetadata metadata = new ServerMetadata( //
+				settings.serverSettings().getName(), //
+				settings.serverSettings().getPort(), //
+				serializationProvider.getSupportedFormat(),//
+				serializationProvider.getDefaultFormat(),//
+				routeDeclarations.getMetadata());
+		return metadata;
 	}
 
 	/**
@@ -427,6 +484,12 @@ public class RestExpress {
 		return urlsByName;
 	}
 
+	/**
+	 * Register specified plugin.
+	 * 
+	 * @param plugin
+	 * @return {@link RestExpress} instance.
+	 */
 	public RestExpress registerPlugin(final Plugin plugin) {
 		if (!plugins.contains(plugin)) {
 			plugins.add(plugin);
@@ -436,43 +499,11 @@ public class RestExpress {
 		return this;
 	}
 
-	private void bindPlugins() {
-		for (final Plugin plugin : plugins) {
-			plugin.bind(this);
-		}
-	}
-
-	private void shutdownPlugins() {
-		for (final Plugin plugin : plugins) {
-			plugin.shutdown(this);
-		}
-	}
-
 	/**
-	 * @param requestHandler
+	 * @return an unmodifiable {@link List} of registered {@link Plugin}.
 	 */
-	private void addPreprocessors(final DefaultRequestHandler requestHandler) {
-		for (final Preprocessor processor : getPreprocessors()) {
-			requestHandler.addPreprocessor(processor);
-		}
-	}
-
-	/**
-	 * @param requestHandler
-	 */
-	private void addPostprocessors(final DefaultRequestHandler requestHandler) {
-		for (final Postprocessor processor : getPostprocessors()) {
-			requestHandler.addPostprocessor(processor);
-		}
-	}
-
-	/**
-	 * @param requestHandler
-	 */
-	private void addFinallyProcessors(final DefaultRequestHandler requestHandler) {
-		for (final Postprocessor processor : getFinallyProcessors()) {
-			requestHandler.addFinallyProcessor(processor);
-		}
+	public List<Plugin> plugins() {
+		return Collections.unmodifiableList(plugins);
 	}
 
 	/**

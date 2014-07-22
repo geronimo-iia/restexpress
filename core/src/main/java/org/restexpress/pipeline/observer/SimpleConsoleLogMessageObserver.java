@@ -32,13 +32,14 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
  */
-package org.restexpress.pipeline;
+package org.restexpress.pipeline.observer;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.pipeline.MessageObserver;
 
 /**
  * Provides simple System.out.println() details about basic timing.

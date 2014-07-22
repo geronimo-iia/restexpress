@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.restexpress.Flags;
 import org.restexpress.route.Route;
 import org.restexpress.url.UrlMatch;
 import org.restexpress.url.UrlPattern;
@@ -52,12 +51,12 @@ import org.restexpress.url.UrlPattern;
 public class ParameterizedRoute extends Route {
 	private UrlPattern[] aliases;
 
-	public ParameterizedRoute(final UrlPattern urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+	public ParameterizedRoute(final UrlPattern urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
 			final Map<String, Object> parameters, final String baseUrl) {
 		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
 	}
 
-	public ParameterizedRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+	public ParameterizedRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
 			final Map<String, Object> parameters, final String baseUrl) {
 		this(new UrlPattern(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
 	}

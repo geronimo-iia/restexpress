@@ -29,6 +29,7 @@ import static org.jboss.netty.handler.codec.http.HttpMethod.PUT;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +37,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.restexpress.Flags;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.common.exception.ConfigurationException;
@@ -80,7 +80,7 @@ public abstract class RouteBuilder {
 	private boolean shouldSerializeResponse = true;
 	private String name;
 	private String baseUrl;
-	private final Set<Flags> flags = new HashSet<>();
+	private final Set<String> flags = new HashSet<>();
 	private final Map<String, Object> parameters = new HashMap<String, Object>();
 
 	/**
@@ -113,7 +113,7 @@ public abstract class RouteBuilder {
 	 * @param baseUrl
 	 * @return
 	 */
-	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, Set<Flags> flags, Map<String, Object> parameters, String baseUrl);
+	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, Set<String> flags, Map<String, Object> parameters, String baseUrl);
 
 	/**
 	 * Map a service method name (action) to a particular HTTP method (e.g. GET,
@@ -228,7 +228,7 @@ public abstract class RouteBuilder {
 	 *            the name of the flag.
 	 * @return this RouteBuilder to facilitate method chaining.
 	 */
-	public RouteBuilder flag(final Flags flagValue) {
+	public RouteBuilder flag(final String flagValue) {
 		flags.add(flagValue);
 		return this;
 	}
@@ -294,24 +294,21 @@ public abstract class RouteBuilder {
 
 	protected abstract String toRegexPattern(String uri);
 
-	// SECTION: CONSOLE
-
+	@SuppressWarnings("unchecked")
 	public RouteMetadata asMetadata() {
-		final RouteMetadata metadata = new RouteMetadata();
-		metadata.setName(name);
-		metadata.setSerialized(shouldSerializeResponse);
-		metadata.addAllSupportedFormats(supportedFormats);
-		metadata.setBaseUrl(baseUrl);
-
+		final List<String> methods = new ArrayList<String>();
 		final UriMetadata uriMeta = new UriMetadata(uri);
 		final List<Route> routes = build();
 
 		for (final Route route : routes) {
 			uriMeta.addAllParameters(route.getUrlParameters());
-			metadata.addMethod(route.getMethod().getName());
+			methods.add(route.getMethod().getName());
 		}
+		final RouteMetadata metadata = new RouteMetadata(name, uriMeta,//
+				Collections.EMPTY_LIST, //
+				new HashSet<String>(supportedFormats), null, //
+				methods, shouldSerializeResponse, baseUrl);
 
-		metadata.setUri(uriMeta);
 		return metadata;
 	}
 

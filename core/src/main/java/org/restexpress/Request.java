@@ -512,7 +512,7 @@ public class Request {
 	 *            the name of a flag.
 	 * @return true if the request contains the named flag, otherwise false.
 	 */
-	public boolean isFlagged(final Flags flag) {
+	public boolean isFlagged(final String flag) {
 		return resolvedRoute.isFlagged(flag);
 	}
 

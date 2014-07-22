@@ -45,7 +45,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.common.query.QueryRange;
 import org.restexpress.common.response.JsendResult;
-import org.restexpress.pipeline.SimpleConsoleLogMessageObserver;
+import org.restexpress.pipeline.observer.SimpleConsoleLogMessageObserver;
 import org.restexpress.postprocessor.TestPostprocessor;
 import org.restexpress.preprocessor.ErrorPreprocessor;
 import org.restexpress.response.Wrapper;
@@ -420,7 +420,7 @@ public class RestExpressServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(ContentType.JSON, entity.getContentType().getValue());
-		LittleO o = serializer.getSerializer(Format.JSON).deserialize(EntityUtils.toString(entity), LittleO.class);
+		LittleO o = serializer.getSerializationProcessor(Format.JSON).deserialize(EntityUtils.toString(entity), LittleO.class);
 		verifyObject(o);
 		request.releaseConnection();
 	}
@@ -438,7 +438,7 @@ public class RestExpressServerTest {
 		Header range = response.getFirstHeader(HttpHeaders.Names.CONTENT_RANGE);
 		assertNotNull(range);
 		assertEquals("items 0-2/3", range.getValue());
-		LittleO[] result = serializer.getSerializer(Format.JSON).deserialize(EntityUtils.toString(entity), LittleO[].class);
+		LittleO[] result = serializer.getSerializationProcessor(Format.JSON).deserialize(EntityUtils.toString(entity), LittleO[].class);
 		verifyList(result);
 		request.releaseConnection();
 	}
@@ -472,7 +472,7 @@ public class RestExpressServerTest {
 		String result = EntityUtils.toString(entity);
 		assertTrue(result.contains("\"status\":\"success\""));
 		String data = extractJson(result);
-		LittleO o = serializer.getSerializer(Format.WRAPPED_JSON).deserialize(data, LittleO.class);
+		LittleO o = serializer.getSerializationProcessor(Format.WRAPPED_JSON).deserialize(data, LittleO.class);
 		verifyObject(o);
 		request.releaseConnection();
 	}
@@ -494,7 +494,7 @@ public class RestExpressServerTest {
 
 		assertTrue(result.contains("\"status\":\"success\""));
 		String data = extractJson(result);
-		LittleO[] o = serializer.getSerializer(Format.WRAPPED_JSON).deserialize(data, LittleO[].class);
+		LittleO[] o = serializer.getSerializationProcessor(Format.WRAPPED_JSON).deserialize(data, LittleO[].class);
 		verifyList(o);
 		request.releaseConnection();
 	}
@@ -509,7 +509,7 @@ public class RestExpressServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(ContentType.XML, entity.getContentType().getValue());
-		LittleO o = serializer.getSerializer(Format.XML).deserialize(EntityUtils.toString(entity), LittleO.class);
+		LittleO o = serializer.getSerializationProcessor(Format.XML).deserialize(EntityUtils.toString(entity), LittleO.class);
 		verifyObject(o);
 		request.releaseConnection();
 	}
@@ -529,7 +529,7 @@ public class RestExpressServerTest {
 		assertEquals("items 0-2/3", range.getValue());
 		String entityString = EntityUtils.toString(entity);
 		@SuppressWarnings("unchecked")
-		List<LittleO> o = serializer.getSerializer(Format.XML).deserialize(entityString, ArrayList.class);
+		List<LittleO> o = serializer.getSerializationProcessor(Format.XML).deserialize(entityString, ArrayList.class);
 		verifyList(o.toArray(new LittleO[0]));
 		request.releaseConnection();
 	}
@@ -545,7 +545,7 @@ public class RestExpressServerTest {
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(ContentType.XML, entity.getContentType().getValue());
 		String entityString = EntityUtils.toString(entity);
-		JsendResult o = serializer.getSerializer(Format.WRAPPED_XML).deserialize(entityString, JsendResult.class);
+		JsendResult o = serializer.getSerializationProcessor(Format.WRAPPED_XML).deserialize(entityString, JsendResult.class);
 		assertEquals("success", o.getStatus());
 		verifyObject((LittleO) o.getData());
 		request.releaseConnection();
@@ -566,7 +566,7 @@ public class RestExpressServerTest {
 		assertNotNull(range);
 		assertEquals("items 0-2/3", range.getValue());
 		String entityString = EntityUtils.toString(entity);
-		JsendResult o = serializer.getSerializer(Format.WRAPPED_XML).deserialize(entityString, JsendResult.class);
+		JsendResult o = serializer.getSerializationProcessor(Format.WRAPPED_XML).deserialize(entityString, JsendResult.class);
 		verifyList(((ArrayList<LittleO>) o.getData()).toArray(new LittleO[0]));
 		request.releaseConnection();
 	}
@@ -591,7 +591,7 @@ public class RestExpressServerTest {
 		assertNotNull(range);
 		assertEquals("items 0-2/3", range.getValue());
 		String entityString = EntityUtils.toString(entity);
-		LittleO[] os = serializer.getSerializer(Format.JSON).deserialize(entityString, LittleO[].class);
+		LittleO[] os = serializer.getSerializationProcessor(Format.JSON).deserialize(entityString, LittleO[].class);
 		verifyList(os);
 		request.releaseConnection();
 	}

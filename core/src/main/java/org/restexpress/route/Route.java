@@ -71,10 +71,10 @@ public abstract class Route {
 	private final String name;
 	private final String baseUrl;
 	private final List<String> supportedFormats = new ArrayList<String>();
-	private final Set<Flags> flags = new HashSet<>();
+	private final Set<String> flags = new HashSet<>();
 	private final Map<String, Object> parameters = new HashMap<String, Object>();
 
-	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
+	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
 			final Map<String, Object> parameters, final String baseUrl) {
 		super();
 		this.urlMatcher = urlMatcher;
@@ -90,8 +90,12 @@ public abstract class Route {
 		this.baseUrl = baseUrl;
 	}
 
-	public boolean isFlagged(final Flags flag) {
+	public boolean isFlagged(final String flag) {
 		return flags.contains(flag);
+	}
+
+	public boolean isFlagged(final Flags flag) {
+		return flags.contains(flag.toString());
 	}
 
 	public boolean hasParameter(final String name) {

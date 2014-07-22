@@ -36,8 +36,9 @@ package org.restexpress.domain.metadata;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * {@link ServerMetadata} expose server metadata information on name, port,
@@ -50,7 +51,7 @@ public class ServerMetadata implements Serializable {
 	private static final long serialVersionUID = -8033976905088770790L;
 	private String name;
 	private int port;
-	private List<String> supportedFormats;
+	private Set<String> supportedFormats;
 	private String defaultFormat;
 	private final List<RouteMetadata> routes;
 
@@ -60,74 +61,46 @@ public class ServerMetadata implements Serializable {
 	public ServerMetadata() {
 		super();
 		routes = new ArrayList<>();
-		supportedFormats = new ArrayList<>();
+		supportedFormats = new HashSet<>();
 	}
 
-	public ServerMetadata copyRootData() {
-		final ServerMetadata copy = new ServerMetadata();
-		copy.setName(getName());
-		copy.setPort(getPort());
-		copy.setDefaultFormat(getDefaultFormat());
-		copy.addAllSupportedFormats(getSupportedFormats());
-		return copy;
+	public ServerMetadata(String name, int port, Set<String> supportedFormats, String defaultFormat, List<RouteMetadata> routes) {
+		super();
+		this.name = name;
+		this.port = port;
+		this.supportedFormats = supportedFormats;
+		this.defaultFormat = defaultFormat;
+		this.routes = routes;
+	}
+
+	public ServerMetadata(ServerMetadata root, RouteMetadata routeInfo) {
+		this.name = root.name;
+		this.port = root.port;
+		this.supportedFormats = new HashSet<String>();
+		this.supportedFormats.addAll(root.supportedFormats);
+		this.defaultFormat = root.defaultFormat;
+		this.routes = new ArrayList<RouteMetadata>();
+		this.routes.add(routeInfo);
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(final String name) {
-		this.name = name;
-	}
-
 	public int getPort() {
 		return port;
 	}
 
-	public void setPort(final int port) {
-		this.port = port;
-	}
-
-	public List<String> getSupportedFormats() {
+	public Set<String> getSupportedFormats() {
 		return supportedFormats;
-	}
-
-	public void addSupportedFormat(final String format) {
-		if (supportedFormats == null) {
-			supportedFormats = new ArrayList<String>();
-		}
-
-		if (!supportedFormats.contains(format)) {
-			supportedFormats.add(format);
-		}
-	}
-
-	public void addAllSupportedFormats(final Collection<String> formats) {
-		for (final String format : formats) {
-			addSupportedFormat(format);
-		}
 	}
 
 	public String getDefaultFormat() {
 		return defaultFormat;
 	}
 
-	public void setDefaultFormat(final String defaultFormat) {
-		this.defaultFormat = defaultFormat;
-	}
-
 	public List<RouteMetadata> getRoutes() {
 		return routes;
-	}
-
-	public void addRoute(final RouteMetadata route) {
-		routes.add(route);
-	}
-
-	public void addAllRoutes(final Collection<RouteMetadata> routes) {
-		for (final RouteMetadata route : routes) {
-			addRoute(route);
-		}
 	}
 
 	@Override

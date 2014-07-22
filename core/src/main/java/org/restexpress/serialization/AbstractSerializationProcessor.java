@@ -18,64 +18,69 @@
  *
  */
 /*
-    Copyright 2013, Strategic Gains, Inc.
+ Copyright 2013, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.serialization;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.restexpress.contenttype.MediaRange;
 import org.restexpress.contenttype.MediaTypeParser;
 
 /**
+ * {@link AbstractSerializationProcessor} implement common functionalities of
+ * {@link SerializationProcessor}. TODO transform to immutable way
+ * 
  * @author toddf
  * @since Jul 18, 2013
  */
 public abstract class AbstractSerializationProcessor implements SerializationProcessor {
+	/**
+	 * supported format.
+	 */
+	private final String supportedFormat;
+	/**
+	 * {@link Set} of {@link MediaRange}.
+	 */
+	private final List<MediaRange> supportedMediaRanges;
 
-	private final List<String> supportedFormats = new ArrayList<String>();
-	private final List<MediaRange> supportedMediaRanges = new ArrayList<MediaRange>();
-
-	public AbstractSerializationProcessor() {
+	/**
+	 * Build a new instance of AbstractSerializationProcessor.
+	 * 
+	 * @param supportedFormat
+	 *            supported format
+	 * @param supportedMediaRanges
+	 *            {@link List} of supported {@link MediaRange}
+	 */
+	public AbstractSerializationProcessor(final String supportedFormat, final List<MediaRange> supportedMediaRanges) {
 		super();
-	}
-
-	public AbstractSerializationProcessor(final List<String> supportedFormats, final List<MediaRange> supportedMediaRanges) {
-		super();
-		setSupportedFormats(supportedFormats);
-		setSupportedMediaRanges(supportedMediaRanges);
-	}
-
-	public AbstractSerializationProcessor addSupportedFormat(final String format) {
-		if (!supportedFormats.contains(format)) {
-			supportedFormats.add(format);
-		}
-
-		return this;
+		this.supportedFormat = supportedFormat;
+		this.supportedMediaRanges = supportedMediaRanges;
+		// this.supportedMediaRanges = new ArrayList<MediaRange>(
+		// supportedMediaRanges);
 	}
 
 	@Override
-	public List<String> getSupportedFormats() {
-		return Collections.unmodifiableList(supportedFormats);
+	public String getSupportedFormat() {
+		return supportedFormat;
 	}
 
-	public void setSupportedFormats(final List<String> supportedFormats) {
-		this.supportedFormats.clear();
-		this.supportedFormats.addAll(supportedFormats);
+	@Override
+	public List<MediaRange> getSupportedMediaRanges() {
+		return supportedMediaRanges;
 	}
 
 	/**
@@ -100,11 +105,6 @@ public abstract class AbstractSerializationProcessor implements SerializationPro
 		for (final MediaRange mediaRange : mediaRanges) {
 			addSupportedMediaRange(mediaRange);
 		}
-	}
-
-	@Override
-	public List<MediaRange> getSupportedMediaRanges() {
-		return supportedMediaRanges;
 	}
 
 	public void setSupportedMediaRanges(final List<MediaRange> mediaRanges) {

@@ -32,7 +32,7 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
  */
-package org.restexpress.util;
+package org.restexpress.context;
 
 import java.util.Hashtable;
 import java.util.Map;

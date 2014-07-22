@@ -3,7 +3,7 @@ package org.restexpress.plugin.route;
 import java.io.IOException;
 
 import org.restexpress.RestExpressLauncher;
-import org.restexpress.pipeline.SimpleConsoleLogMessageObserver;
+import org.restexpress.pipeline.observer.SimpleConsoleLogMessageObserver;
 
 /**
  * RoutePluginDebug is just for see page and ... 
@@ -18,7 +18,7 @@ public class RoutePluginDebug {
 	 */
 	public static void main(String[] args) throws IOException {
 		RestExpressLauncher launcher = new RestExpressLauncher();
-		launcher.server().registerPlugin(new RoutePlugin());
+		launcher.server().registerPlugin(new RouteMetadataPlugin());
 		launcher.server().addMessageObserver(new SimpleConsoleLogMessageObserver());
 		launcher.bind();
 	}
