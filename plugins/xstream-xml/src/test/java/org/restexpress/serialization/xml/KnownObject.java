@@ -18,7 +18,7 @@
  *
  */
 /*
-    Copyright 2014, Strategic Gains, Inc.
+    Copyright 2011, Strategic Gains, Inc.
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -31,29 +31,35 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
- */
-package org.restexpress.postprocessor;
+*/
+package org.restexpress.serialization.xml;
 
-import org.restexpress.pipeline.MessageContext;
-import org.restexpress.pipeline.Postprocessor;
+import java.util.Date;
 
 /**
  * @author toddf
- * @since Jul 2, 2014
+ * @since Aug 4, 2011
  */
-public class TestPostprocessor implements Postprocessor {
-	private int callCount = 0;
+public class KnownObject
+{
+	public static final String CONSTANT = "i hope you don't see this";
+	@SuppressWarnings("unused")
+    private static final String INTERNAL = "or this";
 
-	@Override
-	public void process(MessageContext context) {
-		++callCount;
+	public int integer = 1;
+	public String string = "string value";
+	@SuppressWarnings("deprecation")
+    public Date date = new Date(64, 11, 17, 16, 30);
+	private String p = "something private";
+	public String[] sa;
+	
+	public String getP()
+	{
+		return p;
 	}
-
-	public int callCount() {
-		return callCount;
-	}
-
-	public void resetCallCount() {
-		this.callCount = 0;
+	
+	public String getQ()
+	{
+		return "Q(" + p + ")";
 	}
 }

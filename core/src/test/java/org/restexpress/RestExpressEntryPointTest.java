@@ -4,6 +4,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.restexpress.pipeline.observer.SimpleConsoleLogMessageObserver;
 
 /**
  * {@link RestExpressEntryPointTest} test {@link RestExpressEntryPoint}.
@@ -21,6 +22,7 @@ public class RestExpressEntryPointTest {
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		launcher = new RestExpressLauncher();
+		launcher.server().addMessageObserver(new SimpleConsoleLogMessageObserver());
 		launcher.bind();
 	}
 

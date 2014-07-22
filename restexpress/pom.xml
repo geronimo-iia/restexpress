@@ -13,17 +13,59 @@
 	<url>https://github.com/RestExpress/RestExpress</url>
 	<properties>
 		<license.header.path>../header.txt</license.header.path>
+		<keystone-plugin.version>3.2</keystone-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
 			<artifactId>restexpress-core</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.strategicgains</groupId>
+			<artifactId>restexpress-plugins-jackson-json</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.strategicgains</groupId>
+			<artifactId>restexpress-plugins-xstream-xml</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.strategicgains</groupId>
+			<artifactId>restexpress-plugins-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.strategicgains</groupId>
+			<artifactId>restexpress-plugins-route</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<!-- BUILD -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.intelligents-ia.keystone</groupId>
+				<artifactId>keystone-plugin</artifactId>
+				<version>${keystone-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<configuration>
+							<mainClass>org.restexpress.RestExpressLauncher</mainClass>
+						</configuration>
+						<goals>
+							<goal>custom</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

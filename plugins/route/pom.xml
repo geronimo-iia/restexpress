@@ -15,19 +15,8 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress</artifactId>
-		</dependency>
-		<!-- MVEL -->
-		<dependency>
 			<groupId>org.mvel</groupId>
 			<artifactId>mvel2</artifactId>
-		</dependency>
-		<!-- HTTP CLIENT -->
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

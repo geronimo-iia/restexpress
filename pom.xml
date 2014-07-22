@@ -102,6 +102,8 @@
 		<module>common</module>
 		<module>core</module>
 		<module>plugins</module>
+		<module>restexpress</module>
+		<module>http-client</module>
 	</modules>
 
 	<!-- ******************************************************************* -->
@@ -112,12 +114,12 @@
 			<!-- RESTEXPRESS -->
 			<dependency>
 				<groupId>com.strategicgains</groupId>
-				<artifactId>restexpress</artifactId>
+				<artifactId>restexpress-common</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.strategicgains</groupId>
-				<artifactId>restexpress-common</artifactId>
+				<artifactId>restexpress-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<!-- HTTP SPECIFICATION -->

@@ -108,6 +108,8 @@ Current Version 0.10.4
 * Add a Server Context
 * Add a AccesLogMessageObserver
 * Simplify SerializationProvider: support only one format(one content type) per instance.
+* Add ResponseHeaderPostProcessor (add predefined list of header in response, if they're not present)
+* Add common plugin (from PluginExpress): cache utility, and x-security (not finalized).
 
 Release 0.10.3 - 27 May 2014
 ---------------------------

@@ -18,7 +18,7 @@
  *
  */
 /*
-    Copyright 2014, Strategic Gains, Inc.
+    Copyright 2010, Strategic Gains, Inc.
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -32,18 +32,16 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
  */
-package org.restexpress.preprocessor;
+package org.restexpress.serialization.xml;
 
-import org.restexpress.pipeline.MessageContext;
-import org.restexpress.pipeline.Preprocessor;
+import com.strategicgains.util.date.TimestampAdapter;
 
 /**
  * @author toddf
- * @since Jul 2, 2014
+ * @since Dec 16, 2010
  */
-public class ErrorPreprocessor implements Preprocessor {
-	@Override
-	public void process(MessageContext context) {
-		throw new RuntimeException("ErrorPreprocessor");
+public class XstreamTimestampConverter extends XstreamDateConverter {
+	public XstreamTimestampConverter() {
+		super(new TimestampAdapter());
 	}
 }

@@ -6,9 +6,9 @@
 		<artifactId>restexpress-parent</artifactId>
 		<version>0.10.4-SNAPSHOT</version>
 	</parent>
-	<artifactId>restexpress-core</artifactId>
+	<artifactId>restexpress-http-client</artifactId>
 	<packaging>jar</packaging>
-	<name>restexpress-core</name>
+	<description>Client Http Tooling</description>
 	<properties>
 		<license.header.path>../header.txt</license.header.path>
 	</properties>
@@ -16,26 +16,6 @@
 		<dependency>
 			<groupId>com.strategicgains</groupId>
 			<artifactId>restexpress-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.strategicgains</groupId>
-			<artifactId>DateAdapterJ</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.owasp.encoder</groupId>
-			<artifactId>encoder</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

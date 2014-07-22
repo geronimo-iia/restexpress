@@ -32,7 +32,7 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
  */
-package org.restexpress;
+package org.restexpress.server;
 
 import java.util.List;
 

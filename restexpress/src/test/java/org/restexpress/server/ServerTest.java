@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress;
+package org.restexpress.server;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,18 +43,23 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.restexpress.ContentType;
+import org.restexpress.Format;
+import org.restexpress.Request;
+import org.restexpress.Response;
+import org.restexpress.RestExpress;
 import org.restexpress.common.query.QueryRange;
 import org.restexpress.common.response.JsendResult;
 import org.restexpress.pipeline.observer.SimpleConsoleLogMessageObserver;
-import org.restexpress.postprocessor.TestPostprocessor;
-import org.restexpress.preprocessor.ErrorPreprocessor;
 import org.restexpress.response.Wrapper;
 import org.restexpress.response.Wrapper.JsendResponseWrapper;
 import org.restexpress.serialization.DefaultSerializationProvider;
 import org.restexpress.serialization.json.JacksonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
+import org.restexpress.server.processor.ErrorPreprocessor;
+import org.restexpress.server.processor.TestPostprocessor;
 
-public class RestExpressServerTest {
+public class ServerTest {
 	private static final String URL_PATTERN1 = "/1/restexpress/{id}/test/{test}.{format}";
 	private static final String URL_PATTERN2 = "/2/restexpress/{id}/test/{test}";
 	private static final String URL_PATTERN3 = "/3/restexpress/{id}/test/{test}.{format}";
