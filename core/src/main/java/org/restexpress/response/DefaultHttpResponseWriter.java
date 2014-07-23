@@ -34,6 +34,8 @@ import org.restexpress.Response;
 import org.restexpress.util.HttpSpecification;
 
 /**
+ * {@link DefaultHttpResponseWriter} implements an {@link HttpResponseWriter}.
+ * 
  * @author toddf
  * @since Aug 26, 2010
  */

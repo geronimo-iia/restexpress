@@ -21,10 +21,10 @@ package org.restexpress.response;
 
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.restexpress.Response;
-import org.restexpress.common.exception.Exceptions;
-import org.restexpress.common.response.ErrorResult;
-import org.restexpress.common.response.JsendResult;
-import org.restexpress.common.response.JsendResult.State;
+import org.restexpress.domain.response.ErrorResult;
+import org.restexpress.domain.response.JsendResult;
+import org.restexpress.domain.response.JsendResult.State;
+import org.restexpress.exception.Exceptions;
 
 public enum Wrapper {
 	;

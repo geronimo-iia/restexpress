@@ -40,7 +40,7 @@ import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.Response;
-import org.restexpress.common.exception.HttpSpecificationException;
+import org.restexpress.exception.HttpSpecificationException;
 
 /**
  * Verifies the response contents prior to writing it to the output stream to

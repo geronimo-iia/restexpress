@@ -49,9 +49,9 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.restexpress.Request;
-import org.restexpress.common.query.OrderCallback;
-import org.restexpress.common.query.OrderComponent;
-import org.restexpress.common.query.QueryOrder;
+import org.restexpress.query.OrderCallback;
+import org.restexpress.query.OrderComponent;
+import org.restexpress.query.QueryOrder;
 
 /**
  * @author toddf

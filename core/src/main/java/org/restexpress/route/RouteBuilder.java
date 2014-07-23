@@ -39,9 +39,9 @@ import java.util.Set;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.common.exception.ConfigurationException;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.UriMetadata;
+import org.restexpress.exception.ConfigurationException;
 
 /**
  * Builds a route for a single URI. If a URI is given with no methods or

@@ -28,5 +28,6 @@ import org.restexpress.Response;
  * @since Aug 26, 2010
  */
 public interface HttpResponseWriter {
+	
 	public void write(ChannelHandlerContext ctx, Request request, Response response);
 }

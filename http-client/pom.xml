@@ -14,10 +14,6 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress-common</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<scope>test</scope>

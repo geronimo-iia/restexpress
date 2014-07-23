@@ -25,7 +25,7 @@ import java.util.Date;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.restexpress.ContentType;
-import org.restexpress.common.util.StringUtils;
+import org.restexpress.common.StringUtils;
 import org.restexpress.serialization.json.JsonSerializationProcessor;
 
 import com.google.gson.FieldNamingPolicy;

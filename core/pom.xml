@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress-common</artifactId>
+			<artifactId>restexpress-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.strategicgains</groupId>

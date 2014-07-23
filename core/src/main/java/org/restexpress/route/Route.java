@@ -50,7 +50,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Flags;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.common.util.StringUtils;
+import org.restexpress.common.StringUtils;
 import org.restexpress.url.UrlMatch;
 import org.restexpress.url.UrlMatcher;
 

@@ -99,7 +99,7 @@
 	<!-- MODULE -->
 	<!-- ******************************************************************* -->
 	<modules>
-		<module>common</module>
+		<module>api</module>
 		<module>core</module>
 		<module>plugins</module>
 		<module>restexpress</module>
@@ -114,7 +114,7 @@
 			<!-- RESTEXPRESS -->
 			<dependency>
 				<groupId>com.strategicgains</groupId>
-				<artifactId>restexpress-common</artifactId>
+				<artifactId>restexpress-api</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

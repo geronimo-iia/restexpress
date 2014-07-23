@@ -36,7 +36,7 @@ package org.restexpress.serialization.json;
 
 import org.restexpress.ContentType;
 import org.restexpress.Format;
-import org.restexpress.common.util.StringUtils;
+import org.restexpress.common.StringUtils;
 import org.restexpress.contenttype.MediaTypeParser;
 import org.restexpress.serialization.AbstractSerializationProcessor;
 

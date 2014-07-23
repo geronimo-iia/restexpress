@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.restexpress.Request;
-import org.restexpress.common.query.QueryRange;
+import org.restexpress.query.QueryRange;
 
 /**
  * A factory for RestExpress-Common QueryRange instances, parsing them from a
@@ -32,7 +32,7 @@ import org.restexpress.common.query.QueryRange;
  * 
  * @author toddf
  * @since Apr 11, 2011
- * @see org.restexpress.common.query.QueryRange
+ * @see org.restexpress.query.QueryRange
  */
 public abstract class QueryRanges {
 	// SECTION: CONSTANTS

@@ -48,9 +48,9 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.restexpress.Request;
-import org.restexpress.common.query.FilterCallback;
-import org.restexpress.common.query.FilterComponent;
-import org.restexpress.common.query.QueryFilter;
+import org.restexpress.query.FilterCallback;
+import org.restexpress.query.FilterComponent;
+import org.restexpress.query.QueryFilter;
 
 /**
  * @author toddf

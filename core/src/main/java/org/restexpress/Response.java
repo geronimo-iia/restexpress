@@ -29,7 +29,7 @@ import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.restexpress.common.query.QueryRange;
+import org.restexpress.query.QueryRange;
 import org.restexpress.serialization.SerializationSettings;
 
 /**

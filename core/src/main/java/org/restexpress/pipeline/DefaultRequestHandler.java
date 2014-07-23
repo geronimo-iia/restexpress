@@ -33,7 +33,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.ContentType;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.common.exception.Exceptions;
+import org.restexpress.exception.Exceptions;
 import org.restexpress.response.HttpResponseWriter;
 import org.restexpress.route.Action;
 import org.restexpress.route.RouteResolver;

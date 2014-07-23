@@ -26,7 +26,7 @@ import java.util.Map;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
 import org.restexpress.Format;
-import org.restexpress.common.response.JsendResult;
+import org.restexpress.domain.response.JsendResult;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.SingleValueConverter;

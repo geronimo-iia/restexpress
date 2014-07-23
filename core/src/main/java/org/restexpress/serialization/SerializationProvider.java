@@ -38,7 +38,7 @@ import java.util.Set;
 
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.common.exception.ConfigurationException;
+import org.restexpress.exception.ConfigurationException;
 import org.restexpress.response.ResponseWrapper;
 
 /**
