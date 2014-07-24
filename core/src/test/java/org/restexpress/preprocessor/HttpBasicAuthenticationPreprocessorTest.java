@@ -44,11 +44,11 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
-import org.restexpress.TestUtilities;
 import org.restexpress.Response;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Preprocessor;
 import org.restexpress.pipeline.preprocessor.HttpBasicAuthenticationPreprocessor;
+import org.restexpress.util.TestUtilities;
 
 /**
  * @author toddf

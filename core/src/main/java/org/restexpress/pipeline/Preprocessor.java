@@ -23,9 +23,9 @@ package org.restexpress.pipeline;
  * Defines the interface for processing that occurs after the request is
  * created, but before any other processing of the route occurs. The
  * preprocessing chain is terminated if an exception is thrown. In fact, if a
- * Preprocessor throws an exception, the rest of the Preprocessors in the chain
+ * Processor throws an exception, the rest of the Preprocessors in the chain
  * are skipped along with the entire route. If an exception occurs in a
- * Preprocessor, Postprocessors are not called either. However, MessageObservers
+ * Processor, Postprocessors are not called either. However, MessageObservers
  * are.
  * 
  * @author toddf

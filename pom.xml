@@ -123,12 +123,6 @@
 				<artifactId>restexpress-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>com.strategicgains</groupId>
-				<artifactId>restexpress-test</artifactId>
-				<version>${project.version}</version>
-				<scope>test</scope>
-			</dependency>
 			<!-- HTTP SPECIFICATION -->
 			<dependency>
 				<groupId>org.intelligents-ia.commons</groupId>

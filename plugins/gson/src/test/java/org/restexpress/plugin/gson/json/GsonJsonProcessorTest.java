@@ -46,9 +46,9 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
 import org.restexpress.ContentType;
-import org.restexpress.processor.Processor;
-import org.restexpress.test.KnownObject;
-import org.restexpress.test.TestUtilities;
+import org.restexpress.serialization.KnownObject;
+import org.restexpress.serialization.Processor;
+import org.restexpress.util.TestUtilities;
 
 /**
  * @author toddf

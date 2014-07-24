@@ -18,7 +18,7 @@
  *
  */
 /*
-    Copyright 2011, Strategic Gains, Inc.
+    Copyright 2010, Strategic Gains, Inc.
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -32,21 +32,49 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
  */
-package org.restexpress.processor.xml;
+package org.restexpress.serialization.xml;
+
+import java.text.ParseException;
+import java.util.Date;
+
+import com.strategicgains.util.date.DateAdapter;
+import com.thoughtworks.xstream.converters.SingleValueConverter;
 
 /**
- * {@link Aliasable} define method to add an XML alias.
- * 
- * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
- * @since Jan 28, 2011
+ * @since Dec 16, 2010
  */
-public interface Aliasable {
-	/**
-	 * Define an XML alias for the class.
-	 * 
-	 * @param name
-	 * @param theClass
-	 */
-	public void alias(String name, Class<?> theClass);
+public class XstreamDateConverter implements SingleValueConverter {
+	private final DateAdapter adapter;
+
+	public XstreamDateConverter() {
+		this(new DateAdapter());
+	}
+
+	public XstreamDateConverter(final DateAdapter adapter) {
+		super();
+		this.adapter = adapter;
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public boolean canConvert(final Class aClass) {
+		return Date.class.isAssignableFrom(aClass);
+	}
+
+	@Override
+	public Object fromString(final String value) {
+		try {
+			return adapter.parse(value);
+		} catch (final ParseException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	@Override
+	public String toString(final Object date) {
+		return adapter.format((Date) date);
+	}
 }

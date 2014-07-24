@@ -1,3 +1,22 @@
+/**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
+ *
+ */
 package org.restexpress.pipeline;
 
 import java.util.ArrayList;
@@ -19,7 +38,7 @@ import org.restexpress.util.HttpSpecification;
  * and:
  * <ul>
  * <li>define main pipeline step</li>
- * <li>manage all pre/post/finally org.restexpress.processor and their invoker</li>
+ * <li>manage all pre/post/finally org.restexpress.serialization and their invoker</li>
  * <li>manage {@link MessageObserver} and their notifier</li>
  * <li>implement base method like initial context creation, response writer,
  * HTTP specification enforcer</li>
@@ -30,10 +49,10 @@ import org.restexpress.util.HttpSpecification;
  */
 public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandler {
 
-	private final List<Preprocessor> preprocessors = new ArrayList<Preprocessor>();
-	private final List<Postprocessor> postprocessors = new ArrayList<Postprocessor>();
-	private final List<Postprocessor> finallyProcessors = new ArrayList<Postprocessor>();
-	private final List<MessageObserver> messageObservers = new ArrayList<MessageObserver>();
+	private final List<Preprocessor> preprocessors = new ArrayList<>();
+	private final List<Postprocessor> postprocessors = new ArrayList<>();
+	private final List<Postprocessor> finallyProcessors = new ArrayList<>();
+	private final List<MessageObserver> messageObservers = new ArrayList<>();
 	private final HttpResponseWriter responseWriter;
 	private final boolean shouldEnforceHttpSpec;
 
@@ -136,8 +155,8 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 		return preprocessors;
 	}
 
-	protected void invokePreprocessors(final List<Preprocessor> processors, final MessageContext context) {
-		for (final Preprocessor handler : processors) {
+	protected void invokePreprocessors(final List<Preprocessor> preprocessors, final MessageContext context) {
+		for (final Preprocessor handler : preprocessors) {
 			handler.process(context);
 		}
 		context.getRequest().getBody().resetReaderIndex();

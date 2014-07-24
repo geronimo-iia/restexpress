@@ -50,9 +50,9 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restexpress.Request;
-import org.restexpress.TestUtilities;
 import org.restexpress.Response;
 import org.restexpress.pipeline.MessageContext;
+import org.restexpress.util.TestUtilities;
 
 /**
  * @author toddf

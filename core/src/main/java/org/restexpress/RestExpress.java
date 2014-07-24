@@ -50,8 +50,6 @@ import org.restexpress.pipeline.PipelineBuilder;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;
 import org.restexpress.plugin.Plugin;
-import org.restexpress.processor.json.JacksonJsonProcessor;
-import org.restexpress.processor.xml.XstreamXmlProcessor;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteBuilder;
@@ -59,6 +57,8 @@ import org.restexpress.route.RouteDeclaration;
 import org.restexpress.route.RouteResolver;
 import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
+import org.restexpress.serialization.json.JacksonJsonProcessor;
+import org.restexpress.serialization.xml.XstreamXmlProcessor;
 import org.restexpress.settings.RestExpressSettings;
 import org.restexpress.settings.Settings;
 import org.restexpress.util.Bootstraps;
@@ -149,10 +149,10 @@ public class RestExpress {
 			throw new NullPointerException("RestExpressSettings can not be null");
 		this.settings = settings;
 		this.responseProcessorManager = new ResponseProcessorManager();
-		messageObservers = new ArrayList<MessageObserver>();
-		preprocessors = new ArrayList<Preprocessor>();
-		postprocessors = new ArrayList<Postprocessor>();
-		finallyProcessors = new ArrayList<Postprocessor>();
+		messageObservers = new ArrayList<>();
+		preprocessors = new ArrayList<>();
+		postprocessors = new ArrayList<>();
+		finallyProcessors = new ArrayList<>();
 		plugins = new ArrayList<Plugin>();
 		routeDeclarations = new RouteDeclaration();
 		context = new ServerContext();
@@ -222,16 +222,16 @@ public class RestExpress {
 	}
 
 	/**
-	 * Add a Preprocessor instance that gets called before an incoming message
-	 * gets processed. Preprocessors get called in the order in which they are
-	 * added. To break out of the chain, simply throw an exception.
+	 * Add a Processor instance that gets called before an incoming message gets
+	 * processed. Preprocessors get called in the order in which they are added.
+	 * To break out of the chain, simply throw an exception.
 	 * 
-	 * @param org.restexpress.processor
+	 * @param processor
 	 * @return
 	 */
-	public RestExpress addPreprocessor(final Preprocessor processor) {
-		if (!preprocessors.contains(processor)) {
-			preprocessors.add(processor);
+	public RestExpress addPreprocessor(final Preprocessor preprocessor) {
+		if (!preprocessors.contains(preprocessor)) {
+			preprocessors.add(preprocessor);
 		}
 		return this;
 	}
@@ -250,7 +250,7 @@ public class RestExpress {
 	 * called in the order in which they are added. Note however, they do NOT
 	 * get called in the case of an exception or error within the route.
 	 * 
-	 * @param org.restexpress.processor
+	 * @param processor
 	 * @return
 	 */
 	public RestExpress addPostprocessor(final Postprocessor processor) {
@@ -270,17 +270,17 @@ public class RestExpress {
 	/**
 	 * Add a Postprocessor instance that gets called right before the serialized
 	 * message is sent to the client, or in a finally block after the message is
-	 * processed, if an error occurs. Finally processors are Postprocessor
+	 * processed, if an error occurs. Finally preprocessors are Postprocessor
 	 * instances that are guaranteed to run even if an error is thrown from the
 	 * controller or somewhere else in the route. A Finally Processor is useful
 	 * for adding headers or transforming results even during error conditions.
-	 * Finally processors get called in the order in which they are added.
+	 * Finally preprocessors get called in the order in which they are added.
 	 * 
-	 * If an exception is thrown during finally org.restexpress.processor execution, the finally
-	 * processors following it are executed after printing a stack trace to the
-	 * System.err stream.
+	 * If an exception is thrown during finally org.restexpress.serialization
+	 * execution, the finally preprocessors following it are executed after
+	 * printing a stack trace to the System.err stream.
 	 * 
-	 * @param org.restexpress.processor
+	 * @param processor
 	 * @return RestExpress for method chaining.
 	 */
 	public RestExpress addFinallyProcessor(final Postprocessor processor) {
@@ -323,15 +323,15 @@ public class RestExpress {
 		// Add MessageObservers to the request handler here, if desired...
 		requestHandler.addMessageObserver(messageObservers);
 
-		// Add pre processors to the request handler here...
+		// Add pre preprocessors to the request handler here...
 		for (final Preprocessor processor : preprocessors()) {
 			requestHandler.addPreprocessor(processor);
 		}
-		// Add post processors to the request handler here...
+		// Add post preprocessors to the request handler here...
 		for (final Postprocessor processor : postprocessors()) {
 			requestHandler.addPostprocessor(processor);
 		}
-		// Add finally post processors to the request handler here...
+		// Add finally post preprocessors to the request handler here...
 		for (final Postprocessor processor : finallyProcessors()) {
 			requestHandler.addFinallyProcessor(processor);
 		}

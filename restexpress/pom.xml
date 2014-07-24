@@ -45,10 +45,6 @@
 			<artifactId>httpclient</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress-test</artifactId>
-		</dependency>
 	</dependencies>
 	<!-- BUILD -->
 	<build>

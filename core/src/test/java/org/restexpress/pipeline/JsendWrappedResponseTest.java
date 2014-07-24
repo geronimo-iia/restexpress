@@ -49,10 +49,10 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.SerializationProvider;
-import org.restexpress.processor.json.JacksonJsonProcessor;
-import org.restexpress.processor.xml.XstreamXmlProcessor;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
+import org.restexpress.serialization.json.JacksonJsonProcessor;
+import org.restexpress.serialization.xml.XstreamXmlProcessor;
 
 /**
  * @author toddf

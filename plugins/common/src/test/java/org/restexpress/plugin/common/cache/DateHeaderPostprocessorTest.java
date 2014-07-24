@@ -50,7 +50,7 @@ import org.junit.Test;
 import org.restexpress.Response;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
-import org.restexpress.test.TestUtilities;
+import org.restexpress.util.TestUtilities;
 
 import com.strategicgains.util.date.HttpHeaderTimestampAdapter;
 

@@ -40,7 +40,7 @@ import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.exception.DeserializationException;
 import org.restexpress.exception.SerializationException;
-import org.restexpress.processor.Processor;
+import org.restexpress.serialization.Processor;
 
 /**
  * {@link ResponseProcessor} is an association of a {@link Processor} for
@@ -66,7 +66,7 @@ public final class ResponseProcessor implements Serializer {
 	/**
 	 * Build a new instance of {@link ResponseProcessor}.
 	 * 
-	 * @param org.restexpress.processor
+	 * @param org.restexpress.serialization
 	 * @param wrapper
 	 * @throws IllegalArgumentException
 	 *             if one of parameter is null

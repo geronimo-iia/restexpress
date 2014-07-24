@@ -56,10 +56,10 @@ import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.SerializationProvider;
 import org.restexpress.domain.Format;
-import org.restexpress.processor.json.JacksonJsonProcessor;
-import org.restexpress.processor.xml.XstreamXmlProcessor;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
+import org.restexpress.serialization.json.JacksonJsonProcessor;
+import org.restexpress.serialization.xml.XstreamXmlProcessor;
 
 /**
  * @author toddf

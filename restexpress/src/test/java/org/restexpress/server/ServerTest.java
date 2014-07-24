@@ -53,7 +53,7 @@ import org.restexpress.pipeline.observer.SimpleConsoleLogMessageObserver;
 import org.restexpress.query.QueryRange;
 import org.restexpress.server.processor.ErrorPreprocessor;
 import org.restexpress.server.processor.TestPostprocessor;
-import org.restexpress.test.TestUtilities;
+import org.restexpress.util.TestUtilities;
 
 public class ServerTest {
 	private static final String URL_PATTERN1 = "/1/restexpress/{id}/test/{test}.{format}";

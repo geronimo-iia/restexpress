@@ -32,7 +32,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-package org.restexpress.test;
+package org.restexpress.pipeline;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +47,10 @@ import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.util.HttpSpecification;
 
 /**
+ * {@link StringBufferHttpResponseWriter} implement {@link HttpResponseWriter}
+ * for testing purpose. This class write content into a {@link StringBuffer},
+ * take care of memory.
+ * 
  * @author toddf
  * @since Feb 10, 2011
  */
