@@ -51,6 +51,7 @@ public class ServerMetadata implements Serializable {
 	private static final long serialVersionUID = -8033976905088770790L;
 	private String name;
 	private int port;
+	private Set<String> supportedMediaTypes;
 	private Set<String> supportedFormats;
 	private String defaultFormat;
 	private final List<RouteMetadata> routes;
@@ -64,10 +65,11 @@ public class ServerMetadata implements Serializable {
 		supportedFormats = new HashSet<>();
 	}
 
-	public ServerMetadata(String name, int port, Set<String> supportedFormats, String defaultFormat, List<RouteMetadata> routes) {
+	public ServerMetadata(String name, int port, Set<String> supportedMediaTypes, Set<String> supportedFormats, String defaultFormat, List<RouteMetadata> routes) {
 		super();
 		this.name = name;
 		this.port = port;
+		this.supportedMediaTypes = supportedMediaTypes;
 		this.supportedFormats = supportedFormats;
 		this.defaultFormat = defaultFormat;
 		this.routes = routes;
@@ -91,6 +93,10 @@ public class ServerMetadata implements Serializable {
 		return port;
 	}
 
+	public Set<String> getSupportedMediaTypes() {
+		return supportedMediaTypes;
+	}
+	
 	public Set<String> getSupportedFormats() {
 		return supportedFormats;
 	}

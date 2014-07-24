@@ -14,8 +14,6 @@
 		<license.header.path>../header.txt</license.header.path>
 	</properties>
 	<modules>
-		<module>jackson-json</module>
-		<module>xstream-xml</module>
 		<module>gson</module>
 		<module>route</module>
 		<module>common</module>
@@ -30,6 +28,10 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.strategicgains</groupId>
+			<artifactId>restexpress-test</artifactId>
 		</dependency>
 	</dependencies>
 </project>

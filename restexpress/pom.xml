@@ -45,6 +45,10 @@
 			<artifactId>httpclient</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.strategicgains</groupId>
+			<artifactId>restexpress-test</artifactId>
+		</dependency>
 	</dependencies>
 	<!-- BUILD -->
 	<build>
@@ -58,7 +62,7 @@
 						<id>make-assembly</id>
 						<phase>package</phase>
 						<configuration>
-							<mainClass>org.restexpress.RestExpressLauncher</mainClass>
+							<mainClass>org.restexpress.test.RestExpressLauncher</mainClass>
 						</configuration>
 						<goals>
 							<goal>custom</goal>

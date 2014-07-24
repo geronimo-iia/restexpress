@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 
 import org.jboss.netty.channel.Channel;
-import org.restexpress.serialization.SerializationProvider;
 import org.restexpress.settings.RestExpressSettings;
 import org.restexpress.settings.Settings;
 
@@ -81,10 +80,6 @@ public class RestExpressLauncher implements Runnable {
 	 */
 	public RestExpressLauncher(RestExpressSettings settings) {
 		server(new RestExpress(settings));
-	}
-
-	public RestExpressLauncher(RestExpressSettings settings, SerializationProvider serializationProvider) {
-		server(new RestExpress(settings, serializationProvider));
 	}
 
 	protected void server(RestExpress restExpress) {

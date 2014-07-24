@@ -44,7 +44,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.restexpress.Request;
-import org.restexpress.query.QueryRange;
+import org.restexpress.TestUtilities;
 
 /**
  * @author toddf
@@ -57,7 +57,7 @@ public class QueryRangesTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("Range", "items=0-24");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		QueryRange r = QueryRanges.parseFrom(request);
 		assertEquals(25, r.getLimit());
 		assertEquals(0, r.getOffset());
@@ -69,7 +69,7 @@ public class QueryRangesTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("limit", "5");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		QueryRange r = QueryRanges.parseFrom(request);
 		assertEquals(5, r.getLimit());
 		assertEquals(0, r.getOffset());
@@ -81,7 +81,7 @@ public class QueryRangesTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("offset", "25");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		QueryRanges.parseFrom(request);
 		fail("Should have thrown");
 	}
@@ -91,7 +91,7 @@ public class QueryRangesTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("offset", "25");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		QueryRange r = QueryRanges.parseFrom(request, 5);
 		assertEquals(5, r.getLimit());
 		assertEquals(25, r.getOffset());
@@ -103,7 +103,7 @@ public class QueryRangesTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("Range", "items=A-24");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		QueryRanges.parseFrom(request);
 		fail("Did not throw exception as expected.");
 	}
@@ -113,7 +113,7 @@ public class QueryRangesTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("Range", "items=24-23");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		QueryRanges.parseFrom(request);
 		fail("Did not throw exception as expected.");
 	}
@@ -123,7 +123,7 @@ public class QueryRangesTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("Range", "items=1-0");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		QueryRanges.parseFrom(request);
 		fail("Did not throw exception as expected.");
 	}
@@ -133,7 +133,7 @@ public class QueryRangesTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("Range", "items=200-299");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		QueryRange r = QueryRanges.parseFrom(request);
 		assertEquals(100, r.getLimit());
 		assertEquals(200, r.getStart());
@@ -148,7 +148,7 @@ public class QueryRangesTest
 		// RestExpress parses the query-string into headers.
 		httpRequest.headers().add("limit", "100");
 		httpRequest.headers().add("offset", "200");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		QueryRange r = QueryRanges.parseFrom(request);
 		assertEquals(100, r.getLimit());
 		assertEquals(200, r.getStart());

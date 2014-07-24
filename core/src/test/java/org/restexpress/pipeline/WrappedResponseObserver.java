@@ -60,6 +60,7 @@ extends MessageObserver
     protected void onException(Throwable exception, Request request, Response response)
     {
 		++exceptionCount;
+		exception.printStackTrace();
     }
 
 	@Override

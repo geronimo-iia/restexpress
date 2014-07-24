@@ -18,19 +18,19 @@
  *
  */
 /*
-    Copyright 2010, Strategic Gains, Inc.
+ Copyright 2010, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.pipeline;
 
@@ -40,49 +40,31 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.UpstreamMessageEvent;
-import org.jboss.netty.channel.local.DefaultLocalServerChannelFactory;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
-import org.restexpress.response.DefaultHttpResponseWriter;
-import org.restexpress.response.StringBufferHttpResponseWriter;
+import org.restexpress.processor.json.JacksonJsonProcessor;
+import org.restexpress.processor.xml.XstreamXmlProcessor;
+import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
-import org.restexpress.route.RouteResolver;
-import org.restexpress.serialization.DefaultSerializationProvider;
-import org.restexpress.serialization.SerializationProvider;
 
 /**
  * @author toddf
  * @since Dec 15, 2010
  */
-public class RawWrappedResponseTest {
-	private DefaultRequestHandler messageHandler;
-	private WrappedResponseObserver observer;
-	private Channel channel;
-	private ChannelPipeline pl;
-	private StringBuffer httpResponse;
+public class RawWrappedResponseTest extends AbstractWrapperResponse {
 
 	@Before
 	public void initialize() throws Exception {
-		SerializationProvider resolver = new DefaultSerializationProvider();
 		DummyRoutes routes = new DummyRoutes();
 		routes.defineRoutes();
-		messageHandler = new DefaultRequestHandler(new RouteResolver(routes.createRouteMapping()), resolver, new DefaultHttpResponseWriter(), true);
-		observer = new WrappedResponseObserver();
-		messageHandler.addMessageObserver(observer);
-		httpResponse = new StringBuffer();
-		messageHandler.setResponseWriter(new StringBufferHttpResponseWriter(httpResponse));
-		PipelineBuilder pf = new PipelineBuilder().addRequestHandler(messageHandler);
-		pl = pf.getPipeline();
-		ChannelFactory channelFactory = new DefaultLocalServerChannelFactory();
-		channel = channelFactory.newChannel(pl);
+		initialize(routes);
+		messageHandler.serializationProvider().add(new JacksonJsonProcessor(), Wrapper.newRawResponseWrapper(), true);
+		messageHandler.serializationProvider().add(new XstreamXmlProcessor(), Wrapper.newRawResponseWrapper());
 	}
 
 	@Test
@@ -93,7 +75,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("\"Normal GET action\"", httpResponse.toString());
+		assertEquals("\"Normal GET action\"", responseBody.toString());
 	}
 
 	@Test
@@ -104,7 +86,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("\"Normal GET action\"", httpResponse.toString());
+		assertEquals("\"Normal GET action\"", responseBody.toString());
 	}
 
 	@Test
@@ -115,7 +97,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("<string>Normal GET action</string>", httpResponse.toString());
+		assertEquals("<string>Normal GET action</string>", responseBody.toString());
 	}
 
 	@Test
@@ -126,7 +108,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("<string>Normal GET action</string>", httpResponse.toString());
+		assertEquals("<string>Normal GET action</string>", responseBody.toString());
 	}
 
 	@Test
@@ -137,7 +119,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("\"Normal PUT action\"", httpResponse.toString());
+		assertEquals("\"Normal PUT action\"", responseBody.toString());
 	}
 
 	@Test
@@ -148,7 +130,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("\"Normal PUT action\"", httpResponse.toString());
+		assertEquals("\"Normal PUT action\"", responseBody.toString());
 	}
 
 	@Test
@@ -159,7 +141,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("<string>Normal PUT action</string>", httpResponse.toString());
+		assertEquals("<string>Normal PUT action</string>", responseBody.toString());
 	}
 
 	@Test
@@ -170,7 +152,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("<string>Normal PUT action</string>", httpResponse.toString());
+		assertEquals("<string>Normal PUT action</string>", responseBody.toString());
 	}
 
 	@Test
@@ -181,7 +163,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("\"Normal POST action\"", httpResponse.toString());
+		assertEquals("\"Normal POST action\"", responseBody.toString());
 	}
 
 	@Test
@@ -192,7 +174,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("\"Normal POST action\"", httpResponse.toString());
+		assertEquals("\"Normal POST action\"", responseBody.toString());
 	}
 
 	@Test
@@ -203,7 +185,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("<string>Normal POST action</string>", httpResponse.toString());
+		assertEquals("<string>Normal POST action</string>", responseBody.toString());
 	}
 
 	@Test
@@ -214,7 +196,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("<string>Normal POST action</string>", httpResponse.toString());
+		assertEquals("<string>Normal POST action</string>", responseBody.toString());
 	}
 
 	@Test
@@ -225,7 +207,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("\"Normal DELETE action\"", httpResponse.toString());
+		assertEquals("\"Normal DELETE action\"", responseBody.toString());
 	}
 
 	@Test
@@ -236,7 +218,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("\"Normal DELETE action\"", httpResponse.toString());
+		assertEquals("\"Normal DELETE action\"", responseBody.toString());
 	}
 
 	@Test
@@ -247,7 +229,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("<string>Normal DELETE action</string>", httpResponse.toString());
+		assertEquals("<string>Normal DELETE action</string>", responseBody.toString());
 	}
 
 	@Test
@@ -258,7 +240,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("<string>Normal DELETE action</string>", httpResponse.toString());
+		assertEquals("<string>Normal DELETE action</string>", responseBody.toString());
 	}
 
 	@Test
@@ -269,7 +251,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("\"Item not found\"", httpResponse.toString());
+		assertEquals("\"Item not found\"", responseBody.toString());
 	}
 
 	@Test
@@ -280,7 +262,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("\"Item not found\"", httpResponse.toString());
+		assertEquals("\"Item not found\"", responseBody.toString());
 	}
 
 	@Test
@@ -291,7 +273,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("<string>Item not found</string>", httpResponse.toString());
+		assertEquals("<string>Item not found</string>", responseBody.toString());
 	}
 
 	@Test
@@ -302,7 +284,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("<string>Item not found</string>", httpResponse.toString());
+		assertEquals("<string>Item not found</string>", responseBody.toString());
 	}
 
 	@Test
@@ -313,7 +295,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("\"Null and void\"", httpResponse.toString());
+		assertEquals("\"Null and void\"", responseBody.toString());
 	}
 
 	@Test
@@ -324,7 +306,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("\"Null and void\"", httpResponse.toString());
+		assertEquals("\"Null and void\"", responseBody.toString());
 	}
 
 	@Test
@@ -335,7 +317,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("<string>Null and void</string>", httpResponse.toString());
+		assertEquals("<string>Null and void</string>", responseBody.toString());
 	}
 
 	@Test
@@ -346,7 +328,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("<string>Null and void</string>", httpResponse.toString());
+		assertEquals("<string>Null and void</string>", responseBody.toString());
 	}
 
 	@Test
@@ -357,7 +339,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("\"Unresolvable URL: http://null/xyzt.json\"", httpResponse.toString());
+		assertEquals("\"Unresolvable URL: http://null/xyzt.json\"", responseBody.toString());
 	}
 
 	@Test
@@ -368,7 +350,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("\"Unresolvable URL: http://null/xyzt?format=json\"", httpResponse.toString());
+		assertEquals("\"Unresolvable URL: http://null/xyzt?format=json\"", responseBody.toString());
 	}
 
 	@Test
@@ -379,7 +361,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("<string>Unresolvable URL: http://null/xyzt.xml</string>", httpResponse.toString());
+		assertEquals("<string>Unresolvable URL: http://null/xyzt.xml</string>", responseBody.toString());
 	}
 
 	@Test
@@ -390,7 +372,7 @@ public class RawWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("<string>Unresolvable URL: http://null/xyzt?format=xml</string>", httpResponse.toString());
+		assertEquals("<string>Unresolvable URL: http://null/xyzt?format=xml</string>", responseBody.toString());
 	}
 
 	@Test
@@ -401,7 +383,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("null", httpResponse.toString());
+		assertEquals("null", responseBody.toString());
 	}
 
 	@Test
@@ -422,7 +404,7 @@ public class RawWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("\"Normal DELETE action\"", httpResponse.toString());
+		assertEquals("\"Normal DELETE action\"", responseBody.toString());
 	}
 
 	private void sendEvent(HttpMethod method, String path, String body) {
@@ -449,7 +431,7 @@ public class RawWrappedResponseTest {
 
 			uri("/no_content_delete.{format}", controller).action("noContentDeleteAction", HttpMethod.DELETE);
 
-			uri("/no_content_with_body_delete.{format}", controller).action("noContentWithBodyDeleteAction", HttpMethod.DELETE);
+			uri("/no_content_with_body_delete.{format}", controller).action("noContentWithBodyDeleteActionThrowException", HttpMethod.DELETE);
 
 			uri("/not_found.{format}", controller).action("notFoundAction", HttpMethod.GET);
 

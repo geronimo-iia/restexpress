@@ -101,6 +101,7 @@
 	<modules>
 		<module>api</module>
 		<module>core</module>
+		<module>test</module>
 		<module>plugins</module>
 		<module>restexpress</module>
 		<module>http-client</module>
@@ -121,6 +122,12 @@
 				<groupId>com.strategicgains</groupId>
 				<artifactId>restexpress-core</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.strategicgains</groupId>
+				<artifactId>restexpress-test</artifactId>
+				<version>${project.version}</version>
+				<scope>test</scope>
 			</dependency>
 			<!-- HTTP SPECIFICATION -->
 			<dependency>

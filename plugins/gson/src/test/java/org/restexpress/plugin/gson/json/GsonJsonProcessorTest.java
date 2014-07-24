@@ -18,19 +18,19 @@
  *
  */
 /*
-    Copyright 2011, Strategic Gains, Inc.
+ Copyright 2011, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.plugin.gson.json;
 
@@ -46,9 +46,9 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
 import org.restexpress.ContentType;
-import org.restexpress.plugin.gson.KnownObject;
-import org.restexpress.plugin.gson.json.GsonJsonProcessor;
-import org.restexpress.serialization.SerializationProcessor;
+import org.restexpress.processor.Processor;
+import org.restexpress.test.KnownObject;
+import org.restexpress.test.TestUtilities;
 
 /**
  * @author toddf
@@ -58,12 +58,12 @@ public class GsonJsonProcessorTest {
 	private static final String JSON = "{\"integer\":2,\"string\":\"another string value\",\"date\":\"1963-12-06T12:30:00.000Z\",\"p\":\"good stuff\"}";
 	private static final String JSON_UTF8 = "{\"integer\":2,\"string\":\"????????????\",\"date\":\"1963-12-06T12:30:00.000Z\"}";
 
-	private final SerializationProcessor processor = new GsonJsonProcessor();
+	private Processor processor = new GsonJsonProcessor();
 
 	@Test
 	public void shouldSerializeObject() {
-		final String json = processor.serialize(new KnownObject());
-		// System.out.println(json);
+
+		final String json = TestUtilities.serialize(new KnownObject(), processor);
 		assertNotNull(json);
 		assertTrue(json.startsWith("{"));
 		assertTrue(json.contains("\"integer\":1"));
@@ -76,13 +76,13 @@ public class GsonJsonProcessorTest {
 
 	@Test
 	public void shouldSerializeNull() {
-		final String json = processor.serialize(null);
+		final String json = TestUtilities.serialize(null, processor);
 		assertEquals("", json);
 	}
 
 	@Test
 	public void shouldDeserializeObject() {
-		final KnownObject o = processor.deserialize(JSON, KnownObject.class);
+		final KnownObject o = TestUtilities.deserialize(JSON, KnownObject.class, processor);
 		assertNotNull(o);
 		assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
 		assertEquals(2, o.integer);
@@ -97,40 +97,40 @@ public class GsonJsonProcessorTest {
 
 	@Test
 	public void shouldDeserializeEmptyObject() {
-		final KnownObject o = processor.deserialize("{}", KnownObject.class);
+		final KnownObject o = TestUtilities.deserialize("{}", KnownObject.class, processor);
 		assertNotNull(o);
 		assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
 	}
 
 	@Test
 	public void shouldDeserializeEmptyString() {
-		final Object o = processor.deserialize("", KnownObject.class);
+		final Object o = TestUtilities.deserialize("", KnownObject.class, processor);
 		assertNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeNullString() {
-		final Object o = processor.deserialize((String) null, KnownObject.class);
+		final Object o = TestUtilities.deserialize((String) null, KnownObject.class, processor);
 		assertNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeChannelBuffer() {
 		final ChannelBuffer buf = ChannelBuffers.copiedBuffer(JSON, ContentType.CHARSET);
-		final Object o = processor.deserialize(buf, KnownObject.class);
+		final Object o = TestUtilities.deserialize(buf, KnownObject.class, processor);
 		assertNotNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeEmptyChannelBuffer() {
 		final ChannelBuffer buf = ChannelBuffers.EMPTY_BUFFER;
-		final Object o = processor.deserialize(buf, KnownObject.class);
+		final Object o = TestUtilities.deserialize(buf, KnownObject.class, processor);
 		assertNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeUTF8ChannelBuffer() {
-		final KnownObject o = processor.deserialize(ChannelBuffers.wrappedBuffer(JSON_UTF8.getBytes(ContentType.CHARSET)), KnownObject.class);
+		final KnownObject o = TestUtilities.deserialize(ChannelBuffers.wrappedBuffer(JSON_UTF8.getBytes(ContentType.CHARSET)), KnownObject.class, processor);
 		assertNotNull(o);
 		assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
 		assertEquals(2, o.integer);

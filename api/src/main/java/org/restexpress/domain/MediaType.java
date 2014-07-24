@@ -30,26 +30,42 @@ public enum MediaType {
 	ALL("*/*"), //
 	APPLICATION_ALL("application/*"), //
 	APPLICATION_ALL_JSON("application/*+json"), //
-	APPLICATION_ALL_XML("application/*+xml"), //
-	APPLICATION_JSON("application/json"), //
-	APPLICATION_XML("application/xml"), //
 	APPLICATION_HAL_JSON("application/hal+json"), //
+	APPLICATION_JSON("application/json"), //
+	APPLICATION_ALL_XML("application/*+xml"), //
+	APPLICATION_XML("application/xml"), //
 	APPLICATION_HAL_XML("application/hal+xml"), //
+	APPLICATION_JAVASCRIPT("application/javascript"), //
 	TEXT_ALL("text/*"), //
 	TEXT_XML("text/xml"), //
 	TEXT_JAVASCRIPT("text/javascript"), //
 	TEXT_PLAIN("text/plain"), //
 	TEXT_HTML("text/html"), //
-	TEXT_CSS("text/css")//
-	;
+	TEXT_CSS("text/css");
+
 	private final String mime;
 
 	private MediaType(String mime) {
 		this.mime = mime;
 	}
 
+	/**
+	 * @return MIME type.
+	 */
 	public String getMime() {
 		return mime;
 	}
 
+	public String withCharset(String charsetName) {
+		return mime + "; charset=" + charsetName;
+	}
+
+	/**
+	 * @param parameter
+	 * @param value
+	 * @return MIME type added with parameter information information
+	 */
+	public String getMime(String parameter, String value) {
+		return mime + "; " + parameter + "=" + value;
+	}
 }

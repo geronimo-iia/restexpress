@@ -30,7 +30,6 @@ import java.util.Set;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.query.QueryRange;
-import org.restexpress.serialization.SerializationSettings;
 
 /**
  * @author toddf
@@ -46,7 +45,6 @@ public class Response {
 	private final Map<String, List<String>> headers = new HashMap<String, List<String>>();
 	private boolean isSerialized = true;
 	private Throwable exception = null;
-	private SerializationSettings serializationSettings;
 
 	// SECTION: CONSTRUCTORS
 
@@ -250,15 +248,4 @@ public class Response {
 		this.exception = exception;
 	}
 
-	public void setSerializationSettings(final SerializationSettings settings) {
-		this.serializationSettings = settings;
-	}
-
-	public boolean hasSerializationSettings() {
-		return (serializationSettings != null);
-	}
-
-	public SerializationSettings getSerializationSettings() {
-		return serializationSettings;
-	}
 }

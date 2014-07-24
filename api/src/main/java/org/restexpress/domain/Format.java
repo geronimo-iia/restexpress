@@ -19,8 +19,13 @@
  */
 package org.restexpress.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * {@link Format} define constant to manage {format} parameter.
@@ -985,7 +990,12 @@ public enum Format {
 	ZIP("zip", "application/zip"), //
 	ZIR("zir", "application/vnd.zul"), //
 	ZIRZ("zirz", "application/vnd.zul"), //
-	ZMM("zmm", "application/vnd.handheld-entertainment+xml");
+	ZMM("zmm", "application/vnd.handheld-entertainment+xml"), //
+
+	WJSON("wjson", "application/json"), //
+	WXML("wxml", "application/xml") //
+
+	;
 
 	/**
 	 * Extension
@@ -1016,12 +1026,9 @@ public enum Format {
 		return mediaType;
 	}
 
-	public static Format fromExtentions(String extension) {
-		return null;
-	}
-
-	public static Format fromMediaType(String extension) {
-		return null;
+	@Override
+	public String toString() {
+		return extension;
 	}
 
 	/**
@@ -1035,5 +1042,49 @@ public enum Format {
 			result.put(format.extension, format.mediaType);
 		}
 		return result;
+	}
+
+	/**
+	 * @param mediatype
+	 * @return first associated {@link Format} for specified {@link MediaType}
+	 *         or null if none was found.
+	 */
+	public static Format valueForMediaType(String mediatype) {
+		for (Format format : Format.values()) {
+			if (format.mediaType.equals(mediatype)) {
+				return format;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param mediatype
+	 * @return {@link List} of associated {@link Format} for specified
+	 *         {@link MediaType}
+	 */
+	public static List<Format> valuesForMediaType(String mediatype) {
+		List<Format> result = new ArrayList<Format>();
+		for (Format format : Format.values()) {
+			if (format.mediaType.equals(mediatype)) {
+				result.add(format);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @param mediatype
+	 * @return a {@link Set} of {@link Format} which match {@link Set} of media
+	 *         type.
+	 */
+	public static Set<Format> valuesForMediaType(Set<String> mediatypes) {
+		SortedSet<Format> formats = new TreeSet<>();
+		for (Format format : Format.values()) {
+			if (mediatypes.contains(format.mediaType)) {
+				formats.add(format);
+			}
+		}
+		return formats;
 	}
 }

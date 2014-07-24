@@ -77,7 +77,7 @@ public class RouteMetadataController {
 		}
 
 		// load template
-		console = TemplateCompiler.compileTemplate(getClass().getClassLoader().getResourceAsStream("org.restexpress.plugin.route.console.html"));
+		console = TemplateCompiler.compileTemplate(getClass().getClassLoader().getResourceAsStream("org.restexpress.test.plugin.route.console.html"));
 		if (console == null)
 			throw new IllegalStateException("no console template");
 	}

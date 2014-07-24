@@ -23,8 +23,10 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 
@@ -37,22 +39,26 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.restexpress.context.ServerContext;
+import org.restexpress.domain.Format;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
+import org.restexpress.pipeline.DefaultHttpResponseWriter;
 import org.restexpress.pipeline.DefaultRequestHandler;
+import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.MessageObserver;
 import org.restexpress.pipeline.PipelineBuilder;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;
 import org.restexpress.plugin.Plugin;
-import org.restexpress.response.DefaultHttpResponseWriter;
+import org.restexpress.processor.json.JacksonJsonProcessor;
+import org.restexpress.processor.xml.XstreamXmlProcessor;
+import org.restexpress.response.ResponseProcessorManager;
+import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteBuilder;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.route.RouteResolver;
 import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
-import org.restexpress.serialization.DefaultSerializationProvider;
-import org.restexpress.serialization.SerializationProvider;
 import org.restexpress.settings.RestExpressSettings;
 import org.restexpress.settings.Settings;
 import org.restexpress.util.Bootstraps;
@@ -81,14 +87,24 @@ public class RestExpress {
 	 */
 	private final ServerContext context;
 
-	private SerializationProvider serializationProvider = null;
+	/**
+	 * {@link ResponseProcessorManager} instance.
+	 */
+	private final ResponseProcessorManager responseProcessorManager;
 
+	/**
+	 * {@link ServerBootstrap}.
+	 */
 	private ServerBootstrap bootstrap;
 
 	private final List<MessageObserver> messageObservers;
 	private final List<Preprocessor> preprocessors;
 	private final List<Postprocessor> postprocessors;
 	private final List<Postprocessor> finallyProcessors;
+
+	/**
+	 * {@link List} of {@link Plugin}.
+	 */
 	private final List<Plugin> plugins;
 
 	private final RouteDeclaration routeDeclarations;
@@ -125,27 +141,14 @@ public class RestExpress {
 	 * Build a new instance of {@link RestExpress}.
 	 * 
 	 * @param settings
+	 *            {@link RestExpressSettings} to use.
 	 */
 	public RestExpress(RestExpressSettings settings) {
-		this(settings, new DefaultSerializationProvider(settings.serverSettings().isUseDefaultSerializationConfiguration()));
-	}
-
-	/**
-	 * Build a new instance of {@link RestExpress}.
-	 * 
-	 * @param settings
-	 *            {@link RestExpressSettings} to use.
-	 * @param serializationProvider
-	 *            {@link SerializationProvider} to use.
-	 */
-	public RestExpress(RestExpressSettings settings, SerializationProvider serializationProvider) {
 		super();
 		if (settings == null)
 			throw new NullPointerException("RestExpressSettings can not be null");
-		if (serializationProvider == null)
-			throw new NullPointerException("SerializationProvider can not be null");
 		this.settings = settings;
-		this.serializationProvider = serializationProvider;
+		this.responseProcessorManager = new ResponseProcessorManager();
 		messageObservers = new ArrayList<MessageObserver>();
 		preprocessors = new ArrayList<Preprocessor>();
 		postprocessors = new ArrayList<Postprocessor>();
@@ -153,6 +156,10 @@ public class RestExpress {
 		plugins = new ArrayList<Plugin>();
 		routeDeclarations = new RouteDeclaration();
 		context = new ServerContext();
+		if (settings.serverSettings().isUseDefaultSerializationConfiguration()) {
+			responseProcessorManager.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
+			responseProcessorManager.add(new XstreamXmlProcessor(), Wrapper.newJsendResponseWrapper());
+		}
 	}
 
 	/**
@@ -170,23 +177,10 @@ public class RestExpress {
 	}
 
 	/**
-	 * Change the default behavior for serialization. If no
-	 * SerializationProcessor is set, default of DefaultSerializationProcessor
-	 * is used, which uses Jackson for JSON, XStream for XML.
-	 * 
-	 * @param provider
-	 *            a SerializationProvider instance.
-	 */
-	public RestExpress setSerializationProvider(final SerializationProvider provider) {
-		serializationProvider = provider;
-		return this;
-	}
-
-	/**
 	 * @return {@link SerializationProvider} instance.
 	 */
 	public SerializationProvider serializationProvider() {
-		return serializationProvider;
+		return responseProcessorManager;
 	}
 
 	/**
@@ -232,7 +226,7 @@ public class RestExpress {
 	 * gets processed. Preprocessors get called in the order in which they are
 	 * added. To break out of the chain, simply throw an exception.
 	 * 
-	 * @param processor
+	 * @param org.restexpress.processor
 	 * @return
 	 */
 	public RestExpress addPreprocessor(final Preprocessor processor) {
@@ -256,7 +250,7 @@ public class RestExpress {
 	 * called in the order in which they are added. Note however, they do NOT
 	 * get called in the case of an exception or error within the route.
 	 * 
-	 * @param processor
+	 * @param org.restexpress.processor
 	 * @return
 	 */
 	public RestExpress addPostprocessor(final Postprocessor processor) {
@@ -282,11 +276,11 @@ public class RestExpress {
 	 * for adding headers or transforming results even during error conditions.
 	 * Finally processors get called in the order in which they are added.
 	 * 
-	 * If an exception is thrown during finally processor execution, the finally
+	 * If an exception is thrown during finally org.restexpress.processor execution, the finally
 	 * processors following it are executed after printing a stack trace to the
 	 * System.err stream.
 	 * 
-	 * @param processor
+	 * @param org.restexpress.processor
 	 * @return RestExpress for method chaining.
 	 */
 	public RestExpress addFinallyProcessor(final Postprocessor processor) {
@@ -322,12 +316,12 @@ public class RestExpress {
 	 */
 	public ChannelHandler buildRequestHandler() {
 		// Set up the event pipeline factory.
-		final DefaultRequestHandler requestHandler = new DefaultRequestHandler(new RouteResolver(routeDeclarations.createRouteMapping()), //
-				serializationProvider(), //
-				new DefaultHttpResponseWriter(), settings.serverSettings().isEnforceHttpSpec());
+		final RouteResolver routeResolver = new RouteResolver(routeDeclarations.createRouteMapping());
+		final HttpResponseWriter httpResponseWriter = new DefaultHttpResponseWriter();
+		final DefaultRequestHandler requestHandler = new DefaultRequestHandler(routeResolver, responseProcessorManager, httpResponseWriter, settings.serverSettings().isEnforceHttpSpec());
 
 		// Add MessageObservers to the request handler here, if desired...
-		requestHandler.addMessageObserver(messageObservers.toArray(new MessageObserver[0]));
+		requestHandler.addMessageObserver(messageObservers);
 
 		// Add pre processors to the request handler here...
 		for (final Preprocessor processor : preprocessors()) {
@@ -442,17 +436,22 @@ public class RestExpress {
 	}
 
 	/**
-	 * Retrieve metadata about the routes in this RestExpress server.
+	 * Retrieve meta data about the routes in this RestExpress server.
 	 * 
 	 * @return ServerMetadata instance.
 	 */
 	public ServerMetadata getRouteMetadata() {
+		final Format defaultFormat = Format.valueForMediaType(responseProcessorManager.defaultProcessor().mediaType());
+		final Set<String> supportedFormat = new HashSet<String>();
+		for (Format format : responseProcessorManager.supportedFormat()) {
+			supportedFormat.add(format.toString());
+		}
 		final ServerMetadata metadata = new ServerMetadata( //
 				settings.serverSettings().getName(), //
 				settings.serverSettings().getPort(), //
-				serializationProvider.getSupportedFormat(),//
-				serializationProvider.getDefaultFormat(),//
-				routeDeclarations.getMetadata());
+				responseProcessorManager.supportedMediaType(), //
+				supportedFormat, //
+				defaultFormat == null ? "" : defaultFormat.toString(), routeDeclarations.getMetadata());
 		return metadata;
 	}
 

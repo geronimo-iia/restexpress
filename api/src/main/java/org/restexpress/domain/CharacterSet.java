@@ -42,12 +42,18 @@ public enum CharacterSet {
 	ISO_8859_1("ISO-8859-1");
 
 	private final Charset charset;
+	private final String charsetName;
 
 	private CharacterSet(String name) {
+		this.charsetName = name;
 		this.charset = Charset.forName(name);
 	}
 
 	public Charset getCharset() {
 		return charset;
+	}
+
+	public String getCharsetName() {
+		return charsetName;
 	}
 }

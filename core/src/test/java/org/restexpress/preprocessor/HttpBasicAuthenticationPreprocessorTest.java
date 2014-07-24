@@ -44,10 +44,11 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
-import org.restexpress.Request;
+import org.restexpress.TestUtilities;
 import org.restexpress.Response;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Preprocessor;
+import org.restexpress.pipeline.preprocessor.HttpBasicAuthenticationPreprocessor;
 
 /**
  * @author toddf
@@ -55,7 +56,7 @@ import org.restexpress.pipeline.Preprocessor;
  */
 public class HttpBasicAuthenticationPreprocessorTest {
 	private Preprocessor p = new HttpBasicAuthenticationPreprocessor("Test Realm");
-	private MessageContext context = new MessageContext(new Request(new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/"), null), new Response());
+	private MessageContext context = new MessageContext(TestUtilities.newRequest(new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/")), new Response());
 
 	@Test(expected = UnauthorizedException.class)
 	public void shouldThrowUnauthorizedExceptionOnNullHeader() {

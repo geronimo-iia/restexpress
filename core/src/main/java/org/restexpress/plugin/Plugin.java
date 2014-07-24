@@ -38,7 +38,7 @@ import org.restexpress.RestExpress;
 
 /**
  * {@link Plugin} is a way to extends functionality of {@link RestExpress} by
- * adding preprocessor, post processor, declaring routes, etc..
+ * adding preprocessor, post org.restexpress.processor, declaring routes, etc..
  * 
  * @author toddf
  * @since Jul 20, 2011

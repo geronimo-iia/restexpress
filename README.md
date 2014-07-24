@@ -84,7 +84,10 @@ Current Version 0.10.4
 * Add ResponseHeaderPostProcessor (add predefined list of header in response, if they're not present)
 * Add common plugin (from PluginExpress): cache utility, and x-security (not finalized).
 * Add MediaType, Format, Encoding enumeration
-* Extract restexpress-api, restexpress-core, restexpress module
+* Extract restexpress-api, restexpress-core, restexpress restexpress-test modules
+* refactor SerializationProcessor in order to deal only with media type
+* user format enumeration to resolve to a mime type
+* refactor Request Handler
 
 
 Release 0.10.3 - 27 May 2014

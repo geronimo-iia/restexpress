@@ -34,62 +34,72 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
-import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
+import org.restexpress.response.ResponseProcessorSettingResolver;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteResolver;
-import org.restexpress.serialization.SerializationProvider;
 import org.restexpress.url.QueryStringParser;
 
 /**
+ * {@link Request}.
+ * 
  * @author toddf
  * @since Nov 20, 2009
  */
 public class Request {
 	private static AtomicLong nextCorrelationId = new AtomicLong(0);
 
-	// SECTION: INSTANCE VARIABLES
-
 	private final HttpRequest httpRequest;
 	private final HttpVersion httpVersion;
-	private InetSocketAddress remoteAddress;
 	private final RouteResolver routeResolver;
-	private final SerializationProvider serializationProvider;
-	private HttpMethod effectiveHttpMethod;
+	private final ResponseProcessorSettingResolver responseProcessorSettingResolver;
+	private final Map<String, String> queryStringMap;
+	private final HttpMethod effectiveHttpMethod;
+	private final String correlationId;
+	private final InetSocketAddress remoteAddress;
 	private Route resolvedRoute;
-	private String correlationId;
 	private Map<String, Object> attachments;
-	private Map<String, String> queryStringMap;
 
-	// SECTION: CONSTRUCTOR
-
-	public Request(final HttpRequest request, final RouteResolver routeResolver) {
-		this(request, routeResolver, null);
+	/**
+	 * Build a new instance of {@link Request} for testing purpose.
+	 * @param request
+	 * @param routeResolver
+	 */
+	public Request(final HttpRequest httpRequest, final RouteResolver routeResolver) {
+		this(httpRequest, routeResolver, null, null);
 	}
 
-	public Request(final HttpRequest request, final RouteResolver routeResolver, final SerializationProvider serializationProvider) {
+	public Request(final HttpRequest httpRequest, final RouteResolver routeResolver, final ResponseProcessorSettingResolver responseProcessorSettingResolver) {
+		this(httpRequest, routeResolver, responseProcessorSettingResolver, null);
+	}
+
+	/**
+	 * Build a new instance of {@link Request}.
+	 * 
+	 * @param httpRequest
+	 *            {@link HttpRequest}.
+	 * @param routeResolver
+	 *            {@link RouteResolver}.
+	 * @param responseProcessorSettingResolver
+	 *            {@link ResponseProcessorSettingResolver}.
+	 * @param remoteAddress
+	 *            {@link InetSocketAddress}
+	 */
+	public Request(final HttpRequest httpRequest, final RouteResolver routeResolver, final ResponseProcessorSettingResolver responseProcessorSettingResolver, InetSocketAddress remoteAddress) {
 		super();
-		this.httpRequest = request;
-		this.httpVersion = request.getProtocolVersion();
-		this.effectiveHttpMethod = request.getMethod();
+		this.httpRequest = httpRequest;
+		this.httpVersion = httpRequest.getProtocolVersion();
 		this.routeResolver = routeResolver;
-		this.serializationProvider = serializationProvider;
-		createCorrelationId();
-		this.queryStringMap = new HashMap<String, String>();
-		parseQueryString(request);
-		determineEffectiveHttpMethod(request);
+		this.responseProcessorSettingResolver = responseProcessorSettingResolver;
+		this.queryStringMap = parseQueryString(httpRequest);
+		this.effectiveHttpMethod = determineEffectiveHttpMethod(httpRequest);
+		this.correlationId = createCorrelationId();
+		this.remoteAddress = remoteAddress;
 	}
-
-	public Request(final MessageEvent event, final RouteResolver routes, final SerializationProvider serializationProvider) {
-		this((HttpRequest) event.getMessage(), routes, serializationProvider);
-		this.remoteAddress = (InetSocketAddress) event.getRemoteAddress();
-	}
-
-	// SECTION: ACCESSORS/MUTATORS
 
 	/**
 	 * Return the Correlation ID for this request. The Correlation ID is unique
@@ -120,22 +130,37 @@ public class Request {
 		return effectiveHttpMethod;
 	}
 
+	/**
+	 * @return {@link Boolean#TRUE} if method is {@link HttpMethod#GET}
+	 */
 	public boolean isMethodGet() {
 		return getEffectiveHttpMethod().equals(HttpMethod.GET);
 	}
 
+	/**
+	 * @return {@link Boolean#TRUE} if method is {@link HttpMethod#DELETE}
+	 */
 	public boolean isMethodDelete() {
 		return getEffectiveHttpMethod().equals(HttpMethod.DELETE);
 	}
 
+	/**
+	 * @return {@link Boolean#TRUE} if method is {@link HttpMethod#POST}
+	 */
 	public boolean isMethodPost() {
 		return getEffectiveHttpMethod().equals(HttpMethod.POST);
 	}
 
+	/**
+	 * @return {@link Boolean#TRUE} if method is {@link HttpMethod#PUT}
+	 */
 	public boolean isMethodPut() {
 		return getEffectiveHttpMethod().equals(HttpMethod.PUT);
 	}
 
+	/**
+	 * @return {@link ChannelBuffer} of request body.
+	 */
 	public ChannelBuffer getBody() {
 		return httpRequest.getContent();
 	}
@@ -150,8 +175,8 @@ public class Request {
 	 * @throws BadRequestException
 	 *             if the deserialization fails.
 	 */
-	public <T> T getBodyAs(final Class<T> type) {
-		return serializationProvider.resolveRequest(this).deserialize(this, type);
+	public <T> T getBodyAs(final Class<T> type) throws BadRequestException {
+		return responseProcessorSettingResolver.resolve(this).deserialize(this, type);
 	}
 
 	/**
@@ -168,13 +193,11 @@ public class Request {
 	 * @throws BadRequestException
 	 *             if serialization fails.
 	 */
-	public <T> T getBodyAs(final Class<T> type, final String message) {
+	public <T> T getBodyAs(final Class<T> type, final String message) throws BadRequestException {
 		final T instance = getBodyAs(type);
-
 		if (instance == null) {
 			throw new BadRequestException(message);
 		}
-
 		return instance;
 	}
 
@@ -233,15 +256,23 @@ public class Request {
 			final QueryStringDecoder qsd = new QueryStringDecoder(getBody().toString(ContentType.CHARSET), ContentType.CHARSET, false);
 			return qsd.getParameters();
 		}
-
 		final QueryStringParser qsp = new QueryStringParser(getBody().toString(ContentType.CHARSET), false);
 		return qsp.getParameters();
 	}
 
+	/**
+	 * Set body content.
+	 * 
+	 * @param body
+	 *            {@link ChannelBuffer}.
+	 */
 	public void setBody(final ChannelBuffer body) {
 		httpRequest.setContent(body);
 	}
 
+	/**
+	 * Clear all headers.
+	 */
 	public void clearHeaders() {
 		httpRequest.headers().clear();
 	}
@@ -300,11 +331,9 @@ public class Request {
 	 */
 	public String getHeader(final String name, final String message) {
 		final String value = getHeader(name);
-
 		if (value == null) {
 			throw new BadRequestException(message);
 		}
-
 		return value;
 	}
 
@@ -343,10 +372,18 @@ public class Request {
 		}
 	}
 
+	/**
+	 * @return resolved {@link Route}.
+	 */
 	public Route getResolvedRoute() {
 		return resolvedRoute;
 	}
 
+	/**
+	 * Set resolved {@link Route}.
+	 * 
+	 * @param route
+	 */
 	public void setResolvedRoute(final Route route) {
 		this.resolvedRoute = route;
 	}
@@ -401,12 +438,7 @@ public class Request {
 	 */
 	public String getNamedUrl(final HttpMethod method, final String resourceName) {
 		final Route route = routeResolver.getNamedRoute(resourceName, method);
-
-		if (route != null) {
-			return route.getFullPattern();
-		}
-
-		return null;
+		return route != null ? route.getFullPattern() : null;
 	}
 
 	/**
@@ -421,22 +453,28 @@ public class Request {
 	 */
 	public String getNamedPath(final HttpMethod method, final String resourceName) {
 		final Route route = routeResolver.getNamedRoute(resourceName, method);
-
-		if (route != null) {
-			return route.getPattern();
-		}
-
-		return null;
+		return route != null ? route.getPattern() : null;
 	}
 
+	/**
+	 * @return query string as {@link Map}.
+	 */
 	public Map<String, String> getQueryStringMap() {
 		return queryStringMap;
 	}
 
+	/**
+	 * @return {@link Boolean#TRUE} if and only if the connection can remain
+	 *         open and thus 'kept alive'.
+	 */
 	public boolean isKeepAlive() {
 		return HttpHeaders.isKeepAlive(httpRequest);
 	}
 
+	/**
+	 * @return {@link Boolean#TRUE} if and only if this message does not have
+	 *         any content
+	 */
 	public boolean isChunked() {
 		return httpRequest.isChunked();
 	}
@@ -444,7 +482,7 @@ public class Request {
 	/**
 	 * Get the value of the {format} header in the request.
 	 * 
-	 * @return
+	 * @return format or null if none was found.
 	 */
 	public String getFormat() {
 		return getHeader(Parameters.Query.FORMAT);
@@ -453,7 +491,7 @@ public class Request {
 	/**
 	 * Get the host (and port) from the request.
 	 * 
-	 * @return
+	 * @return the value of the "Host" header.
 	 */
 	public String getHost() {
 		return HttpHeaders.getHost(httpRequest);
@@ -493,11 +531,9 @@ public class Request {
 	 */
 	public boolean isHeaderEqual(final String name, final String value) {
 		final String header = getHeader(name);
-
 		if ((header == null) || (header.trim().length() == 0) || (value == null) || (value.trim().length() == 0)) {
 			return false;
 		}
-
 		return header.trim().equalsIgnoreCase(value.trim());
 	}
 
@@ -551,7 +587,6 @@ public class Request {
 		if (attachments != null) {
 			return attachments.get(name);
 		}
-
 		return null;
 	}
 
@@ -583,23 +618,29 @@ public class Request {
 		if (attachments == null) {
 			attachments = new HashMap<String, Object>();
 		}
-
 		attachments.put(name, attachment);
 	}
 
+	/**
+	 * @return {@link HttpVersion}/
+	 */
 	public HttpVersion getHttpVersion() {
 		return httpVersion;
 	}
 
+	/**
+	 * @return {@link Boolean#TRUE} if HTTP version is 1.0
+	 */
 	public boolean isHttpVersion1_0() {
 		return ((httpVersion.getMajorVersion() == 1) && (httpVersion.getMinorVersion() == 0));
 	}
 
+	/**
+	 * @return remote {@link InetSocketAddress}.
+	 */
 	public InetSocketAddress getRemoteAddress() {
 		return remoteAddress;
 	}
-
-	// SECTION: UTILITY - PRIVATE
 
 	/**
 	 * Add the query string parameters to the request as headers. Also parses
@@ -608,19 +649,15 @@ public class Request {
 	 * will contain them all, but the queryStringMap will only contain the first
 	 * one. This will be fixed in a future release.
 	 */
-	private void parseQueryString(final HttpRequest request) {
+	private static Map<String, String> parseQueryString(final HttpRequest request) {
 		if (!request.getUri().contains("?")) {
-			return;
+			return new HashMap<String, String>();
 		}
-
 		final Map<String, List<String>> parameters = new QueryStringParser(request.getUri(), true).getParameters();
-
 		if ((parameters == null) || parameters.isEmpty()) {
-			return;
+			return new HashMap<String, String>();
 		}
-
-		queryStringMap = new HashMap<String, String>(parameters.size());
-
+		Map<String, String> queryStringMap = new HashMap<String, String>(parameters.size());
 		for (final Entry<String, List<String>> entry : parameters.entrySet()) {
 			queryStringMap.put(entry.getKey(), entry.getValue().get(0));
 
@@ -632,6 +669,7 @@ public class Request {
 				}
 			}
 		}
+		return queryStringMap;
 	}
 
 	/**
@@ -640,20 +678,26 @@ public class Request {
 	 * _method=PUT). This supports DELETE and PUT from the browser.
 	 * 
 	 * @param parameters
+	 * @return effective {@link HttpMethod}.
 	 */
-	private void determineEffectiveHttpMethod(final HttpRequest request) {
-		if (!HttpMethod.POST.equals(request.getMethod())) {
-			return;
+	private  HttpMethod determineEffectiveHttpMethod(final HttpRequest request) {
+		HttpMethod httpMethod = request.getMethod();
+		if (!HttpMethod.POST.equals(httpMethod)) {
+			return httpMethod;
 		}
-
-		final String methodString = request.headers().get(Parameters.Query.METHOD_TUNNEL);
-
+		final String methodString = this.getHeader(Parameters.Query.METHOD_TUNNEL);
 		if ("PUT".equalsIgnoreCase(methodString) || "DELETE".equalsIgnoreCase(methodString)) {
-			effectiveHttpMethod = HttpMethod.valueOf(methodString.toUpperCase());
+			return HttpMethod.valueOf(methodString.toUpperCase());
 		}
+		return httpMethod;
 	}
 
-	private void createCorrelationId() {
-		this.correlationId = String.valueOf(nextCorrelationId.incrementAndGet());
+	/**
+	 * Create correlation Id.
+	 * 
+	 * @return correlation Id.
+	 */
+	protected static String createCorrelationId() {
+		return String.valueOf(nextCorrelationId.incrementAndGet());
 	}
 }

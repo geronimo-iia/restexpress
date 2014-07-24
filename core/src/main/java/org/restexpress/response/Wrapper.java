@@ -128,7 +128,6 @@ public enum Wrapper {
 			if (!response.hasException()) {
 				return response.getBody();
 			}
-
 			return response.getException().getMessage();
 		}
 
