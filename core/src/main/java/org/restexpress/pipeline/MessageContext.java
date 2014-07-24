@@ -40,10 +40,10 @@ import java.util.Collections;
 import java.util.Map.Entry;
 
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.restexpress.ContentType;
 import org.restexpress.Parameters;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.domain.CharacterSet;
 import org.restexpress.response.ResponseProcessorSetting;
 import org.restexpress.route.Action;
 
@@ -148,7 +148,7 @@ public final class MessageContext {
 	private void addUrlParametersAsHeaders(final Request request, final Collection<Entry<String, String>> parameters) {
 		for (final Entry<String, String> entry : parameters) {
 			try {
-				request.addHeader(entry.getKey(), URLDecoder.decode(entry.getValue(), ContentType.ENCODING));
+				request.addHeader(entry.getKey(), URLDecoder.decode(entry.getValue(), CharacterSet.UTF_8.getCharsetName()));
 			} catch (final Exception e) {
 				request.addHeader(entry.getKey(), entry.getValue());
 			}

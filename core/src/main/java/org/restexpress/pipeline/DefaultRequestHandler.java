@@ -26,10 +26,11 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.restexpress.ContentType;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.SerializationProvider;
+import org.restexpress.domain.CharacterSet;
+import org.restexpress.domain.MediaType;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.response.ResponseProcessorSetting;
 import org.restexpress.response.ResponseProcessorSettingResolver;
@@ -130,7 +131,7 @@ public class DefaultRequestHandler extends AbstractRequestHandler {
 				}
 			}
 			if (!response.hasHeader(HttpHeaders.Names.CONTENT_TYPE)) {
-				response.setContentType(ContentType.TEXT_PLAIN);
+				response.setContentType(MediaType.TEXT_PLAIN.withCharset(CharacterSet.UTF_8.getCharsetName()));
 			}
 		}
 	}

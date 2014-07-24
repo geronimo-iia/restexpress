@@ -45,7 +45,7 @@ import java.util.Calendar;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
-import org.restexpress.ContentType;
+import org.restexpress.domain.CharacterSet;
 import org.restexpress.serialization.KnownObject;
 import org.restexpress.serialization.Processor;
 import org.restexpress.util.TestUtilities;
@@ -116,7 +116,7 @@ public class GsonJsonProcessorTest {
 
 	@Test
 	public void shouldDeserializeChannelBuffer() {
-		final ChannelBuffer buf = ChannelBuffers.copiedBuffer(JSON, ContentType.CHARSET);
+		final ChannelBuffer buf = ChannelBuffers.copiedBuffer(JSON, CharacterSet.UTF_8.getCharset());
 		final Object o = TestUtilities.deserialize(buf, KnownObject.class, processor);
 		assertNotNull(o);
 	}
@@ -130,7 +130,7 @@ public class GsonJsonProcessorTest {
 
 	@Test
 	public void shouldDeserializeUTF8ChannelBuffer() {
-		final KnownObject o = TestUtilities.deserialize(ChannelBuffers.wrappedBuffer(JSON_UTF8.getBytes(ContentType.CHARSET)), KnownObject.class, processor);
+		final KnownObject o = TestUtilities.deserialize(ChannelBuffers.wrappedBuffer(JSON_UTF8.getBytes(CharacterSet.UTF_8.getCharset())), KnownObject.class, processor);
 		assertNotNull(o);
 		assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
 		assertEquals(2, o.integer);

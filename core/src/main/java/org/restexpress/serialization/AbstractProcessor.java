@@ -48,6 +48,12 @@ public abstract class AbstractProcessor implements Processor {
 	private final List<String> supportedMediaType;
 
 	/**
+	 * {@link Charset} used to get {@link OutputStreamWriter} and
+	 * {@link InputStreamReader}. By default it's {@link CharacterSet#UTF_8}.
+	 */
+	protected Charset charset = CharacterSet.UTF_8.getCharset();
+
+	/**
 	 * Build a new instance of {@link AbstractProcessor}.
 	 * 
 	 * @param mediaTypes
@@ -135,19 +141,19 @@ public abstract class AbstractProcessor implements Processor {
 
 	/**
 	 * @param buffer
-	 * @return an {@link OutputStreamWriter} with specified {@link Charset} to
-	 *         'UTF-8'.
+	 * @return an {@link OutputStreamWriter} with specified {@link Charset}.
+	 * @see AbstractProcessor#charset
 	 */
 	protected OutputStreamWriter getOutputStreamWriter(ChannelBuffer buffer) {
-		return new OutputStreamWriter(new ChannelBufferOutputStream(buffer), CharacterSet.UTF_8.getCharset());
+		return new OutputStreamWriter(new ChannelBufferOutputStream(buffer), charset);
 	}
 
 	/**
 	 * @param buffer
-	 * @return an {@link InputStreamReader} with specified {@link Charset} to
-	 *         'UTF-8'.
+	 * @return an {@link InputStreamReader} with specified {@link Charset}.
+	 * @see AbstractProcessor#charset
 	 */
 	protected InputStreamReader getInputStreamReader(ChannelBuffer buffer) {
-		return new InputStreamReader(new ChannelBufferInputStream(buffer), CharacterSet.UTF_8.getCharset());
+		return new InputStreamReader(new ChannelBufferInputStream(buffer), charset);
 	}
 }

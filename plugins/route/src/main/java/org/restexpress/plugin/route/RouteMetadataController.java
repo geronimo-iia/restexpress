@@ -27,9 +27,10 @@ import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRuntime;
-import org.restexpress.ContentType;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.domain.CharacterSet;
+import org.restexpress.domain.MediaType;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
 
@@ -131,7 +132,7 @@ public class RouteMetadataController {
 	 * @return HTML content of console page.
 	 */
 	public String getConsole(Request request, Response response) {
-		response.setContentType(ContentType.HTML);
+		response.setContentType(MediaType.TEXT_HTML.withCharset(CharacterSet.UTF_8.getCharsetName()));
 		Map<String, Object> vars = new HashMap<>();
 		vars.put("server", serverMetadata);
 		return TemplateRuntime.execute(console, vars).toString();

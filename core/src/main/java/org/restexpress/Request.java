@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
+import org.restexpress.domain.CharacterSet;
 import org.restexpress.response.ResponseProcessorSettingResolver;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteResolver;
@@ -66,6 +68,7 @@ public class Request {
 
 	/**
 	 * Build a new instance of {@link Request} for testing purpose.
+	 * 
 	 * @param request
 	 * @param routeResolver
 	 */
@@ -252,11 +255,12 @@ public class Request {
 	 * @return
 	 */
 	public Map<String, List<String>> getBodyFromUrlFormEncoded(final boolean shouldDecode) {
+		Charset charset = CharacterSet.UTF_8.getCharset();
 		if (shouldDecode) {
-			final QueryStringDecoder qsd = new QueryStringDecoder(getBody().toString(ContentType.CHARSET), ContentType.CHARSET, false);
+			final QueryStringDecoder qsd = new QueryStringDecoder(getBody().toString(charset), charset, false);
 			return qsd.getParameters();
 		}
-		final QueryStringParser qsp = new QueryStringParser(getBody().toString(ContentType.CHARSET), false);
+		final QueryStringParser qsp = new QueryStringParser(getBody().toString(charset), false);
 		return qsp.getParameters();
 	}
 
@@ -658,12 +662,13 @@ public class Request {
 			return new HashMap<String, String>();
 		}
 		Map<String, String> queryStringMap = new HashMap<String, String>(parameters.size());
+		String charset = CharacterSet.UTF_8.getCharsetName();
 		for (final Entry<String, List<String>> entry : parameters.entrySet()) {
 			queryStringMap.put(entry.getKey(), entry.getValue().get(0));
 
 			for (final String value : entry.getValue()) {
 				try {
-					request.headers().add(entry.getKey(), URLDecoder.decode(value, ContentType.ENCODING));
+					request.headers().add(entry.getKey(), URLDecoder.decode(value, charset));
 				} catch (final Exception e) {
 					request.headers().add(entry.getKey(), value);
 				}
@@ -680,7 +685,7 @@ public class Request {
 	 * @param parameters
 	 * @return effective {@link HttpMethod}.
 	 */
-	private  HttpMethod determineEffectiveHttpMethod(final HttpRequest request) {
+	private HttpMethod determineEffectiveHttpMethod(final HttpRequest request) {
 		HttpMethod httpMethod = request.getMethod();
 		if (!HttpMethod.POST.equals(httpMethod)) {
 			return httpMethod;

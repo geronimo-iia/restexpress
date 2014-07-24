@@ -37,10 +37,15 @@ package org.restexpress.url;
 import java.util.List;
 
 /**
+ * {@link UrlMatcher} define methods to parse an url.
+ * 
+ * @see {@link UrlPattern}, {@link UrlRegex}
+ * 
  * @author toddf
  * @since Jan 7, 2011
  */
 public interface UrlMatcher {
+	
 	public boolean matches(String url);
 
 	public UrlMatch match(String url);

@@ -46,9 +46,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Before;
 import org.junit.Test;
-import org.restexpress.ContentType;
+import org.restexpress.domain.CharacterSet;
 import org.restexpress.serialization.KnownObject;
-import org.restexpress.serialization.xml.XstreamXmlProcessor;
 import org.restexpress.util.TestUtilities;
 
 /**
@@ -118,7 +117,7 @@ public class XstreamXmlProcessorTest {
 
 	@Test
 	public void shouldDeserializeChannelBuffer() {
-		ChannelBuffer buf = ChannelBuffers.copiedBuffer(XML, ContentType.CHARSET);
+		ChannelBuffer buf = ChannelBuffers.copiedBuffer(XML, CharacterSet.UTF_8.getCharset());
 		Object o = TestUtilities.deserialize(buf, KnownObject.class, processor);
 		assertNotNull(o);
 	}

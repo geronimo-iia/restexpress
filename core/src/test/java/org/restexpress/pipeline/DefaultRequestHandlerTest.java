@@ -51,11 +51,12 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
-import org.restexpress.ContentType;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.SerializationProvider;
+import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
+import org.restexpress.domain.MediaType;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.serialization.json.JacksonJsonProcessor;
@@ -135,7 +136,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		assertEquals("<html><body>Arbitrarily set HTML body...</body></html>", responseBody.toString());
 		List<String> contentTypes = responseHeaders.get(HttpHeaders.Names.CONTENT_TYPE);
 		assertEquals(1, contentTypes.size());
-		assertEquals(ContentType.HTML, contentTypes.get(0));
+		assertEquals(MediaType.TEXT_HTML.withCharset(CharacterSet.UTF_8.getCharsetName()), contentTypes.get(0));
 	}
 
 	@Test
@@ -430,7 +431,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 
 			uri("/serializedString.{format}", controller).action("serializedStringAction", HttpMethod.GET);
 
-			uri("/setBodyAction.html", controller).action("setBodyAction", HttpMethod.GET).format(org.restexpress.Format.HTML);
+			uri("/setBodyAction.html", controller).action("setBodyAction", HttpMethod.GET).format(Format.HTML.getExtension());
 			return this;
 		}
 	}
@@ -474,7 +475,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		}
 
 		public void setBodyAction(Request request, Response response) {
-			response.setContentType(ContentType.HTML);
+			response.setContentType(MediaType.TEXT_HTML.withCharset(CharacterSet.UTF_8.getCharsetName()));
 			response.noSerialization();
 			response.setBody("<html><body>Arbitrarily set HTML body...</body></html>");
 		}
