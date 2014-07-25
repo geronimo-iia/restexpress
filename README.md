@@ -91,7 +91,7 @@ Current Version 0.10.4
 * add priority on Plugin, in order to manage their order on initialization
 * Refactor Route and base URL usage
 * add TextProcessor for all text/* media 
-
+* add Slf4fErrorLogMessageObserver to log error using SLF4j
 
 
 Release 0.10.3 - 27 May 2014
