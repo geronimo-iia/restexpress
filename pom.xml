@@ -104,6 +104,7 @@
 		<module>plugins</module>
 		<module>restexpress</module>
 		<module>http-client</module>
+		<module>examples</module>
 	</modules>
 
 	<!-- ******************************************************************* -->

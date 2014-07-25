@@ -17,24 +17,38 @@
  *        under the License.
  *
  */
-package com.echo.serialization;
+/**
+ * 
+ */
+package com.echo;
 
-import com.strategicgains.restexpress.serialization.xml.DefaultXmlProcessor;
+import org.restexpress.RestExpress;
+import org.restexpress.RestExpressEntryPoint;
+import org.restexpress.pipeline.observer.ConsoleAccesLogMessageObserver;
+import org.restexpress.pipeline.observer.SimpleConsoleLogMessageObserver;
 
 /**
- * @author toddf
- * @since Feb 16, 2011
+ * {@link EchoEntryPoint} add several plugin.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ * 
  */
-public class XmlSerializationProcessor
-extends DefaultXmlProcessor
-{
-	public XmlSerializationProcessor()
-    {
-	    super();
-//		alias("element_name", Element.class);
-//		alias("element_name", Element.class);
-//		alias("element_name", Element.class);
-//		alias("element_name", Element.class);
-//		registerConverter(new XstreamObjectIdConverter());
-    }
+public class EchoEntryPoint implements RestExpressEntryPoint {
+
+	/**
+	 * Build a new instance.
+	 */
+	public EchoEntryPoint() {
+	}
+
+	/**
+	 * @see org.restexpress.RestExpressEntryPoint#onLoad(org.restexpress.RestExpress)
+	 */
+	@Override
+	public void onLoad(RestExpress restExpress) throws RuntimeException {
+		restExpress.registerPlugin(new EchoPlugin());
+		restExpress.addMessageObserver(new ConsoleAccesLogMessageObserver(System.err));
+		restExpress.addMessageObserver(new SimpleConsoleLogMessageObserver());
+	}
+
 }

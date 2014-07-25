@@ -17,52 +17,34 @@
  *        under the License.
  *
  */
-package com.echo.controller;
+package com.echo;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.restexpress.Request;
+import org.restexpress.Response;
 
-import com.strategicgains.restexpress.Request;
-import com.strategicgains.restexpress.Response;
-
-/**
- * @author toddf
- * @since Aug 31, 2010
- */
-public class EchoController
-extends AbstractDelayingController
-{
-    private static final String ECHO_PARAMETER_NOT_FOUND = "'echo' header or query-string parameter not found";
+public class EchoController {
+	private static final String ECHO_PARAMETER_NOT_FOUND = "'echo' header or query-string parameter not found. Please set query-string parameter 'echo' (e.g. ?echo=value).";
 	private static final String ECHO_HEADER = "echo";
 
-	public ChannelBuffer create(Request request, Response response)
-	{
-		delay(request);
+	public ChannelBuffer create(Request request, Response response) {
 		response.setResponseCreated();
 		return request.getBody();
 	}
-	
-	public String delete(Request request, Response response)
-	{
-		delay(request);
-		return request.getUrlDecodedHeader(ECHO_HEADER, ECHO_PARAMETER_NOT_FOUND);
+
+	public String delete(Request request, Response response) {
+		return request.getHeader(ECHO_HEADER, ECHO_PARAMETER_NOT_FOUND);
 	}
-	
-	public String read(Request request, Response response)
-	{
-		delay(request);
-		String echo = request.getUrlDecodedHeader(ECHO_HEADER);
-		
-		if (echo == null)
-		{
+
+	public String read(Request request, Response response) {
+		String echo = request.getHeader(ECHO_HEADER);
+		if (echo == null) {
 			return "Please set query-string parameter 'echo' (e.g. ?echo=value)";
 		}
-		
 		return echo;
 	}
 
-	public ChannelBuffer update(Request request, Response response)
-	{
-		delay(request);
+	public ChannelBuffer update(Request request, Response response) {
 		return request.getBody();
 	}
 }

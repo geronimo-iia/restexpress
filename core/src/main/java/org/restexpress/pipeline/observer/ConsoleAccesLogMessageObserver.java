@@ -70,7 +70,7 @@ public class ConsoleAccesLogMessageObserver extends AbstractAccessLogMessageObse
 			sb.append(" responded with ");
 			sb.append(status);
 		}
-
+		sb.append("\n");
 		byte[] bytes = sb.toString().getBytes(charset);
 		try {
 			outputStream.write(bytes, 0, bytes.length);
