@@ -1,1 +1,1 @@
-org.restexpress.test.server.ServerRestExpressEntryPoint
+org.restexpress.server.ServerRestExpressEntryPoint

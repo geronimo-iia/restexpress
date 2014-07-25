@@ -33,6 +33,7 @@ import org.restexpress.serialization.AbstractProcessor;
  * <li>MediaType.APPLICATION_ALL_JSON with CharacterSet.UTF_8</li>
  * <li>MediaType.APPLICATION_JAVASCRIPT with CharacterSet.UTF_8</li>
  * <li>MediaType.TEXT_JAVASCRIPT with CharacterSet.UTF_8</li>
+ * <li>MediaType.APPLICATION_HAL_JSON with CharacterSet.UTF_8</li>
  * </ul>
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
@@ -48,6 +49,7 @@ public abstract class JsonProcessor extends AbstractProcessor {
 		addMediaType(MediaType.APPLICATION_ALL_JSON.withCharset(CharacterSet.UTF_8.getCharsetName()));
 		addMediaType(MediaType.APPLICATION_JAVASCRIPT.withCharset(CharacterSet.UTF_8.getCharsetName()));
 		addMediaType(MediaType.TEXT_JAVASCRIPT.withCharset(CharacterSet.UTF_8.getCharsetName()));
+		addMediaType(MediaType.APPLICATION_HAL_JSON.withCharset(CharacterSet.UTF_8.getCharsetName()));
 	}
 
 	public JsonProcessor(String... mediaTypes) throws IllegalArgumentException {

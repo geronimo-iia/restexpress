@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.serialization.xml;
+package org.restexpress.serialization.xml.xstream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +28,7 @@ import org.restexpress.domain.MediaType;
 import org.restexpress.domain.response.JsendResult;
 import org.restexpress.exception.DeserializationException;
 import org.restexpress.exception.SerializationException;
+import org.restexpress.serialization.xml.XmlProcessor;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;

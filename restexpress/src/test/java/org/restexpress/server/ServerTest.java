@@ -49,7 +49,6 @@ import org.restexpress.RestExpress;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
-import org.restexpress.domain.response.JsendResult;
 import org.restexpress.pipeline.observer.SimpleConsoleLogMessageObserver;
 import org.restexpress.query.QueryRange;
 import org.restexpress.server.processor.ErrorPreprocessor;
@@ -61,7 +60,7 @@ public class ServerTest {
 	private static String XML = MediaType.APPLICATION_XML.withCharset(CharacterSet.UTF_8.getCharsetName());
 	private static String HAL_JSON = MediaType.APPLICATION_HAL_JSON.withCharset(CharacterSet.UTF_8.getCharsetName());
 	private static String TEXT_PLAIN = MediaType.TEXT_PLAIN.withCharset(CharacterSet.UTF_8.getCharsetName());
-	
+
 	private static final String URL_PATTERN1 = "/1/restexpress/{id}/test/{test}.{format}";
 	private static final String URL_PATTERN2 = "/2/restexpress/{id}/test/{test}";
 	private static final String URL_PATTERN3 = "/3/restexpress/{id}/test/{test}.{format}";
@@ -143,7 +142,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals("{\"status\":\"success\",\"data\":\"update\"}", EntityUtils.toString(entity));
+		assertEquals("\"update\"", EntityUtils.toString(entity));
 		request.releaseConnection();
 	}
 
@@ -157,7 +156,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals("{\"status\":\"success\",\"data\":\"create\"}", EntityUtils.toString(entity));
+		assertEquals("\"create\"", EntityUtils.toString(entity));
 		request.releaseConnection();
 	}
 
@@ -199,7 +198,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals("{\"status\":\"error\",\"message\":\"" + URL3_PLAIN + "\",\"data\":\"MethodNotAllowedException\"}", EntityUtils.toString(entity));
+		assertEquals("{\"httpStatus\":405,\"message\":\"" + URL3_PLAIN + "\",\"errorType\":\"MethodNotAllowedException\"}", EntityUtils.toString(entity));
 		String methods = response.getHeaders(HttpHeaders.Names.ALLOW)[0].getValue();
 		assertTrue(methods.contains("GET"));
 		methods = response.getHeaders(HttpHeaders.Names.ALLOW)[1].getValue();
@@ -217,7 +216,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals("\"Unresolvable URL: " + SERVER_HOST + "/x/y/z.json\"", EntityUtils.toString(entity));
+		assertEquals(404, response.getStatusLine().getStatusCode());
 		request.releaseConnection();
 	}
 
@@ -231,10 +230,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(XML, entity.getContentType().getValue());
-		assertEquals("<response>\n" + 
-				"  <status>success</status>\n" + 
-				"  <data class=\"string\">read</data>\n" + 
-				"</response>", EntityUtils.toString(entity));
+		assertEquals("<string>read</string>", EntityUtils.toString(entity));
 		request.releaseConnection();
 	}
 
@@ -249,10 +245,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(XML, entity.getContentType().getValue());
-		assertEquals("<response>\n" + 
-				"  <status>success</status>\n" + 
-				"  <data class=\"string\">read</data>\n" + 
-				"</response>", EntityUtils.toString(entity));
+		assertEquals("<string>read</string>", EntityUtils.toString(entity));
 		request.releaseConnection();
 	}
 
@@ -267,10 +260,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(XML, entity.getContentType().getValue());
-		assertEquals("<response>\n" + 
-				"  <status>success</status>\n" + 
-				"  <data class=\"string\">read</data>\n" + 
-				"</response>", EntityUtils.toString(entity));
+		assertEquals("<string>read</string>", EntityUtils.toString(entity));
 		request.releaseConnection();
 	}
 
@@ -284,7 +274,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals("{\"status\":\"success\",\"data\":\"read\"}", EntityUtils.toString(entity));
+		assertEquals("\"read\"", EntityUtils.toString(entity));
 		request.releaseConnection();
 	}
 
@@ -298,7 +288,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals("{\"status\":\"error\",\"message\":\"Requested representation format not supported: JSON. Supported formats: js, json, xml, xpdl, xsl, wjson, wxml\",\"data\":\"BadRequestException\"}", EntityUtils.toString(entity));
+		assertEquals(400, response.getStatusLine().getStatusCode());
 		request.releaseConnection();
 	}
 
@@ -313,10 +303,8 @@ public class ServerTest {
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
 		String result = EntityUtils.toString(entity);
-
-		assertTrue(result.contains("\"status\":\"success\""));
-		String data = extractJson(result);
-		assertEquals("\"read\"", data);
+		assertEquals(200, response.getStatusLine().getStatusCode());
+		assertEquals("\"read\"", result);
 		request.releaseConnection();
 	}
 
@@ -352,11 +340,8 @@ public class ServerTest {
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(XML, entity.getContentType().getValue());
 		String entityString = EntityUtils.toString(entity);
-		assertTrue(entityString.startsWith("<response>"));
-
-		assertTrue(entityString.contains("<status>success</status>"));
-		assertTrue(entityString.contains("<data class=\"string\">read</data>"));
-		assertTrue(entityString.endsWith("</response>"));
+		System.err.println(entityString);
+		assertEquals("<string>read</string>", entityString);
 		request.releaseConnection();
 	}
 
@@ -406,7 +391,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals("{\"status\":\"error\",\"message\":\"Requested representation format not supported: xyz. Supported formats: js, json, xml, xpdl, xsl, wjson, wxml\",\"data\":\"BadRequestException\"}", EntityUtils.toString(entity));
+		assertEquals(400, response.getStatusLine().getStatusCode());
 		request.releaseConnection();
 	}
 
@@ -421,7 +406,7 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals("{\"status\":\"error\",\"message\":\"Supported Media Types: application/json; charset=UTF-8, application/json, application/*+json, application/javascript, text/javascript, application/xml; charset=UTF-8, application/xml, application/*+xml, text/xml; charset=UTF-8\",\"data\":\"NotAcceptableException\"}", EntityUtils.toString(entity));
+		assertEquals(406, response.getStatusLine().getStatusCode());
 		request.releaseConnection();
 	}
 
@@ -470,7 +455,7 @@ public class ServerTest {
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
 		assertNull(response.getFirstHeader(HttpHeaders.Names.CONTENT_RANGE));
-		assertEquals("{\"status\":\"error\",\"message\":\"Supported Media Types: application/json; charset=UTF-8, application/json, application/*+json, application/javascript, text/javascript, application/xml; charset=UTF-8, application/xml, application/*+xml, text/xml; charset=UTF-8\",\"data\":\"NotAcceptableException\"}", EntityUtils.toString(entity));
+		assertEquals(406, response.getStatusLine().getStatusCode());
 		request.releaseConnection();
 	}
 
@@ -484,8 +469,7 @@ public class ServerTest {
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(JSON, entity.getContentType().getValue());
 		String result = EntityUtils.toString(entity);
-		assertTrue(result.contains("\"status\":\"success\""));
-		LittleO o = TestUtilities.deserialize(extractJson(result), LittleO.class, server.serializationProvider().processor(Format.WJSON.getMediaType()));
+		LittleO o = TestUtilities.deserialize(result, LittleO.class, server.serializationProvider().processor(Format.WJSON.getMediaType()));
 		verifyObject(o);
 		request.releaseConnection();
 	}
@@ -504,9 +488,8 @@ public class ServerTest {
 		assertNotNull(range);
 		assertEquals("items 0-2/3", range.getValue());
 		String result = EntityUtils.toString(entity);
-
-		assertTrue(result.contains("\"status\":\"success\""));
-		LittleO[] o = TestUtilities.deserialize(extractJson(result), LittleO[].class, server.serializationProvider().processor(Format.WJSON.getMediaType()));
+		assertEquals(200, response.getStatusLine().getStatusCode());
+		LittleO[] o = TestUtilities.deserialize(result, LittleO[].class, server.serializationProvider().processor(Format.WJSON.getMediaType()));
 		verifyList(o);
 		request.releaseConnection();
 	}
@@ -555,10 +538,8 @@ public class ServerTest {
 		HttpEntity entity = response.getEntity();
 		assertTrue(entity.getContentLength() > 0l);
 		assertEquals(XML, entity.getContentType().getValue());
-		JsendResult o = TestUtilities.deserialize(EntityUtils.toString(entity), JsendResult.class, server.serializationProvider().processor(Format.WXML.getMediaType()));
-
-		assertEquals("success", o.getStatus());
-		verifyObject((LittleO) o.getData());
+		LittleO o = TestUtilities.deserialize(EntityUtils.toString(entity), LittleO.class, server.serializationProvider().processor(Format.WXML.getMediaType()));
+		verifyObject(o);
 		request.releaseConnection();
 	}
 
@@ -577,8 +558,8 @@ public class ServerTest {
 		assertNotNull(range);
 		assertEquals("items 0-2/3", range.getValue());
 
-		JsendResult o = TestUtilities.deserialize(EntityUtils.toString(entity), JsendResult.class, server.serializationProvider().processor(Format.WXML.getMediaType()));
-		verifyList(((ArrayList<LittleO>) o.getData()).toArray(new LittleO[0]));
+		ArrayList<LittleO> o = TestUtilities.deserialize(EntityUtils.toString(entity), ArrayList.class, server.serializationProvider().processor(Format.WXML.getMediaType()));
+		verifyList(o.toArray(new LittleO[0]));
 		request.releaseConnection();
 	}
 
@@ -737,12 +718,6 @@ public class ServerTest {
 		assertEquals(HttpResponseStatus.INTERNAL_SERVER_ERROR.getCode(), response.getStatusLine().getStatusCode());
 		assertEquals(1, postprocessor.callCount());
 		request.releaseConnection();
-	}
-
-	private String extractJson(String string) {
-		final String search = "\"data\":";
-		int start = string.indexOf(search) + search.length();
-		return string.substring(start, string.length() - 1);
 	}
 
 	private void verifyObject(LittleO o) {

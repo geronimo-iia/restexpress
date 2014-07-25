@@ -50,7 +50,7 @@ import org.junit.Test;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
-import org.restexpress.serialization.xml.XstreamXmlProcessor;
+import org.restexpress.serialization.xml.xstream.XstreamXmlProcessor;
 
 /**
  * @author toddf

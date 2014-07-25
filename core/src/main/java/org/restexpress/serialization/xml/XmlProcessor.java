@@ -31,6 +31,7 @@ import org.restexpress.serialization.AbstractProcessor;
  * <li>MediaType.APPLICATION_XML with CharacterSet.UTF_8</li>
  * <li>MediaType.APPLICATION_ALL_XML, with CharacterSet.UTF_8</li>
  * <li>MediaType.TEXT_XML, with CharacterSet.UTF_8</li>
+ * <li>MediaType.APPLICATION_HAL_XML, with CharacterSet.UTF_8</li>
  * </ul>
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
@@ -46,6 +47,7 @@ public abstract class XmlProcessor extends AbstractProcessor implements Aliasabl
 		super(MediaType.APPLICATION_XML.withCharset(CharacterSet.UTF_8.getCharsetName()));
 		addMediaType(MediaType.APPLICATION_ALL_XML.withCharset(CharacterSet.UTF_8.getCharsetName()));
 		addMediaType(MediaType.TEXT_XML.withCharset(CharacterSet.UTF_8.getCharsetName()));
+		addMediaType(MediaType.APPLICATION_HAL_XML.withCharset(CharacterSet.UTF_8.getCharsetName()));
 	}
 
 	public XmlProcessor(String... mediaTypes) throws IllegalArgumentException {

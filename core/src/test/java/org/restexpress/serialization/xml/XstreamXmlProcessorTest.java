@@ -48,6 +48,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.serialization.KnownObject;
+import org.restexpress.serialization.xml.xstream.XstreamXmlProcessor;
 import org.restexpress.util.TestUtilities;
 
 /**

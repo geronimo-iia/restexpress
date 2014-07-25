@@ -188,8 +188,13 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
 
 	@Override
 	public Processor processor(String mimeType) {
-		ResponseProcessor responseProcessor = processorsByMediaType.get(mimeType);
-		return responseProcessor != null ? responseProcessor.processor() : null;
+		List<MediaRange> requested = MediaRanges.parse(mimeType);
+		final String bestMatch = MediaRanges.getBestMatch(supportedMediaRanges, requested);
+		if (bestMatch != null) {
+			ResponseProcessor responseProcessor = processorsByMediaType.get(bestMatch);
+			return responseProcessor != null ? responseProcessor.processor() : null;
+		}
+		return null;
 	}
 
 	@Override

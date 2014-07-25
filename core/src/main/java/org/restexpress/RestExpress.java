@@ -39,6 +39,7 @@ import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.restexpress.context.ServerContext;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
+import org.restexpress.domain.response.ErrorResult;
 import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.MessageObserver;
 import org.restexpress.pipeline.PipelineBuilder;
@@ -55,7 +56,8 @@ import org.restexpress.route.RouteResolver;
 import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
 import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
-import org.restexpress.serialization.xml.XstreamXmlProcessor;
+import org.restexpress.serialization.text.TextProcessor;
+import org.restexpress.serialization.xml.xstream.XstreamXmlProcessor;
 import org.restexpress.settings.RestExpressSettings;
 import org.restexpress.settings.Settings;
 import org.restexpress.util.Bootstraps;
@@ -110,24 +112,22 @@ public class RestExpress {
 
 	/**
 	 * Create a new RestExpress service. By default, RestExpress uses port 8081.
-	 * Supports JSON, and XML, providing JSEND-style wrapped responses. And
-	 * displays some messages on System.out. These can be altered with the with
-	 * settings().
-	 * 
-	 * <p/>
+	 * Supports JSON, XML, etc.. And displays some messages on System.out. These
+	 * can be altered with the with settings(). By default, all error are
+	 * wrapper using this format (@see {@link ErrorResult}.
+	 * <p>
 	 * The default input and output format for messages is JSON. To change that,
 	 * use the setDefaultFormat(String) DSL modifier, passing the format to use
 	 * by default. Make sure there's a corresponding SerializationProcessor for
 	 * that particular format. The Format class has the basics.
-	 * 
-	 * <p/>
+	 * </p>
+	 * <p>
 	 * This DSL was created as a thin veneer on Netty functionality. The bind()
 	 * method simply builds a Netty pipeline and uses this builder class to
-	 * create it. Underneath the covers, RestExpress uses Google GSON for JSON
+	 * create it. Underneath the covers, RestExpress uses Jackson for JSON
 	 * handling and XStream for XML processing. However, both of those can be
-	 * swapped out using the putSerializationProcessor(String,
-	 * SerializationProcessor) method, creating your own instance of
-	 * SerializationProcessor as necessary.
+	 * swapped out using the {@link #serializationProvider()} as necessary.
+	 * </p>
 	 * 
 	 */
 	public RestExpress() {
@@ -154,8 +154,9 @@ public class RestExpress {
 		routeDeclarations = new RouteDeclaration();
 		context = new ServerContext();
 		if (settings.serverSettings().isUseDefaultSerializationConfiguration()) {
-			responseProcessorManager.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
-			responseProcessorManager.add(new XstreamXmlProcessor(), Wrapper.newJsendResponseWrapper());
+			responseProcessorManager.add(new JacksonJsonProcessor(), Wrapper.newErrorResponseWrapper(), true);
+			responseProcessorManager.add(new XstreamXmlProcessor(), Wrapper.newErrorResponseWrapper());
+			responseProcessorManager.add(new TextProcessor(), Wrapper.newErrorResponseWrapper());
 		}
 	}
 
