@@ -40,13 +40,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.domain.CharacterSet;
+import org.restexpress.domain.metadata.RouteMetadata;
+import org.restexpress.domain.metadata.ServerMetadata;
+import org.restexpress.domain.metadata.UriMetadata;
 import org.restexpress.serialization.KnownObject;
 import org.restexpress.serialization.xml.xstream.XstreamXmlProcessor;
 import org.restexpress.util.TestUtilities;
@@ -63,6 +69,15 @@ public class XstreamXmlProcessorTest {
 	@Before
 	public void setup() {
 		processor.alias("KnownObject", KnownObject.class);
+	}
+
+	@Test
+	public void shouldUnderstandMetadata() {
+		List<RouteMetadata> list = new ArrayList<RouteMetadata>();
+		list.add(new RouteMetadata("api", new UriMetadata("uri"), new ArrayList<String>(), new ArrayList<String>(), true));
+		ServerMetadata serverMetadata = new ServerMetadata("test", 8081, "httpl/localhost:80801", new HashSet<String>(), "json", list);
+		String xml = TestUtilities.serialize(serverMetadata, processor);
+		TestUtilities.deserialize(xml, ServerMetadata.class, processor);
 	}
 
 	@Test
