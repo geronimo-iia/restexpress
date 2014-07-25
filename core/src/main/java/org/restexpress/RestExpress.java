@@ -392,6 +392,7 @@ public class RestExpress {
 		allChannels.add(channel);
 
 		// bind all plugins
+		Collections.sort(plugins);
 		for (final Plugin plugin : plugins) {
 			plugin.bind(this);
 		}
@@ -428,6 +429,7 @@ public class RestExpress {
 		final ChannelGroupFuture future = allChannels.close();
 		future.awaitUninterruptibly();
 		// shut down all plugins
+		Collections.reverse(plugins);
 		for (final Plugin plugin : plugins) {
 			plugin.shutdown(this);
 		}

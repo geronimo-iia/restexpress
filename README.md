@@ -79,7 +79,7 @@ Current Version 0.10.4
 * default serialization configuration can be controlled by ServerSettings.
 * update maven parent pom (version in properties, license plugin, ...)
 * Add a Server Context
-* Add a AccesLogMessageObserver
+* Add a ConsoleAccesLogMessageObserver, CounterMessageObserver and MessageObserverDispatcher
 * Simplify SerializationProvider: support only one format(one content type) per instance.
 * Add ResponseHeaderPostProcessor (add predefined list of header in response, if they're not present)
 * Add common plugin (from PluginExpress): cache utility, and x-security (not finalized).
@@ -88,6 +88,8 @@ Current Version 0.10.4
 * refactor SerializationProcessor in order to deal only with media type
 * user format enumeration to resolve to a mime type
 * refactor Request Handler
+* add priority on Plugin, in order to manage their order on initialization
+
 
 
 Release 0.10.3 - 27 May 2014
