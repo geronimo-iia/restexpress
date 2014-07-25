@@ -39,9 +39,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@link MediaRanges} is useful for parsing Content-Type or Accept HTTP
- * headers to both parse them into an order list of MediaRange preferences and
- * for matching supported MediaRanges to requested ones for serialization.
+ * {@link MediaRanges} is useful for parsing Content-Type or Accept HTTP headers
+ * to both parse them into an order list of MediaRange preferences and for
+ * matching supported MediaRanges to requested ones for serialization.
  * 
  * @author toddf
  * @since Jan 18, 2013
@@ -61,14 +61,30 @@ public enum MediaRanges {
 		if (mediaType == null) {
 			return Collections.emptyList();
 		}
-
 		final String[] segments = mediaType.split("\\s*,\\s*");
 		final List<MediaRange> items = new ArrayList<MediaRange>();
-
 		for (final String segment : segments) {
 			items.add(MediaRange.parse(segment));
 		}
+		return items;
+	}
 
+	/**
+	 * Parses a Content-Type or Accept header into an ordered List of MediaRange
+	 * instances, which in turn can be used to determine which media type is
+	 * most appropriate for serialization.
+	 * 
+	 * @param mediaType
+	 * @return a List of MediaRange instances parsed from the mediaType string.
+	 */
+	public static List<MediaRange> parse(final List<String> mediaTypes) {
+		if (mediaTypes == null) {
+			return Collections.emptyList();
+		}
+		final List<MediaRange> items = new ArrayList<MediaRange>();
+		for (final String segment : mediaTypes) {
+			items.add(MediaRange.parse(segment));
+		}
 		return items;
 	}
 

@@ -145,7 +145,7 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
 	public SerializationProvider add(Processor processor, ResponseWrapper responseWrapper, boolean isDefault) {
 		ResponseProcessor responseProcessor = new ResponseProcessor(processor, responseWrapper);
 		// compute Media Range
-		List<MediaRange> supportedMediaRanges = MediaRanges.parse(StringUtils.join(", ", processor.supportedMediaTypes()));
+		List<MediaRange> supportedMediaRanges = MediaRanges.parse(processor.supportedMediaTypes());
 		// add to this provider
 		addMediaRanges(supportedMediaRanges);
 		// register his supported media type
