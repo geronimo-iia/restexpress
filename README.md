@@ -92,6 +92,7 @@ Current Version 0.10.4
 * Refactor Route and base URL usage
 * add TextProcessor for all text/* media 
 * add Slf4fErrorLogMessageObserver to log error using SLF4j
+* add Slf4jAccessLogMessageObserver to build an access log using SLF4j
 
 
 Release 0.10.3 - 27 May 2014

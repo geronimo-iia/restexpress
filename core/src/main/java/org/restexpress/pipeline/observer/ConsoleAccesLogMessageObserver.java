@@ -22,11 +22,8 @@ package org.restexpress.pipeline.observer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.restexpress.Request;
-import org.restexpress.Response;
+import org.restexpress.domain.CharacterSet;
 
 /**
  * {@link ConsoleAccesLogMessageObserver} add an access log observer.
@@ -34,9 +31,8 @@ import org.restexpress.Response;
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class ConsoleAccesLogMessageObserver extends BaseMessageObserver {
+public class ConsoleAccesLogMessageObserver extends AbstractAccessLogMessageObserver {
 
-	private final Map<String, Long> timers = new ConcurrentHashMap<String, Long>();
 	private final OutputStream outputStream;
 	private final Charset charset;
 
@@ -48,34 +44,31 @@ public class ConsoleAccesLogMessageObserver extends BaseMessageObserver {
 	 *            <code>Files.newOutputStream</code> for example.
 	 */
 	public ConsoleAccesLogMessageObserver(OutputStream outputStream) {
+		this(outputStream, CharacterSet.UTF_8.getCharset());
+	}
+
+	public ConsoleAccesLogMessageObserver(OutputStream outputStream, Charset charset) {
 		super();
 		this.outputStream = outputStream;
-		charset = Charset.forName("UTF-8");
+		this.charset = charset;
+
 	}
 
 	@Override
-	public void onReceived(final Request request, final Response response) {
-		timers.put(request.getCorrelationId(), System.currentTimeMillis());
-	}
-
-	@Override
-	public void onComplete(Request request, Response response) {
-		final Long stop = System.currentTimeMillis();
-		final Long start = timers.remove(request.getCorrelationId());
-
-		final StringBuffer sb = new StringBuffer(request.getEffectiveHttpMethod().toString());
+	protected void access(String method, String url, String status, long duration) {
+		final StringBuffer sb = new StringBuffer(method);
 		sb.append(" ");
-		sb.append(request.getUrl());
+		sb.append(url);
 
-		if (start != null) {
+		if (duration >= 0) {
 			sb.append(" responded with ");
-			sb.append(response.getResponseStatus().toString());
+			sb.append(status);
 			sb.append(" in ");
-			sb.append(stop - start);
+			sb.append(duration);
 			sb.append(" ms");
 		} else {
 			sb.append(" responded with ");
-			sb.append(response.getResponseStatus().toString());
+			sb.append(status);
 		}
 
 		byte[] bytes = sb.toString().getBytes(charset);
@@ -84,7 +77,6 @@ public class ConsoleAccesLogMessageObserver extends BaseMessageObserver {
 		} catch (IOException e) {
 			// we just lost access log
 		}
-
 	}
 
 }
