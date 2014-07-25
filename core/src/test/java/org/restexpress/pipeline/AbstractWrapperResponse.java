@@ -27,13 +27,16 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.local.DefaultLocalServerChannelFactory;
+import org.restexpress.pipeline.handler.DefaultRequestHandler;
+import org.restexpress.pipeline.observer.CounterMessageObserver;
+import org.restexpress.pipeline.writer.StringBufferHttpResponseWriter;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.util.TestUtilities;
 
 public class AbstractWrapperResponse {
 
 	protected DefaultRequestHandler messageHandler;
-	protected WrappedResponseObserver observer;
+	protected CounterMessageObserver observer;
 	protected Channel channel;
 	protected ChannelPipeline pl;
 	protected StringBuffer responseBody;
@@ -46,8 +49,8 @@ public class AbstractWrapperResponse {
 
 		messageHandler = TestUtilities.newDefaultRequestHandler(routes, new StringBufferHttpResponseWriter(responseHeaders, responseBody));
 
-		observer = new WrappedResponseObserver();
-		messageHandler.addMessageObserver(observer);
+		observer = new CounterMessageObserver();
+		messageHandler.dispatcher().addMessageObserver(observer);
 
 		PipelineBuilder pf = new PipelineBuilder().addRequestHandler(messageHandler);
 		pl = pf.getPipeline();

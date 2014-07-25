@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.pipeline;
+package org.restexpress.pipeline.handler;
 
 import java.net.InetSocketAddress;
 
@@ -31,6 +31,8 @@ import org.restexpress.Response;
 import org.restexpress.SerializationProvider;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
+import org.restexpress.pipeline.HttpResponseWriter;
+import org.restexpress.pipeline.MessageContext;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.response.ResponseProcessorSetting;
 import org.restexpress.response.ResponseProcessorSettingResolver;

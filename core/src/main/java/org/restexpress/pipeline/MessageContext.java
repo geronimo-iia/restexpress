@@ -36,11 +36,9 @@ package org.restexpress.pipeline;
 
 import java.net.URLDecoder;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map.Entry;
 
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.restexpress.Parameters;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
@@ -119,31 +117,31 @@ public final class MessageContext {
 	public void setHttpStatus(final HttpResponseStatus httpStatus) {
 		getResponse().setResponseStatus(httpStatus);
 	}
-
-	public String getRequestedFormat() {
-		String format = null;
-		if (hasAction()) {
-			format = getAction().getParameter(Parameters.Query.FORMAT);
-		}
-		if ((format == null) || format.trim().isEmpty()) {
-			format = getRequest().getHeader(Parameters.Query.FORMAT);
-		}
-		return format;
-	}
-
-	public boolean supportsRequestedFormat() {
-		if (!hasAction()) {
-			return false;
-		}
-		return getAction().getRoute().supportsFormat(getRequest().getFormat());
-	}
-
-	public Collection<String> getSupportedRouteFormats() {
-		if (!hasAction()) {
-			return Collections.emptyList();
-		}
-		return getAction().getRoute().getSupportedFormats();
-	}
+//
+//	public String getRequestedFormat() {
+//		String format = null;
+//		if (hasAction()) {
+//			format = getAction().getParameter(Parameters.Query.FORMAT);
+//		}
+//		if ((format == null) || format.trim().isEmpty()) {
+//			format = getRequest().getHeader(Parameters.Query.FORMAT);
+//		}
+//		return format;
+//	}
+//
+//	public boolean supportsRequestedFormat() {
+//		if (!hasAction()) {
+//			return false;
+//		}
+//		return getAction().getRoute().supportsFormat(getRequest().getFormat());
+//	}
+//
+//	public Collection<String> getSupportedRouteFormats() {
+//		if (!hasAction()) {
+//			return Collections.emptyList();
+//		}
+//		return getAction().getRoute().getSupportedFormats();
+//	}
 
 	private void addUrlParametersAsHeaders(final Request request, final Collection<Entry<String, String>> parameters) {
 		for (final Entry<String, String> entry : parameters) {

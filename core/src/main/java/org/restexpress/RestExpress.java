@@ -42,13 +42,13 @@ import org.restexpress.context.ServerContext;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
-import org.restexpress.pipeline.DefaultHttpResponseWriter;
-import org.restexpress.pipeline.DefaultRequestHandler;
 import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.MessageObserver;
 import org.restexpress.pipeline.PipelineBuilder;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;
+import org.restexpress.pipeline.handler.DefaultRequestHandler;
+import org.restexpress.pipeline.writer.DefaultHttpResponseWriter;
 import org.restexpress.plugin.Plugin;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.response.Wrapper;
@@ -321,7 +321,7 @@ public class RestExpress {
 		final DefaultRequestHandler requestHandler = new DefaultRequestHandler(routeResolver, responseProcessorManager, httpResponseWriter, settings.serverSettings().isEnforceHttpSpec());
 
 		// Add MessageObservers to the request handler here, if desired...
-		requestHandler.addMessageObserver(messageObservers);
+		requestHandler.dispatcher().addMessageObserver(messageObservers);
 
 		// Add pre preprocessors to the request handler here...
 		for (final Preprocessor processor : preprocessors()) {

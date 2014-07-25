@@ -27,40 +27,39 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.pipeline.MessageObserver;
 
 /**
- * {@link AccesLogMessageObserver} add an access log observer.
+ * {@link ConsoleAccesLogMessageObserver} add an access log observer.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class AccesLogMessageObserver extends MessageObserver {
+public class ConsoleAccesLogMessageObserver extends BaseMessageObserver {
 
 	private final Map<String, Long> timers = new ConcurrentHashMap<String, Long>();
 	private final OutputStream outputStream;
 	private final Charset charset;
 
 	/**
-	 * Build a new instance of {@link AccesLogMessageObserver}.
+	 * Build a new instance of {@link ConsoleAccesLogMessageObserver}.
 	 * 
 	 * @param outputStream
 	 *            {@link OutputStream} instance which can be obtained by a
 	 *            <code>Files.newOutputStream</code> for example.
 	 */
-	public AccesLogMessageObserver(OutputStream outputStream) {
+	public ConsoleAccesLogMessageObserver(OutputStream outputStream) {
 		super();
 		this.outputStream = outputStream;
 		charset = Charset.forName("UTF-8");
 	}
 
 	@Override
-	protected void onReceived(final Request request, final Response response) {
+	public void onReceived(final Request request, final Response response) {
 		timers.put(request.getCorrelationId(), System.currentTimeMillis());
 	}
 
 	@Override
-	protected void onComplete(Request request, Response response) {
+	public void onComplete(Request request, Response response) {
 		final Long stop = System.currentTimeMillis();
 		final Long start = timers.remove(request.getCorrelationId());
 
@@ -88,13 +87,4 @@ public class AccesLogMessageObserver extends MessageObserver {
 
 	}
 
-	@Override
-	protected void onException(Throwable exception, Request request, Response response) {
-		// nothing
-	}
-
-	@Override
-	protected void onSuccess(Request request, Response response) {
-		// nothing
-	}
 }

@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.pipeline;
+package org.restexpress.pipeline.writer;
 
 import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
 import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
@@ -31,6 +31,7 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
+import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.util.HttpSpecification;
 
 /**

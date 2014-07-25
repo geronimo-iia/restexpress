@@ -70,7 +70,7 @@ public abstract class Route {
 	private boolean shouldSerializeResponse = true;
 	private final String name;
 	private final String baseUrl;
-	private final List<String> supportedFormats = new ArrayList<String>();
+	//private final List<String> supportedFormats = new ArrayList<String>();
 	private final Set<String> flags = new HashSet<>();
 	private final Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -84,7 +84,7 @@ public abstract class Route {
 		this.method = method;
 		this.shouldSerializeResponse = shouldSerializeResponse;
 		this.name = name;
-		this.supportedFormats.addAll(supportedFormats);
+		//this.supportedFormats.addAll(supportedFormats);
 		this.flags.addAll(flags);
 		this.parameters.putAll(parameters);
 		this.baseUrl = baseUrl;
@@ -153,27 +153,27 @@ public abstract class Route {
 		return shouldSerializeResponse;
 	}
 
-	public Collection<String> getSupportedFormats() {
-		return Collections.unmodifiableList(supportedFormats);
-	}
-
-	public boolean hasSupportedFormats() {
-		return (!supportedFormats.isEmpty());
-	}
-
-	public void addAllSupportedFormats(final List<String> formats) {
-		supportedFormats.addAll(formats);
-	}
-
-	public void addSupportedFormat(final String format) {
-		if (!supportsFormat(format)) {
-			supportedFormats.add(format);
-		}
-	}
-
-	public boolean supportsFormat(final String format) {
-		return supportedFormats.contains(format);
-	}
+//	public Collection<String> getSupportedFormats() {
+//		return Collections.unmodifiableList(supportedFormats);
+//	}
+//
+//	public boolean hasSupportedFormats() {
+//		return (!supportedFormats.isEmpty());
+//	}
+//
+//	public void addAllSupportedFormats(final List<String> formats) {
+//		supportedFormats.addAll(formats);
+//	}
+//
+//	public void addSupportedFormat(final String format) {
+//		if (!supportsFormat(format)) {
+//			supportedFormats.add(format);
+//		}
+//	}
+//
+//	public boolean supportsFormat(final String format) {
+//		return supportedFormats.contains(format);
+//	}
 
 	public UrlMatch match(final String url) {
 		return urlMatcher.match(url);

@@ -18,7 +18,7 @@
  *
  */
 /*
- Copyright 2010, Strategic Gains, Inc.
+ Copyright 2011, Strategic Gains, Inc.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -32,53 +32,73 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-package org.restexpress.pipeline;
+package org.restexpress.pipeline.observer;
 
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.pipeline.MessageObserver;
 
 /**
- * {@link MessageObserver} define methods to deal with an observer of the
- * pipeline.
+ * {@link CounterMessageObserver} count message.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- * @author toddf
- * @since Dec 15, 2010
+ * 
  */
-public interface MessageObserver {
-	/**
-	 * Sent when a message is received, after the request and response are
-	 * created. Useful for initiating start timers, etc.
-	 * 
-	 * @param request
-	 * @param response
-	 */
-	public void onReceived(final Request request, final Response response);
+public class CounterMessageObserver implements MessageObserver {
+
+	private int receivedCount = 0;
+	private int exceptionCount = 0;
+	private int successCount = 0;
+	private int completeCount = 0;
+
+	public CounterMessageObserver() {
+		super();
+	}
 
 	/**
-	 * Sent when an exception occurs in a route, but before the response is
-	 * written.
-	 * 
-	 * @param exception
-	 * @param request
-	 * @param response
+	 * Reset counter.
 	 */
-	public void onException(final Throwable exception, final Request request, final Response response);
+	public void reset() {
+		receivedCount = 0;
+		exceptionCount = 0;
+		successCount = 0;
+		completeCount = 0;
+	}
 
-	/**
-	 * Sent after a response is successfully written.
-	 * 
-	 * @param request
-	 * @param response
-	 */
-	public void onSuccess(final Request request, final Response response);
+	@Override
+	public void onReceived(Request request, Response response) {
+		++receivedCount;
+	}
 
-	/**
-	 * Sent after either an exception or successful response is written from a
-	 * route.
-	 * 
-	 * @param request
-	 * @param response
-	 */
-	public void onComplete(final Request request, final Response response);
+	@Override
+	public void onException(Throwable exception, Request request, Response response) {
+		++exceptionCount;
+		exception.printStackTrace();
+	}
+
+	@Override
+	public void onSuccess(Request request, Response response) {
+		++successCount;
+	}
+
+	@Override
+	public void onComplete(Request request, Response response) {
+		++completeCount;
+	}
+
+	public int getReceivedCount() {
+		return receivedCount;
+	}
+
+	public int getExceptionCount() {
+		return exceptionCount;
+	}
+
+	public int getSuccessCount() {
+		return successCount;
+	}
+
+	public int getCompleteCount() {
+		return completeCount;
+	}
 }

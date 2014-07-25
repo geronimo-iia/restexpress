@@ -34,80 +34,32 @@
  */
 package org.restexpress.pipeline.observer;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.pipeline.MessageObserver;
 
 /**
- * Provides simple System.out.println() details about basic timing.
+ * {@link BaseMessageObserver} implement {@link MessageObserver} methods to do
+ * nothing.
  * 
- * @author toddf
- * @since Dec 16, 2010
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ * 
  */
-public class SimpleConsoleLogMessageObserver extends BaseMessageObserver {
+public abstract class BaseMessageObserver implements MessageObserver {
 
-	private final Map<String, Timer> timers = new ConcurrentHashMap<String, Timer>();
-
-	@Override
 	public void onReceived(final Request request, final Response response) {
-		timers.put(request.getCorrelationId(), new Timer());
+		// default behavior is to do nothing.
 	}
 
-	@Override
 	public void onException(final Throwable exception, final Request request, final Response response) {
-		System.out.println(request.getEffectiveHttpMethod().toString() + " " + request.getUrl() + " threw exception: " + exception.getClass().getSimpleName());
-		exception.printStackTrace();
+		// default behavior is to do nothing.
 	}
 
-	@Override
 	public void onSuccess(final Request request, final Response response) {
+		// default behavior is to do nothing.
 	}
 
-	@Override
 	public void onComplete(final Request request, final Response response) {
-		final Timer timer = timers.remove(request.getCorrelationId());
-		if (timer != null) {
-			timer.stop();
-		}
-
-		final StringBuffer sb = new StringBuffer(request.getEffectiveHttpMethod().toString());
-		sb.append(" ");
-		sb.append(request.getUrl());
-
-		if (timer != null) {
-			sb.append(" responded with ");
-			sb.append(response.getResponseStatus().toString());
-			sb.append(" in ");
-			sb.append(timer.toString());
-		} else {
-			sb.append(" responded with ");
-			sb.append(response.getResponseStatus().toString());
-			sb.append(" (no timer found)");
-		}
-
-		System.out.println(sb.toString());
-	}
-
-	private static class Timer {
-		private long startMillis = 0;
-		private long stopMillis = 0;
-
-		public Timer() {
-			super();
-			this.startMillis = System.currentTimeMillis();
-		}
-
-		public void stop() {
-			this.stopMillis = System.currentTimeMillis();
-		}
-
-		@Override
-		public String toString() {
-			final long stopTime = (stopMillis == 0 ? System.currentTimeMillis() : stopMillis);
-
-			return String.valueOf(stopTime - startMillis) + "ms";
-		}
+		// default behavior is to do nothing.
 	}
 }

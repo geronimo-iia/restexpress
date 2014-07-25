@@ -32,7 +32,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-package org.restexpress.pipeline;
+package org.restexpress.pipeline.writer;
 
 import java.util.ArrayList;
 import java.util.List;
