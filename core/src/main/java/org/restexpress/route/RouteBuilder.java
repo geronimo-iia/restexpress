@@ -73,7 +73,6 @@ public abstract class RouteBuilder {
 
 	private final String uri;
 	private List<HttpMethod> methods = new ArrayList<HttpMethod>();
-	private final List<String> supportedFormats = new ArrayList<String>();
 	private final Map<HttpMethod, String> actionNames = new HashMap<HttpMethod, String>();
 	private final Object controller;
 	private boolean shouldSerializeResponse = true;
@@ -112,7 +111,7 @@ public abstract class RouteBuilder {
 	 * @param baseUrl
 	 * @return
 	 */
-	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, Set<String> flags, Map<String, Object> parameters);
+	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, Set<String> flags, Map<String, Object> parameters);
 
 	/**
 	 * Child builder must implements this method.
@@ -201,14 +200,6 @@ public abstract class RouteBuilder {
 		return this;
 	}
 
-	public RouteBuilder format(final String format) {
-		if (!supportedFormats.contains(format)) {
-			supportedFormats.add(format);
-		}
-
-		return this;
-	}
-
 	/**
 	 * Flags are boolean settings that are created at route definition time.
 	 * These flags can be used to pass booleans to preprocessors, controllers,
@@ -276,7 +267,7 @@ public abstract class RouteBuilder {
 			}
 
 			final Method action = determineActionMethod(controller, actionName);
-			routes.add(newRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters));
+			routes.add(newRoute(pattern, controller, action, method, shouldSerializeResponse, name, flags, parameters));
 		}
 
 		return routes;
@@ -295,9 +286,7 @@ public abstract class RouteBuilder {
 			methods.add(route.getMethod().getName());
 		}
 		final RouteMetadata metadata = new RouteMetadata(name, uriMeta,//
-				aliases, //
-				new HashSet<String>(supportedFormats), null, //
-				methods, shouldSerializeResponse);
+				aliases, methods, shouldSerializeResponse);
 
 		return metadata;
 	}

@@ -36,7 +36,6 @@ package org.restexpress.domain.metadata;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -53,8 +52,7 @@ public class ServerMetadata implements Serializable {
 	private int port;
 	private String baseUrl;
 	private Set<String> supportedMediaTypes;
-	private Set<String> supportedFormats;
-	private String defaultFormat;
+	private String defaultMediaType;
 	private final List<RouteMetadata> routes;
 
 	/**
@@ -63,17 +61,15 @@ public class ServerMetadata implements Serializable {
 	protected ServerMetadata() {
 		super();
 		routes = new ArrayList<>();
-		supportedFormats = new HashSet<>();
 	}
 
-	public ServerMetadata(String name, int port, String baseUrl, Set<String> supportedMediaTypes, Set<String> supportedFormats, String defaultFormat, List<RouteMetadata> routes) {
+	public ServerMetadata(String name, int port, String baseUrl, Set<String> supportedMediaTypes, String defaultMediaType, List<RouteMetadata> routes) {
 		super();
 		this.name = name;
 		this.port = port;
 		this.baseUrl = baseUrl;
 		this.supportedMediaTypes = supportedMediaTypes;
-		this.supportedFormats = supportedFormats;
-		this.defaultFormat = defaultFormat;
+		this.defaultMediaType = defaultMediaType;
 		this.routes = routes;
 	}
 
@@ -81,9 +77,8 @@ public class ServerMetadata implements Serializable {
 		this.name = root.name;
 		this.port = root.port;
 		this.baseUrl = root.baseUrl;
-		this.supportedFormats = new HashSet<String>();
-		this.supportedFormats.addAll(root.supportedFormats);
-		this.defaultFormat = root.defaultFormat;
+		this.supportedMediaTypes = root.supportedMediaTypes;
+		this.defaultMediaType = root.defaultMediaType;
 		this.routes = new ArrayList<RouteMetadata>();
 		this.routes.add(routeInfo);
 	}
@@ -91,7 +86,7 @@ public class ServerMetadata implements Serializable {
 	public String getBaseUrl() {
 		return baseUrl;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -103,13 +98,9 @@ public class ServerMetadata implements Serializable {
 	public Set<String> getSupportedMediaTypes() {
 		return supportedMediaTypes;
 	}
-	
-	public Set<String> getSupportedFormats() {
-		return supportedFormats;
-	}
 
-	public String getDefaultFormat() {
-		return defaultFormat;
+	public String getDefaultMediaType() {
+		return defaultMediaType;
 	}
 
 	public List<RouteMetadata> getRoutes() {

@@ -59,7 +59,7 @@ import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
-import org.restexpress.serialization.json.JacksonJsonProcessor;
+import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
 
 /**
@@ -179,7 +179,6 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
-		// System.out.println(responseBody.toString());
 		assertEquals("{\"status\":\"error\",\"message\":\"foobar'd\",\"data\":\"BadRequestException\"}", responseBody.toString());
 	}
 
@@ -190,11 +189,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
-
-		// assertEquals("{\"status\":\"error\",\"message\":\"foobar'd\",\"data\":\"BadRequestException\"}",
-		// responseBody.toString());
-		System.err.println(responseBody.toString());
-		assertEquals("{\"status\":\"error\",\"message\":\"Requested representation format not supported: %target. Supported formats: js, json, xml, xpdl, xsl, wjson, wxml\",\"data\":\"BadRequestException\"}", responseBody.toString());
+		assertTrue(responseBody.toString().startsWith("{\"status\":\"error\",\"message\":\"Requested representation format not supported: %target"));
 	}
 
 	@Test
@@ -204,8 +199,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
-
-		assertEquals("{\"status\":\"error\",\"message\":\"Requested representation format not supported: unsupported. Supported formats: js, json, xml, xpdl, xsl, wjson, wxml\",\"data\":\"BadRequestException\"}", responseBody.toString());
+		assertTrue(responseBody.toString().startsWith("{\"status\":\"error\",\"message\":\"Requested representation format not supported: unsupported."));
 	}
 
 	@Test
@@ -431,7 +425,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 
 			uri("/serializedString.{format}", controller).action("serializedStringAction", HttpMethod.GET);
 
-			uri("/setBodyAction.html", controller).action("setBodyAction", HttpMethod.GET).format(Format.HTML.getExtension());
+			uri("/setBodyAction.html", controller).action("setBodyAction", HttpMethod.GET);
 			return this;
 		}
 	}

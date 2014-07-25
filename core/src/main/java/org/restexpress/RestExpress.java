@@ -23,10 +23,8 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 
@@ -39,7 +37,6 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.restexpress.context.ServerContext;
-import org.restexpress.domain.Format;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
 import org.restexpress.pipeline.HttpResponseWriter;
@@ -57,7 +54,7 @@ import org.restexpress.route.RouteDeclaration;
 import org.restexpress.route.RouteResolver;
 import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
-import org.restexpress.serialization.json.JacksonJsonProcessor;
+import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
 import org.restexpress.settings.RestExpressSettings;
 import org.restexpress.settings.Settings;
@@ -444,18 +441,13 @@ public class RestExpress {
 	 * @return ServerMetadata instance.
 	 */
 	public ServerMetadata getRouteMetadata() {
-		final Format defaultFormat = Format.valueForMediaType(responseProcessorManager.defaultProcessor().mediaType());
-		final Set<String> supportedFormat = new HashSet<String>();
-		for (Format format : responseProcessorManager.supportedFormat()) {
-			supportedFormat.add(format.toString());
-		}
 		final ServerMetadata metadata = new ServerMetadata( //
 				settings.serverSettings().getName(), //
 				settings.serverSettings().getPort(), //
 				settings.serverSettings().getBaseUrl(), //
 				responseProcessorManager.supportedMediaType(), //
-				supportedFormat, //
-				defaultFormat == null ? "" : defaultFormat.toString(), routeDeclarations.getMetadata());
+				responseProcessorManager.defaultProcessor().mediaType(), //
+				routeDeclarations.getMetadata());
 		return metadata;
 	}
 

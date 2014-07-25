@@ -35,7 +35,6 @@
 package org.restexpress.route.regex;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,13 +48,13 @@ import org.restexpress.url.UrlRegex;
  */
 public class RegexRoute extends Route {
 
-	public RegexRoute(final UrlRegex urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
+	public RegexRoute(final UrlRegex urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name,  final Set<String> flags,
 			final Map<String, Object> parameters) {
-		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters);
+		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, flags, parameters);
 	}
 
-	public RegexRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
+	public RegexRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name,  final Set<String> flags,
 			final Map<String, Object> parameters) {
-		this(new UrlRegex(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters);
+		this(new UrlRegex(urlPattern), controller, action, method, shouldSerializeResponse, name,  flags, parameters);
 	}
 }

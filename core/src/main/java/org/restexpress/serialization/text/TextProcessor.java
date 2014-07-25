@@ -39,7 +39,7 @@ import org.restexpress.serialization.Processor;
 public class TextProcessor extends AbstractProcessor {
 
 	public TextProcessor() {
-		super(MediaType.TEXT_ALL);
+		super(MediaType.TEXT_ALL.withCharset(CharacterSet.UTF_8.getCharsetName()));
 	}
 
 	public TextProcessor(MediaType... mediaTypes) throws IllegalArgumentException {

@@ -51,7 +51,7 @@ import org.junit.Test;
 import org.restexpress.SerializationProvider;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
-import org.restexpress.serialization.json.JacksonJsonProcessor;
+import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
 
 /**

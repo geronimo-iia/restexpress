@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.RestExpress;
-import org.restexpress.domain.Format;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
 import org.restexpress.plugin.RoutePlugin;
@@ -75,8 +74,8 @@ public class RouteMetadataPlugin extends RoutePlugin {
 		routeBuilders.add(server.uri("/routes", routeMetadataController) //
 				.action("getConsole", HttpMethod.GET) //
 				.noSerialization() //
-				.name("routes.metadata.console") //
-				.format(Format.HTML.getExtension()));
+				.name("routes.metadata.console"));
+		
 		// apply flag and parameter
 		for (RouteBuilder routeBuilder : routeBuilders) {
 			applyFlags(routeBuilder);

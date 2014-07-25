@@ -21,7 +21,6 @@ package org.restexpress;
 
 import java.util.Set;
 
-import org.restexpress.domain.Format;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.response.ResponseWrapper;
 import org.restexpress.serialization.Processor;
@@ -56,11 +55,6 @@ public interface SerializationProvider extends Aliasable {
 	 * @return this {@link ResponseProcessorManager} instance.
 	 */
 	public abstract SerializationProvider add(Processor processor, ResponseWrapper responseWrapper, boolean isDefault);
-
-	/**
-	 * @return a {@link Set} of supported {@link Format}.
-	 */
-	public abstract Set<Format> supportedFormat();
 
 	/**
 	 * @param mimeType

@@ -35,7 +35,6 @@
 package org.restexpress.route.parameterized;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,9 +58,8 @@ public class ParameterizedRouteBuilder extends RouteBuilder {
 	}
 
 	@Override
-	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
-			final Map<String, Object> parameters) {
-		final ParameterizedRoute parameterizedRoute = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters);
+	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
+		final ParameterizedRoute parameterizedRoute = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, flags, parameters);
 		parameterizedRoute.addAliases(aliases);
 		return parameterizedRoute;
 	}

@@ -37,7 +37,6 @@ package org.restexpress.domain.metadata;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * {@link RouteMetadata} expose meta data information on route: name, uri,
@@ -51,8 +50,6 @@ public class RouteMetadata implements Serializable {
 	private String name;
 	private UriMetadata uri;
 	private List<String> aliases;
-	private Set<String> supportedFormats;
-	private String defaultFormat;
 	private List<String> methods;
 	private boolean serialized;
 
@@ -60,13 +57,11 @@ public class RouteMetadata implements Serializable {
 		super();
 	}
 
-	public RouteMetadata(String name, UriMetadata uri, List<String> aliases, Set<String> supportedFormats, String defaultFormat, List<String> methods, boolean isSerialized) {
+	public RouteMetadata(String name, UriMetadata uri, List<String> aliases, List<String> methods, boolean isSerialized) {
 		super();
 		this.name = name;
 		this.uri = uri;
 		this.aliases = aliases;
-		this.supportedFormats = supportedFormats;
-		this.defaultFormat = defaultFormat;
 		this.methods = methods;
 		this.serialized = isSerialized;
 	}
@@ -91,15 +86,6 @@ public class RouteMetadata implements Serializable {
 	 */
 	public String getUrl(String baseUrl) {
 		return baseUrl + uri.getPattern().replace(".{format}", "");
-	}
-
-	@SuppressWarnings("unchecked")
-	public Set<String> getSupportedFormats() {
-		return supportedFormats == null ? Collections.EMPTY_SET : supportedFormats;
-	}
-
-	public String getDefaultFormat() {
-		return defaultFormat;
 	}
 
 	@SuppressWarnings("unchecked")

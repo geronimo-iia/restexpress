@@ -65,12 +65,10 @@ public abstract class Route {
 	private final HttpMethod method;
 	private boolean shouldSerializeResponse = true;
 	private final String name;
-	// private final List<String> supportedFormats = new ArrayList<String>();
 	private final Set<String> flags = new HashSet<>();
 	private final Map<String, Object> parameters = new HashMap<String, Object>();
 
-	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
-			final Map<String, Object> parameters) {
+	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
 		super();
 		this.urlMatcher = urlMatcher;
 		this.controller = controller;
@@ -79,7 +77,6 @@ public abstract class Route {
 		this.method = method;
 		this.shouldSerializeResponse = shouldSerializeResponse;
 		this.name = name;
-		// this.supportedFormats.addAll(supportedFormats);
 		this.flags.addAll(flags);
 		this.parameters.putAll(parameters);
 	}
@@ -133,28 +130,6 @@ public abstract class Route {
 	public boolean shouldSerializeResponse() {
 		return shouldSerializeResponse;
 	}
-
-	// public Collection<String> getSupportedFormats() {
-	// return Collections.unmodifiableList(supportedFormats);
-	// }
-	//
-	// public boolean hasSupportedFormats() {
-	// return (!supportedFormats.isEmpty());
-	// }
-	//
-	// public void addAllSupportedFormats(final List<String> formats) {
-	// supportedFormats.addAll(formats);
-	// }
-	//
-	// public void addSupportedFormat(final String format) {
-	// if (!supportsFormat(format)) {
-	// supportedFormats.add(format);
-	// }
-	// }
-	//
-	// public boolean supportsFormat(final String format) {
-	// return supportedFormats.contains(format);
-	// }
 
 	public UrlMatch match(final String url) {
 		return urlMatcher.match(url);

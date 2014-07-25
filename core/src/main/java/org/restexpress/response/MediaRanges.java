@@ -132,16 +132,13 @@ public enum MediaRanges {
 	private static WeightedMatch getWeightedMatch(final MediaRange supportedRange, final List<MediaRange> requestedRanges) {
 		int maxRank = -1;
 		MediaRange bestMatch = null;
-
 		for (final MediaRange requestedRange : requestedRanges) {
 			final int rank = supportedRange.rankAgainst(requestedRange);
-
 			if (rank > maxRank) {
 				maxRank = rank;
 				bestMatch = supportedRange;
 			}
 		}
-
 		return (maxRank == -1 ? null : new WeightedMatch(bestMatch, maxRank));
 	}
 

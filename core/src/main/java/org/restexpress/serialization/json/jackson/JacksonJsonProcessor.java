@@ -20,20 +20,17 @@
 /**
  * 
  */
-package org.restexpress.serialization.json;
+package org.restexpress.serialization.json.jackson;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.restexpress.domain.MediaType;
 import org.restexpress.exception.DeserializationException;
 import org.restexpress.exception.SerializationException;
-import org.restexpress.serialization.json.JacksonJsonModule.JacksonEncodingStringSerializer;
-import org.restexpress.serialization.json.JacksonJsonModule.JacksonTimepointDeserializer;
-import org.restexpress.serialization.json.JacksonJsonModule.JacksonTimepointSerializer;
+import org.restexpress.serialization.json.JsonProcessor;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,7 +39,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.strategicgains.util.date.DateAdapterConstants;
 
 /**
@@ -125,16 +123,7 @@ public class JacksonJsonProcessor extends JsonProcessor {
 		}
 	}
 
-	/**
-	 * Template method for sub-classes to augment the module with desired
-	 * serializers and/or deserializers. Sub-classes should call super() to get
-	 * default settings.
-	 */
-	protected SimpleModule initializeModule() {
-		return new SimpleModule().addSerializer(Date.class, new JacksonTimepointSerializer())//
-				.addSerializer(String.class, new JacksonEncodingStringSerializer())//
-				.addDeserializer(Date.class, new JacksonTimepointDeserializer());
-	}
+	
 
 	/**
 	 * Template method for sub-classes to augment the mapper with desired
@@ -162,6 +151,10 @@ public class JacksonJsonProcessor extends JsonProcessor {
 	}
 
 	protected ObjectMapper newObjectMapper() {
-		return initializeMapper(new ObjectMapper()).registerModule(initializeModule());
+		return initializeMapper(new ObjectMapper())//
+				.registerModule(new RestExpressJacksonJsonModule())//
+				.registerModule(new GuavaModule())//
+				.registerModule(new JodaModule())
+				;
 	}
 }

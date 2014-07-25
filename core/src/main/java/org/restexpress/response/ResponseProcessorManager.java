@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.intelligentsia.commons.http.exception.BadRequestException;
@@ -62,21 +63,21 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
 	private ResponseProcessor defaultResponseProcessor;
 
 	/**
-	 * A {@link Map} of extension, media type used to resolve format.
+	 * A {@link Map} of extension and list of {@link MediaRange} used to resolve
+	 * format.
 	 */
-	private final Map<String, String> mediaTypePerFormat;
-
-	/**
-	 * A {@link Set} of supported extensions.
-	 */
-	private Set<Format> supportedFormat = null;
+	private final Map<String, List<MediaRange>> mediaTypePerFormat;
 
 	/**
 	 * Build a new instance of ResponseProcessorManager.
 	 */
 	public ResponseProcessorManager() {
 		super();
-		mediaTypePerFormat = Format.toMap();
+		mediaTypePerFormat = new HashMap<>();
+		// compute media range
+		for (Entry<String, String> entry : Format.toMap().entrySet()) {
+			mediaTypePerFormat.put(entry.getKey(), MediaRanges.parse(entry.getValue()));
+		}
 	}
 
 	@Override
@@ -117,7 +118,7 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
 			if (processor != null) {
 				bestMatch = processor.processor().mediaType();
 			} else if (!shouldForce) {
-				throw new BadRequestException("Requested representation format not supported: " + format + ". Supported formats: " + StringUtils.join(", ", supportedFormat()));
+				throw new BadRequestException("Requested representation format not supported: " + format + ". Supported Media Types: " + StringUtils.join(", ", supportedMediaRanges));
 			}
 		}
 		if (processor == null) {
@@ -155,8 +156,6 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
 				processorsByMediaType.put(mediaRange.asMediaType(), responseProcessor);
 			}
 		}
-		// update supported Format
-		supportedFormat = null;
 		// register default
 		if (isDefault || defaultResponseProcessor == null) {
 			defaultResponseProcessor = responseProcessor;
@@ -167,24 +166,20 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
 	/**
 	 * @param format
 	 * @return a {@link ResponseProcessor} instance or null if no
-	 *         {@link ResponseProcessor} is found for specified format.
+	 *         {@link ResponseProcessor} is found for specified format
+	 *         parameter.
 	 */
 	protected ResponseProcessor getProcessorsByFormat(String format) {
 		if (format != null) {
-			String mediaType = mediaTypePerFormat.get(format);
-			if (mediaType != null) {
-				return processorsByMediaType.get(mediaType);
+			List<MediaRange> requested = mediaTypePerFormat.get(format);
+			if (requested != null) {
+				final String bestMatch = MediaRanges.getBestMatch(supportedMediaRanges, requested);
+				if (bestMatch != null) {
+					return processorsByMediaType.get(bestMatch);
+				}
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public Set<Format> supportedFormat() {
-		if (supportedFormat == null) {
-			supportedFormat = Format.valuesForMediaType(processorsByMediaType.keySet());
-		}
-		return supportedFormat;
 	}
 
 	public Set<String> supportedMediaType() {

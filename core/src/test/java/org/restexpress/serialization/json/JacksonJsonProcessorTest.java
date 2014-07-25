@@ -48,6 +48,7 @@ import org.junit.Test;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.serialization.KnownObject;
 import org.restexpress.serialization.Processor;
+import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
 import org.restexpress.util.TestUtilities;
 
 /**

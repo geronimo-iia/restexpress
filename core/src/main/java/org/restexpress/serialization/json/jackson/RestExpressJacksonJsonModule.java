@@ -17,27 +17,31 @@
  *        under the License.
  *
  */
-package org.restexpress.test;
+package org.restexpress.serialization.json.jackson;
 
-import org.restexpress.Request;
-import org.restexpress.Response;
+import java.util.Date;
+import java.util.Locale;
+
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
- * NoopController for testing purpose.
+ * RestExpressJacksonJsonModule.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class NoopController {
-	public void create(Request request, Response response) {
-	}
+public class RestExpressJacksonJsonModule extends SimpleModule {
 
-	public void read(Request request, Response response) {
-	}
+	private static final long serialVersionUID = 5607854920381206410L;
 
-	public void update(Request request, Response response) {
-	}
+	public RestExpressJacksonJsonModule() {
+		super();
+		addSerializer(String.class, new JacksonEncodingStringSerializer());
+		addSerializer(Date.class, new JacksonTimepointSerializer());
+		addDeserializer(Date.class, new JacksonTimepointDeserializer());
 
-	public void delete(Request request, Response response) {
+		addKeyDeserializer(Locale.class, new JacksonLocaleKeyDeserializer());
+		addSerializer(new JacksonLocaleSerializer());
+		addDeserializer(Locale.class, new JacksonLocaleDeserializer());
 	}
 }
