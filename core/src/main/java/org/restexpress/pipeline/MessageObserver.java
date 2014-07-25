@@ -41,10 +41,11 @@ import org.restexpress.Response;
  * {@link MessageObserver} define methods to deal with an observer of the
  * pipeline.
  * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since Dec 15, 2010
  */
-public class MessageObserver {
+public interface MessageObserver {
 	/**
 	 * Sent when a message is received, after the request and response are
 	 * created. Useful for initiating start timers, etc.
@@ -52,9 +53,7 @@ public class MessageObserver {
 	 * @param request
 	 * @param response
 	 */
-	protected void onReceived(final Request request, final Response response) {
-		// default behavior is to do nothing.
-	}
+	public void onReceived(final Request request, final Response response);
 
 	/**
 	 * Sent when an exception occurs in a route, but before the response is
@@ -64,9 +63,7 @@ public class MessageObserver {
 	 * @param request
 	 * @param response
 	 */
-	protected void onException(final Throwable exception, final Request request, final Response response) {
-		// default behavior is to do nothing.
-	}
+	public void onException(final Throwable exception, final Request request, final Response response);
 
 	/**
 	 * Sent after a response is successfully written.
@@ -74,9 +71,7 @@ public class MessageObserver {
 	 * @param request
 	 * @param response
 	 */
-	protected void onSuccess(final Request request, final Response response) {
-		// default behavior is to do nothing.
-	}
+	public void onSuccess(final Request request, final Response response);
 
 	/**
 	 * Sent after either an exception or successful response is written from a
@@ -85,7 +80,5 @@ public class MessageObserver {
 	 * @param request
 	 * @param response
 	 */
-	protected void onComplete(final Request request, final Response response) {
-		// default behavior is to do nothing.
-	}
+	public void onComplete(final Request request, final Response response);
 }

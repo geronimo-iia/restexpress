@@ -39,20 +39,23 @@ import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.restexpress.context.ServerContext;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
-import org.restexpress.pipeline.DefaultRequestHandler;
+import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.MessageObserver;
 import org.restexpress.pipeline.PipelineBuilder;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;
+import org.restexpress.pipeline.handler.DefaultRequestHandler;
+import org.restexpress.pipeline.writer.DefaultHttpResponseWriter;
 import org.restexpress.plugin.Plugin;
-import org.restexpress.response.DefaultHttpResponseWriter;
+import org.restexpress.response.ResponseProcessorManager;
+import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteBuilder;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.route.RouteResolver;
 import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
-import org.restexpress.serialization.DefaultSerializationProvider;
-import org.restexpress.serialization.SerializationProvider;
+import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
+import org.restexpress.serialization.xml.XstreamXmlProcessor;
 import org.restexpress.settings.RestExpressSettings;
 import org.restexpress.settings.Settings;
 import org.restexpress.util.Bootstraps;
@@ -81,14 +84,24 @@ public class RestExpress {
 	 */
 	private final ServerContext context;
 
-	private SerializationProvider serializationProvider = null;
+	/**
+	 * {@link ResponseProcessorManager} instance.
+	 */
+	private final ResponseProcessorManager responseProcessorManager;
 
+	/**
+	 * {@link ServerBootstrap}.
+	 */
 	private ServerBootstrap bootstrap;
 
 	private final List<MessageObserver> messageObservers;
 	private final List<Preprocessor> preprocessors;
 	private final List<Postprocessor> postprocessors;
 	private final List<Postprocessor> finallyProcessors;
+
+	/**
+	 * {@link List} of {@link Plugin}.
+	 */
 	private final List<Plugin> plugins;
 
 	private final RouteDeclaration routeDeclarations;
@@ -125,34 +138,25 @@ public class RestExpress {
 	 * Build a new instance of {@link RestExpress}.
 	 * 
 	 * @param settings
+	 *            {@link RestExpressSettings} to use.
 	 */
 	public RestExpress(RestExpressSettings settings) {
-		this(settings, new DefaultSerializationProvider(settings.serverSettings().isUseDefaultSerializationConfiguration()));
-	}
-
-	/**
-	 * Build a new instance of {@link RestExpress}.
-	 * 
-	 * @param settings
-	 *            {@link RestExpressSettings} to use.
-	 * @param serializationProvider
-	 *            {@link SerializationProvider} to use.
-	 */
-	public RestExpress(RestExpressSettings settings, SerializationProvider serializationProvider) {
 		super();
 		if (settings == null)
 			throw new NullPointerException("RestExpressSettings can not be null");
-		if (serializationProvider == null)
-			throw new NullPointerException("SerializationProvider can not be null");
 		this.settings = settings;
-		this.serializationProvider = serializationProvider;
-		messageObservers = new ArrayList<MessageObserver>();
-		preprocessors = new ArrayList<Preprocessor>();
-		postprocessors = new ArrayList<Postprocessor>();
-		finallyProcessors = new ArrayList<Postprocessor>();
+		this.responseProcessorManager = new ResponseProcessorManager();
+		messageObservers = new ArrayList<>();
+		preprocessors = new ArrayList<>();
+		postprocessors = new ArrayList<>();
+		finallyProcessors = new ArrayList<>();
 		plugins = new ArrayList<Plugin>();
 		routeDeclarations = new RouteDeclaration();
 		context = new ServerContext();
+		if (settings.serverSettings().isUseDefaultSerializationConfiguration()) {
+			responseProcessorManager.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
+			responseProcessorManager.add(new XstreamXmlProcessor(), Wrapper.newJsendResponseWrapper());
+		}
 	}
 
 	/**
@@ -170,23 +174,10 @@ public class RestExpress {
 	}
 
 	/**
-	 * Change the default behavior for serialization. If no
-	 * SerializationProcessor is set, default of DefaultSerializationProcessor
-	 * is used, which uses Jackson for JSON, XStream for XML.
-	 * 
-	 * @param provider
-	 *            a SerializationProvider instance.
-	 */
-	public RestExpress setSerializationProvider(final SerializationProvider provider) {
-		serializationProvider = provider;
-		return this;
-	}
-
-	/**
 	 * @return {@link SerializationProvider} instance.
 	 */
 	public SerializationProvider serializationProvider() {
-		return serializationProvider;
+		return responseProcessorManager;
 	}
 
 	/**
@@ -228,16 +219,16 @@ public class RestExpress {
 	}
 
 	/**
-	 * Add a Preprocessor instance that gets called before an incoming message
-	 * gets processed. Preprocessors get called in the order in which they are
-	 * added. To break out of the chain, simply throw an exception.
+	 * Add a Processor instance that gets called before an incoming message gets
+	 * processed. Preprocessors get called in the order in which they are added.
+	 * To break out of the chain, simply throw an exception.
 	 * 
 	 * @param processor
 	 * @return
 	 */
-	public RestExpress addPreprocessor(final Preprocessor processor) {
-		if (!preprocessors.contains(processor)) {
-			preprocessors.add(processor);
+	public RestExpress addPreprocessor(final Preprocessor preprocessor) {
+		if (!preprocessors.contains(preprocessor)) {
+			preprocessors.add(preprocessor);
 		}
 		return this;
 	}
@@ -276,15 +267,15 @@ public class RestExpress {
 	/**
 	 * Add a Postprocessor instance that gets called right before the serialized
 	 * message is sent to the client, or in a finally block after the message is
-	 * processed, if an error occurs. Finally processors are Postprocessor
+	 * processed, if an error occurs. Finally preprocessors are Postprocessor
 	 * instances that are guaranteed to run even if an error is thrown from the
 	 * controller or somewhere else in the route. A Finally Processor is useful
 	 * for adding headers or transforming results even during error conditions.
-	 * Finally processors get called in the order in which they are added.
+	 * Finally preprocessors get called in the order in which they are added.
 	 * 
-	 * If an exception is thrown during finally processor execution, the finally
-	 * processors following it are executed after printing a stack trace to the
-	 * System.err stream.
+	 * If an exception is thrown during finally org.restexpress.serialization
+	 * execution, the finally preprocessors following it are executed after
+	 * printing a stack trace to the System.err stream.
 	 * 
 	 * @param processor
 	 * @return RestExpress for method chaining.
@@ -322,22 +313,22 @@ public class RestExpress {
 	 */
 	public ChannelHandler buildRequestHandler() {
 		// Set up the event pipeline factory.
-		final DefaultRequestHandler requestHandler = new DefaultRequestHandler(new RouteResolver(routeDeclarations.createRouteMapping()), //
-				serializationProvider(), //
-				new DefaultHttpResponseWriter(), settings.serverSettings().isEnforceHttpSpec());
+		final RouteResolver routeResolver = new RouteResolver(routeDeclarations.createRouteMapping(settings.serverSettings().getBaseUrl()));
+		final HttpResponseWriter httpResponseWriter = new DefaultHttpResponseWriter();
+		final DefaultRequestHandler requestHandler = new DefaultRequestHandler(routeResolver, responseProcessorManager, httpResponseWriter, settings.serverSettings().isEnforceHttpSpec());
 
 		// Add MessageObservers to the request handler here, if desired...
-		requestHandler.addMessageObserver(messageObservers.toArray(new MessageObserver[0]));
+		requestHandler.dispatcher().addMessageObserver(messageObservers);
 
-		// Add pre processors to the request handler here...
+		// Add pre preprocessors to the request handler here...
 		for (final Preprocessor processor : preprocessors()) {
 			requestHandler.addPreprocessor(processor);
 		}
-		// Add post processors to the request handler here...
+		// Add post preprocessors to the request handler here...
 		for (final Postprocessor processor : postprocessors()) {
 			requestHandler.addPostprocessor(processor);
 		}
-		// Add finally post processors to the request handler here...
+		// Add finally post preprocessors to the request handler here...
 		for (final Postprocessor processor : finallyProcessors()) {
 			requestHandler.addFinallyProcessor(processor);
 		}
@@ -363,6 +354,7 @@ public class RestExpress {
 	 * @return Channel
 	 */
 	public Channel bind(final int port) {
+
 		settings.serverSettings().setPort(port);
 
 		// Configure the server.
@@ -398,6 +390,7 @@ public class RestExpress {
 		allChannels.add(channel);
 
 		// bind all plugins
+		Collections.sort(plugins);
 		for (final Plugin plugin : plugins) {
 			plugin.bind(this);
 		}
@@ -434,6 +427,7 @@ public class RestExpress {
 		final ChannelGroupFuture future = allChannels.close();
 		future.awaitUninterruptibly();
 		// shut down all plugins
+		Collections.reverse(plugins);
 		for (final Plugin plugin : plugins) {
 			plugin.shutdown(this);
 		}
@@ -442,7 +436,7 @@ public class RestExpress {
 	}
 
 	/**
-	 * Retrieve metadata about the routes in this RestExpress server.
+	 * Retrieve meta data about the routes in this RestExpress server.
 	 * 
 	 * @return ServerMetadata instance.
 	 */
@@ -450,8 +444,9 @@ public class RestExpress {
 		final ServerMetadata metadata = new ServerMetadata( //
 				settings.serverSettings().getName(), //
 				settings.serverSettings().getPort(), //
-				serializationProvider.getSupportedFormat(),//
-				serializationProvider.getDefaultFormat(),//
+				settings.serverSettings().getBaseUrl(), //
+				responseProcessorManager.supportedMediaType(), //
+				responseProcessorManager.defaultProcessor().mediaType(), //
 				routeDeclarations.getMetadata());
 		return metadata;
 	}

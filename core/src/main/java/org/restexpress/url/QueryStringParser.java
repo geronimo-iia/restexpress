@@ -71,7 +71,7 @@ import org.jboss.netty.handler.codec.http.QueryStringEncoder;
  * @see QueryStringDecoder
  * @see QueryStringEncoder
  */
-public class QueryStringParser {
+public final class QueryStringParser {
 	private static final int DEFAULT_MAX_PARAMS = 1024;
 
 	private final String uri;

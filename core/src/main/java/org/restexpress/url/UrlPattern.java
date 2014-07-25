@@ -43,7 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * UrlPattern leverages Regex Pattern to represent a parameterized URL.
+ * {@link UrlPattern} leverages Regex Pattern to represent a parameterized URL.
  * Parameters within the URL are denoted by curly braces '{}' with the parameter
  * name contained within (e.g. '{userid}').
  * 

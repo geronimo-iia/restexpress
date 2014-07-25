@@ -52,6 +52,7 @@ import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.pipeline.MessageContext;
+import org.restexpress.util.TestUtilities;
 
 /**
  * @author toddf
@@ -66,7 +67,7 @@ public class RouteResolverTest {
 	public static void setUpBeforeClass() throws Exception {
 		routeDeclarations = new Routes();
 		((Routes) routeDeclarations).defineRoutes();
-		routeMapping = routeDeclarations.createRouteMapping();
+		routeMapping = routeDeclarations.createRouteMapping("http://localhost:8081");
 		resolver = new RouteResolver(routeMapping);
 	}
 
@@ -74,7 +75,7 @@ public class RouteResolverTest {
 	public void shouldResolveGetRoute() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/foo/bar/bar432.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.GET, action.getRoute().getMethod());
@@ -85,7 +86,7 @@ public class RouteResolverTest {
 	public void shouldResolveAliasBarGetRoute() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/bar/bar432.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.GET, action.getRoute().getMethod());
@@ -96,7 +97,7 @@ public class RouteResolverTest {
 	public void shouldResolvePostRoute() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/foo.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.POST, action.getRoute().getMethod());
@@ -107,7 +108,7 @@ public class RouteResolverTest {
 	public void shouldResolveAliasFooPostRoute() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/yada/yada.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.POST, action.getRoute().getMethod());
@@ -118,7 +119,7 @@ public class RouteResolverTest {
 	public void shouldResolveCrudRouteForGet() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/foo/foo23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.GET, action.getRoute().getMethod());
@@ -129,7 +130,7 @@ public class RouteResolverTest {
 	public void shouldResolveAliasCrudRouteForGet() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/blah/foo/foo23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.GET, action.getRoute().getMethod());
@@ -140,7 +141,7 @@ public class RouteResolverTest {
 	public void shouldResolveCrudRouteForPut() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.PUT, "/foo/foo23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.PUT, action.getRoute().getMethod());
@@ -151,7 +152,7 @@ public class RouteResolverTest {
 	public void shouldResolveAliasCrudRouteForPut() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.PUT, "/blah/foo/foo23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.PUT, action.getRoute().getMethod());
@@ -162,7 +163,7 @@ public class RouteResolverTest {
 	public void shouldResolveCrudRouteForPost() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/foo/foo23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.POST, action.getRoute().getMethod());
@@ -173,7 +174,7 @@ public class RouteResolverTest {
 	public void shouldResolveAliasCrudRouteForPost() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/blah/foo/foo23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.POST, action.getRoute().getMethod());
@@ -184,7 +185,7 @@ public class RouteResolverTest {
 	public void shouldResolveCrudRouteForDelete() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/foo/foo23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.DELETE, action.getRoute().getMethod());
@@ -195,7 +196,7 @@ public class RouteResolverTest {
 	public void shouldResolveAliasCrudRouteForDelete() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/blah/foo/foo23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
 		assertEquals(HttpMethod.DELETE, action.getRoute().getMethod());
@@ -206,7 +207,7 @@ public class RouteResolverTest {
 	public void shouldThrowMethodNotAllowed() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.OPTIONS, "/foo/foo23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		resolver.resolve(new MessageContext(request, new Response()));
 	}
 
@@ -214,7 +215,7 @@ public class RouteResolverTest {
 	public void shouldSendAllowedMethodsForCrudRoute() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.OPTIONS, "/foo/foo23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		MessageContext context = new MessageContext(request, new Response());
 		try {
 			resolver.resolve(context);
@@ -232,7 +233,7 @@ public class RouteResolverTest {
 	public void shouldSendAllowedMethodsForPostRoute() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.OPTIONS, "/foo.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		MessageContext context = new MessageContext(request, new Response());
 		try {
 			resolver.resolve(context);
@@ -248,7 +249,7 @@ public class RouteResolverTest {
 	public void shouldSendAllowedMethodsForGetRoute() {
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.OPTIONS, "/foo/bar/bar23.json?value=ignored");
 		httpRequest.headers().add("Host", "testing-host");
-		Request request = new Request(httpRequest, null);
+		Request request = TestUtilities.newRequest(httpRequest);
 		MessageContext context = new MessageContext(request, new Response());
 		try {
 			resolver.resolve(context);

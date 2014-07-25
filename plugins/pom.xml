@@ -14,8 +14,6 @@
 		<license.header.path>../header.txt</license.header.path>
 	</properties>
 	<modules>
-		<module>jackson-json</module>
-		<module>xstream-xml</module>
 		<module>gson</module>
 		<module>route</module>
 		<module>common</module>

@@ -18,19 +18,19 @@
  *
  */
 /*
-    Copyright 2010, Strategic Gains, Inc.
+ Copyright 2010, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.pipeline.observer;
 
@@ -39,7 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.pipeline.MessageObserver;
 
 /**
  * Provides simple System.out.println() details about basic timing.
@@ -47,30 +46,27 @@ import org.restexpress.pipeline.MessageObserver;
  * @author toddf
  * @since Dec 16, 2010
  */
-public class SimpleConsoleLogMessageObserver extends MessageObserver {
-	// SECTION: INSTANCE VARIABLES
+public class SimpleConsoleLogMessageObserver extends BaseMessageObserver {
 
 	private final Map<String, Timer> timers = new ConcurrentHashMap<String, Timer>();
 
-	// SECTION: MESSAGE OBSERVER
-
 	@Override
-	protected void onReceived(final Request request, final Response response) {
+	public void onReceived(final Request request, final Response response) {
 		timers.put(request.getCorrelationId(), new Timer());
 	}
 
 	@Override
-	protected void onException(final Throwable exception, final Request request, final Response response) {
+	public void onException(final Throwable exception, final Request request, final Response response) {
 		System.out.println(request.getEffectiveHttpMethod().toString() + " " + request.getUrl() + " threw exception: " + exception.getClass().getSimpleName());
 		exception.printStackTrace();
 	}
 
 	@Override
-	protected void onSuccess(final Request request, final Response response) {
+	public void onSuccess(final Request request, final Response response) {
 	}
 
 	@Override
-	protected void onComplete(final Request request, final Response response) {
+	public void onComplete(final Request request, final Response response) {
 		final Timer timer = timers.remove(request.getCorrelationId());
 		if (timer != null) {
 			timer.stop();
@@ -94,9 +90,7 @@ public class SimpleConsoleLogMessageObserver extends MessageObserver {
 		System.out.println(sb.toString());
 	}
 
-	// SECTION: INNER CLASS
-
-	private class Timer {
+	private static class Timer {
 		private long startMillis = 0;
 		private long stopMillis = 0;
 

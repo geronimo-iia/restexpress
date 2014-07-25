@@ -38,12 +38,13 @@ import org.restexpress.RestExpress;
 
 /**
  * {@link Plugin} is a way to extends functionality of {@link RestExpress} by
- * adding preprocessor, post processor, declaring routes, etc..
+ * adding preprocessor, post org.restexpress.serialization, declaring routes,
+ * etc..
  * 
  * @author toddf
  * @since Jul 20, 2011
  */
-public interface Plugin {
+public interface Plugin extends Comparable<Plugin> {
 	/**
 	 * Called to register this plugin with the RestExpress server. Within this
 	 * method, pre/post-processors can be created, as well as routes injected.
@@ -67,4 +68,9 @@ public interface Plugin {
 	 * plugin.
 	 */
 	public void shutdown(RestExpress server);
+
+	/**
+	 * @return priority level for loading order.
+	 */
+	public int priority();
 }

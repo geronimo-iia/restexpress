@@ -37,7 +37,6 @@ package org.restexpress.domain.metadata;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * {@link RouteMetadata} expose meta data information on route: name, uri,
@@ -51,26 +50,20 @@ public class RouteMetadata implements Serializable {
 	private String name;
 	private UriMetadata uri;
 	private List<String> aliases;
-	private Set<String> supportedFormats;
-	private String defaultFormat;
 	private List<String> methods;
-	private boolean isSerialized;
-	private String baseUrl;
+	private boolean serialized;
 
-	public RouteMetadata() {
+	protected RouteMetadata() {
 		super();
 	}
 
-	public RouteMetadata(String name, UriMetadata uri, List<String> aliases, Set<String> supportedFormats, String defaultFormat, List<String> methods, boolean isSerialized, String baseUrl) {
+	public RouteMetadata(String name, UriMetadata uri, List<String> aliases, List<String> methods, boolean isSerialized) {
 		super();
 		this.name = name;
 		this.uri = uri;
 		this.aliases = aliases;
-		this.supportedFormats = supportedFormats;
-		this.defaultFormat = defaultFormat;
 		this.methods = methods;
-		this.isSerialized = isSerialized;
-		this.baseUrl = baseUrl;
+		this.serialized = isSerialized;
 	}
 
 	public String getName() {
@@ -85,21 +78,14 @@ public class RouteMetadata implements Serializable {
 		return uri;
 	}
 
-	public void setUri(final UriMetadata uri) {
-		this.uri = uri;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Set<String> getSupportedFormats() {
-		return supportedFormats == null ? Collections.EMPTY_SET : supportedFormats;
-	}
-
-	public String getDefaultFormat() {
-		return defaultFormat;
-	}
-
-	public void setDefaultFormat(final String defaultFormat) {
-		this.defaultFormat = defaultFormat;
+	/**
+	 * Return URL.
+	 * 
+	 * @param baseUrl
+	 * @return {@link String} url.
+	 */
+	public String getUrl(String baseUrl) {
+		return baseUrl + uri.getPattern().replace(".{format}", "");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -107,37 +93,17 @@ public class RouteMetadata implements Serializable {
 		return methods == null ? Collections.EMPTY_LIST : methods;
 	}
 
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
-	}
-
-	public void setMethods(List<String> methods) {
-		this.methods = methods;
-	}
-
-	public void setSupportedFormats(Set<String> supportedFormats) {
-		this.supportedFormats = supportedFormats;
-	}
-
 	public boolean isSerialized() {
-		return isSerialized;
+		return serialized;
 	}
 
-	public void setSerialized(final boolean isSerialized) {
-		this.isSerialized = isSerialized;
+	public void setSerialized(final boolean serialized) {
+		this.serialized = serialized;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<String> getAliases() {
 		return aliases == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(aliases);
-	}
-
-	public void setAliases(List<String> aliases) {
-		this.aliases = aliases;
-	}
-
-	public String getBaseUrl() {
-		return baseUrl;
 	}
 
 	@Override

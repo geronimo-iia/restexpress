@@ -45,10 +45,10 @@ public class LastModifiedHeaderPostprocessor implements Postprocessor {
 	public void process(MessageContext context) {
 		if (!context.getRequest().isMethodGet())
 			return;
-		Response response = context.getResponse();
+		// Response response = context.getResponse();
 		if (!context.getResponse().hasBody())
 			return;
-		Object body = response.getBody();
+		// Object body = response.getBody();
 
 		// if (!response.hasHeader(ResponseHeader.LAST_MODIFIED.getHeader()) &&
 		// body instanceof Timestamped) {

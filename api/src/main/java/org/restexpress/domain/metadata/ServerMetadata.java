@@ -36,7 +36,6 @@ package org.restexpress.domain.metadata;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -51,36 +50,41 @@ public class ServerMetadata implements Serializable {
 	private static final long serialVersionUID = -8033976905088770790L;
 	private String name;
 	private int port;
-	private Set<String> supportedFormats;
-	private String defaultFormat;
+	private String baseUrl;
+	private Set<String> supportedMediaTypes;
+	private String defaultMediaType;
 	private final List<RouteMetadata> routes;
 
 	/**
 	 * Build a new instance of {@link ServerMetadata}.
 	 */
-	public ServerMetadata() {
+	protected ServerMetadata() {
 		super();
 		routes = new ArrayList<>();
-		supportedFormats = new HashSet<>();
 	}
 
-	public ServerMetadata(String name, int port, Set<String> supportedFormats, String defaultFormat, List<RouteMetadata> routes) {
+	public ServerMetadata(String name, int port, String baseUrl, Set<String> supportedMediaTypes, String defaultMediaType, List<RouteMetadata> routes) {
 		super();
 		this.name = name;
 		this.port = port;
-		this.supportedFormats = supportedFormats;
-		this.defaultFormat = defaultFormat;
+		this.baseUrl = baseUrl;
+		this.supportedMediaTypes = supportedMediaTypes;
+		this.defaultMediaType = defaultMediaType;
 		this.routes = routes;
 	}
 
 	public ServerMetadata(ServerMetadata root, RouteMetadata routeInfo) {
 		this.name = root.name;
 		this.port = root.port;
-		this.supportedFormats = new HashSet<String>();
-		this.supportedFormats.addAll(root.supportedFormats);
-		this.defaultFormat = root.defaultFormat;
+		this.baseUrl = root.baseUrl;
+		this.supportedMediaTypes = root.supportedMediaTypes;
+		this.defaultMediaType = root.defaultMediaType;
 		this.routes = new ArrayList<RouteMetadata>();
 		this.routes.add(routeInfo);
+	}
+
+	public String getBaseUrl() {
+		return baseUrl;
 	}
 
 	public String getName() {
@@ -91,12 +95,12 @@ public class ServerMetadata implements Serializable {
 		return port;
 	}
 
-	public Set<String> getSupportedFormats() {
-		return supportedFormats;
+	public Set<String> getSupportedMediaTypes() {
+		return supportedMediaTypes;
 	}
 
-	public String getDefaultFormat() {
-		return defaultFormat;
+	public String getDefaultMediaType() {
+		return defaultMediaType;
 	}
 
 	public List<RouteMetadata> getRoutes() {

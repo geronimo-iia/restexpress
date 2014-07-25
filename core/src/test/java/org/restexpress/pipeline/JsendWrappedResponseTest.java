@@ -18,19 +18,19 @@
  *
  */
 /*
-    Copyright 2010, Strategic Gains, Inc.
+ Copyright 2010, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.pipeline;
 
@@ -41,54 +41,34 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.UpstreamMessageEvent;
-import org.jboss.netty.channel.local.DefaultLocalServerChannelFactory;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
-import org.restexpress.response.DefaultHttpResponseWriter;
-import org.restexpress.response.StringBufferHttpResponseWriter;
+import org.restexpress.SerializationProvider;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
-import org.restexpress.route.RouteResolver;
-import org.restexpress.serialization.DefaultSerializationProvider;
-import org.restexpress.serialization.SerializationProvider;
-import org.restexpress.serialization.json.JacksonJsonProcessor;
+import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
 import org.restexpress.serialization.xml.XstreamXmlProcessor;
 
 /**
  * @author toddf
  * @since Dec 15, 2010
  */
-public class JsendWrappedResponseTest {
-	private DefaultRequestHandler messageHandler;
-	private WrappedResponseObserver observer;
-	private Channel channel;
-	private ChannelPipeline pl;
-	private StringBuffer httpResponse;
+public class JsendWrappedResponseTest extends AbstractWrapperResponse {
 
 	@Before
 	public void initialize() throws Exception {
-		SerializationProvider provider = new DefaultSerializationProvider(Boolean.FALSE);
-		provider.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
-		provider.add(new XstreamXmlProcessor(), Wrapper.newJsendResponseWrapper());
 		DummyRoutes routes = new DummyRoutes();
 		routes.defineRoutes();
-		messageHandler = new DefaultRequestHandler(new RouteResolver(routes.createRouteMapping()), provider, new DefaultHttpResponseWriter(), false);
-		observer = new WrappedResponseObserver();
-		messageHandler.addMessageObserver(observer);
-		httpResponse = new StringBuffer();
-		messageHandler.setResponseWriter(new StringBufferHttpResponseWriter(httpResponse));
-		PipelineBuilder pf = new PipelineBuilder().addRequestHandler(messageHandler);
-		pl = pf.getPipeline();
-		ChannelFactory channelFactory = new DefaultLocalServerChannelFactory();
-		channel = channelFactory.newChannel(pl);
+		initialize(routes);
+		SerializationProvider provider = messageHandler.serializationProvider();
+		provider.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
+		provider.add(new XstreamXmlProcessor(), Wrapper.newJsendResponseWrapper());
+
 	}
 
 	@Test
@@ -99,7 +79,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"success\",\"data\":\"Normal GET action\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"success\",\"data\":\"Normal GET action\"}", responseBody.toString());
 	}
 
 	@Test
@@ -110,7 +90,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"success\",\"data\":\"Normal GET action\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"success\",\"data\":\"Normal GET action\"}", responseBody.toString());
 	}
 
 	@Test
@@ -121,10 +101,10 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
-		assertTrue(httpResponse.toString().contains("<status>success</status>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">Normal GET action</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().contains("<status>success</status>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">Normal GET action</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -135,10 +115,10 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
-		assertTrue(httpResponse.toString().contains("<status>success</status>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">Normal GET action</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().contains("<status>success</status>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">Normal GET action</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -149,7 +129,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"success\",\"data\":\"Normal PUT action\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"success\",\"data\":\"Normal PUT action\"}", responseBody.toString());
 	}
 
 	@Test
@@ -160,7 +140,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"success\",\"data\":\"Normal PUT action\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"success\",\"data\":\"Normal PUT action\"}", responseBody.toString());
 	}
 
 	@Test
@@ -171,10 +151,10 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
-		assertTrue(httpResponse.toString().contains("<status>success</status>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">Normal PUT action</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().contains("<status>success</status>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">Normal PUT action</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -185,10 +165,10 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
-		assertTrue(httpResponse.toString().contains("<status>success</status>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">Normal PUT action</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().contains("<status>success</status>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">Normal PUT action</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -199,7 +179,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"success\",\"data\":\"Normal POST action\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"success\",\"data\":\"Normal POST action\"}", responseBody.toString());
 	}
 
 	@Test
@@ -210,7 +190,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"success\",\"data\":\"Normal POST action\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"success\",\"data\":\"Normal POST action\"}", responseBody.toString());
 	}
 
 	@Test
@@ -221,10 +201,10 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
-		assertTrue(httpResponse.toString().contains("<status>success</status>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">Normal POST action</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().contains("<status>success</status>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">Normal POST action</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -235,10 +215,10 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
-		assertTrue(httpResponse.toString().contains("<status>success</status>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">Normal POST action</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().contains("<status>success</status>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">Normal POST action</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -249,7 +229,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"success\",\"data\":\"Normal DELETE action\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"success\",\"data\":\"Normal DELETE action\"}", responseBody.toString());
 	}
 
 	@Test
@@ -260,7 +240,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"success\",\"data\":\"Normal DELETE action\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"success\",\"data\":\"Normal DELETE action\"}", responseBody.toString());
 	}
 
 	@Test
@@ -271,10 +251,10 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
-		assertTrue(httpResponse.toString().contains("<status>success</status>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">Normal DELETE action</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().contains("<status>success</status>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">Normal DELETE action</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -285,10 +265,10 @@ public class JsendWrappedResponseTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
-		assertTrue(httpResponse.toString().contains("<status>success</status>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">Normal DELETE action</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().contains("<status>success</status>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">Normal DELETE action</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -299,7 +279,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"error\",\"message\":\"Item not found\",\"data\":\"NotFoundException\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"error\",\"message\":\"Item not found\",\"data\":\"NotFoundException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -310,7 +290,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"error\",\"message\":\"Item not found\",\"data\":\"NotFoundException\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"error\",\"message\":\"Item not found\",\"data\":\"NotFoundException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -321,12 +301,12 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
 
-		assertTrue(httpResponse.toString().contains("<status>error</status>"));
-		assertTrue(httpResponse.toString().contains("<message>Item not found</message>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">NotFoundException</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().contains("<status>error</status>"));
+		assertTrue(responseBody.toString().contains("<message>Item not found</message>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">NotFoundException</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -337,11 +317,11 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
 
-		assertTrue(httpResponse.toString().contains("<status>error</status>"));
-		assertTrue(httpResponse.toString().contains("<message>Item not found</message>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().contains("<status>error</status>"));
+		assertTrue(responseBody.toString().contains("<message>Item not found</message>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -352,7 +332,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"fail\",\"message\":\"Null and void\",\"data\":\"NullPointerException\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"fail\",\"message\":\"Null and void\",\"data\":\"NullPointerException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -363,7 +343,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"fail\",\"message\":\"Null and void\",\"data\":\"NullPointerException\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"fail\",\"message\":\"Null and void\",\"data\":\"NullPointerException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -374,11 +354,11 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
-		assertTrue(httpResponse.toString().contains("<status>fail</status>"));
-		assertTrue(httpResponse.toString().contains("<message>Null and void</message>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">NullPointerException</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().contains("<status>fail</status>"));
+		assertTrue(responseBody.toString().contains("<message>Null and void</message>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">NullPointerException</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -389,11 +369,11 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
-		assertTrue(httpResponse.toString().contains("<status>fail</status>"));
-		assertTrue(httpResponse.toString().contains("<message>Null and void</message>"));
-		assertTrue(httpResponse.toString().contains("<data class=\"string\">NullPointerException</data>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().contains("<status>fail</status>"));
+		assertTrue(responseBody.toString().contains("<message>Null and void</message>"));
+		assertTrue(responseBody.toString().contains("<data class=\"string\">NullPointerException</data>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -404,7 +384,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"error\",\"message\":\"Unresolvable URL: http://null/xyzt.json\",\"data\":\"NotFoundException\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"error\",\"message\":\"Unresolvable URL: http://null/xyzt.json\",\"data\":\"NotFoundException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -415,7 +395,7 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertEquals("{\"status\":\"error\",\"message\":\"Unresolvable URL: http://null/xyzt?format=json\",\"data\":\"NotFoundException\"}", httpResponse.toString());
+		assertEquals("{\"status\":\"error\",\"message\":\"Unresolvable URL: http://null/xyzt?format=json\",\"data\":\"NotFoundException\"}", responseBody.toString());
 	}
 
 	@Test
@@ -426,11 +406,11 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
 
-		assertTrue(httpResponse.toString().contains("<status>error</status>"));
-		assertTrue(httpResponse.toString().contains("<message>Unresolvable URL: http://null/xyzt.xml</message>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().contains("<status>error</status>"));
+		assertTrue(responseBody.toString().contains("<message>Unresolvable URL: http://null/xyzt.xml</message>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	@Test
@@ -441,11 +421,11 @@ public class JsendWrappedResponseTest {
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
 
-		assertTrue(httpResponse.toString().startsWith("<response>"));
+		assertTrue(responseBody.toString().startsWith("<response>"));
 
-		assertTrue(httpResponse.toString().contains("<status>error</status>"));
-		assertTrue(httpResponse.toString().contains("<message>Unresolvable URL: http://null/xyzt?format=xml</message>"));
-		assertTrue(httpResponse.toString().endsWith("</response>"));
+		assertTrue(responseBody.toString().contains("<status>error</status>"));
+		assertTrue(responseBody.toString().contains("<message>Unresolvable URL: http://null/xyzt?format=xml</message>"));
+		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
 	private void sendEvent(HttpMethod method, String path, String body) {

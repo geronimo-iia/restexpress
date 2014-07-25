@@ -37,8 +37,9 @@ package org.restexpress.settings;
 
 import java.io.Serializable;
 
-import org.restexpress.ContentType;
-import org.restexpress.serialization.DefaultSerializationProvider;
+import org.restexpress.domain.CharacterSet;
+import org.restexpress.domain.MediaType;
+import org.restexpress.response.ResponseProcessorManager;
 
 /**
  * {@link ServerSettings} group all server settings.
@@ -77,15 +78,15 @@ public class ServerSettings implements Serializable {
 	private int executorThreadPoolSize = 10;
 
 	/***
-	 * Default format serialization (JSON per default).
+	 * Default format serialization (Application JSON UTF-8 per default).
 	 */
-	private String defaultFormat = ContentType.JSON;
+	private String defaultFormat = MediaType.APPLICATION_JSON.withCharset(CharacterSet.UTF_8.getCharsetName());
 
 	/**
 	 * If true (per default it is) serialization provider use Jackson for Json,
 	 * Xstream for xml, and raw response wrapper.
 	 * 
-	 * @see DefaultSerializationProvider for more information.
+	 * @see ResponseProcessorManager for more information.
 	 */
 	private boolean useDefaultSerializationConfiguration = Boolean.TRUE;
 

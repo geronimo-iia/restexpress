@@ -42,11 +42,15 @@ import org.restexpress.RestExpress;
  * @author toddf
  * @since Jul 20, 2011
  */
-public abstract class AbstractPlugin implements Plugin {
+public abstract class AbstractPlugin implements Plugin, Comparable<Plugin> {
 	/**
 	 * Registered flag.
 	 */
 	private boolean isRegistered;
+	/**
+	 * Priority level (default is 0).
+	 */
+	private int priority = 0;
 
 	/**
 	 * Register this instance onto {@link RestExpress}.
@@ -99,11 +103,29 @@ public abstract class AbstractPlugin implements Plugin {
 		return this.getClass().hashCode() ^ 17;
 	}
 
+	@Override
+	public int compareTo(Plugin o) {
+		return priority - o.priority();
+	}
+
 	protected boolean isRegistered() {
 		return isRegistered;
 	}
 
 	protected void setRegistered(final boolean value) {
 		this.isRegistered = value;
+	}
+
+	public int priority() {
+		return priority;
+	}
+
+	/**
+	 * set priority level for loading order.
+	 * 
+	 * @param priority
+	 */
+	public void priority(int priority) {
+		this.priority = priority;
 	}
 }

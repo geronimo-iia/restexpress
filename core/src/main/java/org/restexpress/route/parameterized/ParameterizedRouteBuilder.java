@@ -35,13 +35,10 @@
 package org.restexpress.route.parameterized;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteBuilder;
 
@@ -50,7 +47,6 @@ import org.restexpress.route.RouteBuilder;
  * @since Jan 13, 2011
  */
 public class ParameterizedRouteBuilder extends RouteBuilder {
-	private final List<String> aliases = new ArrayList<String>();
 
 	/**
 	 * @param uri
@@ -62,11 +58,10 @@ public class ParameterizedRouteBuilder extends RouteBuilder {
 	}
 
 	@Override
-	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
-			final Map<String, Object> parameters, final String baseUrl) {
-		final ParameterizedRoute r = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
-		r.addAliases(aliases);
-		return r;
+	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
+		final ParameterizedRoute parameterizedRoute = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, flags, parameters);
+		parameterizedRoute.addAliases(aliases);
+		return parameterizedRoute;
 	}
 
 	/**
@@ -84,25 +79,15 @@ public class ParameterizedRouteBuilder extends RouteBuilder {
 		if (!aliases.contains(uri)) {
 			aliases.add(uri);
 		}
-
 		return this;
-	}
-
-	@Override
-	public RouteMetadata asMetadata() {
-		final RouteMetadata metadata = super.asMetadata();
-		metadata.setAliases(aliases);
-		return metadata;
 	}
 
 	@Override
 	protected String toRegexPattern(final String uri) {
 		String pattern = uri;
-
 		if ((pattern != null) && !pattern.startsWith("/")) {
 			pattern = "/" + pattern;
 		}
-
 		return pattern;
 	}
 

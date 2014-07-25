@@ -79,12 +79,20 @@ Current Version 0.10.4
 * default serialization configuration can be controlled by ServerSettings.
 * update maven parent pom (version in properties, license plugin, ...)
 * Add a Server Context
-* Add a AccesLogMessageObserver
+* Add a ConsoleAccesLogMessageObserver, CounterMessageObserver and MessageObserverDispatcher
 * Simplify SerializationProvider: support only one format(one content type) per instance.
 * Add ResponseHeaderPostProcessor (add predefined list of header in response, if they're not present)
 * Add common plugin (from PluginExpress): cache utility, and x-security (not finalized).
 * Add MediaType, Format, Encoding enumeration
-* Extract restexpress-api, restexpress-core, restexpress module
+* Extract restexpress-api, restexpress-core, restexpress restexpress-test modules
+* refactor SerializationProcessor in order to deal only with media type
+* user format enumeration to resolve to a mime type
+* refactor Request Handler
+* add priority on Plugin, in order to manage their order on initialization
+* Refactor Route and base URL usage
+* add TextProcessor for all text/* media 
+* add Slf4fErrorLogMessageObserver to log error using SLF4j
+* add Slf4jAccessLogMessageObserver to build an access log using SLF4j
 
 
 Release 0.10.3 - 27 May 2014

@@ -20,102 +20,97 @@
 package org.restexpress.serialization.xml;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
-import org.restexpress.Format;
+import org.restexpress.domain.MediaType;
 import org.restexpress.domain.response.JsendResult;
+import org.restexpress.exception.DeserializationException;
+import org.restexpress.exception.SerializationException;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
 
-/**
- * The operation of these SerializationProcessor methods MUST match the behavior
- * of those in the DefaultJsonProcessor (and any other serialization
- * processors).
- * 
- * @author toddf
- * @since Mar 16, 2010
- */
-public class XstreamXmlProcessor extends XmlSerializationProcessor {
+public class XstreamXmlProcessor extends XmlProcessor {
+
 	private final XStream xstream;
-	private final Map<Class<?>, String> aliases = new HashMap<Class<?>, String>();
-	private boolean shouldAutoAlias = true;
 
 	public XstreamXmlProcessor() {
-		this(Format.XML);
+		super();
+		xstream = newXStream();
 	}
 
-	public XstreamXmlProcessor(final String format) {
-		this(new XStream(), format);
-		xstream.registerConverter(new XstreamTimestampConverter());
-		xstream.alias("list", ArrayList.class);
-		xstream.alias("response", JsendResult.class);
+	public XstreamXmlProcessor(String... mediaTypes) throws IllegalArgumentException {
+		super(mediaTypes);
+		xstream = newXStream();
 	}
 
-	public XstreamXmlProcessor(final XStream xstream, final String format) {
-		super(format);
+	public XstreamXmlProcessor(List<String> supportedMediaType) {
+		super(supportedMediaType);
+		xstream = newXStream();
+	}
+
+	public XstreamXmlProcessor(MediaType... mediaTypes) {
+		super(mediaTypes);
+		xstream = newXStream();
+	}
+
+	public XstreamXmlProcessor(XStream xstream) {
+		super();
 		this.xstream = xstream;
-		shouldAutoAlias = false;
 	}
 
-	protected XStream getXStream() {
-		return this.xstream;
+	public XstreamXmlProcessor(XStream xstream, String... mediaTypes) throws IllegalArgumentException {
+		super(mediaTypes);
+		this.xstream = xstream;
+	}
+
+	public XstreamXmlProcessor(XStream xstream, List<String> supportedMediaType) {
+		super(supportedMediaType);
+		this.xstream = xstream;
+	}
+
+	public XstreamXmlProcessor(XStream xstream, MediaType... mediaTypes) {
+		super(mediaTypes);
+		this.xstream = xstream;
 	}
 
 	@Override
-	public void alias(final String name, final Class<?> type) {
-		xstream.alias(name, type);
+	public void write(Object value, ChannelBuffer buffer) throws SerializationException {
+		if (value != null) {
+			xstream.toXML(value, getOutputStreamWriter(buffer));
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T read(ChannelBuffer buffer, Class<T> valueType) throws DeserializationException {
+		if (!buffer.readable()) {
+			return null;
+		}
+		try {
+			return (T) xstream.fromXML(new ChannelBufferInputStream(buffer));
+		} catch (XStreamException e) {
+			throw new DeserializationException(e);
+		}
+	}
+
+	@Override
+	public void alias(String name, Class<?> theClass) {
+		xstream.alias(name, theClass);
 	}
 
 	public void registerConverter(final SingleValueConverter converter) {
 		xstream.registerConverter(converter);
 	}
 
-	@Override
-	public String serialize(final Object object) {
-		if (object == null) {
-			return "";
-		}
-
-		return xstream.toXML(object);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T deserialize(final String xml, final Class<T> type) {
-		if ((xml == null) || xml.trim().isEmpty()) {
-			return null;
-		}
-
-		if (shouldAutoAlias) {
-			addAliasIfNecessary(type);
-		}
-
-		return (T) xstream.fromXML(xml);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T deserialize(final ChannelBuffer xml, final Class<T> type) {
-		if (!xml.readable()) {
-			return null;
-		}
-
-		return (T) xstream.fromXML(new ChannelBufferInputStream(xml));
-	}
-
-	private void addAliasIfNecessary(final Class<?> type) {
-		if (!aliases.containsKey(type)) {
-			final String name = type.getSimpleName().trim();
-
-			if ("[]".equals(name) || "".equals(name)) {
-				return;
-			}
-
-			xstream.alias(name, type);
-		}
+	protected XStream newXStream() {
+		XStream xstream = new XStream();
+		xstream.registerConverter(new XstreamTimestampConverter());
+		xstream.alias("list", ArrayList.class);
+		xstream.alias("response", JsendResult.class);
+		return xstream;
 	}
 }

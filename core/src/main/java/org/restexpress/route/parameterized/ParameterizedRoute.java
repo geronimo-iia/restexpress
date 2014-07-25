@@ -18,19 +18,19 @@
  *
  */
 /*
-    Copyright 2011, Strategic Gains, Inc.
+ Copyright 2011, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.route.parameterized;
 
@@ -51,14 +51,12 @@ import org.restexpress.url.UrlPattern;
 public class ParameterizedRoute extends Route {
 	private UrlPattern[] aliases;
 
-	public ParameterizedRoute(final UrlPattern urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
-			final Map<String, Object> parameters, final String baseUrl) {
-		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
+	public ParameterizedRoute(final UrlPattern urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
+		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, flags, parameters);
 	}
 
-	public ParameterizedRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
-			final Map<String, Object> parameters, final String baseUrl) {
-		this(new UrlPattern(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
+	public ParameterizedRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
+		this(new UrlPattern(urlPattern), controller, action, method, shouldSerializeResponse, name, flags, parameters);
 	}
 
 	public void addAliases(final List<String> uris) {

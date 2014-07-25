@@ -1,7 +1,31 @@
+/**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
+ *
+ */
 package org.restexpress.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * {@link Format} define constant to manage {format} parameter.
@@ -966,7 +990,12 @@ public enum Format {
 	ZIP("zip", "application/zip"), //
 	ZIR("zir", "application/vnd.zul"), //
 	ZIRZ("zirz", "application/vnd.zul"), //
-	ZMM("zmm", "application/vnd.handheld-entertainment+xml");
+	ZMM("zmm", "application/vnd.handheld-entertainment+xml"), //
+
+	WJSON("wjson", "application/json"), //
+	WXML("wxml", "application/xml") //
+
+	;
 
 	/**
 	 * Extension
@@ -997,12 +1026,9 @@ public enum Format {
 		return mediaType;
 	}
 
-	public static Format fromExtentions(String extension) {
-		return null;
-	}
-
-	public static Format fromMediaType(String extension) {
-		return null;
+	@Override
+	public String toString() {
+		return extension;
 	}
 
 	/**
@@ -1016,5 +1042,49 @@ public enum Format {
 			result.put(format.extension, format.mediaType);
 		}
 		return result;
+	}
+
+	/**
+	 * @param mediatype
+	 * @return first associated {@link Format} for specified {@link MediaType}
+	 *         or null if none was found.
+	 */
+	public static Format valueForMediaType(String mediatype) {
+		for (Format format : Format.values()) {
+			if (format.mediaType.equals(mediatype)) {
+				return format;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param mediatype
+	 * @return {@link List} of associated {@link Format} for specified
+	 *         {@link MediaType}
+	 */
+	public static List<Format> valuesForMediaType(String mediatype) {
+		List<Format> result = new ArrayList<Format>();
+		for (Format format : Format.values()) {
+			if (format.mediaType.equals(mediatype)) {
+				result.add(format);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @param mediatype
+	 * @return a {@link Set} of {@link Format} which match {@link Set} of media
+	 *         type.
+	 */
+	public static Set<Format> valuesForMediaType(Set<String> mediatypes) {
+		SortedSet<Format> formats = new TreeSet<>();
+		for (Format format : Format.values()) {
+			if (mediatypes.contains(format.mediaType)) {
+				formats.add(format);
+			}
+		}
+		return formats;
 	}
 }
