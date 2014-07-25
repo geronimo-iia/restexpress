@@ -44,7 +44,6 @@
 				<td>Aliases</td>
 				<td>Methods</td>
 				<td>Serialized</td>
-				<td>Base URL</td>
 				<td>Supported Formats</td>
 				<td>Default Format</td>
 			</tr>
@@ -59,7 +58,6 @@
 			<td>@if{route.methods !=null}@foreach{item
 				:route.methods}@{item}@end{', '}@end{}</td>
 			<td>@{route.serialized}</td>
-			<td>@{route.baseUrl != null ? route.baseUrl  : "" }</td>
 			<td>@if{route.supportedFormats !=
 			null}@foreach{item : route.supportedFormats}@{item}@end{', '}@end{}</td>
 			<td>@{route.defaultFormat != null ? route.defaultFormat : ""}</td>
