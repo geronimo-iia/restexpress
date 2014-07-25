@@ -14,14 +14,21 @@
 		<license.header.path>../header.txt</license.header.path>
 	</properties>
 	<modules>
-		<module>airdock</module>
 		<module>gson</module>
+		<module>xstream</module>
 		<module>route</module>
+		<module>common</module>
+		<module>static</module>
 	</modules>
 	<dependencies>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress</artifactId>
+			<artifactId>restexpress-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

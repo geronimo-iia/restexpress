@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.restexpress.Request;
-import org.restexpress.common.query.QueryOrder;
-import org.restexpress.common.util.StringUtils;
+import org.restexpress.common.StringUtils;
+import org.restexpress.query.QueryOrder;
 
 /**
  * A factory for RestExpress-Common QueryOrder instances, parsing them from a
@@ -33,7 +33,7 @@ import org.restexpress.common.util.StringUtils;
  * 
  * @author toddf
  * @since Apr 12, 2011
- * @see org.restexpress.common.query.QueryOrder
+ * @see org.restexpress.query.QueryOrder
  */
 public abstract class QueryOrders {
 	private static final String SORT_HEADER_NAME = "sort";

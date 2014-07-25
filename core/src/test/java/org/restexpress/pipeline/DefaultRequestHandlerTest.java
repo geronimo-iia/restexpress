@@ -18,19 +18,19 @@
  *
  */
 /*
-    Copyright 2010, Strategic Gains, Inc.
+ Copyright 2010, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.pipeline;
 
@@ -39,17 +39,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.UpstreamMessageEvent;
-import org.jboss.netty.channel.local.DefaultLocalServerChannelFactory;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -57,54 +51,32 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
-import org.restexpress.ContentType;
-import org.restexpress.Format;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.response.DefaultHttpResponseWriter;
-import org.restexpress.response.StringBufferHttpResponseWriter;
+import org.restexpress.SerializationProvider;
+import org.restexpress.domain.CharacterSet;
+import org.restexpress.domain.Format;
+import org.restexpress.domain.MediaType;
+import org.restexpress.plugin.xstream.XstreamXmlProcessor;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
-import org.restexpress.route.RouteResolver;
-import org.restexpress.serialization.DefaultSerializationProvider;
-import org.restexpress.serialization.SerializationProvider;
-import org.restexpress.serialization.json.JacksonJsonProcessor;
-import org.restexpress.serialization.xml.XstreamXmlProcessor;
+import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
 
 /**
  * @author toddf
  * @since Dec 15, 2010
  */
-public class DefaultRequestHandlerTest {
-	private DefaultRequestHandler messageHandler;
-	private DummyObserver observer;
-	private Channel channel;
-	private ChannelPipeline pl;
-	private StringBuffer responseBody;
-	private Map<String, List<String>> responseHeaders;
+public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 
 	@Before
 	public void initialize() throws Exception {
-		SerializationProvider provider = new DefaultSerializationProvider(Boolean.FALSE);
-		provider.add(new JacksonJsonProcessor(Format.JSON), Wrapper.newRawResponseWrapper());
-		provider.add(new JacksonJsonProcessor(Format.WRAPPED_JSON), Wrapper.newJsendResponseWrapper());
-		provider.add(new XstreamXmlProcessor(Format.XML), Wrapper.newJsendResponseWrapper());
-		provider.alias("dated", Dated.class);
-
-		provider.setDefaultFormat(Format.WRAPPED_JSON);
-
 		DummyRoutes routes = new DummyRoutes();
 		routes.defineRoutes();
-		messageHandler = new DefaultRequestHandler(new RouteResolver(routes.createRouteMapping()), provider, new DefaultHttpResponseWriter(), false);
-		observer = new DummyObserver();
-		messageHandler.addMessageObserver(observer);
-		responseBody = new StringBuffer();
-		responseHeaders = new HashMap<String, List<String>>();
-		messageHandler.setResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody));
-		PipelineBuilder pf = new PipelineBuilder().addRequestHandler(messageHandler);
-		pl = pf.getPipeline();
-		ChannelFactory channelFactory = new DefaultLocalServerChannelFactory();
-		channel = channelFactory.newChannel(pl);
+		initialize(routes);
+		SerializationProvider provider = messageHandler.serializationProvider();
+		provider.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper());
+		provider.add(new XstreamXmlProcessor(Format.XML.getMediaType()), Wrapper.newJsendResponseWrapper());
+		provider.alias("dated", Dated.class);
 	}
 
 	@Test
@@ -162,7 +134,7 @@ public class DefaultRequestHandlerTest {
 		assertEquals("<html><body>Arbitrarily set HTML body...</body></html>", responseBody.toString());
 		List<String> contentTypes = responseHeaders.get(HttpHeaders.Names.CONTENT_TYPE);
 		assertEquals(1, contentTypes.size());
-		assertEquals(ContentType.HTML, contentTypes.get(0));
+		assertEquals(MediaType.TEXT_HTML.withCharset(CharacterSet.UTF_8.getCharsetName()), contentTypes.get(0));
 	}
 
 	@Test
@@ -184,7 +156,7 @@ public class DefaultRequestHandlerTest {
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
 
-		assertEquals("\"Todd|Fredrich+was here\"", responseBody.toString());
+		assertEquals("{\"status\":\"success\",\"data\":\"Todd|Fredrich+was here\"}", responseBody.toString());
 	}
 
 	@Test
@@ -205,7 +177,6 @@ public class DefaultRequestHandlerTest {
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
-		// System.out.println(responseBody.toString());
 		assertEquals("{\"status\":\"error\",\"message\":\"foobar'd\",\"data\":\"BadRequestException\"}", responseBody.toString());
 	}
 
@@ -216,10 +187,7 @@ public class DefaultRequestHandlerTest {
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
-
-		// assertEquals("{\"status\":\"error\",\"message\":\"foobar'd\",\"data\":\"BadRequestException\"}",
-		// responseBody.toString());
-		assertEquals("{\"status\":\"error\",\"message\":\"Requested representation format not supported: %target. Supported formats: json, wjson, xml\",\"data\":\"BadRequestException\"}", responseBody.toString());
+		assertTrue(responseBody.toString().startsWith("{\"status\":\"error\",\"message\":\"Requested representation format not supported: %target"));
 	}
 
 	@Test
@@ -229,8 +197,7 @@ public class DefaultRequestHandlerTest {
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getExceptionCount());
 		assertEquals(0, observer.getSuccessCount());
-
-		assertEquals("{\"status\":\"error\",\"message\":\"Requested representation format not supported: unsupported. Supported formats: json, wjson, xml\",\"data\":\"BadRequestException\"}", responseBody.toString());
+		assertTrue(responseBody.toString().startsWith("{\"status\":\"error\",\"message\":\"Requested representation format not supported: unsupported."));
 	}
 
 	@Test
@@ -314,7 +281,7 @@ public class DefaultRequestHandlerTest {
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
-		// System.out.println(responseBody.toString());
+		System.out.println(responseBody.toString());
 		assertTrue(responseBody.toString().startsWith("<response>"));
 
 		assertTrue(responseBody.toString().contains("<status>error</status>"));
@@ -396,7 +363,7 @@ public class DefaultRequestHandlerTest {
 		assertEquals(1, observer.getReceivedCount());
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getSuccessCount());
-		assertEquals("\"raw string\"", responseBody.toString());
+		assertEquals("{\"status\":\"success\",\"data\":\"raw string\"}", responseBody.toString());
 		assertTrue(responseHeaders.containsKey("Content-Type"));
 		List<String> contentTypes = responseHeaders.get(HttpHeaders.Names.CONTENT_TYPE);
 		assertEquals(1, contentTypes.size());
@@ -414,7 +381,7 @@ public class DefaultRequestHandlerTest {
 		List<String> contentTypes = responseHeaders.get(HttpHeaders.Names.CONTENT_TYPE);
 		assertEquals(1, contentTypes.size());
 		assertEquals("application/json; charset=UTF-8", contentTypes.get(0));
-		assertEquals("null", responseBody.toString());
+		assertEquals("{\"status\":\"success\"}", responseBody.toString());
 	}
 
 	private void sendGetEvent(String path) {
@@ -439,8 +406,7 @@ public class DefaultRequestHandlerTest {
 	public class DummyRoutes extends RouteDeclaration {
 		private Object controller = new FooBarController();
 
-
-		public void defineRoutes() {
+		public DummyRoutes defineRoutes() {
 			uri("/foo.{format}", controller).action("fooAction", HttpMethod.GET);
 
 			uri("/foo/{userPhrase}.{format}", controller).action("verifyUrlDecodedParameters", HttpMethod.GET);
@@ -457,7 +423,8 @@ public class DefaultRequestHandlerTest {
 
 			uri("/serializedString.{format}", controller).action("serializedStringAction", HttpMethod.GET);
 
-			uri("/setBodyAction.html", controller).action("setBodyAction", HttpMethod.GET).format(Format.HTML);
+			uri("/setBodyAction.html", controller).action("setBodyAction", HttpMethod.GET);
+			return this;
 		}
 	}
 
@@ -500,52 +467,9 @@ public class DefaultRequestHandlerTest {
 		}
 
 		public void setBodyAction(Request request, Response response) {
-			response.setContentType(ContentType.HTML);
+			response.setContentType(MediaType.TEXT_HTML.withCharset(CharacterSet.UTF_8.getCharsetName()));
 			response.noSerialization();
 			response.setBody("<html><body>Arbitrarily set HTML body...</body></html>");
-		}
-	}
-
-	public class DummyObserver extends MessageObserver {
-		private int receivedCount = 0;
-		private int exceptionCount = 0;
-		private int successCount = 0;
-		private int completeCount = 0;
-
-		@Override
-		protected void onReceived(Request request, Response response) {
-			++receivedCount;
-		}
-
-		@Override
-		protected void onException(Throwable exception, Request request, Response response) {
-			++exceptionCount;
-		}
-
-		@Override
-		protected void onSuccess(Request request, Response response) {
-			++successCount;
-		}
-
-		@Override
-		protected void onComplete(Request request, Response response) {
-			++completeCount;
-		}
-
-		public int getReceivedCount() {
-			return receivedCount;
-		}
-
-		public int getExceptionCount() {
-			return exceptionCount;
-		}
-
-		public int getSuccessCount() {
-			return successCount;
-		}
-
-		public int getCompleteCount() {
-			return completeCount;
 		}
 	}
 

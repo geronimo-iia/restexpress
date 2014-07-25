@@ -38,8 +38,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.junit.Test;
-import org.restexpress.Response;
-import org.restexpress.common.query.QueryRange;
+import org.restexpress.query.QueryRange;
 
 /**
  * @author toddf

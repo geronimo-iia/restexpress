@@ -62,4 +62,9 @@ public class KnownObject
 	{
 		return "Q(" + p + ")";
 	}
+	
+	@Override
+	public String toString() {
+		return string;
+	}
 }

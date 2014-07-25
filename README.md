@@ -29,34 +29,7 @@ Stable:
 			<version>0.10.3</version>
 		</dependency>
 ```
-Development:
-```xml
-		<dependency>
-			<groupId>com.strategicgains</groupId>
-			<artifactId>RestExpress</artifactId>
-			<version>0.10.4-SNAPSHOT</version>
-		</dependency>
-```
-Or download the jar directly from: http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22RestExpress%22
 
-Note that to use the SNAPSHOT version, you must enable snapshots and a repository in your pom file as follows
-(if you already have a profile with repositories in your pom, you can just copy the <repository> section):
-```xml
-  <profiles>
-    <profile>
-       <id>allow-snapshots</id>
-          <activation><activeByDefault>true</activeByDefault></activation>
-       <repositories>
-         <repository>
-           <id>sonatype-snapshots-repo</id>
-           <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-           <releases><enabled>false</enabled></releases>
-           <snapshots><enabled>true</enabled></snapshots>
-         </repository>
-       </repositories>
-     </profile>
-  </profiles>
-```
 
 ===================================================================================================
 ## A quick tutorial:
@@ -94,17 +67,35 @@ Current Version 0.10.4
 * Use Http standard definition shared between rest express server and java client
 * Use MessageContext in pre and post processor (more flexibility to handle response)
 * Use HttpRuntimeException from org.intelligents-ia.common:http-specification
-* Temove ExceptionMapping: server implementation must throw standard Http Exception.
+* Remove ExceptionMapping: server implementation must throw standard Http Exception.
 * Refactor Resolver in order to user MessageContext (more flexibility to handle response)
-* Add few javadoc on methods, classes
+* Add javadoc on methods, classes
 * Refactor XML alias definition. All alias must be declared either on dedicated processor, or after "add" with SerializationProvider
 * Remove SerializationProvider static member on RestExpress.
 * Add RestExpressLauncher (main class) to quickly launch a RestExpress server instance
 * Add plugins module
 * refactor Jackson Object mapper instantiation in order to be able to customize it without extends JacksonJsonProcessor
-* add plugin airdock: define controller life cycle, entry point, runtime discovery
+* add RestExpressEntryPoint (for runtime discovery of plugins)
 * default serialization configuration can be controlled by ServerSettings.
 * update maven parent pom (version in properties, license plugin, ...)
+* Add a Server Context
+* Add a ConsoleAccesLogMessageObserver, CounterMessageObserver and MessageObserverDispatcher
+* Simplify SerializationProvider: support only one format(one content type) per instance.
+* Add ResponseHeaderPostProcessor (add predefined list of header in response, if they're not present)
+* Add common plugin (from PluginExpress): cache utility, and x-security (not finalized).
+* Add MediaType, Format, Encoding enumeration
+* Extract restexpress-api, restexpress-core, restexpress restexpress-test modules
+* refactor SerializationProcessor in order to deal only with media type
+* user format enumeration to resolve to a mime type
+* refactor Request Handler
+* add priority on Plugin, in order to manage their order on initialization
+* Refactor Route and base URL usage
+* add TextProcessor for all text/* media 
+* add Slf4fErrorLogMessageObserver to log error using SLF4j
+* add Slf4jAccessLogMessageObserver to build an access log using SLF4j
+* change default wrapper to ErrorResult
+* add Joda and Guava module for Jackson
+
 
 Release 0.10.3 - 27 May 2014
 ---------------------------

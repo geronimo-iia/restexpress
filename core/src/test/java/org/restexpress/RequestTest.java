@@ -50,6 +50,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
+import org.restexpress.domain.CharacterSet;
 
 /**
  * @author toddf
@@ -251,9 +252,12 @@ public class RequestTest
 		String formValue1 = "http://login.berlin.ecollege-labs.com/google-service/google/sso/callback/google.JSON?successUrl=http%3A%2F%2Fdashboard.berlin.ecollege-labs.com%2Ftransfer.html&failureUrl=http%3A%2F%2Flogin.berlin.ecollege-labs.com&domain=GOOGLE_NON_MARKET_PLACE_DOMAIN";
 		String formValue2 = "https://www.google.com/accounts/o8/id?id=AItOawkHDpeMEfe_xM14z_ge7UATYOSg_QlPeDg";
 		String formValue3 = "https://www.google.com/accounts/o8/id?id=AItOawkHDpeMEfe_xM14z_ge7UATYOSg_QlPeDg";
-		httpRequest.setContent(ChannelBuffers.wrappedBuffer(("openid.return_to=" + URLEncoder.encode(formValue1, ContentType.ENCODING)
-			+ "&openid.identity=" + URLEncoder.encode(formValue2, ContentType.ENCODING)
-			+ "&openid.claimed_id=" + URLEncoder.encode(formValue3, ContentType.ENCODING)).getBytes()));
+		
+		String charset = CharacterSet.UTF_8.getCharsetName();
+				
+		httpRequest.setContent(ChannelBuffers.wrappedBuffer(("openid.return_to=" + URLEncoder.encode(formValue1, charset)
+			+ "&openid.identity=" + URLEncoder.encode(formValue2, charset)
+			+ "&openid.claimed_id=" + URLEncoder.encode(formValue3,charset)).getBytes()));
 		Request formPost = new Request(httpRequest, null);
 		Map<String, List<String>> form = formPost.getBodyFromUrlFormEncoded();
 		assertEquals(3, form.size());

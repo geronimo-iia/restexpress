@@ -18,27 +18,24 @@
  *
  */
 /*
-    Copyright 2010, Strategic Gains, Inc.
+ Copyright 2010, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.route;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +47,6 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Flags;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.common.util.StringUtils;
 import org.restexpress.url.UrlMatch;
 import org.restexpress.url.UrlMatcher;
 
@@ -69,13 +65,10 @@ public abstract class Route {
 	private final HttpMethod method;
 	private boolean shouldSerializeResponse = true;
 	private final String name;
-	private final String baseUrl;
-	private final List<String> supportedFormats = new ArrayList<String>();
-	private final Set<Flags> flags = new HashSet<>();
+	private final Set<String> flags = new HashSet<>();
 	private final Map<String, Object> parameters = new HashMap<String, Object>();
 
-	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
-			final Map<String, Object> parameters, final String baseUrl) {
+	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
 		super();
 		this.urlMatcher = urlMatcher;
 		this.controller = controller;
@@ -84,14 +77,16 @@ public abstract class Route {
 		this.method = method;
 		this.shouldSerializeResponse = shouldSerializeResponse;
 		this.name = name;
-		this.supportedFormats.addAll(supportedFormats);
 		this.flags.addAll(flags);
 		this.parameters.putAll(parameters);
-		this.baseUrl = baseUrl;
+	}
+
+	public boolean isFlagged(final String flag) {
+		return flags.contains(flag);
 	}
 
 	public boolean isFlagged(final Flags flag) {
-		return flags.contains(flag);
+		return flags.contains(flag.toString());
 	}
 
 	public boolean hasParameter(final String name) {
@@ -122,19 +117,6 @@ public abstract class Route {
 		return ((getName() != null) && !getName().trim().isEmpty());
 	}
 
-	public String getBaseUrl() {
-		return (baseUrl == null ? StringUtils.EMPTY_STRING : baseUrl);
-	}
-
-	/**
-	 * Returns the base URL + the URL pattern. Useful in creating links.
-	 * 
-	 * @return a string URL pattern containing the base URL.
-	 */
-	public String getFullPattern() {
-		return getBaseUrl() + getPattern();
-	}
-
 	/**
 	 * Returns the URL pattern without any '.{format}' at the end. In essence, a
 	 * 'short' URL pattern.
@@ -147,28 +129,6 @@ public abstract class Route {
 
 	public boolean shouldSerializeResponse() {
 		return shouldSerializeResponse;
-	}
-
-	public Collection<String> getSupportedFormats() {
-		return Collections.unmodifiableList(supportedFormats);
-	}
-
-	public boolean hasSupportedFormats() {
-		return (!supportedFormats.isEmpty());
-	}
-
-	public void addAllSupportedFormats(final List<String> formats) {
-		supportedFormats.addAll(formats);
-	}
-
-	public void addSupportedFormat(final String format) {
-		if (!supportsFormat(format)) {
-			supportedFormats.add(format);
-		}
-	}
-
-	public boolean supportsFormat(final String format) {
-		return supportedFormats.contains(format);
 	}
 
 	public UrlMatch match(final String url) {

@@ -43,8 +43,8 @@ import java.io.IOException;
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.junit.Test;
 import org.restexpress.Response;
-import org.restexpress.common.response.JsendResult;
-import org.restexpress.common.response.JsendResult.State;
+import org.restexpress.domain.response.JsendResult;
+import org.restexpress.domain.response.JsendResult.State;
 
 
 /**

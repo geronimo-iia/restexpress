@@ -93,8 +93,8 @@ public class RouteDeclaration {
 	 * Generate a RouteMapping (utilized by RouteResolver) from the declared
 	 * routes.
 	 */
-	public RouteMapping createRouteMapping() {
-		final RouteMapping results = new RouteMapping();
+	public RouteMapping createRouteMapping(String baseUrl) {
+		final RouteMapping results = new RouteMapping(baseUrl);
 
 		iterateRouteBuilders(new Callback<RouteBuilder>() {
 			@Override

@@ -18,31 +18,27 @@
  *
  */
 /*
-    Copyright 2011, Strategic Gains, Inc.
+ Copyright 2011, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.route.parameterized;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.restexpress.Flags;
-import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteBuilder;
 
@@ -51,7 +47,6 @@ import org.restexpress.route.RouteBuilder;
  * @since Jan 13, 2011
  */
 public class ParameterizedRouteBuilder extends RouteBuilder {
-	private final List<String> aliases = new ArrayList<String>();
 
 	/**
 	 * @param uri
@@ -63,11 +58,10 @@ public class ParameterizedRouteBuilder extends RouteBuilder {
 	}
 
 	@Override
-	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<Flags> flags,
-			final Map<String, Object> parameters, final String baseUrl) {
-		final ParameterizedRoute r = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
-		r.addAliases(aliases);
-		return r;
+	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
+		final ParameterizedRoute parameterizedRoute = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, flags, parameters);
+		parameterizedRoute.addAliases(aliases);
+		return parameterizedRoute;
 	}
 
 	/**
@@ -85,29 +79,15 @@ public class ParameterizedRouteBuilder extends RouteBuilder {
 		if (!aliases.contains(uri)) {
 			aliases.add(uri);
 		}
-
 		return this;
-	}
-
-	@Override
-	public RouteMetadata asMetadata() {
-		final RouteMetadata metadata = super.asMetadata();
-
-		for (final String alias : aliases) {
-			metadata.addAlias(alias);
-		}
-
-		return metadata;
 	}
 
 	@Override
 	protected String toRegexPattern(final String uri) {
 		String pattern = uri;
-
 		if ((pattern != null) && !pattern.startsWith("/")) {
 			pattern = "/" + pattern;
 		}
-
 		return pattern;
 	}
 

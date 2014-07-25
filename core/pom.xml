@@ -6,18 +6,16 @@
 		<artifactId>restexpress-parent</artifactId>
 		<version>0.10.4-SNAPSHOT</version>
 	</parent>
-	<artifactId>restexpress</artifactId>
+	<artifactId>restexpress-core</artifactId>
 	<packaging>jar</packaging>
-	<name>restexpress</name>
-	<description>Internet scale, high-performance RESTful Services in Java</description>
-	<url>https://github.com/RestExpress/RestExpress</url>
+	<name>restexpress-core</name>
 	<properties>
 		<license.header.path>../header.txt</license.header.path>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress-common</artifactId>
+			<artifactId>restexpress-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
@@ -26,6 +24,18 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
@@ -38,6 +48,10 @@
 		<dependency>
 			<groupId>org.owasp.encoder</groupId>
 			<artifactId>encoder</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

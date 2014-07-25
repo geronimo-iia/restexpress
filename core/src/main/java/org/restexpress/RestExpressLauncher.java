@@ -23,14 +23,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 import org.jboss.netty.channel.Channel;
-import org.restexpress.serialization.SerializationProvider;
 import org.restexpress.settings.RestExpressSettings;
 import org.restexpress.settings.Settings;
 
 /**
- * RestExpressLauncher is the main entry point
+ * {@link RestExpressLauncher} is the main entry point
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
@@ -81,16 +82,22 @@ public class RestExpressLauncher implements Runnable {
 		server(new RestExpress(settings));
 	}
 
-	public RestExpressLauncher(RestExpressSettings settings, SerializationProvider serializationProvider) {
-		server(new RestExpress(settings, serializationProvider));
-	}
-
 	protected void server(RestExpress restExpress) {
 		this.restExpress = restExpress;
 	}
 
+	/**
+	 * Lookup for {@link RestExpressEntryPoint} in class path with
+	 * {@link ServiceLoader} and initialize them.
+	 */
 	protected void initialize() {
-		// nothing todo
+		final ServiceLoader<RestExpressEntryPoint> loader = ServiceLoader.load(RestExpressEntryPoint.class, this.getClass().getClassLoader());
+		final Iterator<RestExpressEntryPoint> iterator = loader.iterator();
+		while (iterator.hasNext()) {
+			RestExpressEntryPoint entryPoint = iterator.next();
+			System.out.println("Load : " + entryPoint.getClass().getName());
+			entryPoint.onLoad(restExpress);
+		}
 	}
 
 	protected void destroy() {
@@ -125,10 +132,11 @@ public class RestExpressLauncher implements Runnable {
 
 	/**
 	 * Instantiate a new {@link RestExpressLauncher} from argument.
+	 * 
 	 * @param args
 	 * @param defaultEnvironmentName
 	 * @return a {@link RestExpressLauncher} instance.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static RestExpressLauncher instanciateFrom(String[] args, String defaultEnvironmentName) throws IOException {
 		String environmentName = defaultEnvironmentName;
@@ -152,12 +160,15 @@ public class RestExpressLauncher implements Runnable {
 	}
 
 	/**
+	 * Mains methods instantiate {@link RestExpress} and add all existing
+	 * {@link RestExpressEntryPoint} finded in class path.
+	 * 
 	 * @param args
 	 * @throws IOException
 	 */
 	public static int main(String[] args) throws IOException {
 		// load from settings
-		RestExpressLauncher restExpressLauncher =  instanciateFrom(args,  "restexpress");
+		RestExpressLauncher restExpressLauncher = instanciateFrom(args, "restexpress");
 		// create and run
 		restExpressLauncher.run();
 		return 0;

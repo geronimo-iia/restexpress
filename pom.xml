@@ -99,9 +99,12 @@
 	<!-- MODULE -->
 	<!-- ******************************************************************* -->
 	<modules>
-		<module>common</module>
+		<module>api</module>
 		<module>core</module>
 		<module>plugins</module>
+		<module>restexpress</module>
+		<module>http-client</module>
+		<module>examples</module>
 	</modules>
 
 	<!-- ******************************************************************* -->
@@ -112,12 +115,12 @@
 			<!-- RESTEXPRESS -->
 			<dependency>
 				<groupId>com.strategicgains</groupId>
-				<artifactId>restexpress</artifactId>
+				<artifactId>restexpress-api</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.strategicgains</groupId>
-				<artifactId>restexpress-common</artifactId>
+				<artifactId>restexpress-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<!-- HTTP SPECIFICATION -->
@@ -158,6 +161,11 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
+				<version>${com.fasterxml.jackson.core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-xml</artifactId>
 				<version>${com.fasterxml.jackson.core.version}</version>
 			</dependency>
 			<!-- LOGGER -->

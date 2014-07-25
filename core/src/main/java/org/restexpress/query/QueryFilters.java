@@ -25,10 +25,10 @@ import java.util.List;
 
 import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.restexpress.Request;
-import org.restexpress.common.query.FilterComponent;
-import org.restexpress.common.query.FilterOperator;
-import org.restexpress.common.query.QueryFilter;
-import org.restexpress.common.util.StringUtils;
+import org.restexpress.common.StringUtils;
+import org.restexpress.query.FilterComponent;
+import org.restexpress.query.FilterOperator;
+import org.restexpress.query.QueryFilter;
 
 /**
  * A factory for RestExpress-Common QueryFilter instance, parsing from a
@@ -36,7 +36,7 @@ import org.restexpress.common.util.StringUtils;
  * 
  * @author toddf
  * @since Apr 12, 2011
- * @see org.restexpress.common.query.QueryFilter
+ * @see org.restexpress.query.QueryFilter
  */
 public abstract class QueryFilters {
 	private static final String FILTER_HEADER_NAME = "filter";

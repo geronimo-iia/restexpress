@@ -1,3 +1,24 @@
+<!--
+
+           Licensed to the Apache Software Foundation (ASF) under one
+           or more contributor license agreements.  See the NOTICE file
+           distributed with this work for additional information
+           regarding copyright ownership.  The ASF licenses this file
+           to you under the Apache License, Version 2.0 (the
+           "License"); you may not use this file except in compliance
+           with the License.  You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+           Unless required by applicable law or agreed to in writing,
+           software distributed under the License is distributed on an
+           "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+           KIND, either express or implied.  See the License for the
+           specific language governing permissions and limitations
+           under the License.
+
+
+-->
 <html>
 <head></head>
 <body>
@@ -7,10 +28,11 @@
 	<ul>
 		<li>name: @{server.name}</li>
 		<li>port: @{server.port}</li>
-		<li>Supported Formats: @if{server.supportedFormats !=
-			null}@foreach{item : server.supportedFormats}@{item}@end{', '}@end{}</li>
-		<li>Default Format: @{server.defaultFormat != null ?
-			server.defaultFormat : ""}</li>
+		<li>url : @{server.baseUrl}</li>
+		<li>Supported Media: @if{server.supportedMediaTypes !=
+			null}@foreach{item : server.supportedMediaTypes}@{item}@end{', '}@end{}</li>
+		<li>Default Media: @{server.defaultMediaType != null ?
+			server.defaultMediaType : ""}</li>
 		<li>Self: <a href="/routes/metadata">metadata</a></li>
 	</ul>
 	<p>&nbsp;</p>
@@ -23,9 +45,6 @@
 				<td>Aliases</td>
 				<td>Methods</td>
 				<td>Serialized</td>
-				<td>Base URL</td>
-				<td>Supported Formats</td>
-				<td>Default Format</td>
 			</tr>
 		</thead>
 		@foreach{route : server.routes}
@@ -38,10 +57,6 @@
 			<td>@if{route.methods !=null}@foreach{item
 				:route.methods}@{item}@end{', '}@end{}</td>
 			<td>@{route.serialized}</td>
-			<td>@{route.baseUrl != null ? route.baseUrl  : "" }</td>
-			<td>@if{route.supportedFormats !=
-			null}@foreach{item : route.supportedFormats}@{item}@end{', '}@end{}</td>
-			<td>@{route.defaultFormat != null ? route.defaultFormat : ""}</td>
 		</tr>
 		@end{}
 	</table>

@@ -36,12 +36,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.restexpress.Flags;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.common.exception.ConfigurationException;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.UriMetadata;
+import org.restexpress.exception.ConfigurationException;
 
 /**
  * Builds a route for a single URI. If a URI is given with no methods or
@@ -74,14 +73,13 @@ public abstract class RouteBuilder {
 
 	private final String uri;
 	private List<HttpMethod> methods = new ArrayList<HttpMethod>();
-	private final List<String> supportedFormats = new ArrayList<String>();
 	private final Map<HttpMethod, String> actionNames = new HashMap<HttpMethod, String>();
 	private final Object controller;
 	private boolean shouldSerializeResponse = true;
 	private String name;
-	private String baseUrl;
-	private final Set<Flags> flags = new HashSet<>();
+	private final Set<String> flags = new HashSet<>();
 	private final Map<String, Object> parameters = new HashMap<String, Object>();
+	protected final List<String> aliases = new ArrayList<String>();
 
 	/**
 	 * Create a RouteBuilder instance for the given URI pattern. URIs that match
@@ -113,7 +111,15 @@ public abstract class RouteBuilder {
 	 * @param baseUrl
 	 * @return
 	 */
-	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, Set<Flags> flags, Map<String, Object> parameters, String baseUrl);
+	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, Set<String> flags, Map<String, Object> parameters);
+
+	/**
+	 * Child builder must implements this method.
+	 * 
+	 * @param uri
+	 * @return
+	 */
+	protected abstract String toRegexPattern(String uri);
 
 	/**
 	 * Map a service method name (action) to a particular HTTP method (e.g. GET,
@@ -134,21 +140,6 @@ public abstract class RouteBuilder {
 			methods.add(method);
 		}
 
-		return this;
-	}
-
-	/**
-	 * Set the base URL that is associated with this route. By default the route
-	 * will inherit the base URL from the RestExpress server and is used when
-	 * retrieving the URL pattern for a route in order to create a Location or
-	 * other hypermedia link.
-	 * 
-	 * @param baseUrl
-	 *            protocol://host:port to use as a base URL in links.
-	 * @return the RouteBuilder instance.
-	 */
-	public RouteBuilder baseUrl(final String baseUrl) {
-		this.baseUrl = baseUrl;
 		return this;
 	}
 
@@ -209,14 +200,6 @@ public abstract class RouteBuilder {
 		return this;
 	}
 
-	public RouteBuilder format(final String format) {
-		if (!supportedFormats.contains(format)) {
-			supportedFormats.add(format);
-		}
-
-		return this;
-	}
-
 	/**
 	 * Flags are boolean settings that are created at route definition time.
 	 * These flags can be used to pass booleans to preprocessors, controllers,
@@ -228,7 +211,7 @@ public abstract class RouteBuilder {
 	 *            the name of the flag.
 	 * @return this RouteBuilder to facilitate method chaining.
 	 */
-	public RouteBuilder flag(final Flags flagValue) {
+	public RouteBuilder flag(final String flagValue) {
 		flags.add(flagValue);
 		return this;
 	}
@@ -263,12 +246,10 @@ public abstract class RouteBuilder {
 		return this;
 	}
 
-	// SECTION - BUILDER
-
 	/**
 	 * Build the Route instances. The last step in the Builder process.
 	 * 
-	 * @return a List of Route instances.
+	 * @return a List of {@link Route} instances.
 	 */
 	public List<Route> build() {
 		if (methods.isEmpty()) {
@@ -286,32 +267,27 @@ public abstract class RouteBuilder {
 			}
 
 			final Method action = determineActionMethod(controller, actionName);
-			routes.add(newRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl));
+			routes.add(newRoute(pattern, controller, action, method, shouldSerializeResponse, name, flags, parameters));
 		}
 
 		return routes;
 	}
 
-	protected abstract String toRegexPattern(String uri);
-
-	// SECTION: CONSOLE
-
+	/**
+	 * @return {@link RouteMetadata}
+	 */
 	public RouteMetadata asMetadata() {
-		final RouteMetadata metadata = new RouteMetadata();
-		metadata.setName(name);
-		metadata.setSerialized(shouldSerializeResponse);
-		metadata.addAllSupportedFormats(supportedFormats);
-		metadata.setBaseUrl(baseUrl);
-
+		final List<String> methods = new ArrayList<String>();
 		final UriMetadata uriMeta = new UriMetadata(uri);
 		final List<Route> routes = build();
 
 		for (final Route route : routes) {
 			uriMeta.addAllParameters(route.getUrlParameters());
-			metadata.addMethod(route.getMethod().getName());
+			methods.add(route.getMethod().getName());
 		}
+		final RouteMetadata metadata = new RouteMetadata(name, uriMeta,//
+				aliases, methods, shouldSerializeResponse);
 
-		metadata.setUri(uriMeta);
 		return metadata;
 	}
 

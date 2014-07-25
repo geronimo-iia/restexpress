@@ -19,18 +19,22 @@
  */
 package org.restexpress.plugin.gson.json;
 
-import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Date;
+import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBufferInputStream;
-import org.restexpress.ContentType;
-import org.restexpress.common.util.StringUtils;
-import org.restexpress.serialization.json.JsonSerializationProcessor;
+import org.restexpress.domain.MediaType;
+import org.restexpress.exception.DeserializationException;
+import org.restexpress.exception.SerializationException;
+import org.restexpress.serialization.json.JsonProcessor;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.strategicgains.util.date.DateAdapterConstants;
 
 /**
@@ -41,13 +45,27 @@ import com.strategicgains.util.date.DateAdapterConstants;
  * @author toddf
  * @since Mar 16, 2010
  */
-public class GsonJsonProcessor extends JsonSerializationProcessor {
+public class GsonJsonProcessor extends JsonProcessor {
 	private final Gson gson;
+
+	public GsonJsonProcessor(List<String> mediaTypes) {
+		super(mediaTypes);
+		gson = newGson();
+	}
+
+	public GsonJsonProcessor(MediaType... mediaTypes) {
+		super(mediaTypes);
+		gson = newGson();
+	}
+
+	public GsonJsonProcessor(String... mediaTypes) throws IllegalArgumentException {
+		super(mediaTypes);
+		gson = newGson();
+	}
 
 	public GsonJsonProcessor() {
 		super();
-		gson = new GsonBuilder().disableHtmlEscaping().registerTypeAdapter(Date.class, new GsonTimepointSerializer()).setDateFormat(DateAdapterConstants.TIMESTAMP_OUTPUT_FORMAT).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-				.create();
+		gson = newGson();
 	}
 
 	public GsonJsonProcessor(final Gson gson) {
@@ -55,24 +73,45 @@ public class GsonJsonProcessor extends JsonSerializationProcessor {
 		this.gson = gson;
 	}
 
-	// SECTION: SERIALIZATION PROCESSOR
+	public GsonJsonProcessor(final Gson gson, List<String> mediaTypes) {
+		super(mediaTypes);
+		this.gson = gson;
+	}
 
-	@Override
-	public <T> T deserialize(final String string, final Class<T> type) {
-		return gson.fromJson(string, type);
+	public GsonJsonProcessor(final Gson gson, MediaType... mediaTypes) {
+		super(mediaTypes);
+		this.gson = gson;
+	}
+
+	public GsonJsonProcessor(final Gson gson, String... mediaTypes) throws IllegalArgumentException {
+		super(mediaTypes);
+		this.gson = gson;
 	}
 
 	@Override
-	public <T> T deserialize(final ChannelBuffer buffer, final Class<T> type) {
-		return gson.fromJson(new InputStreamReader(new ChannelBufferInputStream(buffer), ContentType.CHARSET), type);
-	}
-
-	@Override
-	public String serialize(final Object object) {
-		if (object == null) {
-			return StringUtils.EMPTY_STRING;
+	public <T> T read(ChannelBuffer buffer, Class<T> valueType) throws DeserializationException {
+		try {
+			return gson.fromJson(getInputStreamReader(buffer), valueType);
+		} catch (JsonSyntaxException | JsonIOException  e) {
+			throw new DeserializationException(e);
 		}
+	}
 
-		return gson.toJson(object);
+	@Override
+	public void write(Object value, ChannelBuffer buffer) throws SerializationException {
+		try {
+			if (value != null) {
+				OutputStreamWriter writer = getOutputStreamWriter(buffer);
+				gson.toJson(value, writer);
+				writer.flush();
+			}
+		} catch (JsonIOException | IOException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	protected Gson newGson() {
+		return new GsonBuilder().disableHtmlEscaping().registerTypeAdapter(Date.class, new GsonTimepointSerializer()).setDateFormat(DateAdapterConstants.TIMESTAMP_OUTPUT_FORMAT).setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+				.create();
 	}
 }

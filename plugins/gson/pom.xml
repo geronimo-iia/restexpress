@@ -16,10 +16,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.strategicgains</groupId>
 			<artifactId>DateAdapterJ</artifactId>
 		</dependency>
 		<dependency>
