@@ -316,7 +316,7 @@ public class RestExpress {
 	 */
 	public ChannelHandler buildRequestHandler() {
 		// Set up the event pipeline factory.
-		final RouteResolver routeResolver = new RouteResolver(routeDeclarations.createRouteMapping());
+		final RouteResolver routeResolver = new RouteResolver(routeDeclarations.createRouteMapping(settings.serverSettings().getBaseUrl()));
 		final HttpResponseWriter httpResponseWriter = new DefaultHttpResponseWriter();
 		final DefaultRequestHandler requestHandler = new DefaultRequestHandler(routeResolver, responseProcessorManager, httpResponseWriter, settings.serverSettings().isEnforceHttpSpec());
 
@@ -357,6 +357,7 @@ public class RestExpress {
 	 * @return Channel
 	 */
 	public Channel bind(final int port) {
+
 		settings.serverSettings().setPort(port);
 
 		// Configure the server.

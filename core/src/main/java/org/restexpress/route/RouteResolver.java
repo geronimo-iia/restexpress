@@ -58,6 +58,7 @@ public class RouteResolver implements Resolver<Action> {
 
 	/**
 	 * Build a new instance of {@link RouteResolver}.
+	 * 
 	 * @param routes
 	 */
 	public RouteResolver(final RouteMapping routes) {
@@ -74,6 +75,20 @@ public class RouteResolver implements Resolver<Action> {
 	 */
 	public Route getNamedRoute(final String name, final HttpMethod method) {
 		return routeMapping.getNamedRoute(name, method);
+	}
+
+	/**
+	 * Get the named URL for the given HTTP method
+	 * 
+	 * @param method
+	 *            the HTTP method
+	 * @param resourceName
+	 *            the name of the route
+	 * @return the URL pattern, or null if the name/method does not exist.
+	 */
+	public String getNamedUrl(final String name, final HttpMethod method) {
+		final Route route = getNamedRoute(name, method);
+		return route != null ? routeMapping.getBaseUrl() + route.getPattern() : null;
 	}
 
 	@Override

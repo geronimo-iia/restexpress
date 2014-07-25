@@ -65,10 +65,10 @@ public enum TestUtilities {
 	}
 
 	public static DefaultRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration) {
-		return new DefaultRequestHandler(new RouteResolver(routeDeclaration.createRouteMapping()), new ResponseProcessorManager(), new DefaultHttpResponseWriter(), false);
+		return new DefaultRequestHandler(new RouteResolver(routeDeclaration.createRouteMapping("http://localhost:8081")), new ResponseProcessorManager(), new DefaultHttpResponseWriter(), false);
 	}
 
 	public static DefaultRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration, HttpResponseWriter httpResponseWriter) {
-		return new DefaultRequestHandler(new RouteResolver(routeDeclaration.createRouteMapping()), new ResponseProcessorManager(), httpResponseWriter, false);
+		return new DefaultRequestHandler(new RouteResolver(routeDeclaration.createRouteMapping("http://localhost:8081")), new ResponseProcessorManager(), httpResponseWriter, false);
 	}
 }

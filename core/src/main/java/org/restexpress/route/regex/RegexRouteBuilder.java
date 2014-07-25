@@ -59,8 +59,8 @@ public class RegexRouteBuilder extends RouteBuilder {
 
 	@Override
 	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats,
-			final Set<String> flags, final Map<String, Object> parameters, final String baseUrl) {
-		return new RegexRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
+			final Set<String> flags, final Map<String, Object> parameters) {
+		return new RegexRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters);
 	}
 
 	@Override

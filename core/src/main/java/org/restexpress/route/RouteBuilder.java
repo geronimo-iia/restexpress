@@ -29,7 +29,6 @@ import static org.jboss.netty.handler.codec.http.HttpMethod.PUT;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -79,9 +78,9 @@ public abstract class RouteBuilder {
 	private final Object controller;
 	private boolean shouldSerializeResponse = true;
 	private String name;
-	private String baseUrl;
 	private final Set<String> flags = new HashSet<>();
 	private final Map<String, Object> parameters = new HashMap<String, Object>();
+	protected final List<String> aliases = new ArrayList<String>();
 
 	/**
 	 * Create a RouteBuilder instance for the given URI pattern. URIs that match
@@ -113,7 +112,15 @@ public abstract class RouteBuilder {
 	 * @param baseUrl
 	 * @return
 	 */
-	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, Set<String> flags, Map<String, Object> parameters, String baseUrl);
+	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, List<String> supportedFormats, Set<String> flags, Map<String, Object> parameters);
+
+	/**
+	 * Child builder must implements this method.
+	 * 
+	 * @param uri
+	 * @return
+	 */
+	protected abstract String toRegexPattern(String uri);
 
 	/**
 	 * Map a service method name (action) to a particular HTTP method (e.g. GET,
@@ -134,21 +141,6 @@ public abstract class RouteBuilder {
 			methods.add(method);
 		}
 
-		return this;
-	}
-
-	/**
-	 * Set the base URL that is associated with this route. By default the route
-	 * will inherit the base URL from the RestExpress server and is used when
-	 * retrieving the URL pattern for a route in order to create a Location or
-	 * other hypermedia link.
-	 * 
-	 * @param baseUrl
-	 *            protocol://host:port to use as a base URL in links.
-	 * @return the RouteBuilder instance.
-	 */
-	public RouteBuilder baseUrl(final String baseUrl) {
-		this.baseUrl = baseUrl;
 		return this;
 	}
 
@@ -263,12 +255,10 @@ public abstract class RouteBuilder {
 		return this;
 	}
 
-	// SECTION - BUILDER
-
 	/**
 	 * Build the Route instances. The last step in the Builder process.
 	 * 
-	 * @return a List of Route instances.
+	 * @return a List of {@link Route} instances.
 	 */
 	public List<Route> build() {
 		if (methods.isEmpty()) {
@@ -286,15 +276,15 @@ public abstract class RouteBuilder {
 			}
 
 			final Method action = determineActionMethod(controller, actionName);
-			routes.add(newRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl));
+			routes.add(newRoute(pattern, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters));
 		}
 
 		return routes;
 	}
 
-	protected abstract String toRegexPattern(String uri);
-
-	@SuppressWarnings("unchecked")
+	/**
+	 * @return {@link RouteMetadata}
+	 */
 	public RouteMetadata asMetadata() {
 		final List<String> methods = new ArrayList<String>();
 		final UriMetadata uriMeta = new UriMetadata(uri);
@@ -305,9 +295,9 @@ public abstract class RouteBuilder {
 			methods.add(route.getMethod().getName());
 		}
 		final RouteMetadata metadata = new RouteMetadata(name, uriMeta,//
-				Collections.EMPTY_LIST, //
+				aliases, //
 				new HashSet<String>(supportedFormats), null, //
-				methods, shouldSerializeResponse, baseUrl);
+				methods, shouldSerializeResponse);
 
 		return metadata;
 	}

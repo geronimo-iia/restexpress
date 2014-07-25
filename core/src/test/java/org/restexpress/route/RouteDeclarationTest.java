@@ -46,7 +46,7 @@ public class RouteDeclarationTest {
 	public static void setUpBeforeClass() throws Exception {
 		routeDeclarations = new Routes();
 		((Routes) routeDeclarations).defineRoutes();
-		routeMapping = routeDeclarations.createRouteMapping();
+		routeMapping = routeDeclarations.createRouteMapping("http://localhost:8081");
 	}
 
 	@Test

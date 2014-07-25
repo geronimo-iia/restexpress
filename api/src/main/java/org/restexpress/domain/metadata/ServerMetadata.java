@@ -60,7 +60,7 @@ public class ServerMetadata implements Serializable {
 	/**
 	 * Build a new instance of {@link ServerMetadata}.
 	 */
-	public ServerMetadata() {
+	protected ServerMetadata() {
 		super();
 		routes = new ArrayList<>();
 		supportedFormats = new HashSet<>();

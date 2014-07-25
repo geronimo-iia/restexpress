@@ -434,6 +434,8 @@ public class Request {
 	/**
 	 * Get the named URL for the given HTTP method
 	 * 
+	 * @see RouteResolver#getNamedUrl(String, HttpMethod)
+	 * 
 	 * @param method
 	 *            the HTTP method
 	 * @param resourceName
@@ -441,8 +443,7 @@ public class Request {
 	 * @return the URL pattern, or null if the name/method does not exist.
 	 */
 	public String getNamedUrl(final HttpMethod method, final String resourceName) {
-		final Route route = routeResolver.getNamedRoute(resourceName, method);
-		return route != null ? route.getFullPattern() : null;
+		return routeResolver.getNamedUrl(resourceName, method);
 	}
 
 	/**

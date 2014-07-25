@@ -52,13 +52,13 @@ public class ParameterizedRoute extends Route {
 	private UrlPattern[] aliases;
 
 	public ParameterizedRoute(final UrlPattern urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
-			final Map<String, Object> parameters, final String baseUrl) {
-		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
+			final Map<String, Object> parameters) {
+		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters);
 	}
 
 	public ParameterizedRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final List<String> supportedFormats, final Set<String> flags,
-			final Map<String, Object> parameters, final String baseUrl) {
-		this(new UrlPattern(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters, baseUrl);
+			final Map<String, Object> parameters) {
+		this(new UrlPattern(urlPattern), controller, action, method, shouldSerializeResponse, name, supportedFormats, flags, parameters);
 	}
 
 	public void addAliases(final List<String> uris) {

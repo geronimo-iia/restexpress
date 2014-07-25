@@ -18,19 +18,19 @@
  *
  */
 /*
-    Copyright 2010, Strategic Gains, Inc.
+ Copyright 2010, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.route;
 
@@ -53,8 +53,8 @@ import org.restexpress.url.UrlMatch;
  * @since May 21, 2010
  */
 public class RouteMapping {
-	// SECTION: INSTANCE VARIABLES
 
+	private final String baseUrl;
 	private final Map<HttpMethod, List<Route>> routes;
 	private final List<Route> deleteRoutes = new ArrayList<Route>();
 	private final List<Route> getRoutes = new ArrayList<Route>();
@@ -68,8 +68,9 @@ public class RouteMapping {
 
 	// SECTION: CONSTRUCTOR
 
-	public RouteMapping() {
+	public RouteMapping(String baseUrl) {
 		super();
+		this.baseUrl = baseUrl;
 		routes = new HashMap<HttpMethod, List<Route>>();
 		routes.put(HttpMethod.DELETE, deleteRoutes);
 		routes.put(HttpMethod.GET, getRoutes);
@@ -79,7 +80,12 @@ public class RouteMapping {
 		routes.put(HttpMethod.OPTIONS, optionRoutes);
 	}
 
-	// SECTION: UTILITY - PUBLIC
+	/**
+	 * @return server base URL.
+	 */
+	public String getBaseUrl() {
+		return baseUrl;
+	}
 
 	/**
 	 * Return a list of Route instances for the given HTTP method. The returned
