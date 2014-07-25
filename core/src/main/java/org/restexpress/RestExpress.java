@@ -451,6 +451,7 @@ public class RestExpress {
 		final ServerMetadata metadata = new ServerMetadata( //
 				settings.serverSettings().getName(), //
 				settings.serverSettings().getPort(), //
+				settings.serverSettings().getBaseUrl(), //
 				responseProcessorManager.supportedMediaType(), //
 				supportedFormat, //
 				defaultFormat == null ? "" : defaultFormat.toString(), routeDeclarations.getMetadata());
