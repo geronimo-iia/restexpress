@@ -93,6 +93,8 @@ Current Version 0.10.4
 * add TextProcessor for all text/* media 
 * add Slf4fErrorLogMessageObserver to log error using SLF4j
 * add Slf4jAccessLogMessageObserver to build an access log using SLF4j
+* change default wrapper to ErrorResult
+* add Joda and Guava module for Jackson
 
 
 Release 0.10.3 - 27 May 2014
