@@ -89,6 +89,8 @@ Current Version 0.10.4
 * user format enumeration to resolve to a mime type
 * refactor Request Handler
 * add priority on Plugin, in order to manage their order on initialization
+* Refactor Route and base URL usage
+* add TextProcessor for all text/* media 
 
 
 
