@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.serialization.xml.xstream;
+package org.restexpress.plugin.xstream;
 
 import java.util.ArrayList;
 import java.util.List;

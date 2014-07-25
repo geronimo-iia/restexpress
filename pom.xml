@@ -163,6 +163,11 @@
 				<artifactId>jackson-databind</artifactId>
 				<version>${com.fasterxml.jackson.core.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-xml</artifactId>
+				<version>${com.fasterxml.jackson.core.version}</version>
+			</dependency>
 			<!-- LOGGER -->
 			<dependency>
 				<groupId>org.slf4j</groupId>

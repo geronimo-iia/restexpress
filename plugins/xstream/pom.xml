@@ -3,32 +3,24 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.strategicgains</groupId>
-		<artifactId>restexpress-parent</artifactId>
+		<artifactId>restexpress-plugins</artifactId>
 		<version>0.10.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>restexpress-plugins</artifactId>
-	<packaging>pom</packaging>
-	<description>Plugins modules</description>
+	<artifactId>restexpress-plugins-xstream</artifactId>
+	<packaging>jar</packaging>
+	<description>XStream Serialization library</description>
 	<properties>
-		<license.header.path>../header.txt</license.header.path>
+		<license.header.path>../../header.txt</license.header.path>
 	</properties>
-	<modules>
-		<module>gson</module>
-		<module>xstream</module>
-		<module>route</module>
-		<module>common</module>
-		<module>static</module>
-	</modules>
 	<dependencies>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress-core</artifactId>
+			<artifactId>DateAdapterJ</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<scope>test</scope>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
 		</dependency>
 	</dependencies>
 </project>

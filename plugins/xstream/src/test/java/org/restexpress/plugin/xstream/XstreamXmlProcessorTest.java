@@ -32,7 +32,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-package org.restexpress.serialization.xml;
+package org.restexpress.plugin.xstream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -53,8 +53,6 @@ import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
 import org.restexpress.domain.metadata.UriMetadata;
-import org.restexpress.serialization.KnownObject;
-import org.restexpress.serialization.xml.xstream.XstreamXmlProcessor;
 import org.restexpress.util.TestUtilities;
 
 /**

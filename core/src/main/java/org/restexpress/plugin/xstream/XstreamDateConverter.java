@@ -32,7 +32,7 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
  */
-package org.restexpress.serialization.xml.xstream;
+package org.restexpress.plugin.xstream;
 
 import java.text.ParseException;
 import java.util.Date;

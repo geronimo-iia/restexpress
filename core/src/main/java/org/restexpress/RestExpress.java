@@ -48,6 +48,7 @@ import org.restexpress.pipeline.Preprocessor;
 import org.restexpress.pipeline.handler.DefaultRequestHandler;
 import org.restexpress.pipeline.writer.DefaultHttpResponseWriter;
 import org.restexpress.plugin.Plugin;
+import org.restexpress.plugin.xstream.XstreamXmlProcessor;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteBuilder;
@@ -57,7 +58,6 @@ import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
 import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
 import org.restexpress.serialization.text.TextProcessor;
-import org.restexpress.serialization.xml.xstream.XstreamXmlProcessor;
 import org.restexpress.settings.RestExpressSettings;
 import org.restexpress.settings.Settings;
 import org.restexpress.util.Bootstraps;
@@ -155,6 +155,7 @@ public class RestExpress {
 		context = new ServerContext();
 		if (settings.serverSettings().isUseDefaultSerializationConfiguration()) {
 			responseProcessorManager.add(new JacksonJsonProcessor(), Wrapper.newErrorResponseWrapper(), true);
+			//responseProcessorManager.add(new JacksonXmlProcessor(), Wrapper.newErrorResponseWrapper());
 			responseProcessorManager.add(new XstreamXmlProcessor(), Wrapper.newErrorResponseWrapper());
 			responseProcessorManager.add(new TextProcessor(), Wrapper.newErrorResponseWrapper());
 		}

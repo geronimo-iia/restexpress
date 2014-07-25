@@ -57,10 +57,10 @@ import org.restexpress.SerializationProvider;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
+import org.restexpress.plugin.xstream.XstreamXmlProcessor;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
-import org.restexpress.serialization.xml.xstream.XstreamXmlProcessor;
 
 /**
  * @author toddf
@@ -75,8 +75,6 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		initialize(routes);
 		SerializationProvider provider = messageHandler.serializationProvider();
 		provider.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper());
-		// provider.add(new JacksonJsonProcessor(Format.WJSON.getMediaType()),
-		// Wrapper.newJsendResponseWrapper(), true);
 		provider.add(new XstreamXmlProcessor(Format.XML.getMediaType()), Wrapper.newJsendResponseWrapper());
 		provider.alias("dated", Dated.class);
 	}
@@ -283,7 +281,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(0, observer.getSuccessCount());
 		assertEquals(1, observer.getExceptionCount());
-		// System.out.println(responseBody.toString());
+		System.out.println(responseBody.toString());
 		assertTrue(responseBody.toString().startsWith("<response>"));
 
 		assertTrue(responseBody.toString().contains("<status>error</status>"));
