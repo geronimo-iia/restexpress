@@ -12,12 +12,9 @@ Born to be simple, only three things are required to wire up a service:
 3) Service implementation(s), which is/are a simple POJO--no interface or super class
    implementation.
 
-See: examples/kickstart directory to get started (there is a README there).
+See: examples/echo directory to get started.
 
-RestExpress supports both JSEND-style and raw responses.  Meaning that it can wrap responses so
-AJAX clients can always process the responses easily.  Or it can simply marshal the service return
-value directly into JSON or XML.  For more information on JSEND-style responses, see:
-http://labs.omniti.com/labs/jsend
+
 
 Maven Usage
 ===========
@@ -49,6 +46,25 @@ Please see the Kickstart application in examples/kickstart for a complete, runni
 * On successful creation, call response.setResponseCreated() to set the returning HTTP status code to 201.
 
 * For more real-world examples, see the examples/ directory which contains additional projects that setup RestExpress services.  Simply do '**ant run**' to run them.  Then to see what's available perform a GET on the route: '/routes/metadata' to get a list of all the routes (or endpoints) available (e.g. localhost:8000/routes/metadata in the browser).
+
+
+
+
+##RestExpress Response
+
+RestExpress supports:
+* JSEND-style
+* raw response 
+* a formated error result
+
+Meaning that it can wrap responses so AJAX clients can always process the responses easily.  Or it can simply marshal the service return
+value directly into JSON or XML.
+
+JSend is a specification that lays down some rules for how JSON responses from web servers should be formatted. 
+For more information on JSEND-style responses, see: http://labs.omniti.com/labs/jsend
+
+
+
 
 ===================================================================================================
 Change History/Release Notes:
