@@ -26,7 +26,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.RestExpress;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
-import org.restexpress.plugin.RoutePlugin;
+import org.restexpress.plugin.AbstractRoutePlugin;
 import org.restexpress.route.RouteBuilder;
 
 /**
@@ -35,7 +35,7 @@ import org.restexpress.route.RouteBuilder;
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class RouteMetadataPlugin extends RoutePlugin {
+public class RouteMetadataPlugin extends AbstractRoutePlugin {
 
 	/**
 	 * {@link RouteMetadataController} instance.

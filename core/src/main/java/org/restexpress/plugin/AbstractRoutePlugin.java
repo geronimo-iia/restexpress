@@ -44,8 +44,8 @@ import org.restexpress.Flags;
 import org.restexpress.route.RouteBuilder;
 
 /**
- * {@link RoutePlugin} adds some convenience methods to {@link AbstractPlugin}
- * for plugins that create internal routes. {@link RoutePlugin} enables the
+ * {@link AbstractRoutePlugin} adds some convenience methods to {@link AbstractPlugin}
+ * for plugins that create internal routes. {@link AbstractRoutePlugin} enables the
  * concept of flags and parameters on those routes.
  * <p>
  * Essentially, you want to be sure to call applyFlags(RouteBuilder) and
@@ -55,14 +55,14 @@ import org.restexpress.route.RouteBuilder;
  * @author toddf
  * @since Mar 27, 2014
  */
-public abstract class RoutePlugin extends AbstractPlugin {
+public abstract class AbstractRoutePlugin extends AbstractPlugin {
 	private final List<String> flags = new ArrayList<>();
 	private final Map<String, Object> parameters = new HashMap<String, Object>();
 
 	/**
-	 * Build a new instance of {@link RoutePlugin}.
+	 * Build a new instance of {@link AbstractRoutePlugin}.
 	 */
-	public RoutePlugin() {
+	public AbstractRoutePlugin() {
 		super();
 	}
 
@@ -70,9 +70,9 @@ public abstract class RoutePlugin extends AbstractPlugin {
 	 * Add the flag value if not ever present.
 	 * 
 	 * @param flagValue
-	 * @return {@link RoutePlugin} instance.
+	 * @return {@link AbstractRoutePlugin} instance.
 	 */
-	public RoutePlugin flag(final Flags flagValue) {
+	public AbstractRoutePlugin flag(final Flags flagValue) {
 		return flag(flagValue.toString());
 	}
 
@@ -80,9 +80,9 @@ public abstract class RoutePlugin extends AbstractPlugin {
 	 * Add the flag value if not ever present.
 	 * 
 	 * @param flagValue
-	 * @return {@link RoutePlugin} instance.
+	 * @return {@link AbstractRoutePlugin} instance.
 	 */
-	public RoutePlugin flag(final String flagValue) {
+	public AbstractRoutePlugin flag(final String flagValue) {
 		if (!flags.contains(flagValue)) {
 			flags.add(flagValue);
 		}
@@ -96,9 +96,9 @@ public abstract class RoutePlugin extends AbstractPlugin {
 	 *            parameter name
 	 * @param value
 	 *            associated value.
-	 * @return {@link RoutePlugin} instance.
+	 * @return {@link AbstractRoutePlugin} instance.
 	 */
-	public RoutePlugin parameter(final String name, final Object value) {
+	public AbstractRoutePlugin parameter(final String name, final Object value) {
 		if (!parameters.containsKey(name)) {
 			parameters.put(name, value);
 		}
@@ -110,9 +110,9 @@ public abstract class RoutePlugin extends AbstractPlugin {
 	 * Apply all flag on specified route builder.
 	 * 
 	 * @param routeBuilder
-	 * @return {@link RoutePlugin} instance.
+	 * @return {@link AbstractRoutePlugin} instance.
 	 */
-	protected RoutePlugin applyFlags(final RouteBuilder routeBuilder) {
+	protected AbstractRoutePlugin applyFlags(final RouteBuilder routeBuilder) {
 		for (final String flag : flags) {
 			routeBuilder.flag(flag);
 		}
@@ -123,9 +123,9 @@ public abstract class RoutePlugin extends AbstractPlugin {
 	 * Apply all parameter on specified route builder.
 	 * 
 	 * @param routeBuilder
-	 * @return {@link RoutePlugin} instance.
+	 * @return {@link AbstractRoutePlugin} instance.
 	 */
-	protected RoutePlugin applyParameters(final RouteBuilder routeBuilder) {
+	protected AbstractRoutePlugin applyParameters(final RouteBuilder routeBuilder) {
 		for (final Entry<String, Object> entry : parameters.entrySet()) {
 			routeBuilder.parameter(entry.getKey(), entry.getValue());
 		}
