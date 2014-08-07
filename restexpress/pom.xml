@@ -22,16 +22,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress-plugins-jackson-json</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.strategicgains</groupId>
-			<artifactId>restexpress-plugins-xstream-xml</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.strategicgains</groupId>
 			<artifactId>restexpress-plugins-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
