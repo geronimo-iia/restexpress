@@ -113,6 +113,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 				context.getResponse().setBody(result);
 			}
 			invokePostprocessors(postprocessors(), context);
+			//TODO insert wrapper
 			serializeResponse(context, false);
 			enforceHttpSpecification(context);
 			invokeFinallyProcessors(finallyProcessors(), context);
@@ -131,6 +132,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 
 			context.setException(rootCause);
 			dispatcher.notifyException(context);
+			// TODO insert wrapper
 			serializeResponse(context, true);
 			invokeFinallyProcessors(finallyProcessors(), context);
 			writeResponse(ctx, context);
@@ -257,10 +259,10 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 	protected abstract Request createRequest(MessageEvent event, ChannelHandlerContext ctx);
 
 	/**
-	 * Serialize response object.
+	 * Serialize response object and wrap exception if necessary.
 	 * 
 	 * @param context
-	 * @param force
+	 * @param force true if response must be rendered even if requested format is not supported.
 	 */
 	protected abstract void serializeResponse(final MessageContext context, final boolean force);
 

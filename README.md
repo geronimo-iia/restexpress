@@ -57,10 +57,11 @@ RestExpress supports:
 * raw response 
 * a formated error result
 
-Meaning that it can wrap responses so AJAX clients can always process the responses easily.  Or it can simply marshal the service return
-value directly into JSON or XML.
+Meaning that it can wrap responses so AJAX clients can always process the responses easily.  
+Or it can simply marshal the service return value directly into JSON or XML.
 
-JSend is a specification that lays down some rules for how JSON responses from web servers should be formatted. 
+JSend is a specification that lays down some rules for how JSON responses from web servers should be formatted.
+This specification should only be used in JSON format. 
 For more information on JSEND-style responses, see: http://labs.omniti.com/labs/jsend
 
 

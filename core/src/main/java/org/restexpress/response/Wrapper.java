@@ -36,7 +36,7 @@ public enum Wrapper {
     }
 
     /**
-     * Wraps the out bound Response body in a JSEND-style object.
+     * Wraps the out bound Response body in a JSEND-style object. This wrapper should be only used in JSON format.
      * 
      * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
      * @author toddf
@@ -105,19 +105,25 @@ public enum Wrapper {
     }
 
     /**
-     * Leaves the response alone, returning it without wrapping it at all, unless there is an exception. If there is an exception, the
-     * exception is wrapped in a serializable Error instance.
+     * Leaves the response alone, returning it without wrapping it at all, unless there is an exception.
+     * <p>
+     * If there is an exception, the exception is wrapped in a serializable Error instance, content type will be set in text/plain with
+     * no serialization.
+     * </p>
+     * 
      * 
      * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
      * @author toddf
      * @since Feb 10, 2011
      */
     public static class RawResponseWrapper implements ResponseWrapper {
+        
         @Override
         public Object wrap(final Response response) {
             if (!response.hasException()) {
                 return response.getBody();
             }
+            response.setIsSerialized(false);
             return response.getException().getMessage();
         }
 

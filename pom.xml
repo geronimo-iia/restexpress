@@ -79,12 +79,18 @@
 
 		<!-- dependencies version -->
 		<http-specification.version>1.0.1</http-specification.version>
+		
 		<mvel2.version>2.1.9.Final</mvel2.version>
+		
 		<guava.version>17.0</guava.version>
+		
 		<joda-time.version>2.3</joda-time.version>
+		
 		<jackson-datatype-joda.version>2.4.0</jackson-datatype-joda.version>
 		<jackson-datatype-guava.version>2.1.2</jackson-datatype-guava.version>
 		<com.fasterxml.jackson.core.version>2.3.3</com.fasterxml.jackson.core.version>
+		<org.codehaus.woodstox.version>4.1.4</org.codehaus.woodstox.version>
+		
 		<slf4j.version>1.7.5</slf4j.version>
 		<junit.version>4.11</junit.version>
 		<httpclient.version>4.2.5</httpclient.version>
@@ -167,6 +173,11 @@
 				<groupId>com.fasterxml.jackson.dataformat</groupId>
 				<artifactId>jackson-dataformat-xml</artifactId>
 				<version>${com.fasterxml.jackson.core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.woodstox</groupId>
+				<artifactId>woodstox-core-asl</artifactId>
+				<version>${org.codehaus.woodstox.version}</version>
 			</dependency>
 			<!-- LOGGER -->
 			<dependency>

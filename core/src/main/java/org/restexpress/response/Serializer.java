@@ -19,7 +19,6 @@
  */
 package org.restexpress.response;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.exception.DeserializationException;
@@ -52,9 +51,8 @@ public interface Serializer {
 	 * 
 	 * @param response
 	 *            {@link Response} instance.
-	 * @return {@link ChannelBuffer} or null if no object was found.
 	 * @throws SerializationException
 	 *             if an error occurs
 	 */
-	public ChannelBuffer serialize(final Response response) throws SerializationException;
+	public void serialize(final Response response) throws SerializationException;
 }

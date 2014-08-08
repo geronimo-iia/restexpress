@@ -36,10 +36,13 @@ package org.restexpress.pipeline;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * @author toddf
  * @since Dec 16, 2010
  */
+@XmlRootElement(name="dated")
 public class Dated
 {
 	private Date at;

@@ -57,10 +57,10 @@ import org.restexpress.SerializationProvider;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
-import org.restexpress.plugin.xstream.XstreamXmlProcessor;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
+import org.restexpress.serialization.xml.jackson.JacksonXmlProcessor;
 
 /**
  * @author toddf
@@ -75,7 +75,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		initialize(routes);
 		SerializationProvider provider = messageHandler.serializationProvider();
 		provider.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper());
-		provider.add(new XstreamXmlProcessor(Format.XML.getMediaType()), Wrapper.newJsendResponseWrapper());
+		provider.add(new JacksonXmlProcessor(Format.XML.getMediaType()), Wrapper.newJsendResponseWrapper());
 		provider.alias("dated", Dated.class);
 	}
 
@@ -251,8 +251,9 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		assertEquals(1, observer.getCompleteCount());
 		assertEquals(1, observer.getSuccessCount());
 		assertEquals(0, observer.getExceptionCount());
+		System.err.println(responseBody.toString());
 		assertTrue(responseBody.toString().startsWith("<response>"));
-		assertTrue(responseBody.toString().contains("<data class=\"dated\">"));
+		assertTrue(responseBody.toString().contains("<data>"));
 		assertTrue(responseBody.toString().contains("<at>2010-12-17T12:00:00.000Z</at>"));
 		assertTrue(responseBody.toString().contains("</data>"));
 		assertTrue(responseBody.toString().endsWith("</response>"));
@@ -268,7 +269,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 
 		assertTrue(responseBody.toString().startsWith("<response>"));
 
-		assertTrue(responseBody.toString().contains("<data class=\"dated\">"));
+		assertTrue(responseBody.toString().contains("<data>"));
 		assertTrue(responseBody.toString().contains("<at>2010-12-17T12:00:00.000Z</at>"));
 		assertTrue(responseBody.toString().contains("</data>"));
 		assertTrue(responseBody.toString().endsWith("</response>"));

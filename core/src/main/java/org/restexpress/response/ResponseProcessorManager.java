@@ -108,6 +108,7 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
 		String bestMatch = null;
 		ResponseProcessor processor = null;
 		String format = request.getFormat();
+		// if we have no header format and exception, try to find format
 		if ((format == null) && response.hasException()) {
 			// try to obtain format from URL
 			format = parseFormatFromUrl(request.getUrl());

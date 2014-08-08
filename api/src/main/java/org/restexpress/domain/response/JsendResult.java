@@ -1,20 +1,28 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file distributed
- * with this work for additional information regarding copyright ownership. The ASF licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License
- * at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
- * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * 
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
+ *
  */
 package org.restexpress.domain.response;
 
 import java.io.Serializable;
 import java.util.Locale;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Generic JSEND-style wrapper for responses. Differs from the JSEND recommendation as follows:</br>
@@ -23,6 +31,7 @@ import java.util.Locale;
  * <li>Error status illustrates a non-2xx and non-500 response (e.g. validation errors causing a 400, Bad Request).</li>
  * <li>Fail status is essentially a 500 (internal server) error.</li>
  * </ul>
+ * This response should be only used in JSON format.
  * 
  * @see http://labs.omniti.com/labs/jsend
  * 
@@ -31,6 +40,7 @@ import java.util.Locale;
  * @author toddf
  * @since Jan 11, 2011
  */
+@XmlRootElement(name="response")
 public class JsendResult implements Serializable {
 
     private static final long serialVersionUID = -1905504337512287014L;
@@ -69,6 +79,7 @@ public class JsendResult implements Serializable {
      * Associated error message, if status is {@link State#ERROR}.
      */
     private String message;
+    
     /**
      * Associated data , if status is {@link State#SUCCESS} or {@link State#FAIL}.
      */
