@@ -148,6 +148,7 @@ public class JacksonJsonProcessorTest {
 		ko.sa = new String[] { "this", "is", "an", "evil", "Json", "<script>alert(\'xss')</script>" };
 		String json = TestUtilities.serialize(ko, processor);
 		assertNotNull(json);
+		System.err.println(json);
 		assertTrue(json.startsWith("{"));
 		assertTrue(json.contains("\"integer\":1"));
 		assertTrue(json.contains("\"string\":\"string value\""));

@@ -41,7 +41,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.strategicgains.util.date.DateAdapterConstants;
 
 /**
  * JacksonJsonProcessor.
@@ -147,7 +146,7 @@ public class JacksonJsonProcessor extends JsonProcessor {
 				.setVisibility(PropertyAccessor.SETTER, Visibility.NONE)//
 				.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)
 				// Set default date output format.
-				.setDateFormat(new SimpleDateFormat(DateAdapterConstants.TIME_POINT_OUTPUT_FORMAT));
+				.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"));
 	}
 
 	protected ObjectMapper newObjectMapper() {

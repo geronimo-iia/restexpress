@@ -34,7 +34,6 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import com.strategicgains.util.date.DateAdapterConstants;
 
 /**
  * {@link JacksonXmlProcessor} implement an XML {@link Processor} with Jackson.
@@ -58,22 +57,22 @@ public class JacksonXmlProcessor extends XmlProcessor {
      */
     public JacksonXmlProcessor() {
         super();
-        this.objectMapper = newinitializedXmlMapper();
+        this.objectMapper = newInitializedXmlMapper();
     }
 
     public JacksonXmlProcessor(List<String> supportedMediaType) {
         super(supportedMediaType);
-        this.objectMapper = newinitializedXmlMapper();
+        this.objectMapper = newInitializedXmlMapper();
     }
 
     public JacksonXmlProcessor(MediaType... mediaTypes) {
         super(mediaTypes);
-        this.objectMapper = newinitializedXmlMapper();
+        this.objectMapper = newInitializedXmlMapper();
     }
 
     public JacksonXmlProcessor(String... mediaTypes) throws IllegalArgumentException {
         super(mediaTypes);
-        this.objectMapper = newinitializedXmlMapper();
+        this.objectMapper = newInitializedXmlMapper();
     }
 
     public JacksonXmlProcessor(XmlMapper objectMapper, List<String> mediaTypes) throws IllegalArgumentException {
@@ -136,7 +135,7 @@ public class JacksonXmlProcessor extends XmlProcessor {
                 .setVisibility(PropertyAccessor.SETTER, Visibility.NONE)//
                 .setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)
                 // Set default date output format.
-                .setDateFormat(new SimpleDateFormat(DateAdapterConstants.TIME_POINT_OUTPUT_FORMAT))
+                .setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"))
                 // enable wrap
                 .enable(SerializationFeature.WRAP_ROOT_VALUE);
 
@@ -158,12 +157,14 @@ public class JacksonXmlProcessor extends XmlProcessor {
     /**
      * @return an initialized {@link XmlMapper}.
      */
-    public XmlMapper newinitializedXmlMapper() {
+    public XmlMapper newInitializedXmlMapper() {
         return (XmlMapper) registerModule(initializeMapper(new XmlMapper()));
     }
-    //
-    // public XmlMapper newXmlMapper() {
-    // XmlFactory factory = new XmlFactory(new InputFactoryImpl(), new OutputFactoryImpl());
-    // return new XmlMapper(factory);
-    // }
+
+    /**
+     * @return {@link XmlMapper} instance.
+     */
+    public XmlMapper getObjectMapper() {
+        return objectMapper;
+    }
 }

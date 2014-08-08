@@ -124,6 +124,7 @@ public class JacksonXmlProcessorTest {
 		KnownObject ko = new KnownObject();
 		ko.sa = new String[] { "this", "is", "an", "evil", "Json", "<script>alert(\'xss')</script>" };
 		String xml = TestUtilities.serialize(ko, processor);
+		System.err.println(xml);
 		assertNotNull(xml);
 		assertTrue(xml.startsWith("<KnownObject"));
 		assertTrue(xml.contains("<integer>1</integer>"));

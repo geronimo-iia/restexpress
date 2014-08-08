@@ -17,10 +17,10 @@
 			<groupId>com.strategicgains</groupId>
 			<artifactId>restexpress-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.strategicgains</groupId>
-			<artifactId>DateAdapterJ</artifactId>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.strategicgains</groupId> -->
+<!-- 			<artifactId>DateAdapterJ</artifactId> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
