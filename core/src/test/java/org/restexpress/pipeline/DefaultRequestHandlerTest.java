@@ -59,8 +59,8 @@ import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
-import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
-import org.restexpress.serialization.xml.jackson.JacksonXmlProcessor;
+import org.restexpress.serialization.jackson.JacksonJsonProcessor;
+import org.restexpress.serialization.jackson.JacksonXmlProcessor;
 
 /**
  * @author toddf
@@ -76,7 +76,6 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		SerializationProvider provider = messageHandler.serializationProvider();
 		provider.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper());
 		provider.add(new JacksonXmlProcessor(Format.XML.getMediaType()), Wrapper.newJsendResponseWrapper());
-		provider.alias("dated", Dated.class);
 	}
 
 	@Test

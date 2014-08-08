@@ -17,21 +17,36 @@
  *        under the License.
  *
  */
-package org.restexpress.serialization.json.jackson;
+package org.restexpress.serialization.jackson;
 
 import java.io.IOException;
+import java.util.Locale;
 
-import org.owasp.encoder.Encode;
-
+import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-public class JacksonEncodingStringSerializer extends JsonSerializer<String> {
+/**
+ * {@link JacksonLocaleSerializer} implements a serializer for {@link Locale}
+ * class. Use underlying method {@link Locale#toString()}.
+ * 
+ * Examples: "en", "de_DE", "_GB", "en_US_WIN", "de__POSIX", "fr__MAC".
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ */
+public class JacksonLocaleSerializer extends StdSerializer<Locale> {
+
+	/**
+	 * Build a new instance of JacksonLocaleSerializer.java.
+	 */
+	public JacksonLocaleSerializer() {
+		super(Locale.class);
+	}
 
 	@Override
-	public void serialize(final String value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException, JsonProcessingException {
-		jgen.writeString(Encode.forXmlContent(value));
+	public void serialize(final Locale locale, final JsonGenerator jgen, final SerializerProvider provider) throws IOException, JsonGenerationException {
+		jgen.writeString(locale.toString());
 	}
+
 }

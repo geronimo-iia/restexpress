@@ -17,36 +17,31 @@
  *        under the License.
  *
  */
-package org.restexpress.serialization.json.jackson;
+package org.restexpress.serialization.jackson;
 
-import java.io.IOException;
+import java.util.Date;
 import java.util.Locale;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
- * {@link JacksonLocaleSerializer} implements a serializer for {@link Locale}
- * class. Use underlying method {@link Locale#toString()}.
- * 
- * Examples: "en", "de_DE", "_GB", "en_US_WIN", "de__POSIX", "fr__MAC".
+ * RestExpressJacksonJsonModule.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ * 
  */
-public class JacksonLocaleSerializer extends StdSerializer<Locale> {
+public class RestExpressJacksonJsonModule extends SimpleModule {
 
-	/**
-	 * Build a new instance of JacksonLocaleSerializer.java.
-	 */
-	public JacksonLocaleSerializer() {
-		super(Locale.class);
+	private static final long serialVersionUID = 5607854920381206410L;
+
+	public RestExpressJacksonJsonModule() {
+		super();
+		addSerializer(String.class, new JacksonEncodingStringSerializer());
+		addSerializer(Date.class, new JacksonTimepointSerializer());
+		addDeserializer(Date.class, new JacksonTimepointDeserializer());
+
+		addKeyDeserializer(Locale.class, new JacksonLocaleKeyDeserializer());
+		addSerializer(new JacksonLocaleSerializer());
+		addDeserializer(Locale.class, new JacksonLocaleDeserializer());
 	}
-
-	@Override
-	public void serialize(final Locale locale, final JsonGenerator jgen, final SerializerProvider provider) throws IOException, JsonGenerationException {
-		jgen.writeString(locale.toString());
-	}
-
 }

@@ -17,32 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.serialization.json.jackson;
+package org.restexpress.serialization.jackson;
 
-import java.util.Locale;
+import java.io.IOException;
+import java.util.Date;
 
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.strategicgains.util.date.DateAdapter;
+import com.strategicgains.util.date.TimestampAdapter;
 
-/**
- * Deserializer for class {@link Locale} used as a key in a Map.
- * 
- * @author LRI
- * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- */
-public class JacksonLocaleKeyDeserializer extends StdKeyDeserializer {
+public class JacksonTimepointSerializer extends JsonSerializer<Date> {
+	private final DateAdapter adapter;
 
-	private static final long serialVersionUID = -923987142048841491L;
+	public JacksonTimepointSerializer() {
+		this(new TimestampAdapter());
+	}
 
-	/**
-	 * Build a new instance of JacksonLocaleKeyDeserializer.java.
-	 */
-	public JacksonLocaleKeyDeserializer() {
-		super(Locale.class);
+	public JacksonTimepointSerializer(final DateAdapter adapter) {
+		super();
+		this.adapter = adapter;
 	}
 
 	@Override
-	protected Object _parse(final String key, final DeserializationContext ctxt) throws Exception {
-		return JacksonLocaleDeserializer.parse(key);
+	public void serialize(final Date date, final JsonGenerator gen, final SerializerProvider sp) throws IOException, JsonProcessingException {
+		gen.writeString(adapter.format(date));
 	}
 }

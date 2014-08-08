@@ -19,8 +19,8 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.response.Wrapper;
-import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
-import org.restexpress.serialization.xml.jackson.JacksonXmlProcessor;
+import org.restexpress.serialization.jackson.JacksonJsonProcessor;
+import org.restexpress.serialization.jackson.JacksonXmlProcessor;
 
 /**
  * @author toddf

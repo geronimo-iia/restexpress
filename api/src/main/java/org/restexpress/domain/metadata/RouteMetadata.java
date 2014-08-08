@@ -38,6 +38,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * {@link RouteMetadata} expose meta data information on route: name, uri,
  * alias, supported format, methods, ...
@@ -45,6 +47,7 @@ import java.util.List;
  * @author toddf
  * @since Jan 31, 2011
  */
+@XmlRootElement(name="route")
 public class RouteMetadata implements Serializable {
 	private static final long serialVersionUID = -6892754126510965799L;
 	private String name;

@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.serialization.json.jackson;
+package org.restexpress.serialization.jackson;
 
 import java.io.IOException;
 import java.util.Locale;

@@ -28,8 +28,8 @@ import org.restexpress.SerializationProvider;
 import org.restexpress.domain.response.JsendResult;
 import org.restexpress.response.Wrapper;
 import org.restexpress.serialization.Processor;
-import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
-import org.restexpress.serialization.xml.jackson.JacksonXmlProcessor;
+import org.restexpress.serialization.jackson.JacksonJsonProcessor;
+import org.restexpress.serialization.jackson.JacksonXmlProcessor;
 
 /**
  * 

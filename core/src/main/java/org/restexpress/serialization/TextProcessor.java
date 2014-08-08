@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.serialization.text;
+package org.restexpress.serialization;
 
 import java.util.List;
 
@@ -26,8 +26,6 @@ import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
 import org.restexpress.exception.DeserializationException;
 import org.restexpress.exception.SerializationException;
-import org.restexpress.serialization.AbstractProcessor;
-import org.restexpress.serialization.Processor;
 
 /**
  * {@link TextProcessor} implement a {@link Processor} for all text/* media

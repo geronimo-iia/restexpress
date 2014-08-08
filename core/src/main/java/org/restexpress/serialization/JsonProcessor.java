@@ -17,13 +17,12 @@
  *        under the License.
  *
  */
-package org.restexpress.serialization.json;
+package org.restexpress.serialization;
 
 import java.util.List;
 
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
-import org.restexpress.serialization.AbstractProcessor;
 
 /**
  * {@link JsonProcessor} define default supported {@link MediaType} in order of

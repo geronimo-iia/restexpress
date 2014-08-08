@@ -32,7 +32,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-package org.restexpress.serialization.json;
+package org.restexpress.serialization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -46,9 +46,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
 import org.restexpress.domain.CharacterSet;
-import org.restexpress.serialization.KnownObject;
 import org.restexpress.serialization.Processor;
-import org.restexpress.serialization.json.jackson.JacksonJsonProcessor;
+import org.restexpress.serialization.jackson.JacksonJsonProcessor;
 import org.restexpress.util.TestUtilities;
 
 /**

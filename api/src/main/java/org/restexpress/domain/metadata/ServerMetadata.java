@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * {@link ServerMetadata} expose server metadata information on name, port,
  * supported formats, and routes.
@@ -46,6 +48,7 @@ import java.util.Set;
  * @author toddf
  * @since Jan 31, 2011
  */
+@XmlRootElement(name="service")
 public class ServerMetadata implements Serializable {
 	private static final long serialVersionUID = -8033976905088770790L;
 	private String name;

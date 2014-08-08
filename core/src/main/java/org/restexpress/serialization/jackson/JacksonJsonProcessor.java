@@ -20,7 +20,7 @@
 /**
  * 
  */
-package org.restexpress.serialization.json.jackson;
+package org.restexpress.serialization.jackson;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -30,7 +30,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.restexpress.domain.MediaType;
 import org.restexpress.exception.DeserializationException;
 import org.restexpress.exception.SerializationException;
-import org.restexpress.serialization.json.JsonProcessor;
+import org.restexpress.serialization.JsonProcessor;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;

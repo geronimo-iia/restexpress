@@ -11,7 +11,7 @@
  * permissions and limitations under the License.
  * 
  */
-package org.restexpress.serialization.xml.jackson;
+package org.restexpress.serialization.jackson;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -22,8 +22,7 @@ import org.restexpress.domain.MediaType;
 import org.restexpress.exception.DeserializationException;
 import org.restexpress.exception.SerializationException;
 import org.restexpress.serialization.Processor;
-import org.restexpress.serialization.json.jackson.RestExpressJacksonJsonModule;
-import org.restexpress.serialization.xml.XmlProcessor;
+import org.restexpress.serialization.XmlProcessor;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -115,10 +114,6 @@ public class JacksonXmlProcessor extends XmlProcessor {
         } catch (IOException e) {
             throw new SerializationException(e);
         }
-    }
-
-    @Override
-    public void alias(String name, Class<?> theClass) {
     }
 
     /**
