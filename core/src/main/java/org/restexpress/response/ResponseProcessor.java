@@ -95,4 +95,10 @@ public final class ResponseProcessor implements Serializer {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ResponseProcessor [processor=" + processor + "]";
+    }
+
+    
 }

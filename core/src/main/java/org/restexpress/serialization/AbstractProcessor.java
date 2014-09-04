@@ -156,4 +156,11 @@ public abstract class AbstractProcessor implements Processor {
 	protected InputStreamReader getInputStreamReader(ChannelBuffer buffer) {
 		return new InputStreamReader(new ChannelBufferInputStream(buffer), charset);
 	}
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " [supportedMediaType=" + supportedMediaType + ", charset=" + charset + "]";
+    }
+	
+	
 }
