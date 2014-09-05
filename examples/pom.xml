@@ -2,12 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.strategicgains</groupId>
-		<artifactId>restexpress-parent</artifactId>
+		<groupId>org.intelligents-ia</groupId>
+		<artifactId>restexpress</artifactId>
 		<version>0.10.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>restexpress-examples</artifactId>
+	<groupId>org.intelligents-ia.restexpress</groupId>
+	<artifactId>examples</artifactId>
 	<packaging>pom</packaging>
 	<description>examples</description>
 	<properties>
@@ -30,7 +31,7 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>com.strategicgains</groupId>
+			<groupId>org.intelligents-ia.restexpress</groupId>
 			<artifactId>restexpress</artifactId>
 			<version>${project.version}</version>
 		</dependency>

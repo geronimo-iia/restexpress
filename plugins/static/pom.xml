@@ -2,12 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.strategicgains</groupId>
-		<artifactId>restexpress-plugins</artifactId>
+		<groupId>org.intelligents-ia.restexpress</groupId>
+		<artifactId>plugins</artifactId>
 		<version>0.10.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>restexpress-plugins-static</artifactId>
+	<groupId>org.intelligents-ia.restexpress.plugins</groupId>
+	<artifactId>plugins-static</artifactId>
 	<packaging>jar</packaging>
 	<description>RESTExpress Static Plugin</description>
 	<properties>
