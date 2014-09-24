@@ -16,10 +16,6 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>com.strategicgains</groupId>
-			<artifactId>DateAdapterJ</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<scope>compile</scope>

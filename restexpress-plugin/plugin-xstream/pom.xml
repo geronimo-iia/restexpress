@@ -16,10 +16,6 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>com.strategicgains</groupId>
-			<artifactId>DateAdapterJ</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
 		</dependency>

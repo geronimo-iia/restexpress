@@ -49,7 +49,7 @@ import org.restexpress.RestExpress;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
-import org.restexpress.pipeline.observer.SimpleConsoleLogMessageObserver;
+import org.restexpress.observer.SimpleConsoleLogMessageObserver;
 import org.restexpress.query.QueryRange;
 import org.restexpress.response.Wrapper;
 import org.restexpress.serialization.JacksonJsonProcessor;

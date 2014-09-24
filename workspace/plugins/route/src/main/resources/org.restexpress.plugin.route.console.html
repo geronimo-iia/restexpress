@@ -1,0 +1,65 @@
+<!--
+
+           Licensed to the Apache Software Foundation (ASF) under one
+           or more contributor license agreements.  See the NOTICE file
+           distributed with this work for additional information
+           regarding copyright ownership.  The ASF licenses this file
+           to you under the Apache License, Version 2.0 (the
+           "License"); you may not use this file except in compliance
+           with the License.  You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+           Unless required by applicable law or agreed to in writing,
+           software distributed under the License is distributed on an
+           "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+           KIND, either express or implied.  See the License for the
+           specific language governing permissions and limitations
+           under the License.
+
+
+-->
+<html>
+<head></head>
+<body>
+	<h1>@{server.name}</h1>
+	<p>&nbsp;</p>
+	<h2>Information</h2>
+	<ul>
+		<li>name: @{server.name}</li>
+		<li>port: @{server.port}</li>
+		<li>url : @{server.baseUrl}</li>
+		<li>Supported Media: @if{server.supportedMediaTypes !=
+			null}@foreach{item : server.supportedMediaTypes}@{item}@end{', '}@end{}</li>
+		<li>Default Media: @{server.defaultMediaType != null ?
+			server.defaultMediaType : ""}</li>
+		<li>Self: <a href="/routes/metadata">metadata</a></li>
+	</ul>
+	<p>&nbsp;</p>
+	<h2>Routes</h2>
+	<table>
+		<thead>
+			<tr>
+				<td>Name</td>
+				<td>URI</td>
+				<td>Aliases</td>
+				<td>Methods</td>
+				<td>Serialized</td>
+			</tr>
+		</thead>
+		@foreach{route : server.routes}
+		<tr>
+			<td>@{route.name}<br>Self: <a href="/routes/@{route.name}/metadata">metadata</a></td>
+			<td>@{route.uri.pattern}@if{route.uri.parameters !=null}<br />Parameters: @foreach{item
+				:route.uri.parameters}@{item}@end{', '}@end{}</td>
+			<td>@if{route.aliases !=null}@foreach{item
+				:route.aliases}@{item}@end{', '}@end{}</td>
+			<td>@if{route.methods !=null}@foreach{item
+				:route.methods}@{item}@end{', '}@end{}</td>
+			<td>@{route.serialized}</td>
+		</tr>
+		@end{}
+	</table>
+	<p>&nbsp;</p>
+</body>
+</html>

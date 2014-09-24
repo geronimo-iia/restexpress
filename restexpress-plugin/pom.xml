@@ -17,8 +17,6 @@
 	<modules>
 		<module>plugin-gson</module>
 		<module>plugin-xstream</module>
-		<module>plugin-route</module>
-		<module>plugin-common</module>
 		<module>plugin-static</module>
 	</modules>
 	<dependencies>

@@ -12,6 +12,6 @@
 	<packaging>jar</packaging>
 	<description>HTTP Commons Specification protocol according RFC 2616</description>
 	<properties>
-		<license.header.path>../header.txt</license.header.path>
+		<license.header.path>header.txt</license.header.path>
 	</properties>
 </project>

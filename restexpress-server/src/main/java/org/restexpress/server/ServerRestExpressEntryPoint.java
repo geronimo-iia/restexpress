@@ -24,8 +24,8 @@ package org.restexpress.server;
 
 import org.restexpress.RestExpress;
 import org.restexpress.RestExpressEntryPoint;
+import org.restexpress.plugin.RouteMetadataPlugin;
 import org.restexpress.plugin.common.cache.CacheControlPlugin;
-import org.restexpress.plugin.route.RouteMetadataPlugin;
 
 /**
  * {@link ServerRestExpressEntryPoint} add several plugin.

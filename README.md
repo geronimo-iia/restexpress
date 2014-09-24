@@ -74,6 +74,9 @@ Change History/Release Notes:
 Current Version 0.10.4
 ---------------------------
 
+* create restexpress-XXX module
+* move default serialization tool in restexpress-common
+* integrate http specification module
 * Add RestExpressSettings definition and json I/O loader utilities (see Settings)
 * Remove route default class (default format could be use with a Format class)
 * Merge (Nul/Default/Abstract)SerializationProvider, into one class.
@@ -493,3 +496,119 @@ Release 0.3
 * Added JSONP support. Use jsonp=<method_name> in query string.
 * Utilized Builder pattern in DefaultPipelineFactory, which is now PipelineBuilder.
 * Externalized DefaultRequestHandler in PipelineBuilder and now supports pre/post processors (with associated interfaces).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cache Control Plugin
+====================
+
+
+This plugin adds caching-related headers to GET and HEAD responses.
+
+
+For GET and HEAD requests, adds a Date: \<timestamp\> header, if not already present. This enables clients to determine age of a representation for caching purposes.  Where \<timestamp\> is in RFC1123 full date format.
+
+Note that while HEAD requests are provided with a Date header via this plugin. Most external caches forward HEAD requests to the origin server as a GET request and cache the result.
+
+If the route has a Parameters.Cache.MAX_AGE parameter, whose value is the max-age in seconds then the following are added:
+* Cache-Control: max-age=\<seconds\>
+* Expires: now + max-age
+
+If the route has a Flags.Cache.NO_CACHE flag, then the following headers are set on the response:
+* Cache-Control: no-cache
+* Pragma: no-cache
+
+The MAX_AGE parameter takes precidence, in that, if present, the NO_CACHE flag is ignored.
+
+If the response body is non-null, adds an ETag header.  ETag is computed from the body object's hash code combined with the hash code of the resulting format (content-type).
+
+**NOTE:** To fully support basic caching capability, also implement a LastModifiedHeaderPostprocessor() that inspects the date on your domain or presentation model and sets the 'Last-Modified' header.
+
+Example Usage:
+```Java
+    RestExpress server = new RestExpress();
+    ...
+    new CacheControlPlugin()
+        .register(server);
+    server.addPostprocessor(new LastModifiedHeaderProcessor());
+```
+
+An example LastModifiedHeaderPostprocessor:
+```Java
+    public class LastModifiedHeaderPostprocessor
+    implements Postprocessor
+    {
+		DateAdapter fmt = new HttpHeaderTimestampAdapter();
+
+		@Override
+		public void process(Request request, Response response)
+		{
+			if (!request.isMethodGet()) return;
+			if (!response.hasBody()) return;
+
+			Object body = response.getBody();
+
+			if (!response.hasHeader(LAST_MODIFIED) && body instanceof Timestamped)
+			{
+				response.addHeader(LAST_MODIFIED, fmt.format(((Timestamped) body).getUpdatedAt()));
+			}
+		}
+    }
+```
+
+
+
+
+Routes Plugin
+=============
+
+Adds several routes within your service suite to facilitate auto-discovery of what's available. 
+
+Routes added are:
+* /routes/metadata.{format} - to retrieve all metadata for all routes.
+* /routes/{routeName}/metadata.{format} - to retrieve metadata for a named route.
+* /routes - placeholder in HTML format to see all information in a classical browser
+
+The plugin allows flags and parameters, just like the regular Route DSL to set flags and parameters on the routes created
+by the plugin so appropriate values are available in preprocessors, etc.  For instance, if you want to turn off 
+authentication or authorization for the metadata routes.
+
+maven: com.strategicgains:restexpress-plugins-route
+
+Usage
+=====
+
+Simply create a new plugin and register it with the RestExpress server, setting options
+as necessary, using method chaining if desired.
+
+For example:
+```java
+RestExpress server = new RestExpress()...
+
+new RoutesPlugin()
+	.flag("public-route")					// optional. Set a flag on the request for this route.
+	.parameter("name", "value")				// optional. Set a parameter on the request for this route.
+	.register(server);
+```
+
+Todo
+====
+
+
+* Use content type negotiation to display in JSON, XML or HTML format.
+* Autoregister plugin when this artifact is loaded.
+
+

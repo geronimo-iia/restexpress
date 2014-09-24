@@ -24,8 +24,8 @@ package com.echo;
 
 import org.restexpress.RestExpress;
 import org.restexpress.RestExpressEntryPoint;
-import org.restexpress.pipeline.observer.ConsoleAccesLogMessageObserver;
-import org.restexpress.pipeline.observer.SimpleConsoleLogMessageObserver;
+import org.restexpress.observer.ConsoleAccesLogMessageObserver;
+import org.restexpress.observer.SimpleConsoleLogMessageObserver;
 
 /**
  * {@link EchoEntryPoint} add several plugin.
