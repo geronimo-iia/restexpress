@@ -5,6 +5,13 @@
 RestExpress is a thin wrapper on the JBOSS Netty HTTP stack to provide a simple and easy way to
 create RESTful services in Java that support massive Internet Scale and performance.
 
+An extremely Lightweight, Fast, REST Engine and API for Java.  
+Supports JSON and XML serialization automagically as well as ISO 8601 date formats.  
+A thin wrapper on Netty IO HTTP handling, RestExpress lets you create performant, stand-alone REST web services rapidly.  
+RestExpress supports the best practices proposed in the Best Practice document available at: http://www.restapitutorial.com
+
+
+
 Born to be simple, only three things are required to wire up a service:
 1) The main class which utilizes the RestExpress DSL to create a server instance.
 2) A RouteDeclaration extender (much like routes.rb in a Rails app), which uses a DSL for the
@@ -12,26 +19,27 @@ Born to be simple, only three things are required to wire up a service:
 3) Service implementation(s), which is/are a simple POJO--no interface or super class
    implementation.
 
-See: examples/echo directory to get started.
-
+See: restexpress-sample/echo directory to get started.
 
 
 Maven Usage
 ===========
-Stable:
+
+
 ```xml
 		<dependency>
-			<groupId>com.strategicgains</groupId>
-			<artifactId>RestExpress</artifactId>
-			<version>0.10.3</version>
+			<groupId>org.intelligents-ia.restexpress</groupId>
+			<artifactId>restexpress-server</artifactId>
+			<version>0.10.4</version>
 		</dependency>
 ```
 
 
-===================================================================================================
-## A quick tutorial:
 
-Please see the Kickstart application in examples/kickstart for a complete, running example.
+A quick tutorial:
+====================
+
+Please see the echo application in examples/echo for a running example.
 
 * HTTP Methods, if not changed in the fluent (DSL) interface, map to the following:
 	* GET --> read(Request, Response)
@@ -39,18 +47,27 @@ Please see the Kickstart application in examples/kickstart for a complete, runni
 	* POST --> create(Request, Response)
 	* DELETE --> delete(Request, Response)
 
-* You can choose to return objects from the methods, if desired, which will be returned to the client in the body of the response.  The object will be marshaled into JSON or XML, depending on the default or based on the format in the request (e.g. '.xml' or '?format=xml').
+* You can choose to return objects from the methods, if desired, which will be returned to the client in the body of the response.  
+  The object will be marshaled into JSON or XML, depending on the default or based on the format in the request (e.g. '.xml' or '?format=xml').
 
-* If you choose to not return a value from the method (void methods) and using raw responses, then call response.setResponseNoContent() before returning to set the response HTTP status code to 204 (no content).  Wrapped responses (JSEND style) are the default.  So if you're using wrapped responses, there will always be a response returned to the client--therefore, you don't need to set the response.setResponseNoContent().  Just return your objects--or not.  RestExpress will handle things on your behalf!
+* If you choose to not return a value from the method (void methods) and using raw responses, then call response.setResponseNoContent() 
+  before returning to set the response HTTP status code to 204 (no content).  
+  Wrapped responses (JSEND style) are the default.  
+  So if you're using wrapped responses, there will always be a response returned to the client--therefore, you don't need to set the response.setResponseNoContent().  
+  Just return your objects--or not.  RestExpress will handle things on your behalf!
 
 * On successful creation, call response.setResponseCreated() to set the returning HTTP status code to 201.
 
-* For more real-world examples, see the examples/ directory which contains additional projects that setup RestExpress services.  Simply do '**ant run**' to run them.  Then to see what's available perform a GET on the route: '/routes/metadata' to get a list of all the routes (or endpoints) available (e.g. localhost:8000/routes/metadata in the browser).
+* For more real-world examples, see the restexpress-sample directory which contains additional projects that setup RestExpress services.  
+ Simply do '**mvn clean install**' to run them.  
+ Then to see what's available perform a GET on the route: '/routes/metadata' to get a list of all the routes(or endpoints) available 
+ (e.g. localhost:8000/routes/metadata in the browser).
 
 
 
 
-##RestExpress Response
+RestExpress Response
+====================
 
 RestExpress supports:
 * JSEND-style
@@ -63,6 +80,101 @@ Or it can simply marshal the service return value directly into JSON or XML.
 JSend is a specification that lays down some rules for how JSON responses from web servers should be formatted.
 This specification should only be used in JSON format. 
 For more information on JSEND-style responses, see: http://labs.omniti.com/labs/jsend
+
+
+
+
+Cache Control Plugin
+====================
+
+
+This plugin adds caching-related headers to GET and HEAD responses.
+
+
+For GET and HEAD requests, adds a Date: \<timestamp\> header, if not already present. This enables clients to determine age of a representation for caching purposes.  Where \<timestamp\> is in RFC1123 full date format.
+
+Note that while HEAD requests are provided with a Date header via this plugin. Most external caches forward HEAD requests to the origin server as a GET request and cache the result.
+
+If the route has a Parameters.Cache.MAX_AGE parameter, whose value is the max-age in seconds then the following are added:
+* Cache-Control: max-age=\<seconds\>
+* Expires: now + max-age
+
+If the route has a Flags.Cache.NO_CACHE flag, then the following headers are set on the response:
+* Cache-Control: no-cache
+* Pragma: no-cache
+
+The MAX_AGE parameter takes precidence, in that, if present, the NO_CACHE flag is ignored.
+
+If the response body is non-null, adds an ETag header.  ETag is computed from the body object's hash code combined with the hash code of the resulting format (content-type).
+
+**NOTE:** To fully support basic caching capability, also implement a LastModifiedHeaderPostprocessor() that inspects the date on your domain or presentation model and sets the 'Last-Modified' header.
+
+Example Usage:
+```Java
+    RestExpress server = new RestExpress();
+    ...
+    new CacheControlPlugin()
+        .register(server);
+    server.addPostprocessor(new LastModifiedHeaderProcessor());
+```
+
+An example LastModifiedHeaderPostprocessor:
+```Java
+    public class LastModifiedHeaderPostprocessor
+    implements Postprocessor
+    {
+		DateAdapter fmt = new HttpHeaderTimestampAdapter();
+
+		@Override
+		public void process(Request request, Response response)
+		{
+			if (!request.isMethodGet()) return;
+			if (!response.hasBody()) return;
+
+			Object body = response.getBody();
+
+			if (!response.hasHeader(LAST_MODIFIED) && body instanceof Timestamped)
+			{
+				response.addHeader(LAST_MODIFIED, fmt.format(((Timestamped) body).getUpdatedAt()));
+			}
+		}
+    }
+```
+
+
+
+
+Routes Plugin
+=============
+
+Adds several routes within your service suite to facilitate auto-discovery of what's available. 
+
+Routes added are:
+* /routes/metadata.{format} - to retrieve all metadata for all routes.
+* /routes/{routeName}/metadata.{format} - to retrieve metadata for a named route.
+* /routes - placeholder in HTML format to see all information in a classical browser
+
+The plugin allows flags and parameters, just like the regular Route DSL to set flags and parameters on the routes created
+by the plugin so appropriate values are available in preprocessors, etc.  For instance, if you want to turn off 
+authentication or authorization for the metadata routes.
+
+maven: com.strategicgains:restexpress-plugins-route
+
+Usage
+=====
+
+Simply create a new plugin and register it with the RestExpress server, setting options
+as necessary, using method chaining if desired.
+
+For example:
+```java
+RestExpress server = new RestExpress()...
+
+new RoutesPlugin()
+	.flag("public-route")					// optional. Set a flag on the request for this route.
+	.parameter("name", "value")				// optional. Set a parameter on the request for this route.
+	.register(server);
+```
 
 
 
@@ -508,107 +620,5 @@ Release 0.3
 
 
 
-
-
-
-
-Cache Control Plugin
-====================
-
-
-This plugin adds caching-related headers to GET and HEAD responses.
-
-
-For GET and HEAD requests, adds a Date: \<timestamp\> header, if not already present. This enables clients to determine age of a representation for caching purposes.  Where \<timestamp\> is in RFC1123 full date format.
-
-Note that while HEAD requests are provided with a Date header via this plugin. Most external caches forward HEAD requests to the origin server as a GET request and cache the result.
-
-If the route has a Parameters.Cache.MAX_AGE parameter, whose value is the max-age in seconds then the following are added:
-* Cache-Control: max-age=\<seconds\>
-* Expires: now + max-age
-
-If the route has a Flags.Cache.NO_CACHE flag, then the following headers are set on the response:
-* Cache-Control: no-cache
-* Pragma: no-cache
-
-The MAX_AGE parameter takes precidence, in that, if present, the NO_CACHE flag is ignored.
-
-If the response body is non-null, adds an ETag header.  ETag is computed from the body object's hash code combined with the hash code of the resulting format (content-type).
-
-**NOTE:** To fully support basic caching capability, also implement a LastModifiedHeaderPostprocessor() that inspects the date on your domain or presentation model and sets the 'Last-Modified' header.
-
-Example Usage:
-```Java
-    RestExpress server = new RestExpress();
-    ...
-    new CacheControlPlugin()
-        .register(server);
-    server.addPostprocessor(new LastModifiedHeaderProcessor());
-```
-
-An example LastModifiedHeaderPostprocessor:
-```Java
-    public class LastModifiedHeaderPostprocessor
-    implements Postprocessor
-    {
-		DateAdapter fmt = new HttpHeaderTimestampAdapter();
-
-		@Override
-		public void process(Request request, Response response)
-		{
-			if (!request.isMethodGet()) return;
-			if (!response.hasBody()) return;
-
-			Object body = response.getBody();
-
-			if (!response.hasHeader(LAST_MODIFIED) && body instanceof Timestamped)
-			{
-				response.addHeader(LAST_MODIFIED, fmt.format(((Timestamped) body).getUpdatedAt()));
-			}
-		}
-    }
-```
-
-
-
-
-Routes Plugin
-=============
-
-Adds several routes within your service suite to facilitate auto-discovery of what's available. 
-
-Routes added are:
-* /routes/metadata.{format} - to retrieve all metadata for all routes.
-* /routes/{routeName}/metadata.{format} - to retrieve metadata for a named route.
-* /routes - placeholder in HTML format to see all information in a classical browser
-
-The plugin allows flags and parameters, just like the regular Route DSL to set flags and parameters on the routes created
-by the plugin so appropriate values are available in preprocessors, etc.  For instance, if you want to turn off 
-authentication or authorization for the metadata routes.
-
-maven: com.strategicgains:restexpress-plugins-route
-
-Usage
-=====
-
-Simply create a new plugin and register it with the RestExpress server, setting options
-as necessary, using method chaining if desired.
-
-For example:
-```java
-RestExpress server = new RestExpress()...
-
-new RoutesPlugin()
-	.flag("public-route")					// optional. Set a flag on the request for this route.
-	.parameter("name", "value")				// optional. Set a parameter on the request for this route.
-	.register(server);
-```
-
-Todo
-====
-
-
-* Use content type negotiation to display in JSON, XML or HTML format.
-* Autoregister plugin when this artifact is loaded.
 
 
