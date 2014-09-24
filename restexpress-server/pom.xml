@@ -21,16 +21,6 @@
 			<artifactId>restexpress-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.intelligents-ia.restexpress.plugin</groupId>
-			<artifactId>plugin-common</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.intelligents-ia.restexpress.plugin</groupId>
-			<artifactId>plugin-route</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<scope>test</scope>
