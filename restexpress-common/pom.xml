@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.intelligents-ia</groupId>
+		<artifactId>restexpress</artifactId>
+		<version>0.10.4-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<groupId>org.intelligents-ia.restexpress</groupId>
+	<artifactId>restexpress-common</artifactId>
+	<packaging>jar</packaging>
+	<description>RestExpress Common Definition (server and java client)</description>
+	<properties>
+		<license.header.path>../header.txt</license.header.path>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.intelligents-ia.restexpress</groupId>
+			<artifactId>restexpress-http</artifactId>
+		</dependency>
+		<!-- Jackson Serialization -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+		</dependency>
+		<!-- Encoder -->
+		<dependency>
+			<groupId>org.owasp.encoder</groupId>
+			<artifactId>encoder</artifactId>
+		</dependency>
+	</dependencies>
+</project>
