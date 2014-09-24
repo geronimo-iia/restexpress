@@ -4,9 +4,7 @@
 	<groupId>org.intelligents-ia</groupId>
 	<artifactId>restexpress</artifactId>
 	<version>0.10.4-SNAPSHOT</version>
-
 	<packaging>pom</packaging>
-	<name>RestExpress</name>
 	<description>RestExpress is a thin wrapper on the JBOSS Netty HTTP stack to provide a simple and easy way to create RESTful services in Java that support massive Internet Scale and performance.</description>
 	<url>https://github.com/geronimo-iia/RestExpress</url>
 	<inceptionYear>2012</inceptionYear>
