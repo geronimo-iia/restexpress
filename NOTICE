@@ -59,3 +59,13 @@ Please visit the GSON web site at Google Code for more information:
 
 Copyright (C) 2010 Google Inc.
 ----
+This product includes FasterXML/jackson-databind (ISO8601Utils and test):
+Please visit the FasterXML web site at github for more information:
+
+  * https://github.com/FasterXML/jackson-databind
+  
+or Wiki: http://wiki.fasterxml.com/JacksonHome
+
+Copyright ©2009 FasterXML, LLC
+----
+

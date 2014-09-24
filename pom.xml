@@ -50,12 +50,12 @@
 	<!-- MODULE -->
 	<!-- ******************************************************************* -->
 	<modules>
-		<module>api</module>
-		<module>core</module>
-		<module>plugins</module>
-		<module>restexpress</module>
-		<module>http-client</module>
-		<module>examples</module>
+		<module>restexpress-http</module>
+		<module>restexpress-common</module>
+		<module>restexpress-core</module>
+		<module>restexpress-plugin</module>
+		<module>restexpress-server</module>
+		<module>restexpress-sample</module>
 	</modules>
 
 	<!-- ******************************************************************* -->
@@ -99,7 +99,6 @@
 		<pl.project13.maven.version>2.1.10</pl.project13.maven.version>
 
 		<!-- dependencies version -->
-		<http-specification.version>1.0.1</http-specification.version>
 
 		<mvel2.version>2.1.9.Final</mvel2.version>
 
@@ -132,19 +131,18 @@
 			<!-- RESTEXPRESS -->
 			<dependency>
 				<groupId>org.intelligents-ia.restexpress</groupId>
-				<artifactId>restexpress-api</artifactId>
+				<artifactId>restexpress-http</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.intelligents-ia.restexpress</groupId>
+				<artifactId>restexpress-common</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.intelligents-ia.restexpress</groupId>
 				<artifactId>restexpress-core</artifactId>
 				<version>${project.version}</version>
-			</dependency>
-			<!-- HTTP SPECIFICATION -->
-			<dependency>
-				<groupId>org.intelligents-ia.commons</groupId>
-				<artifactId>http-specification</artifactId>
-				<version>${http-specification.version}</version>
 			</dependency>
 			<!-- MVEL -->
 			<dependency>
@@ -586,20 +584,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	<!-- ******************************************************************* -->
-	<!-- REPOSITORY -->
-	<!-- ******************************************************************* -->
-	<repositories>
-		<repository>
-			<id>intelligents-ia-releases</id>
-			<name>Intelligents-ia releases repository</name>
-			<url>http://mvn.intelligents-ia.com/releases</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 </project>
