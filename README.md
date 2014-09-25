@@ -1,6 +1,4 @@
-[![Build Status](https://buildhive.cloudbees.com/job/RestExpress/job/RestExpress/badge/icon)](https://buildhive.cloudbees.com/job/RestExpress/job/RestExpress/)
 
-[![Stories in Ready](https://badge.waffle.io/RestExpress/RestExpress.png?label=Ready)](http://waffle.io/RestExpress/RestExpress)
 
 RestExpress is a thin wrapper on the JBOSS Netty HTTP stack to provide a simple and easy way to
 create RESTful services in Java that support massive Internet Scale and performance.
@@ -9,7 +7,6 @@ An extremely Lightweight, Fast, REST Engine and API for Java.
 Supports JSON and XML serialization automagically as well as ISO 8601 date formats.  
 A thin wrapper on Netty IO HTTP handling, RestExpress lets you create performant, stand-alone REST web services rapidly.  
 RestExpress supports the best practices proposed in the Best Practice document available at: http://www.restapitutorial.com
-
 
 
 Born to be simple, only three things are required to wire up a service:
@@ -22,30 +19,52 @@ Born to be simple, only three things are required to wire up a service:
 See: restexpress-sample/echo directory to get started.
 
 
-Maven Usage
-===========
+Note:
+ * Actually, this project is under heavy development, so be patient for the release.
 
 
-```xml
-		<dependency>
-			<groupId>org.intelligents-ia.restexpress</groupId>
-			<artifactId>restexpress-server</artifactId>
-			<version>0.10.4</version>
-		</dependency>
-```
+See also:
+* TechStack_Bootcamp_2013.pdf
+* TechSummit_2012_Instant_REST_Services.pdf
 
 
+Framework
+=========
 
-A quick tutorial:
-====================
 
-Please see the echo application in examples/echo for a running example.
+Current framework are used in order to run Restexpress server:
+* Netty
+* Guava
+* Jackson Json and Xml
+* Joda
+* SLF4j
+* Mvel
+
+And, with Optional Plugins:
+* Xstream
+* Gson
+
+Request Response Life Cycle
+===========================
+
+
+TODO
+
+
+IO and Processing Model
+=======================
+
+TODO
+
+Controller and REST
+===================
 
 * HTTP Methods, if not changed in the fluent (DSL) interface, map to the following:
 	* GET --> read(Request, Response)
 	* PUT --> update(Request, Response)
 	* POST --> create(Request, Response)
 	* DELETE --> delete(Request, Response)
+
 
 * You can choose to return objects from the methods, if desired, which will be returned to the client in the body of the response.  
   The object will be marshaled into JSON or XML, depending on the default or based on the format in the request (e.g. '.xml' or '?format=xml').
@@ -63,8 +82,170 @@ Please see the echo application in examples/echo for a running example.
  Then to see what's available perform a GET on the route: '/routes/metadata' to get a list of all the routes(or endpoints) available 
  (e.g. localhost:8000/routes/metadata in the browser).
 
+Please see the echo application in examples/echo for a running example.
 
 
+Example:
+
+```java
+public class EchoController {
+	private static final String ECHO_PARAMETER_NOT_FOUND = "'echo' header or query-string parameter not found. Please set query-string parameter 'echo' (e.g. ?echo=value).";
+	private static final String ECHO_HEADER = "echo";
+
+	public ChannelBuffer create(Request request, Response response) {
+		response.setResponseCreated();
+		return request.getBody();
+	}
+
+	public String delete(Request request, Response response) {
+		return request.getHeader(ECHO_HEADER, ECHO_PARAMETER_NOT_FOUND);
+	}
+
+	public String read(Request request, Response response) {
+		String echo = request.getHeader(ECHO_HEADER);
+		if (echo == null) {
+			return "Please set query-string parameter 'echo' (e.g. ?echo=value)";
+		}
+		return echo;
+	}
+
+	public ChannelBuffer update(Request request, Response response) {
+		return request.getBody();
+	}
+}
+```
+
+
+If a controller instance is mapped with "/", we have:
+* GET, http://localhost:8000/ --> read, if echo parameter is present in query string, return it
+* PUT, http://localhost:8000/ --> update, return the request body 
+* POST, http://localhost:8000/ --> create, return an HTTP 204
+* DELETE, http://localhost:8000/ --> delete, if echo parameter is present in query string, return it
+
+
+Route Definition
+================
+
+TODO
+
+Format and Negociation
+======================
+
+TODO
+
+
+Plugin and Extension point
+==========================
+
+TODO
+
+Settings
+========
+
+TODO
+
+
+Serialization
+=============
+
+TODO
+
+
+Processor
+=========
+
+We have three point when a "processor" can be applied:
+* pre processor: applied before response processing
+* post processor, applied after response processing
+* finally processor: always applied after serialization process
+
+Actually, your could find:
+* HttpBasicAuthenticationPreprocessor
+* CacheHeaderPostprocessor
+* DateHeaderPostprocessor
+* EtagHeaderPostprocessor
+* LastModifiedHeaderPostprocessor
+* ResponseHeaderPostProcessor
+
+
+HttpBasicAuthenticationPreprocessor
+-----------------------------------
+
+This preprocessor implements HTTP Basic authentication. It simply parses the
+Authorization header, putting the username and password in request headers.
+To use it, simply add it to your RestExpress server as follows:
+ 
+
+	server.addPreprocessor(new HttpBasicAuthenticationPreprocessor("my realm"));
+
+
+Once this preprocessor completes successfully, it places the username and password in the request as headers, X-AuthenticatedUser and
+ X-AuthenticatedPassword, respectively.
+
+If the preprocessor fails, it throws an UnauthorizedException, which results in an HTTP status of 401 to the caller. 
+It also sets the WWW-Authenticate header to 'Basic realm=<provided realm>' where <provided realm> is the arbitrary realm name passed in on instantiation.
+ 
+Use of this preprocessor assumes you'll implement an authorization preprocessor that validates the username and password.
+
+CacheHeaderPostprocessor
+------------------------
+
+For GET and HEAD requests, adds caching control headers. May be used in conjunction with DateHeaderPostprocessor to add Date header 
+for GET and HEAD requests.
+ 
+If the route has a Parameters.Cache.MAX_AGE parameter, whose value is the max-age in seconds then the following are added:
+* Cache-Control: max-age=<seconds>
+* Expires: now + max-age
+ 
+If the route has a Flags.Cache.NO_CACHE flag, then the following headers are set on the response: 
+* Cache-Control: no-cache
+* Pragma: no-cache
+ 
+The MAX_AGE parameter takes precidence, in that, if present, the NO_CACHE flag is ignored.
+
+To use: simply add server.addPostprocessor(new CacheHeaderPostprocessor()); in your main() method.
+
+
+DateHeaderPostprocessor
+-----------------------
+
+For GET and HEAD requests, adds a Date: <timestamp> header, if not already present.
+This enables clients to determine age of a representation for caching purposes. 
+<timestamp> is in RFC1123 full date format.
+
+To use: simply add server.addPostprocessor(new DateHeaderPostprocessor()); in your main() method.
+
+Note that HEAD requests are not provided with a Date header via this postprocessor. This is due to the fact that most external
+caches forward HEAD requests to the origin server as a GET request and cache the result.
+
+
+EtagHeaderPostprocessor
+-----------------------
+
+If the response body is non-null, adds an ETag header. ETag is computed from the body object's hash code .
+
+
+LastModifiedHeaderPostprocessor
+-------------------------------
+
+Add header "LAST_MODIFIED" for GET requests if not present.
+ Timestamp came from response body, if the object implement TimeStamped interface.
+ 
+	public interface TimeStamped {
+	
+	    public Date updateAt();
+	}
+ 
+
+ResponseHeaderPostProcessor
+---------------------------
+
+Add response header if they're not present.
+Headers are arbitrary define by pair (name, value).
+
+To use: add server.addPostprocessor(new ResponseHeaderPostProcessor(name, value)); in your main() method.
+	
+	
 
 RestExpress Response
 ====================
@@ -82,10 +263,72 @@ This specification should only be used in JSON format.
 For more information on JSEND-style responses, see: http://labs.omniti.com/labs/jsend
 
 
+Date Format Support
+===================
+
+Restexpress support this following standard and no standard date format:
+* ISO 8601
+* RFC 1123
+* RFC 822
+* RFC 850
+* ANSI C ASCTIME
+* Other: yyyy-MM-dd
+
+The standard output header is RFC 1123, and for body is ISO 8601 (like 'yyyy-MM-ddThh:mm:ss[.sss]Z')
+
+
+Build
+===== 
+
+
+Maven Usage
+-----------
+
+A usual, simply do a 'mvn clean install"
+
+
+
+Project Tree and Module
+-----------------------
+
+* restexpress-http: Http standard Definition without external dependencies (See readme file in the module).
+* restexpress-common: Common Definition which can be used by Server and a Java Client
+* restexpress-core: server implementation
+* restexpress-server: server distribution, with cache and route plugin activated
+* restexpress-plugin:
+	* plugin-gson: Gson serializer
+	* plugin-xstream: Xstream serializer
+* restexpress-sample
+	* echo: A simple example
+
+
+
+Dependency
+----------
+
+If you would integrate Restexpress server in your project, you have to use this dependency:
+
+```xml
+		<dependency>
+			<groupId>org.intelligents-ia.restexpress</groupId>
+			<artifactId>restexpress-server</artifactId>
+			<version>X.X.X</version>
+		</dependency>
+```
+
+
+
+Plugins
+=======
+
+
+TODO
+
+
 
 
 Cache Control Plugin
-====================
+--------------------
 
 
 This plugin adds caching-related headers to GET and HEAD responses.
@@ -120,32 +363,32 @@ Example Usage:
 
 An example LastModifiedHeaderPostprocessor:
 ```Java
-    public class LastModifiedHeaderPostprocessor
-    implements Postprocessor
-    {
-		DateAdapter fmt = new HttpHeaderTimestampAdapter();
+public class LastModifiedHeaderPostprocessor
+implements Postprocessor
+{
+	DateAdapter fmt = new HttpHeaderTimestampAdapter();
 
-		@Override
-		public void process(Request request, Response response)
+	@Override
+	public void process(Request request, Response response)
+	{
+		if (!request.isMethodGet()) return;
+		if (!response.hasBody()) return;
+
+		Object body = response.getBody();
+
+		if (!response.hasHeader(LAST_MODIFIED) && body instanceof Timestamped)
 		{
-			if (!request.isMethodGet()) return;
-			if (!response.hasBody()) return;
-
-			Object body = response.getBody();
-
-			if (!response.hasHeader(LAST_MODIFIED) && body instanceof Timestamped)
-			{
-				response.addHeader(LAST_MODIFIED, fmt.format(((Timestamped) body).getUpdatedAt()));
-			}
+			response.addHeader(LAST_MODIFIED, fmt.format(((Timestamped) body).getUpdatedAt()));
 		}
-    }
+	}
+}
 ```
 
 
 
 
 Routes Plugin
-=============
+-------------
 
 Adds several routes within your service suite to facilitate auto-discovery of what's available. 
 
@@ -158,7 +401,7 @@ The plugin allows flags and parameters, just like the regular Route DSL to set f
 by the plugin so appropriate values are available in preprocessors, etc.  For instance, if you want to turn off 
 authentication or authorization for the metadata routes.
 
-maven: com.strategicgains:restexpress-plugins-route
+This plugins is present by default in restexpress-server.
 
 Usage
 =====
@@ -179,12 +422,12 @@ new RoutesPlugin()
 
 
 
-===================================================================================================
-Change History/Release Notes:
----------------------------------------------------------------------------------------------------
 
-Current Version 0.10.4
----------------------------
+Change History/Release Notes:
+===================================================================================================
+
+Current Developpement Version 0.10.4
+------------------------------------
 
 * create restexpress-XXX module
 * move default serialization tool in restexpress-common
@@ -388,7 +631,6 @@ Release 0.8.0 - 09 Jan 2013
 * Removed need for RouteDefinition class, moving that functionality into the RestExpress builder.
 * Changed example apps to reflect above elimination of RouteDefinition class.
 
-===================================================================================================
 Release 0.7.4 - 30 Nov 2012 (branch 'v0.7.4')
 ---------------------------------------------------------------------------------------------------
 * Patch release to allow period ('.') as a valid character within URL parameters. Note that this
@@ -401,14 +643,12 @@ Release 0.7.4 - 30 Nov 2012 (branch 'v0.7.4')
   -- /foo/todd. --> /foo/{p1}.{format} will contain 'todd.' for the value of p1
   -- /foo/todd. --> /foo/{p1} will contain 'todd.' for the value of p1
 
-===================================================================================================
 Release 0.7.3 - 12 July 2012 (branch 'v0.7.3')
 ---------------------------------------------------------------------------------------------------
 * Patch release to fix an issue with i18n. Fixed issue with
   DefaultJsonProcessor.deserialize(ChannelBuffer, Class) where underlying InputStreamReader was
   not UTF-8.
 
-==================================================================================================
 Release 0.7.2 - 14 May 2012
 ---------------------------------------------------------------------------------------------------
 * Introduced ExecutionHandler with configuration via RestExpress.setExecutorThreadCount(int)
@@ -428,7 +668,6 @@ Release 0.7.2 - 14 May 2012
 * Refactored so SerializationProcessor.resolve(Request) is only called once at the end of the
   request cycle (performance enhancement).
 
-===================================================================================================
 Release 0.7.1 - 20 Sep 2011
 ---------------------------------------------------------------------------------------------------
 * Added rootCause to ResultWrapper data area.
@@ -447,7 +686,6 @@ Release 0.7.1 - 20 Sep 2011
 * Added ability to set the number of worker threads via call to RestExpress.setWorkerThreadCount()
   before calling bind().
 
-===================================================================================================
 Release 0.7.0
 ---------------------------------------------------------------------------------------------------
 * Added gzip request/response handling. On by default. Disable it via call to
@@ -455,13 +693,11 @@ Release 0.7.0
 * Added chunked message handling. On by default. Chunking settings are managed via
   RestExpress.noChunkingSupport(), supportChunking(), and setMaxChunkSize(int).
 
-===================================================================================================
 Release 0.6.1.1 - 31 Mar 2011
 ---------------------------------------------------------------------------------------------------
 * Bug fix to patch erroneously writing to already closed channel in
   DefaultRequestHandler.exceptionCaught().
 
-===================================================================================================
 Release 0.6.1 - 30 Mar 2011
 ---------------------------------------------------------------------------------------------------
 * Stability release.
@@ -476,7 +712,6 @@ Release 0.6.1 - 30 Mar 2011
 * Added FieldNamingPolicy to DefaultJsonProcessor (using LOWER_CASE_WITH_UNDERSCORES).
 * getUrlDecodedHeader(String) throws BadRequestException if URL decoding fails.
 
-===================================================================================================
 Release 0.6.0.2 - 21 Mar 2011
 ---------------------------------------------------------------------------------------------------
 * Fixed issue with 'connection reset by peer' causing unresponsive behavior.
@@ -496,7 +731,6 @@ Release 0.6.0.2 - 21 Mar 2011
 * Parameters parsed from the URL and query string arguments are URL decoded before being placed
   as Request headers.
 
-===================================================================================================
 Release 0.6.0.1
 ---------------------------------------------------------------------------------------------------
 * Issue #7 - Fixed issue with invalid URL requested where serialization always occurred to the
@@ -506,7 +740,6 @@ Release 0.6.0.1
 * Issue #12 - Parse URL parameter names out of the URL pattern and include them in the route
               metadata output.
 
-===================================================================================================
 Release 0.6.0
 ---------------------------------------------------------------------------------------------------
 * Routes now defined in descendant of RouteDeclaration.
@@ -526,7 +759,6 @@ Release 0.6.0
   programs to use their own shutdown hooks, calling RestExpress.shutdown() upon shudown to release
   all resource.
 
-===================================================================================================
 Release 0.5.6.1 - 11 Mar 2011
 ---------------------------------------------------------------------------------------------------
 * Patch release to fix issue with HTTP response status of 204 (No Content) and 304 (Not Modified)
@@ -534,7 +766,6 @@ Release 0.5.6.1 - 11 Mar 2011
   serializes for 204 or 304.  Also no longer serializes for null body response unless a JSONP header
   is passed in on the query string.
 
-===================================================================================================
 Release 0.5.6 - 18 Jan 2011
 ---------------------------------------------------------------------------------------------------
 * Upgraded to Netty 3.2.3 final.
@@ -542,7 +773,6 @@ Release 0.5.6 - 18 Jan 2011
 * Functionality of getUrl() is now getPath() and getUrl() now returns the entire URL string,
   including protocol, host and port, and path.
 
-===================================================================================================
 Release 0.5.5
 ---------------------------------------------------------------------------------------------------
 * Added regex URL matching with RouteMapping.regex(String) method.
@@ -550,14 +780,12 @@ Release 0.5.5
 * Added KickStart release artifact to get projects going quickly--simply unzip the kickstart file.
 * Added SimpleMessageObserver which performs simple timings and outputs to System.out.
 
-===================================================================================================
 Release 0.5.4
 ---------------------------------------------------------------------------------------------------
 * Added alias() capability to DefaultTxtProcessor to facilitate custom text serialization.
 * Updated kickstart application to illustrate latest features.
 * Minor refactoring of constants and their locations (moved to RestExpress.java).
 
-===================================================================================================
 Release 0.5.3
 ---------------------------------------------------------------------------------------------------
 * Fixed issue with JSON date/timestamp parsing.
@@ -567,7 +795,6 @@ Release 0.5.3
 * Added alias(String, Class) to DefaultXmlProcessor.
 * By default, alias List and Link in DefaultXmlProcessor.
 
-===================================================================================================
 Release 0.5.2
 ---------------------------------------------------------------------------------------------------
 * Introduced DateJsonProcessor (sibling to DefaultJsonProcessor) which parses dates vs. time points.
@@ -575,14 +802,12 @@ Release 0.5.2
 * Introduced MessageObserver, which accepts notifications of onReceived(), onSuccess(), onException(), onComplete() to facilitate logging, auditing, timing, etc.
 * Changed RouteResolver.resolve() to throw NotFoundException instead of BadRequestException for unresolvable URI.
 
-===================================================================================================
 Release 0.5.1
 ---------------------------------------------------------------------------------------------------
 * Enhanced support for mark, unreserved and some reserved characters in URL. Specifically, added
   $-+*()~:!' and %.  Still doesn't parse URLs with '.' within the string itself--because of the
   support for .{format} URL section.
 
-===================================================================================================
 Release 0.5
 ---------------------------------------------------------------------------------------------------
 * Renamed repository from RestX to RestExpress.
@@ -590,7 +815,6 @@ Release 0.5
 * Changed DefaultHttpResponseWriter to output resonse headers correctly.
 * Updated javadoc on RouteBuilder to provide some documentation on route DSL.
 
-===================================================================================================
 Release 0.4
 ---------------------------------------------------------------------------------------------------
 * Fixed error in "Connection: keep-alive" processing during normal and error response writing.
@@ -601,7 +825,6 @@ Release 0.4
 * Improved UT coverage.
 * KickStart application builds and is a more accurate template.
 
-===================================================================================================
 Release 0.3
 ---------------------------------------------------------------------------------------------------
 * Added support for "method tunneling" in POST via query string parameter (e.g. _method=PUT or _method=DELETE)
