@@ -116,6 +116,7 @@
 		<netty.version>3.9.0.Final</netty.version>
 		<gson.version>2.2.4</gson.version>
 		<encoder.version>1.1.1</encoder.version>
+		<snakeyaml.version>1.14</snakeyaml.version>
 	</properties>
 
 
@@ -239,6 +240,11 @@
 				<version>${gson.version}</version>
 				<scope>compile</scope>
 				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>$[snakeyaml.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
