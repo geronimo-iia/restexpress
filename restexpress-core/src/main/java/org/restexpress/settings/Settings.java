@@ -25,6 +25,14 @@ import java.io.InputStream;
 import java.nio.file.Path;
 
 import org.restexpress.RestExpress;
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.introspector.BeanAccess;
+import org.yaml.snakeyaml.introspector.PropertyUtils;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -45,6 +53,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
+ * use extention .json or .yaml
  */
 public enum Settings {
 	;
@@ -112,5 +121,21 @@ public enum Settings {
 				.setVisibility(PropertyAccessor.SETTER, Visibility.NONE)//
 				.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)//
 				.enable(SerializationFeature.INDENT_OUTPUT);
+	}
+	
+	/**
+	 * @return a configured {@link Yaml} instance.
+	 */
+	static Yaml getYaml() {
+	    PropertyUtils propUtils = new PropertyUtils();
+        propUtils.setBeanAccess(BeanAccess.FIELD);
+        Representer repr = new Representer();
+        repr.setPropertyUtils(propUtils);
+        repr.addClassTag(RestExpressSettings.class, new Tag("!restexpress"));
+        repr.setDefaultFlowStyle(FlowStyle.AUTO);
+        Constructor constructor = new Constructor();
+        constructor.setPropertyUtils(propUtils);
+        constructor.addTypeDescription(new TypeDescription(RestExpressSettings.class, "!restexpress"));
+        return new Yaml(constructor, repr);
 	}
 }
