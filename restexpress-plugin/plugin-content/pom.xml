@@ -8,9 +8,9 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.intelligents-ia.restexpress.plugin</groupId>
-	<artifactId>plugin-static</artifactId>
+	<artifactId>plugin-content</artifactId>
 	<packaging>jar</packaging>
-	<description>RESTExpress Static Plugin</description>
+	<description>RESTExpress Content Plugin</description>
 	<properties>
 		<license.header.path>../../header.txt</license.header.path>
 	</properties>

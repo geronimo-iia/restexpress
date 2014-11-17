@@ -1,4 +1,4 @@
-RestExpress Plugin Static
+RestExpress Plugin Content
 =========================
 
 Expose static page provided by:
@@ -8,7 +8,8 @@ Expose static page provided by:
   * other HTTP provider with cache utilities
 
 default route:
- "/static"
+ "/content"
+ 
 
 système d'alias:
  name -> provider

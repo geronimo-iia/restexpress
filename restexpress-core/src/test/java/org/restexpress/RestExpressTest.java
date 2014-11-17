@@ -1,40 +1,31 @@
 /**
- *        Licensed to the Apache Software Foundation (ASF) under one
- *        or more contributor license agreements.  See the NOTICE file
- *        distributed with this work for additional information
- *        regarding copyright ownership.  The ASF licenses this file
- *        to you under the Apache License, Version 2.0 (the
- *        "License"); you may not use this file except in compliance
- *        with the License.  You may obtain a copy of the License at
- *
- *          http://www.apache.org/licenses/LICENSE-2.0
- *
- *        Unless required by applicable law or agreed to in writing,
- *        software distributed under the License is distributed on an
- *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *        KIND, either express or implied.  See the License for the
- *        specific language governing permissions and limitations
- *        under the License.
- *
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file distributed
+ * with this work for additional information regarding copyright ownership. The ASF licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License
+ * at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ * 
  */
 /*
- Copyright 2011, Strategic Gains, Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2011, Strategic Gains, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
  */
 package org.restexpress;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -49,216 +40,236 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.intelligentsia.commons.http.ResponseHeader;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.junit.Test;
+import org.restexpress.plugin.DummyPluginInterface;
+import org.restexpress.plugin.PluginA;
+import org.restexpress.plugin.PluginB;
 
 /**
  * @author toddf
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @since Jan 28, 2011
  */
 public class RestExpressTest {
-	private static final String TEST_PATH = "/restexpress/test1";
-	private static final int TEST_PORT = 8901;
-	private static final String TEST_URL = "http://localhost:" + TEST_PORT + TEST_PATH;
+    private static final String TEST_PATH = "/restexpress/test1";
+    private static final int TEST_PORT = 8901;
+    private static final String TEST_URL = "http://localhost:" + TEST_PORT + TEST_PATH;
 
-	// @Test
-	// public void shouldUseDefaults()
-	// {
-	// assertEquals(Format.JSON, server.getDefaultFormat());
-	// assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-	// assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-	// assertEquals(2, server.getResponseProcessors().size());
-	//
-	// assertEquals(0, server.getPort());
-	// assertTrue(server.getMessageObservers().isEmpty());
-	// assertTrue(server.getPostprocessors().isEmpty());
-	// assertTrue(server.getPreprocessors().isEmpty());
-	// assertTrue(server.shouldUseSystemOut());
-	// }
+    @Test
+    public void lookupPluginByInterface() {
+        RestExpress restExpress = new RestExpress();
+        restExpress.registerPlugin(new PluginA());
+        restExpress.registerPlugin(new PluginB());
+        assertTrue(restExpress.findPlugin(DummyPluginInterface.class) != null);
+    }
 
-	// @Test
-	// public void shouldDisableJson()
-	// {
-	// server.noJson();
-	// assertEquals(Format.JSON, server.getDefaultFormat());
-	// assertFalse(server.getResponseProcessors().containsKey(Format.JSON));
-	// assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-	// assertEquals(1, server.getResponseProcessors().size());
-	// }
+    @Test
+    public void lookupPluginByName() {
+        RestExpress restExpress = new RestExpress();
+        assertTrue(restExpress.findPlugin("PluginB") == null);
+        restExpress.registerPlugin(new PluginB());
+        assertTrue(restExpress.findPlugin("PluginB") != null);
+    }
 
-	// @Test
-	// public void shouldDisableXml()
-	// {
-	// server.noXml();
-	// assertEquals(Format.JSON, server.getDefaultFormat());
-	// assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-	// assertFalse(server.getResponseProcessors().containsKey(Format.XML));
-	// assertEquals(1, server.getResponseProcessors().size());
-	// }
+    // @Test
+    // public void shouldUseDefaults()
+    // {
+    // assertEquals(Format.JSON, server.getDefaultFormat());
+    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
+    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
+    // assertEquals(2, server.getResponseProcessors().size());
+    //
+    // assertEquals(0, server.getPort());
+    // assertTrue(server.getMessageObservers().isEmpty());
+    // assertTrue(server.getPostprocessors().isEmpty());
+    // assertTrue(server.getPreprocessors().isEmpty());
+    // assertTrue(server.shouldUseSystemOut());
+    // }
 
-	// @Test
-	// public void shouldMakeXmlDefault()
-	// {
-	// server.supportXml(true);
-	// assertEquals(Format.XML, server.getDefaultFormat());
-	// assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-	// assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-	// assertEquals(2, server.getResponseProcessors().size());
-	// }
+    // @Test
+    // public void shouldDisableJson()
+    // {
+    // server.noJson();
+    // assertEquals(Format.JSON, server.getDefaultFormat());
+    // assertFalse(server.getResponseProcessors().containsKey(Format.JSON));
+    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
+    // assertEquals(1, server.getResponseProcessors().size());
+    // }
 
-	// @Test
-	// public void shouldCustomizeJsonSerializer()
-	// {
-	// server.putResponseProcessor(Format.JSON,
-	// provider.newProcessor(Format.JSON));
-	// assertEquals(Format.JSON, server.getDefaultFormat());
-	// assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-	// assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-	// assertEquals(2, server.getResponseProcessors().size());
-	// }
+    // @Test
+    // public void shouldDisableXml()
+    // {
+    // server.noXml();
+    // assertEquals(Format.JSON, server.getDefaultFormat());
+    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
+    // assertFalse(server.getResponseProcessors().containsKey(Format.XML));
+    // assertEquals(1, server.getResponseProcessors().size());
+    // }
 
-	// @Test
-	// public void shouldCustomizeXmlSerializer()
-	// {
-	// server.putResponseProcessor(Format.XML,
-	// provider.newProcessor(Format.XML));
-	// assertEquals(Format.JSON, server.getDefaultFormat());
-	// assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-	// assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-	// assertEquals(2, server.getResponseProcessors().size());
-	// }
+    // @Test
+    // public void shouldMakeXmlDefault()
+    // {
+    // server.supportXml(true);
+    // assertEquals(Format.XML, server.getDefaultFormat());
+    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
+    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
+    // assertEquals(2, server.getResponseProcessors().size());
+    // }
 
-	// @Test
-	// public void shouldNotUpdateJsonSerializer()
-	// {
-	// ResponseProcessor rp = provider.newProcessor(Format.JSON);
-	// server.putResponseProcessor(Format.JSON, rp);
-	// server.supportJson(true);
-	// assertEquals(Format.JSON, server.getDefaultFormat());
-	// assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-	// assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-	// assertEquals(2, server.getResponseProcessors().size());
-	//
-	// assertTrue(rp == server.getResponseProcessors().get(Format.JSON));
-	// }
+    // @Test
+    // public void shouldCustomizeJsonSerializer()
+    // {
+    // server.putResponseProcessor(Format.JSON,
+    // provider.newProcessor(Format.JSON));
+    // assertEquals(Format.JSON, server.getDefaultFormat());
+    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
+    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
+    // assertEquals(2, server.getResponseProcessors().size());
+    // }
 
-	// @Test
-	// public void shouldNotUpdateXmlSerializer()
-	// {
-	// ResponseProcessor rp = provider.newProcessor(Format.XML);
-	// server.putResponseProcessor(Format.XML, rp);
-	// server.supportXml(true);
-	// assertEquals(Format.XML, server.getDefaultFormat());
-	// assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-	// assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-	// assertEquals(2, server.getResponseProcessors().size());
-	//
-	// assertTrue(rp == server.getResponseProcessors().get(Format.XML));
-	// }
+    // @Test
+    // public void shouldCustomizeXmlSerializer()
+    // {
+    // server.putResponseProcessor(Format.XML,
+    // provider.newProcessor(Format.XML));
+    // assertEquals(Format.JSON, server.getDefaultFormat());
+    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
+    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
+    // assertEquals(2, server.getResponseProcessors().size());
+    // }
 
-	@Test
-	public void shouldCallDefaultMethods() throws ClientProtocolException, IOException {
-		RestExpress re = new RestExpress();
-		NoopController controller = new NoopController();
-		re.uri(TEST_PATH, controller);
-		re.bind(TEST_PORT);
+    // @Test
+    // public void shouldNotUpdateJsonSerializer()
+    // {
+    // ResponseProcessor rp = provider.newProcessor(Format.JSON);
+    // server.putResponseProcessor(Format.JSON, rp);
+    // server.supportJson(true);
+    // assertEquals(Format.JSON, server.getDefaultFormat());
+    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
+    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
+    // assertEquals(2, server.getResponseProcessors().size());
+    //
+    // assertTrue(rp == server.getResponseProcessors().get(Format.JSON));
+    // }
 
-		HttpClient client = new DefaultHttpClient();
-		HttpGet get = new HttpGet(TEST_URL);
-		HttpResponse response = (HttpResponse) client.execute(get);
-		assertEquals(200, response.getStatusLine().getStatusCode());
-		assertEquals(1, controller.read);
-		assertEquals(0, controller.create);
-		assertEquals(0, controller.update);
-		assertEquals(0, controller.delete);
-		get.releaseConnection();
+    // @Test
+    // public void shouldNotUpdateXmlSerializer()
+    // {
+    // ResponseProcessor rp = provider.newProcessor(Format.XML);
+    // server.putResponseProcessor(Format.XML, rp);
+    // server.supportXml(true);
+    // assertEquals(Format.XML, server.getDefaultFormat());
+    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
+    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
+    // assertEquals(2, server.getResponseProcessors().size());
+    //
+    // assertTrue(rp == server.getResponseProcessors().get(Format.XML));
+    // }
 
-		HttpPost post = new HttpPost(TEST_URL);
-		response = (HttpResponse) client.execute(post);
-		assertEquals(201, response.getStatusLine().getStatusCode());
-		assertEquals(1, controller.create);
-		assertEquals(1, controller.read);
-		assertEquals(0, controller.update);
-		assertEquals(0, controller.delete);
-		post.releaseConnection();
+    @Test
+    public void shouldCallDefaultMethods() throws ClientProtocolException, IOException {
+        RestExpress re = new RestExpress();
+        NoopController controller = new NoopController();
+        re.uri(TEST_PATH, controller);
+        re.bind(TEST_PORT);
 
-		HttpPut put = new HttpPut(TEST_URL);
-		response = (HttpResponse) client.execute(put);
-		assertEquals(200, response.getStatusLine().getStatusCode());
-		assertEquals(1, controller.update);
-		assertEquals(1, controller.read);
-		assertEquals(1, controller.create);
-		assertEquals(0, controller.delete);
-		put.releaseConnection();
+        HttpClient client = new DefaultHttpClient();
+        HttpGet get = new HttpGet(TEST_URL);
+        HttpResponse response = (HttpResponse) client.execute(get);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals(1, controller.read);
+        assertEquals(0, controller.create);
+        assertEquals(0, controller.update);
+        assertEquals(0, controller.delete);
+        get.releaseConnection();
 
-		HttpDelete delete = new HttpDelete(TEST_URL);
-		response = (HttpResponse) client.execute(delete);
-		assertEquals(200, response.getStatusLine().getStatusCode());
-		assertEquals(1, controller.delete);
-		assertEquals(1, controller.read);
-		assertEquals(1, controller.create);
-		assertEquals(1, controller.update);
-		delete.releaseConnection();
+        HttpPost post = new HttpPost(TEST_URL);
+        response = (HttpResponse) client.execute(post);
+        assertEquals(201, response.getStatusLine().getStatusCode());
+        assertEquals(1, controller.create);
+        assertEquals(1, controller.read);
+        assertEquals(0, controller.update);
+        assertEquals(0, controller.delete);
+        post.releaseConnection();
 
-		re.shutdown();
-	}
+        HttpPut put = new HttpPut(TEST_URL);
+        response = (HttpResponse) client.execute(put);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals(1, controller.update);
+        assertEquals(1, controller.read);
+        assertEquals(1, controller.create);
+        assertEquals(0, controller.delete);
+        put.releaseConnection();
 
-	@Test
-	public void shouldSetOutputMediaType() throws ClientProtocolException, IOException {
-		RestExpress re = new RestExpress();
-		NoopController controller = new NoopController();
-		re.uri(TEST_PATH, controller);
-		re.bind(TEST_PORT);
+        HttpDelete delete = new HttpDelete(TEST_URL);
+        response = (HttpResponse) client.execute(delete);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals(1, controller.delete);
+        assertEquals(1, controller.read);
+        assertEquals(1, controller.create);
+        assertEquals(1, controller.update);
+        delete.releaseConnection();
 
-		HttpClient client = new DefaultHttpClient();
+        re.shutdown();
+    }
 
-		HttpPost post = new HttpPost(TEST_URL);
-		post.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
-		HttpResponse response = (HttpResponse) client.execute(post);
-		assertEquals(201, response.getStatusLine().getStatusCode());
-		assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
-		post.releaseConnection();
+    @Test
+    public void shouldSetOutputMediaType() throws ClientProtocolException, IOException {
+        RestExpress re = new RestExpress();
+        NoopController controller = new NoopController();
+        re.uri(TEST_PATH, controller);
+        re.bind(TEST_PORT);
 
-		HttpGet get = new HttpGet(TEST_URL);
-		get.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
-		response = (HttpResponse) client.execute(get);
-		assertEquals(200, response.getStatusLine().getStatusCode());
-		assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
-		get.releaseConnection();
+        HttpClient client = new DefaultHttpClient();
 
-		HttpPut put = new HttpPut(TEST_URL);
-		put.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
-		response = (HttpResponse) client.execute(put);
-		assertEquals(200, response.getStatusLine().getStatusCode());
-		assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
-		put.releaseConnection();
+        HttpPost post = new HttpPost(TEST_URL);
+        post.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
+        HttpResponse response = (HttpResponse) client.execute(post);
+        assertEquals(201, response.getStatusLine().getStatusCode());
+        assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
+        post.releaseConnection();
 
-		HttpDelete delete = new HttpDelete(TEST_URL);
-		delete.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
-		response = (HttpResponse) client.execute(delete);
-		assertEquals(200, response.getStatusLine().getStatusCode());
-		assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
-		delete.releaseConnection();
+        HttpGet get = new HttpGet(TEST_URL);
+        get.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
+        response = (HttpResponse) client.execute(get);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
+        get.releaseConnection();
 
-		re.shutdown();
-	}
+        HttpPut put = new HttpPut(TEST_URL);
+        put.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
+        response = (HttpResponse) client.execute(put);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
+        put.releaseConnection();
 
-	public class NoopController {
-		int create, read, update, delete = 0;
+        HttpDelete delete = new HttpDelete(TEST_URL);
+        delete.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
+        response = (HttpResponse) client.execute(delete);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
+        delete.releaseConnection();
 
-		public void create(Request req, Response res) {
-			++create;
-			res.setResponseCreated();
-		}
+        re.shutdown();
+    }
 
-		public void read(Request req, Response res) {
-			++read;
-		}
+    public class NoopController {
+        int create, read, update, delete = 0;
 
-		public void update(Request req, Response res) {
-			++update;
-		}
+        public void create(Request req, Response res) {
+            ++create;
+            res.setResponseCreated();
+        }
 
-		public void delete(Request req, Response res) {
-			++delete;
-		}
-	}
+        public void read(Request req, Response res) {
+            ++read;
+        }
+
+        public void update(Request req, Response res) {
+            ++update;
+        }
+
+        public void delete(Request req, Response res) {
+            ++delete;
+        }
+    }
 }
