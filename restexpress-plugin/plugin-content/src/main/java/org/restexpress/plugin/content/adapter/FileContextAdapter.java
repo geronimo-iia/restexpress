@@ -39,4 +39,9 @@ public class FileContextAdapter implements ContextAdapter {
         return file.exists() ? file : null;
     }
 
+    @Override
+    public String toString() {
+        return "FileContextAdapter [resolver=" + resolver + ", rootDirectory=" + rootDirectory + "]";
+    }
+
 }
