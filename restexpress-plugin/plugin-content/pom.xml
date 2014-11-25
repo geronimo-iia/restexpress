@@ -14,4 +14,11 @@
 	<properties>
 		<license.header.path>../../header.txt</license.header.path>
 	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.ning</groupId>
+			<artifactId>async-http-client</artifactId>
+			<version>1.8.4</version>
+		</dependency>
+	</dependencies>
 </project>

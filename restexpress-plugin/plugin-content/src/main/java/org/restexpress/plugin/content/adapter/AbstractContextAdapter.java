@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.restexpress.plugin.content.ContextAdapter;
-import org.restexpress.plugin.content.resolver.ExclusionResolver;
-import org.restexpress.plugin.content.resolver.PathResolver;
 import org.restexpress.plugin.content.resolver.Resolver;
 
 import com.google.common.base.Preconditions;
@@ -16,7 +14,8 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
 
 /**
- * {@link AbstractContextAdapter} implement default behavior for all {@link ContextAdapter}.
+ * {@link AbstractContextAdapter} implement default behavior for all {@link ContextAdapter} which deal with temporary directory, remote
+ * document base, and context retrieval.
  * 
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
@@ -36,7 +35,7 @@ public abstract class AbstractContextAdapter<T> implements ContextAdapter {
     /**
      * Remote document base.
      */
-    protected final String docBase;
+    protected final String remoteDocumentBase;
 
     /**
      * Temporary directory.
@@ -46,16 +45,15 @@ public abstract class AbstractContextAdapter<T> implements ContextAdapter {
     /**
      * Build a new instance of {@link WebRemoteClient}.
      * 
-     * @param path location associated with this remote ('/' or empty string stand for root).
-     * @param docBase document base associated with this remote.
-     * @param excludedPath array of excluded path.
+     * @param resolver resolver instance.
+     * @param remoteDocumentBase document base associated with this adapter.
      * @param tempDirectory temporary directory
-     * @throws NullPointerException if path, docBase or tempDirectory is null
+     * @throws NullPointerException if resolver, remoteDocumentBase or tempDirectory is null
      */
-    public AbstractContextAdapter(final String path, final String docBase, final String[] excludedPath, final File tempDirectory) {
+    public AbstractContextAdapter(Resolver resolver, final String remoteDocumentBase, final File tempDirectory) {
         super();
-        this.docBase = Preconditions.checkNotNull(docBase);
-        resolver = new Resolver(path, excludedPath);
+        this.remoteDocumentBase = Preconditions.checkNotNull(remoteDocumentBase);
+        this.resolver = Preconditions.checkNotNull(resolver);
         this.tempDirectory = Preconditions.checkNotNull(tempDirectory);
     }
 
@@ -166,14 +164,14 @@ public abstract class AbstractContextAdapter<T> implements ContextAdapter {
      * @return a path.
      */
     protected final String resolveRemotePath(final String remoteName, final boolean asFile) {
-        final StringBuilder builder = new StringBuilder(docBase);
+        final StringBuilder builder = new StringBuilder(remoteDocumentBase);
 
         if (!remoteName.isEmpty()) {
             // did remote start with '/' ?
             if (remoteName.charAt(0) != '/')
                 builder.append(SLASH);
 
-            // add remotepart
+            // add remote part
             builder.append(remoteName);
         }
 

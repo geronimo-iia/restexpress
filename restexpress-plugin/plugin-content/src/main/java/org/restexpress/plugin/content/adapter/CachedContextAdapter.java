@@ -161,4 +161,9 @@ public class CachedContextAdapter implements ContextAdapter {
             }
     }
 
+    @Override
+    public String toString() {
+        return "CachedContextAdapter [delegate=" + delegate + "]";
+    }
+
 }

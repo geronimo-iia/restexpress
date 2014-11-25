@@ -6,6 +6,13 @@ import java.io.IOException;
 import org.restexpress.plugin.content.ContextAdapter;
 import org.restexpress.plugin.content.resolver.Resolver;
 
+import com.google.common.base.Preconditions;
+
+/**
+ * {@link FileContextAdapter} implement a {@link ContextAdapter} which map an external folder.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ */
 public class FileContextAdapter implements ContextAdapter {
 
     /**
@@ -20,7 +27,7 @@ public class FileContextAdapter implements ContextAdapter {
 
     public FileContextAdapter(Resolver resolver, File rootDirectory) {
         super();
-        this.resolver = resolver;
+        this.resolver = Preconditions.checkNotNull(resolver);
         this.rootDirectory = rootDirectory;
     }
 

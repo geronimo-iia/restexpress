@@ -10,6 +10,11 @@ import org.restexpress.plugin.content.ContextAdapter;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * {@link CompositeContextAdapter} implement a composite {@link ContextAdapter}.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ */
 public class CompositeContextAdapter implements ContextAdapter, Iterable<ContextAdapter> {
 
     protected ContextAdapter[] clients;
