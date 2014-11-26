@@ -74,7 +74,7 @@ public abstract class AbstractContextAdapter<T> implements ContextAdapter {
      * @param tempDirectory temporary directory
      * @throws NullPointerException if resolver, remoteDocumentBase or tempDirectory is null
      */
-    public AbstractContextAdapter(String name, Resolver resolver, final String remoteDocumentBase, final File tempDirectory) {
+    public AbstractContextAdapter(final String name, final Resolver resolver, final String remoteDocumentBase, final File tempDirectory) {
         super();
         this.name = name;
         this.remoteDocumentBase = Preconditions.checkNotNull(remoteDocumentBase);
@@ -87,6 +87,7 @@ public abstract class AbstractContextAdapter<T> implements ContextAdapter {
         return name;
     }
 
+    @Override
     public Boolean match(final String name) {
         return resolver.match(name);
     }

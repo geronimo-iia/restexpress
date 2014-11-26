@@ -45,7 +45,7 @@ public class HttpContextAdapter extends AbstractContextAdapter<AsyncHttpClient> 
      * Build a new instance of {@link HttpContextAdapter} with default {@link AsyncHttpClient} (compression and pooling connection
      * enabled, and request timeout set to 30000 ms).
      */
-    public HttpContextAdapter(String name, Resolver resolver, String remoteDocumentBase, File tempDirectory)
+    public HttpContextAdapter(final String name, final Resolver resolver, final String remoteDocumentBase, final File tempDirectory)
             throws NullPointerException {
         this(name, resolver, remoteDocumentBase, tempDirectory, new AsyncHttpClient(new AsyncHttpClientConfig.Builder()
                 .setCompressionEnabled(true)//
@@ -53,8 +53,8 @@ public class HttpContextAdapter extends AbstractContextAdapter<AsyncHttpClient> 
                 .setRequestTimeoutInMs(30000).build()));
     }
 
-    public HttpContextAdapter(String name, Resolver resolver, String remoteDocumentBase, File tempDirectory,
-            AsyncHttpClient asyncHttpClient) {
+    public HttpContextAdapter(final String name, final Resolver resolver, final String remoteDocumentBase, final File tempDirectory,
+            final AsyncHttpClient asyncHttpClient) {
         super(name, resolver, remoteDocumentBase, tempDirectory);
         this.asyncHttpClient = asyncHttpClient;
     }
@@ -65,12 +65,12 @@ public class HttpContextAdapter extends AbstractContextAdapter<AsyncHttpClient> 
     }
 
     @Override
-    protected void destroyContext(AsyncHttpClient context) {
+    protected void destroyContext(final AsyncHttpClient context) {
         // nothing to do
     }
 
     @Override
-    protected boolean exists(AsyncHttpClient context, String remotePath) throws IOException {
+    protected boolean exists(final AsyncHttpClient context, final String remotePath) throws IOException {
         final ListenableFuture<Response> response = asyncHttpClient.prepareHead(remotePath).execute();
         try {
             final int status = response.get().getStatusCode();
@@ -83,7 +83,7 @@ public class HttpContextAdapter extends AbstractContextAdapter<AsyncHttpClient> 
     }
 
     @Override
-    protected InputStream get(AsyncHttpClient context, String remotePath) throws IOException {
+    protected InputStream get(final AsyncHttpClient context, final String remotePath) throws IOException {
         try {
             final Response response = asyncHttpClient.prepareGet(remotePath).execute().get();
             if (response.getStatusCode() == 200)

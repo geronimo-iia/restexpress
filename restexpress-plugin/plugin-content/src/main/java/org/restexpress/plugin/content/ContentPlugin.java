@@ -72,7 +72,7 @@ public class ContentPlugin extends AbstractRoutePlugin implements ContentService
     }
 
     @Override
-    public void bind(RestExpress server) {
+    public void bind(final RestExpress server) {
         super.bind(server);
 
         // load server configuration
@@ -83,12 +83,12 @@ public class ContentPlugin extends AbstractRoutePlugin implements ContentService
         tempDirectory = Files.createTempDir();
         binded = true;
         build();
-        ContentController controller = new ContentController(this);
+        final ContentController controller = new ContentController(this);
         server.uri(DEFAULT_ENTRYPOINT, controller).name("content.routes").noSerialization();
     }
 
     @Override
-    public void shutdown(RestExpress server) {
+    public void shutdown(final RestExpress server) {
         super.shutdown(server);
         binded = false;
         enableCache = false;
@@ -108,7 +108,7 @@ public class ContentPlugin extends AbstractRoutePlugin implements ContentService
     }
 
     @Override
-    public void enableCache(int initialCapacity, int maximumSize, int expireAfterWrite) {
+    public void enableCache(final int initialCapacity, final int maximumSize, final int expireAfterWrite) {
         enableCache = true;
         this.initialCapacity = initialCapacity;
         this.maximumSize = maximumSize;
@@ -128,19 +128,19 @@ public class ContentPlugin extends AbstractRoutePlugin implements ContentService
     }
 
     @Override
-    public void register(ContextAdapter contextAdapter) {
+    public void register(final ContextAdapter contextAdapter) {
         adapters.put(contextAdapter.name(), contextAdapter);
         build();
     }
 
     @Override
-    public ContextAdapter find(String name) {
+    public ContextAdapter find(final String name) {
         return adapters.get(name);
     }
 
     @Override
-    public boolean remove(String name) {
-        boolean result = adapters.remove(name) != null;
+    public boolean remove(final String name) {
+        final boolean result = adapters.remove(name) != null;
         if (result)
             build();
         return result;
@@ -152,10 +152,9 @@ public class ContentPlugin extends AbstractRoutePlugin implements ContentService
     protected void build() {
         if (binded) {
             ContextAdapter contextAdapter = new CompositeContextAdapter(adapters.values());
-            if (enableCache) {
+            if (enableCache)
                 contextAdapter = new CachedContextAdapter(contextAdapter, tempDirectory, initialCapacity, maximumSize,
                         expireAfterWrite);
-            }
             // swap configuration
             this.contextAdapter = contextAdapter;
         }
@@ -167,12 +166,12 @@ public class ContentPlugin extends AbstractRoutePlugin implements ContentService
     }
 
     @Override
-    public Boolean match(String name) {
+    public Boolean match(final String name) {
         return contextAdapter.match(name);
     }
 
     @Override
-    public File retrieve(String name) throws IOException {
+    public File retrieve(final String name) throws IOException {
         return contextAdapter.retrieve(name);
     }
 

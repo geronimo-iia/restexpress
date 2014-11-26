@@ -49,7 +49,7 @@ public class FileContextAdapter implements ContextAdapter {
      */
     protected final String name;
 
-    public FileContextAdapter(String name, Resolver resolver, File rootDirectory) {
+    public FileContextAdapter(final String name, final Resolver resolver, final File rootDirectory) {
         super();
         this.name = name;
         this.resolver = Preconditions.checkNotNull(resolver);
@@ -62,23 +62,21 @@ public class FileContextAdapter implements ContextAdapter {
     }
 
     @Override
-    public Boolean match(String name) {
+    public Boolean match(final String name) {
         return resolver.match(name);
     }
 
     @Override
-    public File retrieve(String name) throws IOException {
+    public File retrieve(final String name) throws IOException {
         // extract path name
-        String pathname = resolver.resolve(name);
+        final String pathname = resolver.resolve(name);
         // locate file under root directory
-        File file = new File(rootDirectory, pathname);
+        final File file = new File(rootDirectory, pathname);
         // check file if exists and visible
-        if (file.isHidden() || !file.exists()) {
+        if (file.isHidden() || !file.exists())
             return null;
-        }
-        if (!file.isFile()) {
+        if (!file.isFile())
             return null;
-        }
         return file;
     }
 

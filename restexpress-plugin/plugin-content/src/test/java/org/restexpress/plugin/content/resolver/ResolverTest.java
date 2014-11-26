@@ -19,7 +19,9 @@
  */
 package org.restexpress.plugin.content.resolver;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -37,7 +39,7 @@ public class ResolverTest {
     @Test
     public void checkResolverWithoutExcludedPart() {
         final Resolver resolver = new Resolver("", null);
-        
+
         assertTrue(resolver.match("/root"));
         assertFalse(resolver.match("boot"));
         assertEquals("/root/", resolver.resolve("/root/"));
@@ -49,14 +51,14 @@ public class ResolverTest {
 
     @Test
     public void checkResolverWithExcludedPart() {
-        final Resolver resolver = new Resolver("/root", new String[] {"/root/b"});
+        final Resolver resolver = new Resolver("/root", new String[] { "/root/b" });
         assertTrue(resolver.match("/root"));
         assertFalse(resolver.match("boot"));
-        
+
         assertTrue(resolver.match("/root/a"));
         assertEquals("/a", resolver.resolve("/root/a"));
         assertFalse(resolver.match("/root/b"));
         assertFalse(resolver.match("/root/b/a"));
-        
+
     }
 }

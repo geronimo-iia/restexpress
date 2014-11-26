@@ -33,7 +33,8 @@ import org.restexpress.plugin.content.resolver.Resolver;
  */
 public class ClassPathContextAdapter extends AbstractContextAdapter<ClassLoader> {
 
-    public ClassPathContextAdapter(String name, Resolver resolver, String remoteDocumentBase, File tempDirectory) {
+    public ClassPathContextAdapter(final String name, final Resolver resolver, final String remoteDocumentBase,
+            final File tempDirectory) {
         super(name, resolver, remoteDocumentBase, tempDirectory);
     }
 
@@ -43,17 +44,17 @@ public class ClassPathContextAdapter extends AbstractContextAdapter<ClassLoader>
     }
 
     @Override
-    protected void destroyContext(ClassLoader context) {
+    protected void destroyContext(final ClassLoader context) {
         // nothing to do
     }
 
     @Override
-    protected boolean exists(ClassLoader context, String remotePath) throws IOException {
+    protected boolean exists(final ClassLoader context, final String remotePath) throws IOException {
         return context.getResource(remotePath) != null;
     }
 
     @Override
-    protected InputStream get(ClassLoader context, String remotePath) throws IOException {
+    protected InputStream get(final ClassLoader context, final String remotePath) throws IOException {
         return context.getResourceAsStream(remotePath);
     }
 

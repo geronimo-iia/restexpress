@@ -38,7 +38,7 @@ public class CompositeContextAdapter implements ContextAdapter, Iterable<Context
 
     protected ContextAdapter[] clients;
 
-    private int size;
+    private final int size;
 
     /**
      * Build a new instance of {@link CompositeContextAdapter}.
@@ -74,7 +74,7 @@ public class CompositeContextAdapter implements ContextAdapter, Iterable<Context
     }
 
     @Override
-    public Boolean match(String name) {
+    public Boolean match(final String name) {
         int i = 0;
         boolean result = false;
         do {

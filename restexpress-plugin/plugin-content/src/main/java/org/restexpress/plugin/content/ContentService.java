@@ -28,12 +28,11 @@ import java.io.File;
  */
 public interface ContentService {
 
-    
     /**
      * @return main entry point
      */
     public String entryPoint();
-    
+
     /**
      * Enable caching with default parameters:
      * <ul>
@@ -57,7 +56,7 @@ public interface ContentService {
      * Disable cache.
      */
     public void disableCache();
-    
+
     /**
      * @return current temporary directory
      */

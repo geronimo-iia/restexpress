@@ -34,7 +34,7 @@ public class ContentEntryPoint implements RestExpressEntryPoint {
     }
 
     @Override
-    public void onLoad(RestExpress restExpress) throws RuntimeException {
+    public void onLoad(final RestExpress restExpress) throws RuntimeException {
         restExpress.registerPlugin(new ContentPlugin());
     }
 

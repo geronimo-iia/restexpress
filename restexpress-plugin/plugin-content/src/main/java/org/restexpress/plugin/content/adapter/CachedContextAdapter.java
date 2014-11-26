@@ -112,7 +112,7 @@ public class CachedContextAdapter implements ContextAdapter {
     }
 
     @Override
-    public File retrieve(String name) throws IOException {
+    public File retrieve(final String name) throws IOException {
         File result = null;
         if (name != null)
             try {
@@ -135,15 +135,13 @@ public class CachedContextAdapter implements ContextAdapter {
     }
 
     @Override
-    public Boolean match(String name) {
+    public Boolean match(final String name) {
         return delegate.match(name);
     }
 
     public ContextAdapter delegate() {
         return delegate;
     }
-
-   
 
     @Override
     public String toString() {

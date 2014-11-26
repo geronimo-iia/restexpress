@@ -64,7 +64,7 @@ public class Resolver {
      * @param name
      * @return remote name or null.
      */
-    public String resolve(String name) {
+    public String resolve(final String name) {
         return pathResolver.resolve(name);
     }
 

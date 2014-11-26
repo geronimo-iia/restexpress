@@ -62,7 +62,7 @@ public class ContentController {
      * @param contextAdapter instance of {@link ContextAdapter}.
      * @throws NullPointerException if {@link ContextAdapter} is null
      */
-    public ContentController(ContextAdapter contextAdapter) throws NullPointerException {
+    public ContentController(final ContextAdapter contextAdapter) throws NullPointerException {
         super();
         this.contextAdapter = Preconditions.checkNotNull(contextAdapter);
     }
@@ -76,7 +76,7 @@ public class ContentController {
      * @throws IOException
      * @throws ParseException
      */
-    public File read(Request request, Response response) throws IOException, ParseException {
+    public File read(final Request request, final Response response) throws IOException, ParseException {
         final String uri = request.getPath();
         final String path = sanitizeUri(uri);
         File resource = null;
@@ -95,30 +95,30 @@ public class ContentController {
         }
         if (isModifiedSince(request, resource)) {
             response.setResponseStatus(HttpResponseStatus.NOT_MODIFIED);
-            Calendar time = new GregorianCalendar();
+            final Calendar time = new GregorianCalendar();
             response.addHeader(ResponseHeader.DATE.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(time.getTime()));
             resource = null;
         }
         return resource;
     }
 
-    public void delete(Request request, Response response) {
+    public void delete(final Request request, final Response response) {
         response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
     }
 
-    public void create(Request request, Response response) {
+    public void create(final Request request, final Response response) {
         response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
     }
 
-    public void update(Request request, Response response) {
+    public void update(final Request request, final Response response) {
         response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
     }
 
-    public void headers(Request request, Response response) {
+    public void headers(final Request request, final Response response) {
         response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
     }
 
-    public void options(Request request, Response response) {
+    public void options(final Request request, final Response response) {
         response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
     }
 
@@ -128,14 +128,14 @@ public class ContentController {
      * @return True if ressource is modified since date value read from {@link RequestHeader#IF_MODIFIED_SINCE}.
      * @throws ParseException
      */
-    private static boolean isModifiedSince(Request request, File resource) throws ParseException {
-        String ifModifiedSince = request.getHeader(RequestHeader.IF_MODIFIED_SINCE.getHeader());
+    private static boolean isModifiedSince(final Request request, final File resource) throws ParseException {
+        final String ifModifiedSince = request.getHeader(RequestHeader.IF_MODIFIED_SINCE.getHeader());
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
-            Date ifModifiedSinceDate = HttpHeaderDateTimeFormat.parseAny(ifModifiedSince);
+            final Date ifModifiedSinceDate = HttpHeaderDateTimeFormat.parseAny(ifModifiedSince);
             // just compare second
-            long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
-            long fileLastModifiedSeconds = resource.lastModified() / 1000;
-            return (ifModifiedSinceDateSeconds <= fileLastModifiedSeconds);
+            final long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
+            final long fileLastModifiedSeconds = resource.lastModified() / 1000;
+            return ifModifiedSinceDateSeconds <= fileLastModifiedSeconds;
         }
         return false;
     }
@@ -149,16 +149,14 @@ public class ContentController {
     private static String sanitizeUri(String uri) {
         try {
             uri = URLDecoder.decode(uri, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new Error(e);
         }
-        if (uri.isEmpty() || uri.charAt(0) != '/') {
+        if (uri.isEmpty() || uri.charAt(0) != '/')
             return null;
-        }
         if (uri.contains("/.") || uri.contains("./") || uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.'
-                || INSECURE_URI.matcher(uri).matches()) {
+                || INSECURE_URI.matcher(uri).matches())
             return null;
-        }
         return uri;
     }
 

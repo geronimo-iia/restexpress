@@ -33,8 +33,7 @@ public interface ContextAdapter {
      * @return convenient name
      */
     public String name();
-    
-    
+
     /**
      * @param name
      * @return {@link Boolean.TRUE} if named resource can be retrieved by this {@link ContextAdapter}.
