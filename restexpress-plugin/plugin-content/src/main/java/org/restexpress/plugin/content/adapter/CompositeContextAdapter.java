@@ -1,10 +1,29 @@
+/**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
+ *
+ */
 package org.restexpress.plugin.content.adapter;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.restexpress.plugin.content.ContextAdapter;
 
@@ -24,11 +43,11 @@ public class CompositeContextAdapter implements ContextAdapter, Iterable<Context
     /**
      * Build a new instance of {@link CompositeContextAdapter}.
      * 
-     * @param clients list of {@link ContextAdapter} client to add
+     * @param clients {@link Collection} of {@link ContextAdapter} client to add
      * @throws NullPointerException if {@code clients} is null
      * @throws IllegalArgumentException if {@code clients} is empty
      */
-    public CompositeContextAdapter(final List<ContextAdapter> clients) {
+    public CompositeContextAdapter(final Collection<ContextAdapter> clients) {
         super();
         Preconditions.checkArgument(Preconditions.checkNotNull(clients).size() > 0);
         this.clients = clients.toArray(new AbstractContextAdapter<?>[clients.size()]);
@@ -47,6 +66,11 @@ public class CompositeContextAdapter implements ContextAdapter, Iterable<Context
         Preconditions.checkArgument(Preconditions.checkNotNull(clients).length > 0);
         this.clients = clients;
         size = this.clients.length;
+    }
+
+    @Override
+    public String name() {
+        return getClass().getSimpleName();
     }
 
     @Override
@@ -80,5 +104,12 @@ public class CompositeContextAdapter implements ContextAdapter, Iterable<Context
     @Override
     public Iterator<ContextAdapter> iterator() {
         return Arrays.asList(clients).iterator();
+    }
+
+    /**
+     * @return an array of {@link ContextAdapter}
+     */
+    public ContextAdapter[] clients() {
+        return clients;
     }
 }

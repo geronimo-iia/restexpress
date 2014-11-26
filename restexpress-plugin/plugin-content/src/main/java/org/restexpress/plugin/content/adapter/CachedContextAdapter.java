@@ -1,4 +1,23 @@
 /**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
+ *
+ */
+/**
  * 
  */
 package org.restexpress.plugin.content.adapter;
@@ -9,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.restexpress.plugin.content.ContextAdapter;
+import org.restexpress.plugin.content.FileRemovals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,16 +73,6 @@ public class CachedContextAdapter implements ContextAdapter {
      * 
      * @param delegate
      * @param tempDirectory
-     */
-    public CachedContextAdapter(final ContextAdapter delegate, final File tempDirectory) {
-        this(delegate, tempDirectory, 3000, 25000, 10);
-    }
-
-    /**
-     * Build a new instance of {@link CachedContextAdapter}.
-     * 
-     * @param delegate
-     * @param tempDirectory
      * @param initialCapacity
      * @param maximumSize
      * @param expireAfterWrite
@@ -84,7 +94,7 @@ public class CachedContextAdapter implements ContextAdapter {
                     public void onRemoval(final RemovalNotification<String, Optional<File>> notification) {
                         // do not clean up directory
                         if (!notification.getKey().endsWith("/") && tempDirectory != null && notification.getValue().isPresent())
-                            delete(notification.getValue().get());
+                            FileRemovals.delete(notification.getValue().get());
                     }
 
                 }).build(new CacheLoader<String, Optional<File>>() {
@@ -97,6 +107,11 @@ public class CachedContextAdapter implements ContextAdapter {
     }
 
     @Override
+    public String name() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
     public File retrieve(String name) throws IOException {
         File result = null;
         if (name != null)
@@ -104,11 +119,8 @@ public class CachedContextAdapter implements ContextAdapter {
                 final Optional<File> value = fileCache.get(name);
                 if (value.isPresent()) {
                     result = value.get();
-                    if (result == null)
-                        // Should not occurs
-                        fileCache.invalidate(name);
-                    else // file from cache has be removed by hand
-                    if (!result.exists()) {
+                    // file from cache has be removed by hand
+                    if (result != null && !result.exists()) {
                         fileCache.invalidate(name);
                         result = null;
                     }
@@ -127,39 +139,11 @@ public class CachedContextAdapter implements ContextAdapter {
         return delegate.match(name);
     }
 
-    /**
-     * Delete a file or directory with silent.
-     * 
-     * @param file
-     */
-    protected static void delete(final File file) {
-        if (file.isDirectory())
-            cleanDirectory(file);
-        try {
-            file.delete();
-        } catch (final Throwable throwable) {
-            try {
-                file.deleteOnExit();
-            } catch (final Throwable th) {
-                // log.warn(file.getPath() + " could not be cleaned");
-            }
-        }
+    public ContextAdapter delegate() {
+        return delegate;
     }
 
-    /**
-     * Clean a directory
-     * 
-     * @param file
-     */
-    protected static void cleanDirectory(final File file) {
-        if (file != null && file.exists())
-            if (file.isDirectory()) {
-                final File[] files = file.listFiles();
-                if (files != null)
-                    for (final File f : files)
-                        delete(f);
-            }
-    }
+   
 
     @Override
     public String toString() {
