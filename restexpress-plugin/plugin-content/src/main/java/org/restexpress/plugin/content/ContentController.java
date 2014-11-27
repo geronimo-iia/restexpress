@@ -99,6 +99,7 @@ public class ContentController {
             response.addHeader(ResponseHeader.DATE.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(time.getTime()));
             resource = null;
         }
+        response.setResponseStatus(HttpResponseStatus.OK);
         return resource;
     }
 
@@ -125,7 +126,7 @@ public class ContentController {
     /**
      * @param request
      * @param resource
-     * @return True if ressource is modified since date value read from {@link RequestHeader#IF_MODIFIED_SINCE}.
+     * @return True if resource is modified since date value read from {@link RequestHeader#IF_MODIFIED_SINCE}.
      * @throws ParseException
      */
     private static boolean isModifiedSince(final Request request, final File resource) throws ParseException {
