@@ -113,7 +113,7 @@
 		<junit.version>4.11</junit.version>
 		<httpclient.version>4.2.5</httpclient.version>
 		<xstream.version>1.4.4</xstream.version>
-		<netty.version>3.9.0.Final</netty.version>
+		<netty.version>3.9.5.Final</netty.version>
 		<gson.version>2.2.4</gson.version>
 		<encoder.version>1.1.1</encoder.version>
 		<snakeyaml.version>1.14</snakeyaml.version>
