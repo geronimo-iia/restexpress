@@ -39,7 +39,7 @@ import org.restexpress.serialization.Processor;
 /**
  * ResponseProcessorManager manager {@link ResponseProcessor}. This class implements a {@link SerializationProvider} and a
  * {@link ResponseProcessorSettingResolver}.
- *
+ * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
 public class ResponseProcessorManager implements ResponseProcessorSettingResolver, SerializationProvider {
@@ -200,8 +200,8 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
 
     /**
      * Add specified {@link MediaRange} if they're not ever exists.
-     *
-     * @param mediaRanges a List of  {@link MediaRange} to add
+     * 
+     * @param mediaRanges a List of {@link MediaRange} to add
      */
     protected void addMediaRanges(final List<MediaRange> mediaRanges) {
         if (mediaRanges != null) {
@@ -214,41 +214,16 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
 
     /**
      * Utility to obtain extension of an url.
-     *
+     * 
      * @param url url which contains format information
      * @return extension or null if none was found.
      */
     protected static String parseFormatFromUrl(final String url) {
-        StringBuffer buffer = new StringBuffer(url);
-        /* remove query parameters */
-        final int queryDelimiterIndex = buffer.indexOf("?");
-        if (queryDelimiterIndex > 0) {
-            buffer.delete(queryDelimiterIndex, buffer.length());
-        }
-        int length = buffer.length();
-        if (length < 1) return null;
-        //buffer.reverse();
-      /*  *//*  check if we are not in domain name part *//*
-        final int startIndex = buffer.indexOf("/", buffer.indexOf("://") + 3);
-        if (startIndex < 0) {
-            return null;
-        }*/
-        final int formatDelimiterIndex = buffer.lastIndexOf(".");
-        return formatDelimiterIndex < 0 ? null : buffer.substring(formatDelimiterIndex +1);
-    }
-
-
-    /**
-     * Utility to obtain extension of an url.
-     *
-     * @param url url which contains format information
-     * @return extension or null if none was found.
-     */
-    protected static String parseFormatFromUrlOld(final String url) {
         final int queryDelimiterIndex = url.indexOf('?');
         /* remove query parameters */
         final String path = (queryDelimiterIndex > 0 ? url.substring(0, queryDelimiterIndex) : url);
-        if (path.endsWith(".")) return null;
+        if (path.endsWith("."))
+            return null;
         // check if we are not in domain name part
         final int startIndex = path.indexOf("/", path.indexOf("://") + 3);
         if (startIndex < 0) {

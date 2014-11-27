@@ -66,11 +66,11 @@ public class ResponseProcessorManagerTest {
 
     @Test
     public void checkParseFormatFromPath() {
-        assertEquals("txt",ResponseProcessorManager.parseFormatFromUrl("://dummmy.com/fichier.txt"));
-        assertEquals("txt",ResponseProcessorManager.parseFormatFromUrl("://dummmy.com/fichier.txt?q="));
-        assertEquals("txt",ResponseProcessorManager.parseFormatFromUrl("://dummmy.com/path1/path2/fichier.txt?q=http://ahaha.com/file.json"));
-        assertEquals("json",ResponseProcessorManager.parseFormatFromUrl("://dummmy.com/path1/path2/fichier.json?q=http://ahaha.com/file.txt"));
-        assertEquals(null,ResponseProcessorManager.parseFormatFromUrl("://dummmy.com"));
+        assertEquals("txt",ResponseProcessorManager.parseFormatFromUrl("http://dummmy.com/fichier.txt"));
+        assertEquals("txt",ResponseProcessorManager.parseFormatFromUrl("http://dummmy.com/fichier.txt?q="));
+        assertEquals("txt",ResponseProcessorManager.parseFormatFromUrl("https://dummmy.com/path1/path2/fichier.txt?q=http://ahaha.com/file.json"));
+        assertEquals("json",ResponseProcessorManager.parseFormatFromUrl("https://dummmy.com/path1/path2/fichier.json?q=http://ahaha.com/file.txt"));
+        assertEquals(null,ResponseProcessorManager.parseFormatFromUrl("http://dummmy.com"));
         assertEquals(null,ResponseProcessorManager.parseFormatFromUrl("://dummmy.com?q="));
         assertEquals(null,ResponseProcessorManager.parseFormatFromUrl("://dummmy.com/file"));
         assertEquals(null,ResponseProcessorManager.parseFormatFromUrl("://dummmy.com/file."));
