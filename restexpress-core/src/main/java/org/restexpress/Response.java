@@ -70,6 +70,10 @@ public class Response {
 		headers.clear();
 	}
 
+	public Map<String, List<String>> headers() {
+	    return headers;
+	}
+	
 	public String getHeader(final String name) {
 		final List<String> list = headers.get(name);
 
