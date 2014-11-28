@@ -492,29 +492,29 @@ public class RestExpress {
      * @return an instance of {@link Plugin} which implement the specified interface or null if none is found.
      */
     @SuppressWarnings("unchecked")
-    public <T>  T findPlugin(final Class<T> interfaceName) {
-        for(Plugin plugin : plugins) {
+    public <T> T findPlugin(final Class<T> interfaceName) {
+        for (Plugin plugin : plugins) {
             if (interfaceName.isAssignableFrom(plugin.getClass())) {
                 return (T) plugin;
             }
         }
         return null;
     }
-    
+
     /**
      * @param simplePluginClassName simple Plugin Class Name
      * @return an instance of {@link Plugin} named simplePluginClassName or null if none is found.
      */
     @SuppressWarnings("unchecked")
     public <T extends Plugin> T findPlugin(final String simplePluginClassName) {
-        for(Plugin plugin : plugins) {
+        for (Plugin plugin : plugins) {
             if (plugin.getClass().getSimpleName().equals(simplePluginClassName)) {
                 return (T) plugin;
             }
         }
         return null;
     }
-    
+
     /**
      * Create a route.
      * 

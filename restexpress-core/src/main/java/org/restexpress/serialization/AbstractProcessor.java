@@ -161,6 +161,37 @@ public abstract class AbstractProcessor implements Processor {
     public String toString() {
         return getClass().getSimpleName() + " [supportedMediaType=" + supportedMediaType + ", charset=" + charset + "]";
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((charset == null) ? 0 : charset.hashCode());
+        result = prime * result + ((supportedMediaType == null) ? 0 : supportedMediaType.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AbstractProcessor other = (AbstractProcessor) obj;
+        if (charset == null) {
+            if (other.charset != null)
+                return false;
+        } else if (!charset.equals(other.charset))
+            return false;
+        if (supportedMediaType == null) {
+            if (other.supportedMediaType != null)
+                return false;
+        } else if (!supportedMediaType.equals(other.supportedMediaType))
+            return false;
+        return true;
+    }
 	
 	
 }

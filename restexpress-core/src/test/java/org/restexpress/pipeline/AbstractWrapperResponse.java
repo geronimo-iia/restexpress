@@ -42,6 +42,11 @@ import org.restexpress.route.RouteDeclaration;
 import org.restexpress.serialization.Processor;
 import org.restexpress.util.TestUtilities;
 
+/**
+ * {@link AbstractWrapperResponse} is a class facility for testing all wrapper.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ */
 public class AbstractWrapperResponse {
 
     protected DefaultRequestHandler messageHandler;

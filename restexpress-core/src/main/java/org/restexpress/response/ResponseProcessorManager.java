@@ -218,7 +218,7 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
      * @param url url which contains format information
      * @return extension or null if none was found.
      */
-    protected static String parseFormatFromUrl(final String url) {
+    public static String parseFormatFromUrl(final String url) {
         final int queryDelimiterIndex = url.indexOf('?');
         /* remove query parameters */
         final String path = (queryDelimiterIndex > 0 ? url.substring(0, queryDelimiterIndex) : url);

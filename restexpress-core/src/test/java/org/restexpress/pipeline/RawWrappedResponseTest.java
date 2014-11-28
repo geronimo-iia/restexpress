@@ -25,10 +25,14 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.response.Wrapper;
+import org.restexpress.response.Wrapper.RawResponseWrapper;
 import org.restexpress.serialization.JacksonJsonProcessor;
 import org.restexpress.serialization.JacksonXmlProcessor;
 
 /**
+ * {@link RawResponseWrapper} test case.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since Dec 15, 2010
  */
