@@ -26,6 +26,7 @@ import static org.jboss.netty.handler.codec.http.HttpMethod.OPTIONS;
 import static org.jboss.netty.handler.codec.http.HttpMethod.POST;
 import static org.jboss.netty.handler.codec.http.HttpMethod.PUT;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
 import org.restexpress.Response;
@@ -48,6 +50,13 @@ import org.slf4j.LoggerFactory;
  * Builds a route for a single URI. If a URI is given with no methods or actions, the builder creates routes for the GET, POST, PUT,
  * and DELETE HTTP methods for the given URI.
  * 
+ * Change
+ * <ul>
+ * <li>When using default mapping only, this builder did not raise an exception if a declared action has no method, but log a warning.</li>
+ * <li>Turn off serialization option when a method return a {@link File}</li>
+ * </ul>
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since 2010
  */
@@ -249,7 +258,7 @@ public abstract class RouteBuilder {
             String actionName = actionNames.get(method);
             Method action = null;
             if (actionName == null) {
-                // on default mapping, if method is not found we did not rasie a configuration exception
+                // on default mapping, if method is not found we did not raise a configuration exception
                 actionName = ACTION_MAPPING.get(method);
                 try {
                     action = determineActionMethod(controller, actionName);
@@ -261,7 +270,14 @@ public abstract class RouteBuilder {
             }
 
             if (action != null) {
-                routes.add(newRoute(pattern, controller, action, method, shouldSerializeResponse, name, flags, parameters));
+                // set accessible
+                action.setAccessible(true);
+                // compute serialization
+                boolean serializeResponse = shouldSerializeResponse(action);
+                // create route
+                Route route = newRoute(pattern, controller, action, method, serializeResponse, name, flags, parameters);
+                // add result
+                routes.add(route);
             }
         }
 
@@ -269,6 +285,27 @@ public abstract class RouteBuilder {
     }
 
     /**
+     * Should Serialize Response for specified action ? This method return false if action return type is
+     * <ul>
+     * <li>a {@link File}</li>
+     * <li>a {@link ChannelBuffer}</li>
+     * <li>shouldSerializeResponse flag is false (from call on {@link #noSerialization()})</li>
+     * </ul>
+     * 
+     * @param action {@link Method} to check
+     * @return True if we should use serialization
+     */
+    private boolean shouldSerializeResponse(Method action) {
+        if (shouldSerializeResponse) {
+            Class<?> returnType = action.getReturnType();
+            return !(File.class.isAssignableFrom(returnType) || ChannelBuffer.class.isAssignableFrom(returnType));
+        }
+        return Boolean.FALSE;
+    }
+
+    /**
+     * TODO a lot of refactoring here
+     * 
      * @return {@link RouteMetadata}
      */
     public RouteMetadata asMetadata() {
@@ -285,8 +322,6 @@ public abstract class RouteBuilder {
 
         return metadata;
     }
-
-    // SECTION: UTILITY - PRIVATE
 
     /**
      * Attempts to find the actionName on the controller, assuming a signature of actionName(Request, Response), and returns the action

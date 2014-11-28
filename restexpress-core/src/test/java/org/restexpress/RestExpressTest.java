@@ -46,11 +46,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.intelligentsia.commons.http.ResponseHeader;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.junit.Test;
+import org.restexpress.domain.Format;
 import org.restexpress.plugin.DummyPluginInterface;
 import org.restexpress.plugin.PluginA;
 import org.restexpress.plugin.PluginB;
 
 /**
+ * {@link RestExpress} test case.
+ * 
  * @author toddf
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @since Jan 28, 2011
@@ -76,100 +79,20 @@ public class RestExpressTest {
         assertTrue(restExpress.findPlugin("PluginB") != null);
     }
 
-    // @Test
-    // public void shouldUseDefaults()
-    // {
-    // assertEquals(Format.JSON, server.getDefaultFormat());
-    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-    // assertEquals(2, server.getResponseProcessors().size());
-    //
-    // assertEquals(0, server.getPort());
-    // assertTrue(server.getMessageObservers().isEmpty());
-    // assertTrue(server.getPostprocessors().isEmpty());
-    // assertTrue(server.getPreprocessors().isEmpty());
-    // assertTrue(server.shouldUseSystemOut());
-    // }
-
-    // @Test
-    // public void shouldDisableJson()
-    // {
-    // server.noJson();
-    // assertEquals(Format.JSON, server.getDefaultFormat());
-    // assertFalse(server.getResponseProcessors().containsKey(Format.JSON));
-    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-    // assertEquals(1, server.getResponseProcessors().size());
-    // }
-
-    // @Test
-    // public void shouldDisableXml()
-    // {
-    // server.noXml();
-    // assertEquals(Format.JSON, server.getDefaultFormat());
-    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-    // assertFalse(server.getResponseProcessors().containsKey(Format.XML));
-    // assertEquals(1, server.getResponseProcessors().size());
-    // }
-
-    // @Test
-    // public void shouldMakeXmlDefault()
-    // {
-    // server.supportXml(true);
-    // assertEquals(Format.XML, server.getDefaultFormat());
-    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-    // assertEquals(2, server.getResponseProcessors().size());
-    // }
-
-    // @Test
-    // public void shouldCustomizeJsonSerializer()
-    // {
-    // server.putResponseProcessor(Format.JSON,
-    // provider.newProcessor(Format.JSON));
-    // assertEquals(Format.JSON, server.getDefaultFormat());
-    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-    // assertEquals(2, server.getResponseProcessors().size());
-    // }
-
-    // @Test
-    // public void shouldCustomizeXmlSerializer()
-    // {
-    // server.putResponseProcessor(Format.XML,
-    // provider.newProcessor(Format.XML));
-    // assertEquals(Format.JSON, server.getDefaultFormat());
-    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-    // assertEquals(2, server.getResponseProcessors().size());
-    // }
-
-    // @Test
-    // public void shouldNotUpdateJsonSerializer()
-    // {
-    // ResponseProcessor rp = provider.newProcessor(Format.JSON);
-    // server.putResponseProcessor(Format.JSON, rp);
-    // server.supportJson(true);
-    // assertEquals(Format.JSON, server.getDefaultFormat());
-    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-    // assertEquals(2, server.getResponseProcessors().size());
-    //
-    // assertTrue(rp == server.getResponseProcessors().get(Format.JSON));
-    // }
-
-    // @Test
-    // public void shouldNotUpdateXmlSerializer()
-    // {
-    // ResponseProcessor rp = provider.newProcessor(Format.XML);
-    // server.putResponseProcessor(Format.XML, rp);
-    // server.supportXml(true);
-    // assertEquals(Format.XML, server.getDefaultFormat());
-    // assertTrue(server.getResponseProcessors().containsKey(Format.JSON));
-    // assertTrue(server.getResponseProcessors().containsKey(Format.XML));
-    // assertEquals(2, server.getResponseProcessors().size());
-    //
-    // assertTrue(rp == server.getResponseProcessors().get(Format.XML));
-    // }
+    @Test
+    public void shouldUseDefaults() {
+        RestExpress restExpress = new RestExpress();
+        assertTrue(restExpress.serializationProvider().processor(Format.JSON.getMediaType()) != null);
+        assertTrue(restExpress.serializationProvider().processor(Format.JSON.getMediaType())
+                .equals(restExpress.serializationProvider().defaultProcessor()));
+        assertTrue(restExpress.serializationProvider().processor(Format.XML.getMediaType()) != null);
+        assertTrue(restExpress.serializationProvider().processor(Format.TEXT.getMediaType()) != null);
+        assertEquals(8081, restExpress.settings().serverSettings().getPort());
+        assertTrue(restExpress.messageObservers().isEmpty());
+        assertTrue(restExpress.postprocessors().isEmpty());
+        assertTrue(restExpress.preprocessors().isEmpty());
+        assertTrue(restExpress.settings().serverSettings().isUseSystemOut());
+    }
 
     @Test
     public void shouldCallDefaultMethods() throws ClientProtocolException, IOException {

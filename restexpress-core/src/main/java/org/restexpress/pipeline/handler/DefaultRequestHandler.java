@@ -123,10 +123,10 @@ public class DefaultRequestHandler extends AbstractRequestHandler {
                 if (settings != null) {
                     settings.serialize(response);
                 }
-            }
-            // add default content type if none was provided.
-            if (!response.hasHeader(HttpHeaders.Names.CONTENT_TYPE)) {
-                response.setContentType(MediaType.TEXT_PLAIN.withCharset(CharacterSet.UTF_8.getCharsetName()));
+                // add default content type if none was provided only if we serialize something.
+                if (!response.hasHeader(HttpHeaders.Names.CONTENT_TYPE)) {
+                    response.setContentType(MediaType.TEXT_PLAIN.withCharset(CharacterSet.UTF_8.getCharsetName()));
+                }
             }
         }
     }
