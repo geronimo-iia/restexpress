@@ -998,6 +998,11 @@ public enum Format {
     ;
 
     /**
+     * Map of [Extension, Media Type]
+     */
+    private final static Map<String, String> extensionMap = toMap();;
+    
+    /**
      * Extension
      */
     private final String extension;
@@ -1031,6 +1036,10 @@ public enum Format {
         return extension;
     }
 
+    public static Map<String, String> asMap() {
+    	return extensionMap;
+    }
+    
     /**
      * Transform {@link Format} into a {@link Map} of Extension, Media Type
      * 
