@@ -65,14 +65,11 @@ import org.restexpress.util.HttpSpecification;
  */
 public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 
-    private final Map<String, String> format;
-
     /**
      * Build a new instance of {@link DefaultHttpResponseWriter}.
      */
     public DefaultHttpResponseWriter() {
         super();
-        format = Format.toMap();
     }
 
     @Override
@@ -139,7 +136,7 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
             String extension = ResponseProcessorManager.parseFormatFromUrl(resource.getName());
             String mediaType = Format.BIN.getMediaType();
             if (extension != null) {
-                mediaType = format.get(extension);
+                mediaType = Format.asMap().get(extension);
             }
             httpResponse.headers().set(ResponseHeader.CONTENT_TYPE.getHeader(), mediaType);
 

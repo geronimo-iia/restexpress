@@ -71,7 +71,7 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
         super();
         mediaTypePerFormat = new HashMap<>();
         // compute media range
-        for (Entry<String, String> entry : Format.toMap().entrySet()) {
+        for (Entry<String, String> entry : Format.asMap().entrySet()) {
             mediaTypePerFormat.put(entry.getKey(), MediaRanges.parse(entry.getValue()));
         }
     }

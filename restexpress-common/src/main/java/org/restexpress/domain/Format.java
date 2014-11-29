@@ -1000,7 +1000,7 @@ public enum Format {
     /**
      * Map of [Extension, Media Type]
      */
-    private final static Map<String, String> extensionMap = toMap();;
+    private final static Map<String, String> extensionMap = toMap();
     
     /**
      * Extension
@@ -1045,7 +1045,7 @@ public enum Format {
      * 
      * @return a {@link Map}.
      */
-    public static Map<String, String> toMap() {
+    protected static Map<String, String> toMap() {
         Map<String, String> result = new HashMap<String, String>();
         for (Format format : Format.values()) {
             result.put(format.extension, format.mediaType);
