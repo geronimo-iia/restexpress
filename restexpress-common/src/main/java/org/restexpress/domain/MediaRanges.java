@@ -32,7 +32,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-package org.restexpress.response;
+package org.restexpress.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;

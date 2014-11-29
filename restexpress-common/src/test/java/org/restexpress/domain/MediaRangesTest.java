@@ -32,7 +32,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-package org.restexpress.response;
+package org.restexpress.domain;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -42,8 +42,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
-import org.restexpress.response.MediaRange;
-import org.restexpress.response.MediaRanges;
+import org.restexpress.domain.MediaRange;
+import org.restexpress.domain.MediaRanges;
 
 /**
  * @author toddf

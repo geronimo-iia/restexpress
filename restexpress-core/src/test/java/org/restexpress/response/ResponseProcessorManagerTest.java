@@ -20,11 +20,14 @@
 package org.restexpress.response;
 
 import com.google.common.collect.Lists;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 import org.restexpress.domain.CharacterSet;
+import org.restexpress.domain.MediaRange;
+import org.restexpress.domain.MediaRanges;
 import org.restexpress.domain.MediaType;
 
 import java.util.List;

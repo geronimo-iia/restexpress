@@ -34,6 +34,8 @@ import org.restexpress.Response;
 import org.restexpress.SerializationProvider;
 import org.restexpress.common.StringUtils;
 import org.restexpress.domain.Format;
+import org.restexpress.domain.MediaRange;
+import org.restexpress.domain.MediaRanges;
 import org.restexpress.serialization.Processor;
 
 /**
