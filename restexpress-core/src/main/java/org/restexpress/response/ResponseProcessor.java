@@ -39,6 +39,8 @@ import org.restexpress.exception.DeserializationException;
 import org.restexpress.exception.SerializationException;
 import org.restexpress.serialization.Processor;
 
+import com.google.common.base.Preconditions;
+
 /**
  * {@link ResponseProcessor} is an association of a {@link Processor} for serialization purpose and a {@link ResponseWrapper} to render
  * error result. This class implements {@link Serializer} interface.
@@ -64,16 +66,12 @@ public final class ResponseProcessor implements Serializer {
      * 
      * @param org.restexpress.serialization
      * @param wrapper
-     * @throws IllegalArgumentException if one of parameter is null
+     * @throws NullPointerException if one of parameter is null
      */
-    public ResponseProcessor(final Processor processor, final ResponseWrapper wrapper) throws IllegalArgumentException {
+    public ResponseProcessor(final Processor processor, final ResponseWrapper wrapper) throws NullPointerException {
         super();
-        if (processor == null)
-            throw new IllegalArgumentException("Processor can't be null");
-        if (wrapper == null)
-            throw new IllegalArgumentException("ResponseWrapper can't be null");
-        this.processor = processor;
-        this.wrapper = wrapper;
+        this.processor = Preconditions.checkNotNull(processor, "Processor can't be null");
+        this.wrapper = Preconditions.checkNotNull(wrapper, "ResponseWrapper can't be null");;
     }
 
     /**
@@ -95,7 +93,6 @@ public final class ResponseProcessor implements Serializer {
             ChannelBuffer content = ChannelBuffers.dynamicBuffer();
             processor.write(wrapped, content);
             response.setBody(content);
-
         } else {
             response.setBody(wrapped);
         }

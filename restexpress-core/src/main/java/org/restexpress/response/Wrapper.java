@@ -26,6 +26,12 @@ import org.restexpress.domain.response.JsendResult;
 import org.restexpress.domain.response.JsendResult.State;
 import org.restexpress.exception.Exceptions;
 
+/**
+ * {@link Wrapper} utility class to define instance of {@link ResponseWrapper}. 
+ *
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ *
+ */
 public enum Wrapper {
     ;
 

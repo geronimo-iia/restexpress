@@ -113,7 +113,6 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 				context.getResponse().setBody(result);
 			}
 			invokePostprocessors(postprocessors(), context);
-			//TODO insert wrapper
 			serializeResponse(context, false);
 			enforceHttpSpecification(context);
 			invokeFinallyProcessors(finallyProcessors(), context);
