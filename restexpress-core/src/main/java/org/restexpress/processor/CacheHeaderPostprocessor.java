@@ -78,7 +78,7 @@ public class CacheHeaderPostprocessor implements Postprocessor {
             response.addHeader(ResponseHeader.CACHE_CONTROL.getHeader(), String.format("max-age=%s", maxAge));
             response.addHeader(ResponseHeader.EXPIRES.getHeader(),
                     HttpHeaderDateTimeFormat.RFC_1123.format(computeExpiresDate((Integer) maxAge)));
-        } else if (request.isFlagged(Flags.DONT_CACHE.toString())) {
+        } else if (request.isFlagged(Flags.DONT_CACHE)) {
             response.addHeader(RequestHeader.CACHE_CONTROL.getHeader(), NO_CACHE);
             response.addHeader(RequestHeader.PRAGMA.getHeader(), NO_CACHE);
         }

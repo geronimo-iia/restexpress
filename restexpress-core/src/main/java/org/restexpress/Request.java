@@ -558,6 +558,21 @@ public class Request {
 	}
 
 	/**
+	 * Ask if the request contains the named flag. Flags are boolean settings
+	 * that are created at route definition time. These flags can be used to
+	 * pass booleans to preprocessors, controllers, or postprocessors. An
+	 * example might be: flag(NO_AUTHORIZATION), which might inform an
+	 * authorization preprocessor to skip authorization for this route.
+	 * 
+	 * @param flag
+	 *            the name of a flag.
+	 * @return true if the request contains the named flag, otherwise false.
+	 */
+	public boolean isFlagged(final Flags flag) {
+		return resolvedRoute.isFlagged(flag.toString());
+	}
+
+	/**
 	 * Get a named parameter. Parameters are named settings that are created at
 	 * route definition time. These parameters can be used to pass data to
 	 * subsequent preprocessors, controllers, or postprocessors. This is a way

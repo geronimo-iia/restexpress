@@ -85,7 +85,7 @@ public abstract class Route {
 	}
 
 	public boolean isFlagged(final Flags flag) {
-		return flags.contains(flag.toString());
+		return isFlagged(flag.toString());
 	}
 
 	public boolean hasParameter(final String name) {
