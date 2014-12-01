@@ -79,7 +79,7 @@ public class ContentController {
 		final String path = sanitizeUri(uri);
 		File resource = null;
 		if (path == null) {
-			response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
+			response.setResponseStatus(HttpResponseStatus.BAD_REQUEST);
 			return resource;
 		}
 		if (!contextAdapter.match(path)) {
@@ -92,6 +92,8 @@ public class ContentController {
 			return resource;
 		}
 		response.setResponseStatus(HttpResponseStatus.OK);
+		
+		
 		return resource;
 	}
 
