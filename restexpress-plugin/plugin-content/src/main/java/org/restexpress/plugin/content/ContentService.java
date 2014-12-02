@@ -46,8 +46,8 @@ public interface ContentService extends ContextAdapter {
     /**
      * Enable cache.
      * 
-     * @param initialCapacity initial Capacity
-     * @param maximumSiz emaximum Size
+     * @param initialCapacity initial cache Capacity
+     * @param maximumSize maximum cache Size
      * @param expireAfterWrite time expire After Write in Minutes
      */
     public void enableCache(final int initialCapacity, final int maximumSize, final int expireAfterWrite);
@@ -71,6 +71,13 @@ public interface ContentService extends ContextAdapter {
      * @return current temporary directory
      */
     public File temporaryDirectory();
+
+    /**
+     * Set temporary Directory.
+     * 
+     * @param temporaryDirectory temporary Directory
+     */
+    public void temporaryDirectory(File temporaryDirectory);
 
     /**
      * Register a specific {@link ContextAdapter} instance.

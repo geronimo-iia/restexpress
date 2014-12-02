@@ -28,6 +28,7 @@ import org.restexpress.plugin.AbstractRoutePlugin;
 import org.restexpress.plugin.content.adapter.CachedContextAdapter;
 import org.restexpress.plugin.content.adapter.CompositeContextAdapter;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
@@ -37,8 +38,11 @@ import com.google.common.io.Files;
  * <li>{@link ContentService}</li>
  * <li>{@link ContextAdapter}</li>
  * </ul>
- * in order to be able to change at runtime all content controller configuration.
- * 
+ * in order to be able to change at runtime all content controller configuration. By default:
+ * <ul>
+ * <li>cache is disabled</li>
+ * <li>temporary directory is created under JVM temporary directory</li>
+ * </ul>
  * 
  * <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
@@ -74,11 +78,6 @@ public class ContentPlugin extends AbstractRoutePlugin implements ContentService
     @Override
     public void bind(final RestExpress server) {
         super.bind(server);
-
-        // load server configuration
-        // server.settings(this, "ENTRY_POINT", DEFAULT_ENTRYPOINT);
-        // server.settings(this, "TEMP_DIRECTORY", null);
-
         entryPoint = DEFAULT_ENTRYPOINT;
         tempDirectory = Files.createTempDir();
         binded = true;
@@ -135,6 +134,15 @@ public class ContentPlugin extends AbstractRoutePlugin implements ContentService
     @Override
     public File temporaryDirectory() {
         return tempDirectory;
+    }
+
+    @Override
+    public void temporaryDirectory(File temporaryDirectory) {
+        Preconditions.checkNotNull(temporaryDirectory);
+        Preconditions.checkArgument(temporaryDirectory.exists(), "temporary directory must exists");
+        Preconditions.checkArgument(temporaryDirectory.isDirectory(), "temporary directory must be a directory");
+        this.tempDirectory = temporaryDirectory;
+        build();
     }
 
     @Override
