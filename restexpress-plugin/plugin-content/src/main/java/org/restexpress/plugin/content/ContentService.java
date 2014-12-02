@@ -22,11 +22,11 @@ package org.restexpress.plugin.content;
 import java.io.File;
 
 /**
- * {@link ContentEntryPoint} declare service content operation.
+ * {@link ContentEntryPoint} declare service content operation and provide a {@link ContextAdapter} interface.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
-public interface ContentService {
+public interface ContentService extends ContextAdapter{
 
     /**
      * @return main entry point
@@ -56,6 +56,11 @@ public interface ContentService {
      * Disable cache.
      */
     public void disableCache();
+    
+    /**
+     * @return <code>true</code> if cache is enabled.
+     */
+    public boolean isCacheEnabled();
 
     /**
      * @return current temporary directory

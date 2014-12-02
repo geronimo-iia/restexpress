@@ -42,7 +42,7 @@ import com.google.common.io.Files;
  * 
  * <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
-public class ContentPlugin extends AbstractRoutePlugin implements ContentService, ContextAdapter {
+public class ContentPlugin extends AbstractRoutePlugin implements ContentService {
 
     /**
      * Default value entry point.
@@ -120,6 +120,11 @@ public class ContentPlugin extends AbstractRoutePlugin implements ContentService
     public void disableCache() {
         enableCache = false;
         build();
+    }
+
+    @Override
+    public boolean isCacheEnabled() {
+        return enableCache;
     }
 
     @Override
