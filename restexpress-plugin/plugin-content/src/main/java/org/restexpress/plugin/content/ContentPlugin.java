@@ -128,6 +128,11 @@ public class ContentPlugin extends AbstractRoutePlugin implements ContentService
     }
 
     @Override
+    public int expireAfterWrite() {
+        return enableCache ? expireAfterWrite : -1;
+    }
+
+    @Override
     public File temporaryDirectory() {
         return tempDirectory;
     }

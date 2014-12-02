@@ -48,14 +48,19 @@ import org.restexpress.pipeline.Postprocessor;
  * For GET and HEAD requests, adds caching control headers. May be used in conjunction with DateHeaderPostprocessor to add Date header
  * for GET and HEAD requests.
  * <p/>
- * If the route has a Parameters.Cache.MAX_AGE parameter, whose value is the max-age in seconds then the following are added:
- * Cache-Control: max-age=<seconds><br/>
- * Expires: now + max-age
- * <p/>
  * If the route has a Flags.Cache.NO_CACHE flag, then the following headers are set on the response: Cache-Control: no-cache<br/>
  * Pragma: no-cache
  * <p/>
- * The MAX_AGE parameter takes precidence, in that, if present, the NO_CACHE flag is ignored.
+ * If the route has a Parameters.Cache.MAX_AGE parameter, or request has a Parameters.Cache.MAX_AGE attachment, whose value is the
+ * max-age in seconds then the following are added:
+ * <ul>
+ * <li>Cache-Control: max-age=<seconds></li>
+ * <li>Expires: now + max-age</li>
+ * </ul>
+ * <p/>
+ * The MAX_AGE parameter takes precedence, in that, if present, the NO_CACHE flag is ignored.
+ * <p/>
+ * The Parameters.Cache.MAX_AGE attachment takes precedence on parameter.
  * <p/>
  * To use: simply add server.addPostprocessor(new CacheHeaderPostprocessor()); in your main() method.
  * 
@@ -72,8 +77,13 @@ public class CacheHeaderPostprocessor implements Postprocessor {
         if (!request.isMethodGet() && !HttpMethod.HEAD.equals(request.getHttpMethod()))
             return;
 
-        final Object maxAge = request.getParameter(Parameters.Cache.MAX_AGE);
+        // lookup max age from request Attachment first, or from route definition is no attachment was found.
+        Object maxAge = request.getAttachment(Parameters.Cache.MAX_AGE);
+        if (maxAge == null) {
+            maxAge = request.getParameter(Parameters.Cache.MAX_AGE);
+        }
         final Response response = context.getResponse();
+        //
         if (maxAge != null) {
             response.addHeader(ResponseHeader.CACHE_CONTROL.getHeader(), String.format("max-age=%s", maxAge));
             response.addHeader(ResponseHeader.EXPIRES.getHeader(),

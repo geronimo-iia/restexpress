@@ -26,7 +26,7 @@ import java.io.File;
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
-public interface ContentService extends ContextAdapter{
+public interface ContentService extends ContextAdapter {
 
     /**
      * @return main entry point
@@ -56,11 +56,16 @@ public interface ContentService extends ContextAdapter{
      * Disable cache.
      */
     public void disableCache();
-    
+
     /**
      * @return <code>true</code> if cache is enabled.
      */
     public boolean isCacheEnabled();
+
+    /**
+     * @return if isCacheEnabled is true return time expire After Write in Minutes else return -1.
+     */
+    public int expireAfterWrite();
 
     /**
      * @return current temporary directory

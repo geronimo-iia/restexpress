@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.util.regex.Pattern;
 
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.restexpress.Parameters;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.processor.CacheHeaderPostprocessor;
@@ -93,9 +94,7 @@ public class ContentController {
         response.setResponseStatus(HttpResponseStatus.OK);
         // add cache information that could be used by CacheHeaderPostprocessor.
         if (contentService.isCacheEnabled()) {
-            // TODO add request context parameter
-            // request.getResolvedRoute().getParameter(name)
-            // reques.gett.getParameter(Parameters.Cache.MAX_AGE);
+            request.putAttachment(Parameters.Cache.MAX_AGE, contentService.expireAfterWrite() * 60);
         }
         return resource;
     }
