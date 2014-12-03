@@ -35,7 +35,7 @@
 package org.restexpress;
 
 /**
- * Constants for built-in RestExpress parameters on routes.
+ * Constants for built-in RestExpress parameters on routes or Attachment on request.
  * 
  * @author toddf
  * @since Jan 19, 2011

@@ -49,10 +49,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "route")
 public class RouteMetadata implements Serializable {
     private static final long serialVersionUID = -6892754126510965799L;
+    /**
+     * Route name.
+     */
     private String name;
+    /**
+     * URI information.
+     */
     private UriMetadata uri;
     private List<String> aliases;
     private List<String> methods;
+    /**
+     * Use Serialization if needed.
+     */
     private boolean serialized;
 
     protected RouteMetadata() {

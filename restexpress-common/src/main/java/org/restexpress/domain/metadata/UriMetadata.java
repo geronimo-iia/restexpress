@@ -48,7 +48,13 @@ import java.util.List;
 public class UriMetadata implements Serializable {
 	private static final long serialVersionUID = 7363930531607327246L;
 
+	/**
+	 * URI pattern.
+	 */
 	private String pattern;
+	/**
+	 * list of parameter from URI.
+	 */
 	private List<String> parameters;
 
 	protected UriMetadata() {

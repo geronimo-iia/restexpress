@@ -48,14 +48,32 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author toddf
  * @since Jan 31, 2011
  */
-@XmlRootElement(name="service")
+@XmlRootElement(name = "service")
 public class ServerMetadata implements Serializable {
 	private static final long serialVersionUID = -8033976905088770790L;
+	/**
+	 * Instance name.
+	 */
 	private String name;
+	/**
+	 * Port number.
+	 */
 	private int port;
+	/**
+	 * Base URL.
+	 */
 	private String baseUrl;
+	/**
+	 * Set of supported Media type for serialization purpose.
+	 */
 	private Set<String> supportedMediaTypes;
+	/**
+	 * Default media type for serialization.
+	 */
 	private String defaultMediaType;
+	/**
+	 * List of {@link RouteMetadata}.
+	 */
 	private final List<RouteMetadata> routes;
 
 	/**

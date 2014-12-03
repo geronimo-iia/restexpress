@@ -22,48 +22,59 @@ package org.restexpress;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.OK;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.intelligentsia.commons.http.ResponseHeader;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.query.QueryRange;
 
+import com.google.common.collect.Maps;
+
 /**
+ * {@link Response} definition for RestExpress.
+ * 
  * @author toddf
  * @since Nov 20, 2009
  */
 public class Response {
-	private static final String CONTENT_RANGE_HEADER_NAME = "Content-Range";
-
-	// SECTION: INSTANCE VARIABLES
 
 	private HttpResponseStatus responseCode = OK;
 	private Object body;
-	private final Map<String, List<String>> headers = new HashMap<String, List<String>>();
+	private final Map<String, List<String>> headers = Maps.newHashMap();
 	private boolean isSerialized = true;
 	private Throwable exception = null;
-
-	// SECTION: CONSTRUCTORS
 
 	public Response() {
 		super();
 	}
 
-	// SECTION: ACCESSORS/MUTATORS
-
+	/**
+	 * @return response body as {@link Object}
+	 */
 	public Object getBody() {
 		return body;
 	}
 
+	/**
+	 * @return True if body member is not null AND responseCode <>
+	 *         {@link HttpResponseStatus#NO_CONTENT}
+	 */
 	public boolean hasBody() {
-		return (getBody() != null);
+		return (getBody() != null) && (responseCode.getCode() != HttpResponseStatus.NO_CONTENT.getCode());
 	}
 
+	/**
+	 * Set response body if responseCode <>
+	 * {@link HttpResponseStatus#NO_CONTENT}.
+	 * 
+	 * @param body response body
+	 */
 	public void setBody(final Object body) {
-		this.body = body;
+		if (responseCode.getCode() != HttpResponseStatus.NO_CONTENT.getCode())
+			this.body = body;
 	}
 
 	public void clearHeaders() {
@@ -71,9 +82,9 @@ public class Response {
 	}
 
 	public Map<String, List<String>> headers() {
-	    return headers;
+		return headers;
 	}
-	
+
 	public String getHeader(final String name) {
 		final List<String> list = headers.get(name);
 
@@ -127,11 +138,15 @@ public class Response {
 	 * @param size
 	 */
 	public void addRangeHeader(final QueryRange range, final long count) {
-		addHeader(CONTENT_RANGE_HEADER_NAME, range.asContentRange(count));
+		addHeader(ResponseHeader.CONTENT_RANGE.getHeader(), range.asContentRange(count));
 	}
 
+	/**
+	 * Add a "Location" header to the response.
+	 * @param url URL location
+	 */
 	public void addLocationHeader(final String url) {
-		addHeader(HttpHeaders.Names.LOCATION, url);
+		addHeader(ResponseHeader.LOCATION.getHeader(), url);
 	}
 
 	/**
@@ -153,10 +168,10 @@ public class Response {
 			range.setLimitViaEnd((count > 1 ? count - 1 : 0));
 
 			if ((count > 0) && !range.spans(size, count)) {
-				setResponseCode(206);
+				setResponseStatus(HttpResponseStatus.PARTIAL_CONTENT);
 			}
 		} else if (range.isInside(size, count)) {
-			setResponseCode(206);
+			setResponseStatus(HttpResponseStatus.PARTIAL_CONTENT);
 		}
 
 		addRangeHeader(range, count);
@@ -193,11 +208,7 @@ public class Response {
 	 * body will contain content).
 	 */
 	public void setResponseNoContent() {
-		// TODO: fix this...
-		// if (!responseProcessor.getWrapper().addsBodyContent(this))
-		// {
 		setResponseStatus(HttpResponseStatus.NO_CONTENT);
-		// }
 	}
 
 	/**

@@ -47,9 +47,9 @@ package org.restexpress;
  */
 public enum Flags {
 	/**
-	 * DONT_CACHE flag: prevent caching header declaration
+	 * NO_CACHE flag: prevent caching header declaration
 	 */
-	DONT_CACHE("no.caching"), //
+	NO_CACHE("no.caching"), //
 	/**
 	 * PUBLIC_ROUTE flag: declare a public route (not secured)
 	 */
