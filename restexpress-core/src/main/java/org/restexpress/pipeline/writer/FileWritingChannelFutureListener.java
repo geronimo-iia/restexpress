@@ -39,7 +39,7 @@ import com.google.common.io.Closeables;
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
-public class FileWritingChannelFutureListener implements ChannelFutureListener {
+public final class FileWritingChannelFutureListener implements ChannelFutureListener {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FileWritingChannelFutureListener.class);
 

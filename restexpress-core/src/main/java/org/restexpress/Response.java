@@ -59,22 +59,20 @@ public class Response {
 	}
 
 	/**
-	 * @return True if body member is not null AND responseCode <>
-	 *         {@link HttpResponseStatus#NO_CONTENT}
+	 * @return True if body member is not null
 	 */
 	public boolean hasBody() {
-		return (getBody() != null) && (responseCode.getCode() != HttpResponseStatus.NO_CONTENT.getCode());
+		return (getBody() != null);
 	}
 
 	/**
-	 * Set response body if responseCode <>
-	 * {@link HttpResponseStatus#NO_CONTENT}.
+	 * Set response body.
 	 * 
-	 * @param body response body
+	 * @param body
+	 *            response body
 	 */
 	public void setBody(final Object body) {
-		if (responseCode.getCode() != HttpResponseStatus.NO_CONTENT.getCode())
-			this.body = body;
+		this.body = body;
 	}
 
 	public void clearHeaders() {
@@ -143,7 +141,9 @@ public class Response {
 
 	/**
 	 * Add a "Location" header to the response.
-	 * @param url URL location
+	 * 
+	 * @param url
+	 *            URL location
 	 */
 	public void addLocationHeader(final String url) {
 		addHeader(ResponseHeader.LOCATION.getHeader(), url);

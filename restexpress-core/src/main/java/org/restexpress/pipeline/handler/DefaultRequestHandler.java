@@ -19,17 +19,29 @@
  */
 package org.restexpress.pipeline.handler;
 
+import java.io.File;
 import java.net.InetSocketAddress;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
+import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
+import org.intelligentsia.commons.http.RequestHeader;
+import org.intelligentsia.commons.http.ResponseHeader;
+import org.intelligentsia.commons.http.exception.HttpRuntimeException;
+import org.intelligentsia.commons.http.status.HttpResponseStandardStatus;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.SerializationProvider;
 import org.restexpress.domain.CharacterSet;
+import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
 import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.MessageContext;
@@ -45,7 +57,7 @@ import org.restexpress.util.HttpSpecification;
  * @since Nov 13, 2009
  */
 @Sharable
-public class DefaultRequestHandler extends AbstractRequestHandler {
+public final class DefaultRequestHandler extends AbstractRequestHandler {
 
 	private final RouteResolver routeResolver;
 	private final ResponseProcessorManager responseProcessorManager;
@@ -117,22 +129,91 @@ public class DefaultRequestHandler extends AbstractRequestHandler {
 	}
 
 	@Override
-	protected void serializeResponse(final MessageContext context, final boolean force) {
+	protected void handleResponseContent(final MessageContext context, final boolean force) {
 		final Response response = context.getResponse();
 		if (HttpSpecification.isContentTypeAllowed(response)) {
 			if (response.isSerialized()) {
+				// find serialization settings
 				ResponseProcessorSetting settings = context.getResponseProcessorSetting();
 				if (settings == null && force) {
 					settings = responseProcessorManager.resolve(context.getRequest(), response, force);
 				}
+				// process serialization if one was found
 				if (settings != null) {
 					settings.serialize(response);
 				}
 			}
-			// add default content type if none was provided only if content type is allowed
+
+			// manage File case
+			final Object body = response.getBody();
+			if (body != null)
+				if (File.class.isAssignableFrom(body.getClass())) {
+					File resource = (File) response.getBody();
+					processFileResponseHeader(context.getRequest(), response, resource);
+				}
+
+			// add default content type if none was provided only if content
+			// type is allowed
 			if (!response.hasHeader(HttpHeaders.Names.CONTENT_TYPE)) {
 				response.setContentType(MediaType.TEXT_PLAIN.withCharset(CharacterSet.UTF_8.getCharsetName()));
 			}
 		}
+	}
+
+	private static void processFileResponseHeader(final Request request, final Response response, File resource) {
+		// check for is Modified Since
+		if (!isModifiedSince(request, resource)) {
+			response.setResponseStatus(HttpResponseStatus.NOT_MODIFIED);
+			final Calendar time = new GregorianCalendar();
+			response.addHeader(ResponseHeader.DATE.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(time.getTime()));
+		} else {
+			// we have little thing to do
+			final Calendar time = new GregorianCalendar();
+			Date currentTime = time.getTime();
+			// date header
+			response.addHeader(ResponseHeader.DATE.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(currentTime));
+			// last modified header
+			Date lastModified = new Date(resource.lastModified());
+			if (lastModified.after(currentTime)) {
+				response.addHeader(ResponseHeader.LAST_MODIFIED.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(currentTime));
+			} else {
+				response.addHeader(ResponseHeader.LAST_MODIFIED.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(lastModified));
+			}
+			// content type
+			String extension = ResponseProcessorManager.parseFormatFromUrl(resource.getName());
+			String mediaType = Format.BIN.getMediaType();
+			if (extension != null) {
+				mediaType = Format.asMap().get(extension);
+			}
+			response.addHeader(ResponseHeader.CONTENT_TYPE.getHeader(), mediaType);
+
+			// we can now add content length header
+			response.addHeader(ResponseHeader.CONTENT_LENGTH.getHeader(), Long.toString(resource.length()));
+		}
+	}
+
+	/**
+	 * @param request
+	 * @param resource
+	 * @return True if resource is modified since date value read from
+	 *         {@link RequestHeader#IF_MODIFIED_SINCE}.
+	 * @throws HttpRuntimeException
+	 *             {@link HttpResponseStandardStatus#BAD_REQUEST} if header
+	 *             {@link RequestHeader#IF_MODIFIED_SINCE} cannot be parsed.
+	 */
+	private static boolean isModifiedSince(final Request request, final File resource) throws HttpRuntimeException {
+		final String ifModifiedSince = request.getHeader(RequestHeader.IF_MODIFIED_SINCE.getHeader());
+		if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
+			try {
+				Date ifModifiedSinceDate = HttpHeaderDateTimeFormat.parseAny(ifModifiedSince);
+				// just compare second
+				final long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
+				final long fileLastModifiedSeconds = resource.lastModified() / 1000;
+				return ifModifiedSinceDateSeconds <= fileLastModifiedSeconds;
+			} catch (ParseException e) {
+				throw new HttpRuntimeException(HttpResponseStandardStatus.BAD_REQUEST, e);
+			}
+		}
+		return true;
 	}
 }
