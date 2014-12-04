@@ -99,7 +99,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 	}
 
 	@Override
-	public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent event) throws Exception {
+	public final void messageReceived(final ChannelHandlerContext ctx, final MessageEvent event) throws Exception {
 		final MessageContext context = createInitialContext(ctx, event);
 
 		try {
@@ -140,7 +140,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 	}
 
 	@Override
-	public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent event) throws Exception {
+	public final void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent event) throws Exception {
 		try {
 			final MessageContext messageContext = (MessageContext) ctx.getAttachment();
 			if (messageContext != null) {
@@ -158,17 +158,17 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 	/**
 	 * @return {@link MessageObserverDispatcher} instance.
 	 */
-	public MessageObserverDispatcher dispatcher() {
+	public final MessageObserverDispatcher dispatcher() {
 		return dispatcher;
 	}
 
-	public void addPreprocessor(final Preprocessor handler) {
+	public final void addPreprocessor(final Preprocessor handler) {
 		if (!preprocessors.contains(handler)) {
 			preprocessors.add(handler);
 		}
 	}
 
-	public void addPostprocessor(final Postprocessor handler) {
+	public final void addPostprocessor(final Postprocessor handler) {
 		if (!postprocessors.contains(handler)) {
 			postprocessors.add(handler);
 		}
@@ -180,19 +180,19 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 		}
 	}
 
-	public List<Postprocessor> finallyProcessors() {
+	public final List<Postprocessor> finallyProcessors() {
 		return finallyProcessors;
 	}
 
-	public List<Postprocessor> postprocessors() {
+	public final List<Postprocessor> postprocessors() {
 		return postprocessors;
 	}
 
-	public List<Preprocessor> preprocessors() {
+	public final List<Preprocessor> preprocessors() {
 		return preprocessors;
 	}
 
-	protected void invokePreprocessors(final MessageContext context) {
+	protected final void invokePreprocessors(final MessageContext context) {
 		for (final Preprocessor handler : preprocessors) {
 			handler.process(context);
 		}
@@ -200,13 +200,13 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 			context.getRequest().getBody().resetReaderIndex();
 	}
 
-	protected void invokePostprocessors(final MessageContext context) {
+	protected final void invokePostprocessors(final MessageContext context) {
 		for (final Postprocessor handler : postprocessors) {
 			handler.process(context);
 		}
 	}
 
-	protected void invokeFinallyProcessors(final MessageContext context) {
+	protected final void invokeFinallyProcessors(final MessageContext context) {
 		for (final Postprocessor handler : finallyProcessors) {
 			try {
 				handler.process(context);
@@ -216,7 +216,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 		}
 	}
 
-	protected MessageContext createInitialContext(final ChannelHandlerContext ctx, final MessageEvent event) {
+	protected final MessageContext createInitialContext(final ChannelHandlerContext ctx, final MessageEvent event) {
 		final Request request = createRequest(event, ctx);
 		final Response response = createResponse();
 		final MessageContext context = new MessageContext(request, response);
@@ -230,7 +230,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 	 * @param ctx
 	 * @param context
 	 */
-	protected void writeResponse(final ChannelHandlerContext ctx, final MessageContext context) {
+	protected final void writeResponse(final ChannelHandlerContext ctx, final MessageContext context) {
 		responseWriter.write(ctx, context.getRequest(), context.getResponse());
 	}
 
@@ -239,7 +239,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 	 * 
 	 * @param context
 	 */
-	protected void enforceHttpSpecification(final MessageContext context) {
+	protected final void enforceHttpSpecification(final MessageContext context) {
 		if (shouldEnforceHttpSpec) {
 			HttpSpecification.enforce(context.getResponse());
 		}
