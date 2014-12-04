@@ -106,16 +106,16 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 			dispatcher.notifyReceived(context);
 			resolveRoute(context);
 			resolveResponseProcessor(context);
-			invokePreprocessors(preprocessors(), context);
-			// invoke controller 
+			invokePreprocessors(context);
+			// invoke controller
 			final Object result = context.getAction().invoke(context.getRequest(), context.getResponse());
 			if (result != null) {
 				context.getResponse().setBody(result);
 			}
-			invokePostprocessors(postprocessors(), context);
+			invokePostprocessors(context);
 			serializeResponse(context, false);
 			enforceHttpSpecification(context);
-			invokeFinallyProcessors(finallyProcessors(), context);
+			invokeFinallyProcessors(context);
 			writeResponse(ctx, context);
 			dispatcher.notifySuccess(context);
 		} catch (final Throwable cause) {
@@ -131,9 +131,8 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 
 			context.setException(rootCause);
 			dispatcher.notifyException(context);
-			// TODO insert wrapper
 			serializeResponse(context, true);
-			invokeFinallyProcessors(finallyProcessors(), context);
+			invokeFinallyProcessors(context);
 			writeResponse(ctx, context);
 		} finally {
 			dispatcher.notifyComplete(context);
@@ -193,21 +192,22 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 		return preprocessors;
 	}
 
-	protected void invokePreprocessors(final List<Preprocessor> preprocessors, final MessageContext context) {
+	protected void invokePreprocessors(final MessageContext context) {
 		for (final Preprocessor handler : preprocessors) {
 			handler.process(context);
 		}
-		context.getRequest().getBody().resetReaderIndex();
+		if (context.getRequest().getBody() != null)
+			context.getRequest().getBody().resetReaderIndex();
 	}
 
-	protected void invokePostprocessors(final List<Postprocessor> processors, final MessageContext context) {
-		for (final Postprocessor handler : processors) {
+	protected void invokePostprocessors(final MessageContext context) {
+		for (final Postprocessor handler : postprocessors) {
 			handler.process(context);
 		}
 	}
 
-	protected void invokeFinallyProcessors(final List<Postprocessor> processors, final MessageContext context) {
-		for (final Postprocessor handler : processors) {
+	protected void invokeFinallyProcessors(final MessageContext context) {
+		for (final Postprocessor handler : finallyProcessors) {
 			try {
 				handler.process(context);
 			} catch (final Throwable t) {
@@ -261,7 +261,9 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 	 * Serialize response object and wrap exception if necessary.
 	 * 
 	 * @param context
-	 * @param force true if response must be rendered even if requested format is not supported.
+	 * @param force
+	 *            true if response must be rendered even if requested format is
+	 *            not supported.
 	 */
 	protected abstract void serializeResponse(final MessageContext context, final boolean force);
 
