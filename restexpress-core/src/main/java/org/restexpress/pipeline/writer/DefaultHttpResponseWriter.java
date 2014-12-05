@@ -21,15 +21,9 @@ package org.restexpress.pipeline.writer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
-import org.intelligentsia.commons.http.RequestHeader;
 import org.intelligentsia.commons.http.ResponseHeader;
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.intelligentsia.commons.http.status.HttpResponseStandardStatus;
@@ -40,13 +34,10 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
-import org.restexpress.domain.Format;
 import org.restexpress.pipeline.HttpResponseWriter;
-import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.util.HttpSpecification;
 
 /**
