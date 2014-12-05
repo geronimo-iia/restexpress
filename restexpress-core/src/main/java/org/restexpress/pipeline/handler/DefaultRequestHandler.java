@@ -53,6 +53,10 @@ import org.restexpress.route.RouteResolver;
 import org.restexpress.util.HttpSpecification;
 
 /**
+ * {@link DefaultRequestHandler} implements an {@link AbstractRequestHandler}
+ * for our {@link ResponseProcessorSetting} and {@link RouteResolver}.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since Nov 13, 2009
  */
@@ -61,6 +65,17 @@ public final class DefaultRequestHandler extends AbstractRequestHandler {
 
 	private final RouteResolver routeResolver;
 	private final ResponseProcessorManager responseProcessorManager;
+	// default content type (may be a must to manage this in another place)
+	private final String defaultContentType;
+
+	public DefaultRequestHandler(final RouteResolver routeResolver, final ResponseProcessorManager responseProcessorManager, //
+			final HttpResponseWriter responseWriter, final boolean shouldEnforceHttpSpec,//
+			final String defaultContentType) {
+		super(responseWriter, shouldEnforceHttpSpec);
+		this.routeResolver = routeResolver;
+		this.responseProcessorManager = responseProcessorManager;
+		this.defaultContentType = defaultContentType;
+	}
 
 	/**
 	 * Build a new instance of {@link DefaultRequestHandler}.
@@ -76,9 +91,7 @@ public final class DefaultRequestHandler extends AbstractRequestHandler {
 	public DefaultRequestHandler(final RouteResolver routeResolver, //
 			final ResponseProcessorManager responseProcessorManager,//
 			final HttpResponseWriter responseWriter, final boolean enforceHttpSpec) {
-		super(responseWriter, enforceHttpSpec);
-		this.routeResolver = routeResolver;
-		this.responseProcessorManager = responseProcessorManager;
+		this(routeResolver, responseProcessorManager, responseWriter, enforceHttpSpec, MediaType.TEXT_PLAIN.withCharset(CharacterSet.UTF_8.getCharsetName()));
 	}
 
 	/**
@@ -132,35 +145,39 @@ public final class DefaultRequestHandler extends AbstractRequestHandler {
 	protected void handleResponseContent(final MessageContext context, final boolean force) {
 		final Response response = context.getResponse();
 		if (HttpSpecification.isContentTypeAllowed(response)) {
-			if (response.isSerialized()) {
-				// find serialization settings
-				ResponseProcessorSetting settings = context.getResponseProcessorSetting();
-				if (settings == null && force) {
-					settings = responseProcessorManager.resolve(context.getRequest(), response, force);
-				}
-				// process serialization if one was found
-				if (settings != null) {
-					settings.serialize(response);
-				}
+			/*
+			 * Mind ResponseProcessorSetting is something that can handle
+			 * exception and Serialization. We assume that for a File, we have
+			 * no serialization on response.
+			 */
+			ResponseProcessorSetting settings = context.getResponseProcessorSetting();
+			if ((settings == null) && force) {
+				settings = responseProcessorManager.resolve(context.getRequest(), response, force);
+			}
+			// process serialization if one was found
+			if (settings != null) {
+				settings.serialize(response);
 			}
 
+			// TODO manage this in another place
 			// manage File case
 			final Object body = response.getBody();
-			if (body != null)
+			if (body != null) {
 				if (File.class.isAssignableFrom(body.getClass())) {
-					File resource = (File) response.getBody();
+					final File resource = (File) response.getBody();
 					processFileResponseHeader(context.getRequest(), response, resource);
 				}
+			}
 
 			// add default content type if none was provided only if content
 			// type is allowed
 			if (!response.hasHeader(HttpHeaders.Names.CONTENT_TYPE)) {
-				response.setContentType(MediaType.TEXT_PLAIN.withCharset(CharacterSet.UTF_8.getCharsetName()));
+				response.setContentType(defaultContentType);
 			}
 		}
 	}
 
-	private static void processFileResponseHeader(final Request request, final Response response, File resource) {
+	private static void processFileResponseHeader(final Request request, final Response response, final File resource) {
 		// check for is Modified Since
 		if (!isModifiedSince(request, resource)) {
 			response.setResponseStatus(HttpResponseStatus.NOT_MODIFIED);
@@ -169,20 +186,22 @@ public final class DefaultRequestHandler extends AbstractRequestHandler {
 		} else {
 			// we have little thing to do
 			final Calendar time = new GregorianCalendar();
-			Date currentTime = time.getTime();
+			final Date currentTime = time.getTime();
 			// date header
 			response.addHeader(ResponseHeader.DATE.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(currentTime));
 			// last modified header
-			Date lastModified = new Date(resource.lastModified());
+			final Date lastModified = new Date(resource.lastModified());
 			if (lastModified.after(currentTime)) {
 				response.addHeader(ResponseHeader.LAST_MODIFIED.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(currentTime));
 			} else {
 				response.addHeader(ResponseHeader.LAST_MODIFIED.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(lastModified));
 			}
 			// content type
-			String extension = ResponseProcessorManager.parseFormatFromUrl(resource.getName());
 			String mediaType = Format.BIN.getMediaType();
-			if (extension != null) {
+			final String resourceName =resource.getName(); 
+			final int index = resourceName.indexOf(".");
+			if (index>=0) {
+				final String extension = resourceName.substring(index);
 				mediaType = Format.asMap().get(extension);
 			}
 			response.addHeader(ResponseHeader.CONTENT_TYPE.getHeader(), mediaType);
@@ -203,14 +222,14 @@ public final class DefaultRequestHandler extends AbstractRequestHandler {
 	 */
 	private static boolean isModifiedSince(final Request request, final File resource) throws HttpRuntimeException {
 		final String ifModifiedSince = request.getHeader(RequestHeader.IF_MODIFIED_SINCE.getHeader());
-		if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
+		if ((ifModifiedSince != null) && !ifModifiedSince.isEmpty()) {
 			try {
-				Date ifModifiedSinceDate = HttpHeaderDateTimeFormat.parseAny(ifModifiedSince);
+				final Date ifModifiedSinceDate = HttpHeaderDateTimeFormat.parseAny(ifModifiedSince);
 				// just compare second
 				final long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
 				final long fileLastModifiedSeconds = resource.lastModified() / 1000;
 				return ifModifiedSinceDateSeconds <= fileLastModifiedSeconds;
-			} catch (ParseException e) {
+			} catch (final ParseException e) {
 				throw new HttpRuntimeException(HttpResponseStandardStatus.BAD_REQUEST, e);
 			}
 		}

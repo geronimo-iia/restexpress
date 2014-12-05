@@ -27,118 +27,147 @@ import org.restexpress.domain.response.JsendResult.State;
 import org.restexpress.exception.Exceptions;
 
 /**
- * {@link Wrapper} utility class to define instance of {@link ResponseWrapper}. 
- *
+ * {@link Wrapper} utility class to define instance of {@link ResponseWrapper}.
+ * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- *
+ * 
  */
 public enum Wrapper {
-    ;
+	;
 
-    public static ResponseWrapper newJsendResponseWrapper() {
-        return new JsendResponseWrapper();
-    }
+	/**
+	 * @return a new instance of {@link JsendResponseWrapper}.
+	 */
+	public static ResponseWrapper newJsendResponseWrapper() {
+		return new JsendResponseWrapper();
+	}
 
-    public static ResponseWrapper newErrorResponseWrapper() {
-        return new ErrorResponseWrapper();
-    }
+	/**
+	 * @return a new instance of {@link ErrorResponseWrapper}.
+	 */
+	public static ResponseWrapper newErrorResponseWrapper() {
+		return new ErrorResponseWrapper();
+	}
 
-    public static ResponseWrapper newRawResponseWrapper() {
-        return new RawResponseWrapper();
-    }
+	/**
+	 * @return a new instance of {@link RawResponseWrapper}.
+	 */
+	public static ResponseWrapper newRawResponseWrapper() {
+		return new RawResponseWrapper();
+	}
 
-    /**
-     * Wraps the out bound Response body in a JSEND-style object. This wrapper should be only used in JSON format.
-     * 
-     * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
-     * @author toddf
-     * @since Feb 10, 2011
-     */
-    public static class JsendResponseWrapper implements ResponseWrapper {
-        @Override
-        public Object wrap(final Response response) {
-            if (response.hasException()) {
-                final Throwable exception = response.getException();
-                final Throwable rootCause = Exceptions.findRootCause(exception);
-                final String message = (rootCause != null ? rootCause.getMessage() : exception.getMessage());
-                final String causeName = (rootCause != null ? rootCause.getClass().getSimpleName() : exception.getClass()
-                        .getSimpleName());
+	/**
+	 * {@link JsendResponseWrapper} wraps the out bound Response body in a
+	 * JSEND-style object. This wrapper should be only used in JSON format.
+	 * 
+	 * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+	 * @author toddf
+	 * @since Feb 10, 2011
+	 */
+	public static class JsendResponseWrapper implements ResponseWrapper {
+		@Override
+		public Object wrap(final Response response) {
+			if (response.hasException()) {
+				final Throwable exception = response.getException();
+				final Throwable rootCause = Exceptions.findRootCause(exception);
+				final String message = (rootCause != null ? rootCause.getMessage() : exception.getMessage());
+				final String causeName = (rootCause != null ? rootCause.getClass().getSimpleName() : exception.getClass().getSimpleName());
 
-                if (HttpRuntimeException.class.isAssignableFrom(exception.getClass())) {
-                    return new JsendResult(State.ERROR, message, causeName);
-                }
+				if (HttpRuntimeException.class.isAssignableFrom(exception.getClass())) {
+					return new JsendResult(State.ERROR, message, causeName);
+				}
 
-                return new JsendResult(State.FAIL, message, causeName);
-            }
-            final int code = response.getResponseStatus().getCode();
-            if ((code >= 400) && (code < 500)) {
-                return new JsendResult(State.ERROR, null, response.getBody());
-            }
-            if ((code >= 500) && (code < 600)) {
-                return new JsendResult(State.FAIL, null, response.getBody());
-            }
-            return new JsendResult(State.SUCCESS, null, response.getBody());
-        }
+				return new JsendResult(State.FAIL, message, causeName);
+			}
+			final int code = response.getResponseStatus().getCode();
+			if ((code >= 400) && (code < 500)) {
+				return new JsendResult(State.ERROR, null, response.getBody());
+			}
+			if ((code >= 500) && (code < 600)) {
+				return new JsendResult(State.FAIL, null, response.getBody());
+			}
+			return new JsendResult(State.SUCCESS, null, response.getBody());
+		}
 
-    }
+		@Override
+		public String toString() {
+			return "JsendResponseWrapper";
+		}
 
-    /**
-     * ErrorResponseWrapper.
-     * 
-     * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
-     * 
-     */
-    public static class ErrorResponseWrapper implements ResponseWrapper {
-        @Override
-        public Object wrap(final Response response) {
-            if (addsBodyContent(response)) {
-                if (response.hasException()) {
-                    final Throwable exception = response.getException();
-                    final Throwable rootCause = Exceptions.findRootCause(exception);
-                    final String message = (rootCause != null ? rootCause.getMessage() : exception.getMessage());
-                    String causeName = null;
-                    causeName = (rootCause != null ? rootCause.getClass().getSimpleName() : exception.getClass().getSimpleName());
-                    return new ErrorResult(response.getResponseStatus().getCode(), message, causeName);
-                }
+	}
 
-                return new ErrorResult(response.getResponseStatus().getCode(), null, null);
-            }
-            return response.getBody();
-        }
+	/**
+	 * {@link ErrorResponseWrapper} leaves the response alone, returning it
+	 * without wrapping it at all, unless there is an exception.
+	 * <p>
+	 * If there is an exception, the exception is returned as an
+	 * {@link ErrorResult} instance, serialization will be forced.
+	 * </p>
+	 * 
+	 * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+	 */
+	public static class ErrorResponseWrapper implements ResponseWrapper {
+		@Override
+		public Object wrap(final Response response) {
+			if (addsBodyContent(response)) {
+				response.setIsSerialized(true);
+				if (response.hasException()) {
+					final Throwable exception = response.getException();
+					final Throwable rootCause = Exceptions.findRootCause(exception);
+					final String message = (rootCause != null ? rootCause.getMessage() : exception.getMessage());
+					String causeName = null;
+					causeName = (rootCause != null ? rootCause.getClass().getSimpleName() : exception.getClass().getSimpleName());
+					return new ErrorResult(response.getResponseStatus().getCode(), message, causeName);
+				}
+				return new ErrorResult(response.getResponseStatus().getCode(), null, null);
+			}
+			return response.getBody();
+		}
 
-        public static boolean addsBodyContent(final Response response) {
-            if (response.hasException()) {
-                return true;
-            }
-            final int code = response.getResponseStatus().getCode();
-            return ((code >= 400) && (code < 600));
-        }
+		public static boolean addsBodyContent(final Response response) {
+			if (response.hasException()) {
+				return true;
+			}
+			final int code = response.getResponseStatus().getCode();
+			return ((code >= 400) && (code < 600));
+		}
 
-    }
+		@Override
+		public String toString() {
+			return "ErrorResponseWrapper";
+		}
 
-    /**
-     * Leaves the response alone, returning it without wrapping it at all, unless there is an exception.
-     * <p>
-     * If there is an exception, the exception is wrapped in a serializable Error instance, content type will be set in text/plain with
-     * no serialization.
-     * </p>
-     * 
-     * 
-     * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
-     * @author toddf
-     * @since Feb 10, 2011
-     */
-    public static class RawResponseWrapper implements ResponseWrapper {
-        
-        @Override
-        public Object wrap(final Response response) {
-            if (!response.hasException()) {
-                return response.getBody();
-            }
-            response.setIsSerialized(false);
-            return response.getException().getMessage();
-        }
+	}
 
-    }
+	/**
+	 * {@link RawResponseWrapper} leaves the response alone, returning it
+	 * without wrapping it at all, unless there is an exception.
+	 * <p>
+	 * If there is an exception, the exception is returned as a simple message,
+	 * content type will be set in text/plain with no serialization.
+	 * </p>
+	 * 
+	 * 
+	 * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+	 * @author toddf
+	 * @since Feb 10, 2011
+	 */
+	public static class RawResponseWrapper implements ResponseWrapper {
+
+		@Override
+		public Object wrap(final Response response) {
+			if (!response.hasException()) {
+				return response.getBody();
+			}
+			response.setIsSerialized(false);
+			return response.getException().getMessage();
+		}
+
+		@Override
+		public String toString() {
+			return "RawResponseWrapper";
+		}
+
+	}
 
 }
