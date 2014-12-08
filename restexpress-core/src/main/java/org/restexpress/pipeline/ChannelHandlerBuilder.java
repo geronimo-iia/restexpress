@@ -1,12 +1,10 @@
-package org.restexpress.pipeline.handler;
+package org.restexpress.pipeline;
 
 import java.util.List;
 
 import org.jboss.netty.channel.ChannelHandler;
-import org.restexpress.pipeline.HttpResponseWriter;
-import org.restexpress.pipeline.MessageObserverDispatcher;
-import org.restexpress.pipeline.Postprocessor;
-import org.restexpress.pipeline.Preprocessor;
+import org.restexpress.pipeline.handler.DefaultRequestHandler;
+import org.restexpress.pipeline.writer.DefaultHttpResponseWriter;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.route.RouteResolver;
 
@@ -14,7 +12,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 /**
- * {@link ChannelHandlerBuilder} implements a builder for {@link DefaultRequestHandler}.
+ * {@link ChannelHandlerBuilder} implements a builder for
+ * {@link DefaultRequestHandler}.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
@@ -24,14 +23,15 @@ public final class ChannelHandlerBuilder {
 	private List<Postprocessor> postprocessors = Lists.newArrayList();
 	private List<Postprocessor> finallyProcessors = Lists.newArrayList();
 
-	private HttpResponseWriter responseWriter;
+	private HttpResponseWriter responseWriter = new DefaultHttpResponseWriter();
+
 	private boolean shouldEnforceHttpSpec = Boolean.TRUE;
 
-	private MessageObserverDispatcher dispatcher;
+	private MessageObserverDispatcher dispatcher = new MessageObserverDispatcher();
 
 	private RouteResolver routeResolver;
 
-	private ResponseProcessorManager responseProcessorManager;
+	private ResponseProcessorManager responseProcessorManager = new ResponseProcessorManager();
 
 	public ChannelHandlerBuilder() {
 		super();
@@ -47,6 +47,38 @@ public final class ChannelHandlerBuilder {
 				dispatcher, //
 				routeResolver, //
 				responseProcessorManager);
+	}
+
+	public HttpResponseWriter responseWriter() {
+		return responseWriter;
+	}
+
+	public MessageObserverDispatcher dispatcher() {
+		return dispatcher;
+	}
+
+	public List<Preprocessor> preprocessors() {
+		return preprocessors;
+	}
+
+	public List<Postprocessor> postprocessors() {
+		return postprocessors;
+	}
+
+	public List<Postprocessor> finallyProcessors() {
+		return finallyProcessors;
+	}
+
+	public boolean isShouldEnforceHttpSpec() {
+		return shouldEnforceHttpSpec;
+	}
+
+	public RouteResolver routeResolver() {
+		return routeResolver;
+	}
+
+	public ResponseProcessorManager responseProcessorManager() {
+		return responseProcessorManager;
 	}
 
 	public ChannelHandlerBuilder addPreprocessor(final Preprocessor preprocessor) {
@@ -92,6 +124,16 @@ public final class ChannelHandlerBuilder {
 
 	public ChannelHandlerBuilder setShouldEnforceHttpSpec(boolean shouldEnforceHttpSpec) {
 		this.shouldEnforceHttpSpec = shouldEnforceHttpSpec;
+		return this;
+	}
+
+	public ChannelHandlerBuilder shouldEnforceHttpSpec() {
+		this.shouldEnforceHttpSpec = Boolean.TRUE;
+		return this;
+	}
+
+	public ChannelHandlerBuilder shouldNotEnforceHttpSpec() {
+		this.shouldEnforceHttpSpec = Boolean.FALSE;
 		return this;
 	}
 
