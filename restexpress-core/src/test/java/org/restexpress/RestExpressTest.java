@@ -77,7 +77,7 @@ public class RestExpressTest {
         assertTrue(restExpress.serializationProvider().processor(Format.TEXT.getMediaType()) != null);
         assertEquals(8081, restExpress.settings().serverSettings().getPort());
         assertTrue(restExpress.messageObservers().isEmpty());
-        assertTrue(restExpress.postprocessors().isEmpty());
+        assertTrue(restExpress.postprocessors().size() == 2);
         assertTrue(restExpress.preprocessors().isEmpty());
         assertTrue(restExpress.settings().serverSettings().isUseSystemOut());
     }

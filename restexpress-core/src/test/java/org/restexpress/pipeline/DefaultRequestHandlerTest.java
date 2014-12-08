@@ -57,10 +57,13 @@ import org.restexpress.SerializationProvider;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
+import org.restexpress.pipeline.handler.DefaultRequestHandler;
+import org.restexpress.pipeline.writer.StringBufferHttpResponseWriter;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.serialization.JacksonJsonProcessor;
 import org.restexpress.serialization.JacksonXmlProcessor;
+import org.restexpress.util.TestUtilities;
 
 /**
  * @author toddf
@@ -68,14 +71,20 @@ import org.restexpress.serialization.JacksonXmlProcessor;
  */
 public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 
-	@Before
-	public void initialize() throws Exception {
-		DummyRoutes routes = new DummyRoutes();
-		routes.defineRoutes();
-		initialize(routes);
+	protected DummyRoutes routes = null;
+
+	public void initializeSerializationProvider() {
 		SerializationProvider provider = messageHandler.serializationProvider();
 		provider.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper());
 		provider.add(new JacksonXmlProcessor(Format.XML.getMediaType()), Wrapper.newJsendResponseWrapper());
+	}
+
+	@Before
+	public void initialize() throws Exception {
+		routes = new DummyRoutes();
+		routes.defineRoutes();
+		initialize(routes);
+		initializeSerializationProvider();
 	}
 
 	@Test
@@ -305,16 +314,21 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 	}
 
 	@Test
-	public void shouldCallAllFinallyProcessors() {
+	public void shouldCallAllFinallyProcessors() throws Exception {
 		NoopPostprocessor p1 = new NoopPostprocessor();
 		NoopPostprocessor p2 = new NoopPostprocessor();
 		NoopPostprocessor p3 = new NoopPostprocessor();
-		messageHandler.addPostprocessor(p1);
-		messageHandler.addPostprocessor(p2);
-		messageHandler.addPostprocessor(p3);
-		messageHandler.addFinallyProcessor(p1);
-		messageHandler.addFinallyProcessor(p2);
-		messageHandler.addFinallyProcessor(p3);
+
+		ChannelHandlerBuilder builder = TestUtilities.newBuilder(routes);
+		builder.setResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody));
+		builder.addPostprocessor(p1);
+		builder.addPostprocessor(p2);
+		builder.addPostprocessor(p3);
+		builder.addFinallyProcessor(p1);
+		builder.addFinallyProcessor(p2);
+		builder.addFinallyProcessor(p3);
+		initialize((DefaultRequestHandler) builder.build());
+		initializeSerializationProvider();
 		sendGetEvent("/foo");
 		assertEquals(2, p1.getCallCount());
 		assertEquals(2, p2.getCallCount());
@@ -322,16 +336,20 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 	}
 
 	@Test
-	public void shouldCallAllFinallyProcessorsOnRouteException() {
+	public void shouldCallAllFinallyProcessorsOnRouteException() throws Exception {
 		NoopPostprocessor p1 = new NoopPostprocessor();
 		NoopPostprocessor p2 = new NoopPostprocessor();
 		NoopPostprocessor p3 = new NoopPostprocessor();
-		messageHandler.addPostprocessor(p1);
-		messageHandler.addPostprocessor(p2);
-		messageHandler.addPostprocessor(p3);
-		messageHandler.addFinallyProcessor(p1);
-		messageHandler.addFinallyProcessor(p2);
-		messageHandler.addFinallyProcessor(p3);
+		ChannelHandlerBuilder builder = TestUtilities.newBuilder(routes);
+		builder.setResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody));
+		builder.addPostprocessor(p1);
+		builder.addPostprocessor(p2);
+		builder.addPostprocessor(p3);
+		builder.addFinallyProcessor(p1);
+		builder.addFinallyProcessor(p2);
+		builder.addFinallyProcessor(p3);
+		initialize((DefaultRequestHandler) builder.build());
+		initializeSerializationProvider();
 		sendGetEvent("/xyzt.html");
 		assertEquals(1, p1.getCallCount());
 		assertEquals(1, p2.getCallCount());
@@ -339,17 +357,20 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 	}
 
 	@Test
-	public void shouldCallAllFinallyProcessorsOnProcessorException() {
+	public void shouldCallAllFinallyProcessorsOnProcessorException() throws Exception {
 		NoopPostprocessor p1 = new ExceptionPostprocessor();
 		NoopPostprocessor p2 = new ExceptionPostprocessor();
 		NoopPostprocessor p3 = new ExceptionPostprocessor();
-		messageHandler.addPostprocessor(p1); // this one throws the exception in
-												// Postprocessors
-		messageHandler.addPostprocessor(p2); // not called
-		messageHandler.addPostprocessor(p3); // not called
-		messageHandler.addFinallyProcessor(p1);
-		messageHandler.addFinallyProcessor(p2);
-		messageHandler.addFinallyProcessor(p3);
+		ChannelHandlerBuilder builder = TestUtilities.newBuilder(routes);
+		builder.setResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody));
+		builder.addPostprocessor(p1);
+		builder.addPostprocessor(p2);
+		builder.addPostprocessor(p3);
+		builder.addFinallyProcessor(p1);
+		builder.addFinallyProcessor(p2);
+		builder.addFinallyProcessor(p3);
+		initialize((DefaultRequestHandler) builder.build());
+		initializeSerializationProvider();
 		sendGetEvent("/foo");
 		assertEquals(2, p1.getCallCount());
 		assertEquals(1, p2.getCallCount());

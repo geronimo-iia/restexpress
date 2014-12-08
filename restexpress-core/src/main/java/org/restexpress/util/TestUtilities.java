@@ -25,9 +25,11 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.restexpress.Request;
 import org.restexpress.SerializationProvider;
 import org.restexpress.domain.CharacterSet;
+import org.restexpress.pipeline.ChannelHandlerBuilder;
 import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.handler.DefaultRequestHandler;
-import org.restexpress.pipeline.writer.DefaultHttpResponseWriter;
+import org.restexpress.processor.DefaultContentTypePostprocessor;
+import org.restexpress.processor.FileHeaderPostProcessor;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.route.RouteResolver;
@@ -64,11 +66,19 @@ public enum TestUtilities {
 		return new ResponseProcessorManager();
 	}
 
+	public static ChannelHandlerBuilder newBuilder(RouteDeclaration routeDeclaration) {
+		ChannelHandlerBuilder builder = new ChannelHandlerBuilder();
+		builder.addPostprocessor(new DefaultContentTypePostprocessor())//
+				.addPostprocessor(new FileHeaderPostProcessor());
+		return builder.setRouteResolver(new RouteResolver(routeDeclaration.createRouteMapping("http://localhost:8081")))//
+				.setShouldEnforceHttpSpec(false);
+	}
+
 	public static DefaultRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration) {
-		return new DefaultRequestHandler(new RouteResolver(routeDeclaration.createRouteMapping("http://localhost:8081")), new ResponseProcessorManager(), new DefaultHttpResponseWriter(), false);
+		return (DefaultRequestHandler) newBuilder(routeDeclaration).build();
 	}
 
 	public static DefaultRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration, HttpResponseWriter httpResponseWriter) {
-		return new DefaultRequestHandler(new RouteResolver(routeDeclaration.createRouteMapping("http://localhost:8081")), new ResponseProcessorManager(), httpResponseWriter, false);
+		return (DefaultRequestHandler) newBuilder(routeDeclaration).setResponseWriter(httpResponseWriter).build();
 	}
 }

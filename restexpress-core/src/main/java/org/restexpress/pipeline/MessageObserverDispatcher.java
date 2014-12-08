@@ -32,7 +32,7 @@ import org.restexpress.Response;
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class MessageObserverDispatcher implements MessageObserver {
+public final class MessageObserverDispatcher implements MessageObserver {
 
 	private final List<MessageObserver> messageObservers = new ArrayList<>();
 
@@ -56,12 +56,13 @@ public class MessageObserverDispatcher implements MessageObserver {
 	 * 
 	 * @param observers
 	 */
-	public void addMessageObserver(final MessageObserver... observers) {
+	public MessageObserverDispatcher addMessageObserver(final MessageObserver... observers) {
 		for (final MessageObserver observer : observers) {
 			if (!messageObservers.contains(observer)) {
 				messageObservers.add(observer);
 			}
 		}
+		return this;
 	}
 
 	/**
@@ -69,12 +70,13 @@ public class MessageObserverDispatcher implements MessageObserver {
 	 * 
 	 * @param observers
 	 */
-	public void addMessageObserver(final List<MessageObserver> observers) {
+	public MessageObserverDispatcher addMessageObserver(final List<MessageObserver> observers) {
 		for (final MessageObserver observer : observers) {
 			if (!messageObservers.contains(observer)) {
 				messageObservers.add(observer);
 			}
 		}
+		return this;
 	}
 
 	/**
