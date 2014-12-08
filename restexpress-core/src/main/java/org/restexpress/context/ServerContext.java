@@ -45,7 +45,7 @@ public class ServerContext {
 		environment = new ConcurrentHashMap<>();
 	}
 
-	public boolean containsKey(Object key) {
+	public boolean containsKey(String key) {
 		return environment.containsKey(key);
 	}
 
