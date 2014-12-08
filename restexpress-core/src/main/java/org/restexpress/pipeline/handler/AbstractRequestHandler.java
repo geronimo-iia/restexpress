@@ -19,9 +19,6 @@
  */
 package org.restexpress.pipeline.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
@@ -38,6 +35,8 @@ import org.restexpress.pipeline.MessageObserverDispatcher;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;
 import org.restexpress.util.HttpSpecification;
+
+import com.google.common.base.Preconditions;
 
 /**
  * {@link AbstractRequestHandler} extends {@link SimpleChannelUpstreamHandler}
@@ -56,46 +55,29 @@ import org.restexpress.util.HttpSpecification;
  */
 public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandler {
 
-	private final List<Preprocessor> preprocessors = new ArrayList<>();
-	private final List<Postprocessor> postprocessors = new ArrayList<>();
-	private final List<Postprocessor> finallyProcessors = new ArrayList<>();
+	private final Preprocessor[] preprocessors;
+	private final int preprocessorSize;
+	private final Postprocessor[] postprocessors;
+	private final int postprocessorSize;
+	private final Postprocessor[] finallyProcessors;
+	private final int finallyProcessorSize;
 
 	private final HttpResponseWriter responseWriter;
 	private final boolean shouldEnforceHttpSpec;
 
 	private MessageObserverDispatcher dispatcher;
 
-	/**
-	 * Build a new instance of {@link AbstractRequestHandler}.
-	 * 
-	 * @param responseWriter
-	 */
-	public AbstractRequestHandler(HttpResponseWriter responseWriter) {
-		this(responseWriter, Boolean.TRUE);
-	}
-
-	/**
-	 * Build a new instance of {@link AbstractRequestHandler}.
-	 * 
-	 * @param responseWriter
-	 * @param shouldEnforceHttpSpec
-	 */
-	public AbstractRequestHandler(HttpResponseWriter responseWriter, boolean shouldEnforceHttpSpec) {
-		this(responseWriter, shouldEnforceHttpSpec, new MessageObserverDispatcher());
-	}
-
-	/**
-	 * Build a new instance of {@link AbstractRequestHandler}.
-	 * 
-	 * @param responseWriter
-	 * @param shouldEnforceHttpSpec
-	 * @param dispatcher
-	 */
-	public AbstractRequestHandler(HttpResponseWriter responseWriter, boolean shouldEnforceHttpSpec, MessageObserverDispatcher dispatcher) {
+	public AbstractRequestHandler(Preprocessor[] preprocessors, Postprocessor[] postprocessors, Postprocessor[] finallyProcessors, HttpResponseWriter responseWriter, boolean shouldEnforceHttpSpec, MessageObserverDispatcher dispatcher) {
 		super();
-		this.responseWriter = responseWriter;
+		this.preprocessors = Preconditions.checkNotNull(preprocessors);
+		preprocessorSize = preprocessors.length;
+		this.postprocessors = Preconditions.checkNotNull(postprocessors);
+		postprocessorSize = postprocessors.length;
+		this.finallyProcessors = Preconditions.checkNotNull(finallyProcessors);
+		finallyProcessorSize = finallyProcessors.length;
+		this.responseWriter = Preconditions.checkNotNull(responseWriter);
 		this.shouldEnforceHttpSpec = shouldEnforceHttpSpec;
-		this.dispatcher = dispatcher;
+		this.dispatcher = Preconditions.checkNotNull(dispatcher);
 	}
 
 	@Override
@@ -162,54 +144,49 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 		return dispatcher;
 	}
 
-	public final void addPreprocessor(final Preprocessor handler) {
-		if (!preprocessors.contains(handler)) {
-			preprocessors.add(handler);
-		}
-	}
-
-	public final void addPostprocessor(final Postprocessor handler) {
-		if (!postprocessors.contains(handler)) {
-			postprocessors.add(handler);
-		}
-	}
-
-	public void addFinallyProcessor(final Postprocessor handler) {
-		if (!finallyProcessors.contains(handler)) {
-			finallyProcessors.add(handler);
-		}
-	}
-
-	public final List<Postprocessor> finallyProcessors() {
-		return finallyProcessors;
-	}
-
-	public final List<Postprocessor> postprocessors() {
-		return postprocessors;
-	}
-
-	public final List<Preprocessor> preprocessors() {
+	/**
+	 * @return an array of {@link Preprocessor}.
+	 */
+	public Preprocessor[] preprocessors() {
 		return preprocessors;
 	}
 
+	/**
+	 * @return an array of {@link Postprocessor}.
+	 */
+	public Postprocessor[] postprocessors() {
+		return postprocessors;
+	}
+
+	/**
+	 * @return an array of finally processor.
+	 */
+	public Postprocessor[] finallyProcessors() {
+		return finallyProcessors;
+	}
+
+	public HttpResponseWriter responseWriter() {
+		return responseWriter;
+	}
+
 	protected final void invokePreprocessors(final MessageContext context) {
-		for (final Preprocessor handler : preprocessors) {
-			handler.process(context);
+		for (int i = 0; i < preprocessorSize; i++) {
+			preprocessors[i].process(context);
 		}
 		if (context.getRequest().getBody() != null)
 			context.getRequest().getBody().resetReaderIndex();
 	}
 
 	protected final void invokePostprocessors(final MessageContext context) {
-		for (final Postprocessor handler : postprocessors) {
-			handler.process(context);
+		for (int i = 0; i < postprocessorSize; i++) {
+			postprocessors[i].process(context);
 		}
 	}
 
 	protected final void invokeFinallyProcessors(final MessageContext context) {
-		for (final Postprocessor handler : finallyProcessors) {
+		for (int i = 0; i < finallyProcessorSize; i++) {
 			try {
-				handler.process(context);
+				finallyProcessors[i].process(context);
 			} catch (final Throwable t) {
 				t.printStackTrace(System.err);
 			}

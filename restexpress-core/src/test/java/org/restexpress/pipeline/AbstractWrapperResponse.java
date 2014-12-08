@@ -49,86 +49,85 @@ import org.restexpress.util.TestUtilities;
  */
 public class AbstractWrapperResponse {
 
-    protected DefaultRequestHandler messageHandler;
-    protected CounterMessageObserver observer;
-    protected Channel channel;
-    protected ChannelPipeline pl;
-    protected StringBuffer responseBody;
-    protected Map<String, List<String>> responseHeaders;
+	protected DefaultRequestHandler messageHandler;
+	protected CounterMessageObserver observer;
+	protected Channel channel;
+	protected ChannelPipeline pl;
+	protected StringBuffer responseBody;
+	protected Map<String, List<String>> responseHeaders;
 
-    /**
-     * Utility to read result.
-     * 
-     * @param processor
-     * @param valueType
-     * @return
-     */
-    protected <T> T read(Processor processor, Class<T> valueType) {
-        return processor.read(ChannelBuffers.copiedBuffer(responseBody.toString(), CharacterSet.UTF_8.getCharset()), valueType);
-    }
+	/**
+	 * Utility to read result.
+	 * 
+	 * @param processor
+	 * @param valueType
+	 * @return
+	 */
+	protected <T> T read(Processor processor, Class<T> valueType) {
+		return processor.read(ChannelBuffers.copiedBuffer(responseBody.toString(), CharacterSet.UTF_8.getCharset()), valueType);
+	}
 
-    /**
-     * Initialize route and pipeline.
-     * 
-     * @param routes
-     * @throws Exception
-     */
-    protected void initialize(RouteDeclaration routes) throws Exception {
+	/**
+	 * Initialize route and pipeline.
+	 * 
+	 * @param routes
+	 * @throws Exception
+	 */
+	protected void initialize(RouteDeclaration routes) throws Exception {
+		responseBody = new StringBuffer();
+		responseHeaders = new HashMap<String, List<String>>();
+		initialize(TestUtilities.newDefaultRequestHandler(routes, new StringBufferHttpResponseWriter(responseHeaders, responseBody)));
+	}
 
-        responseBody = new StringBuffer();
-        responseHeaders = new HashMap<String, List<String>>();
+	protected void initialize(DefaultRequestHandler messageHandler) throws Exception {
+		this.messageHandler = messageHandler;
+		observer = new CounterMessageObserver();
+		messageHandler.dispatcher().addMessageObserver(observer);
 
-        messageHandler = TestUtilities.newDefaultRequestHandler(routes, new StringBufferHttpResponseWriter(responseHeaders,
-                responseBody));
+		RestExpressPipelineFactory pf = new RestExpressPipelineFactory().addRequestHandler(messageHandler);
+		pl = pf.getPipeline();
+		ChannelFactory channelFactory = new DefaultLocalServerChannelFactory();
+		channel = channelFactory.newChannel(pl);
+	}
 
-        observer = new CounterMessageObserver();
-        messageHandler.dispatcher().addMessageObserver(observer);
+	/**
+	 * Utility to send an event.
+	 * 
+	 * @param method
+	 * @param path
+	 * @param body
+	 */
+	protected void sendEvent(HttpMethod method, String path, String body) {
+		HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1, method, path);
+		if (body != null) {
+			request.setContent(ChannelBuffers.copiedBuffer(body, CharacterSet.UTF_8.getCharset()));
+		}
+		pl.sendUpstream(new UpstreamMessageEvent(channel, request, new InetSocketAddress(1)));
+	}
 
-        PipelineBuilder pf = new PipelineBuilder().addRequestHandler(messageHandler);
-        pl = pf.getPipeline();
-        ChannelFactory channelFactory = new DefaultLocalServerChannelFactory();
-        channel = channelFactory.newChannel(pl);
-    }
+	/**
+	 * Route Declaration for JSendResult test.
+	 */
+	public class DummyRoutes extends RouteDeclaration {
 
-    /**
-     * Utility to send an event.
-     * 
-     * @param method
-     * @param path
-     * @param body
-     */
-    protected void sendEvent(HttpMethod method, String path, String body) {
-        HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1, method, path);
-        if (body != null) {
-            request.setContent(ChannelBuffers.copiedBuffer(body, CharacterSet.UTF_8.getCharset()));
-        }
-        pl.sendUpstream(new UpstreamMessageEvent(channel, request, new InetSocketAddress(1)));
-    }
+		private Object controller = new WrappedResponseController();
 
-    /**
-     * Route Declaration for JSendResult test.
-     */
-    public class DummyRoutes extends RouteDeclaration {
+		public DummyRoutes defineRoutes() {
+			uri("/normal_get.{format}", controller).action("normalGetAction", HttpMethod.GET);
 
-        private Object controller = new WrappedResponseController();
+			uri("/normal_put.{format}", controller).action("normalPutAction", HttpMethod.PUT);
 
-        public DummyRoutes defineRoutes() {
-            uri("/normal_get.{format}", controller).action("normalGetAction", HttpMethod.GET);
+			uri("/normal_post.{format}", controller).action("normalPostAction", HttpMethod.POST);
 
-            uri("/normal_put.{format}", controller).action("normalPutAction", HttpMethod.PUT);
+			uri("/normal_delete.{format}", controller).action("normalDeleteAction", HttpMethod.DELETE);
 
-            uri("/normal_post.{format}", controller).action("normalPostAction", HttpMethod.POST);
+			uri("/no_content_delete.{format}", controller).action("noContentDeleteAction", HttpMethod.DELETE);
 
-            uri("/normal_delete.{format}", controller).action("normalDeleteAction", HttpMethod.DELETE);
+			uri("/no_content_with_body_delete.{format}", controller).action("noContentWithBodyDeleteActionThrowException", HttpMethod.DELETE);
+			uri("/not_found.{format}", controller).action("notFoundAction", HttpMethod.GET);
 
-            uri("/no_content_delete.{format}", controller).action("noContentDeleteAction", HttpMethod.DELETE);
-
-            uri("/no_content_with_body_delete.{format}", controller).action("noContentWithBodyDeleteActionThrowException",
-                    HttpMethod.DELETE);
-            uri("/not_found.{format}", controller).action("notFoundAction", HttpMethod.GET);
-
-            uri("/null_pointer.{format}", controller).action("nullPointerAction", HttpMethod.GET);
-            return this;
-        }
-    }
+			uri("/null_pointer.{format}", controller).action("nullPointerAction", HttpMethod.GET);
+			return this;
+		}
+	}
 }
