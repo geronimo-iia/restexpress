@@ -18,7 +18,7 @@
  *
  */
 /*
-    Copyright 2010, Strategic Gains, Inc.
+    Copyright 2014, Strategic Gains, Inc.
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -32,45 +32,28 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
  */
-package org.restexpress.util;
+package org.restexpress.processor;
 
-import java.util.concurrent.Executors;
-
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.restexpress.pipeline.MessageContext;
+import org.restexpress.pipeline.Postprocessor;
 
 /**
- * static helper class to automate getting Netty going
- * 
- * @author kevwil
- * @since October 1, 2010
+ * @author toddf
+ * @since Jul 2, 2014
  */
-public enum Bootstraps {
-	;
-	/**
-	 * Build up a server with NIO channels and default cached thread pools.
-	 * 
-	 * @see ServerBootstrap
-	 * @see NioServerSocketChannelFactory
-	 * @see Executors
-	 * @return An {@link ServerBootstrap} instance.
-	 */
-	public final static ServerBootstrap createServerNioBootstrap() {
-		return new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
+public class TestPostprocessor implements Postprocessor {
+	private int callCount = 0;
+
+	@Override
+	public void process(MessageContext context) {
+		++callCount;
 	}
 
-	/**
-	 * Build up a server with NIO channels and default cached thread pools,
-	 * specifying the number of worker threads.
-	 * 
-	 * @param workerCount
-	 *            the number of worker threads desired.
-	 * @see ServerBootstrap
-	 * @see NioServerSocketChannelFactory
-	 * @see Executors
-	 * @return An {@link ServerBootstrap} instance.
-	 */
-	public final static ServerBootstrap createServerNioBootstrap(final int workerCount) {
-		return new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool(), workerCount));
+	public int callCount() {
+		return callCount;
+	}
+
+	public void resetCallCount() {
+		this.callCount = 0;
 	}
 }

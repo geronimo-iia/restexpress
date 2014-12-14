@@ -19,7 +19,6 @@
  */
 package org.restexpress.pipeline.handler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
@@ -28,16 +27,18 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.exception.Exceptions;
 import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.MessageObserver;
-import org.restexpress.pipeline.MessageObserverDispatcher;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;
-import org.restexpress.util.HttpSpecification;
+import org.restexpress.plugin.Plugin;
+
+import com.google.common.base.Preconditions;
 
 /**
  * {@link AbstractRequestHandler} extends {@link SimpleChannelUpstreamHandler}
@@ -56,46 +57,35 @@ import org.restexpress.util.HttpSpecification;
  */
 public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandler {
 
-	private final List<Preprocessor> preprocessors = new ArrayList<>();
-	private final List<Postprocessor> postprocessors = new ArrayList<>();
-	private final List<Postprocessor> finallyProcessors = new ArrayList<>();
+	// avoid premature optimization (array usage)
+	private final List<Preprocessor> preprocessors;
+	private final List<Postprocessor> postprocessors;
+	private final List<Postprocessor> finallyProcessors;
 
 	private final HttpResponseWriter responseWriter;
+
 	private final boolean shouldEnforceHttpSpec;
 
-	private MessageObserverDispatcher dispatcher;
+	private final MessageObserver observer;
 
 	/**
 	 * Build a new instance of {@link AbstractRequestHandler}.
 	 * 
-	 * @param responseWriter
-	 */
-	public AbstractRequestHandler(HttpResponseWriter responseWriter) {
-		this(responseWriter, Boolean.TRUE);
-	}
-
-	/**
-	 * Build a new instance of {@link AbstractRequestHandler}.
-	 * 
+	 * @param preprocessors
+	 * @param postprocessors
+	 * @param finallyProcessors
 	 * @param responseWriter
 	 * @param shouldEnforceHttpSpec
+	 * @param observer
 	 */
-	public AbstractRequestHandler(HttpResponseWriter responseWriter, boolean shouldEnforceHttpSpec) {
-		this(responseWriter, shouldEnforceHttpSpec, new MessageObserverDispatcher());
-	}
-
-	/**
-	 * Build a new instance of {@link AbstractRequestHandler}.
-	 * 
-	 * @param responseWriter
-	 * @param shouldEnforceHttpSpec
-	 * @param dispatcher
-	 */
-	public AbstractRequestHandler(HttpResponseWriter responseWriter, boolean shouldEnforceHttpSpec, MessageObserverDispatcher dispatcher) {
+	protected AbstractRequestHandler(List<Preprocessor> preprocessors, List<Postprocessor> postprocessors, List<Postprocessor> finallyProcessors, HttpResponseWriter responseWriter, boolean shouldEnforceHttpSpec, MessageObserver observer) {
 		super();
-		this.responseWriter = responseWriter;
+		this.preprocessors = Preconditions.checkNotNull(preprocessors);
+		this.postprocessors = Preconditions.checkNotNull(postprocessors);
+		this.finallyProcessors = Preconditions.checkNotNull(finallyProcessors);
+		this.responseWriter = Preconditions.checkNotNull(responseWriter);
 		this.shouldEnforceHttpSpec = shouldEnforceHttpSpec;
-		this.dispatcher = dispatcher;
+		this.observer = observer;
 	}
 
 	@Override
@@ -103,7 +93,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 		final MessageContext context = createInitialContext(ctx, event);
 
 		try {
-			dispatcher.notifyReceived(context);
+			notifyReceived(context);
 			resolveRoute(context);
 			resolveResponseProcessor(context);
 			invokePreprocessors(context);
@@ -117,7 +107,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 			enforceHttpSpecification(context);
 			invokeFinallyProcessors(context);
 			writeResponse(ctx, context);
-			dispatcher.notifySuccess(context);
+			notifySuccess(context);
 		} catch (final Throwable cause) {
 			// handle exception
 			Throwable rootCause = cause;
@@ -128,14 +118,13 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 				rootCause = Exceptions.findRootCause(cause);
 				context.setHttpStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 			}
-
 			context.setException(rootCause);
-			dispatcher.notifyException(context);
+			notifyException(context);
 			handleResponseContent(context, true);
 			invokeFinallyProcessors(context);
 			writeResponse(ctx, context);
 		} finally {
-			dispatcher.notifyComplete(context);
+			notifyComplete(context);
 		}
 	}
 
@@ -145,7 +134,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 			final MessageContext messageContext = (MessageContext) ctx.getAttachment();
 			if (messageContext != null) {
 				messageContext.setException(event.getCause());
-				dispatcher.notifyException(messageContext);
+				notifyException(messageContext);
 			}
 		} catch (final Throwable t) {
 			System.err.print("RequestHandler.exceptionCaught() threw an exception.");
@@ -156,66 +145,141 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 	}
 
 	/**
-	 * @return {@link MessageObserverDispatcher} instance.
+	 * Used for runtime information.
+	 * 
+	 * @return {@link MessageObserver} instance.
 	 */
-	public final MessageObserverDispatcher dispatcher() {
-		return dispatcher;
+	public final MessageObserver messageObserver() {
+		return observer;
 	}
 
-	public final void addPreprocessor(final Preprocessor handler) {
-		if (!preprocessors.contains(handler)) {
-			preprocessors.add(handler);
-		}
-	}
-
-	public final void addPostprocessor(final Postprocessor handler) {
-		if (!postprocessors.contains(handler)) {
-			postprocessors.add(handler);
-		}
-	}
-
-	public void addFinallyProcessor(final Postprocessor handler) {
-		if (!finallyProcessors.contains(handler)) {
-			finallyProcessors.add(handler);
-		}
-	}
-
-	public final List<Postprocessor> finallyProcessors() {
-		return finallyProcessors;
-	}
-
-	public final List<Postprocessor> postprocessors() {
-		return postprocessors;
-	}
-
+	/**
+	 * Used for runtime information.
+	 * 
+	 * @return a {@link List} of {@link Preprocessor}.
+	 */
 	public final List<Preprocessor> preprocessors() {
 		return preprocessors;
 	}
 
+	/**
+	 * Used for runtime information.
+	 * 
+	 * @return a {@link List} of {@link Postprocessor}.
+	 */
+	public final List<Postprocessor> postprocessors() {
+		return postprocessors;
+	}
+
+	/**
+	 * Used for runtime information.
+	 * 
+	 * @return a {@link List} finally processor.
+	 */
+	public final List<Postprocessor> finallyProcessors() {
+		return finallyProcessors;
+	}
+
+	/**
+	 * Used for runtime information.
+	 * 
+	 * @return {@link HttpResponseWriter}.
+	 */
+	public final HttpResponseWriter httpResponseWriter() {
+		return responseWriter;
+	}
+
+	/**
+	 * Add specified {@link Preprocessor}. This method is useful to add
+	 * customization from {@link Plugin}.
+	 * 
+	 * @param preprocessor
+	 *            {@link Preprocessor}
+	 */
+	public final void addPreprocessor(final Preprocessor preprocessor) {
+		if (!preprocessors.contains(preprocessor)) {
+			preprocessors.add(preprocessor);
+		}
+	}
+
+	/**
+	 * Add specified {@link Postprocessor}. This method is useful to add
+	 * customization from {@link Plugin}.
+	 * 
+	 * 
+	 * @param processor
+	 *            {@link Postprocessor}
+	 */
+	public final void addPostprocessor(final Postprocessor processor) {
+		if (!postprocessors.contains(processor)) {
+			postprocessors.add(processor);
+		}
+	}
+
+	/**
+	 * Add specified finally {@link Postprocessor}. This method is useful to add
+	 * customization from {@link Plugin}.
+	 * 
+	 * @param processor
+	 *            {@link Postprocessor}
+	 */
+	public final void addFinallyProcessor(final Postprocessor processor) {
+		if (!finallyProcessors.contains(processor)) {
+			finallyProcessors.add(processor);
+		}
+	}
+
+	/**
+	 * Invoke all {@link Preprocessor}.
+	 * 
+	 * @param context
+	 *            {@link MessageContext}
+	 */
 	protected final void invokePreprocessors(final MessageContext context) {
-		for (final Preprocessor handler : preprocessors) {
-			handler.process(context);
+		for (Preprocessor preprocessor : preprocessors) {
+			preprocessor.process(context);
 		}
 		if (context.getRequest().getBody() != null)
 			context.getRequest().getBody().resetReaderIndex();
 	}
 
+	/**
+	 * Invoke all {@link Postprocessor}.
+	 * 
+	 * @param context
+	 *            {@link MessageContext}.
+	 */
 	protected final void invokePostprocessors(final MessageContext context) {
-		for (final Postprocessor handler : postprocessors) {
-			handler.process(context);
+		for (Postprocessor postprocessor : postprocessors) {
+			postprocessor.process(context);
 		}
 	}
 
+	/**
+	 * Invoke all finally {@link Postprocessor}.
+	 * 
+	 * @param context
+	 *            {@link MessageContext}
+	 */
 	protected final void invokeFinallyProcessors(final MessageContext context) {
-		for (final Postprocessor handler : finallyProcessors) {
+		for (Postprocessor finallyProcessor : finallyProcessors) {
 			try {
-				handler.process(context);
+				finallyProcessor.process(context);
 			} catch (final Throwable t) {
 				t.printStackTrace(System.err);
 			}
 		}
 	}
 
+	/**
+	 * Create {@link MessageContext}
+	 * 
+	 * @param ctx
+	 *            {@link ChannelHandlerContext}
+	 * @param event
+	 *            {@link MessageEvent}
+	 * @return {@link MessageContext} instance.
+	 */
 	protected final MessageContext createInitialContext(final ChannelHandlerContext ctx, final MessageEvent event) {
 		final Request request = createRequest(event, ctx);
 		final Response response = createResponse();
@@ -243,6 +307,53 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 		if (shouldEnforceHttpSpec) {
 			HttpSpecification.enforce(context.getResponse());
 		}
+	}
+
+	/**
+	 * Notify observer.
+	 * 
+	 * @param context
+	 *            {@link MessageContext} instance for this call.
+	 */
+	protected final void notifyReceived(MessageContext context) {
+		if (observer != null)
+			observer.onReceived(context.getRequest(), context.getResponse());
+	}
+
+	/**
+	 * Notify observer.
+	 * 
+	 * @param context
+	 *            {@link MessageContext} instance for this call.
+	 */
+	protected final void notifyException(final MessageContext context) {
+		if (observer != null) {
+			final Throwable exception = context.getException();
+			observer.onException(exception, context.getRequest(), context.getResponse());
+		}
+	}
+
+	/**
+	 * Notify observer.
+	 * 
+	 * @param context
+	 *            {@link MessageContext} instance for this call.
+	 */
+	protected final void notifyComplete(final MessageContext context) {
+		if (observer != null)
+			observer.onComplete(context.getRequest(), context.getResponse());
+
+	}
+
+	/**
+	 * Notify observer.
+	 * 
+	 * @param context
+	 *            {@link MessageContext} instance for this call.
+	 */
+	protected final void notifySuccess(final MessageContext context) {
+		if (observer != null)
+			observer.onSuccess(context.getRequest(), context.getResponse());
 	}
 
 	/**

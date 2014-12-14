@@ -31,7 +31,6 @@ import org.intelligentsia.commons.http.exception.NotAcceptableException;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.SerializationProvider;
 import org.restexpress.common.StringUtils;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaRange;

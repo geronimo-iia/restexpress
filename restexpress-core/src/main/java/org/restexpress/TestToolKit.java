@@ -17,30 +17,33 @@
  *        under the License.
  *
  */
-package org.restexpress.util;
+package org.restexpress;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.restexpress.Request;
-import org.restexpress.SerializationProvider;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.pipeline.HttpResponseWriter;
-import org.restexpress.pipeline.handler.DefaultRequestHandler;
-import org.restexpress.pipeline.writer.DefaultHttpResponseWriter;
+import org.restexpress.pipeline.handler.RestExpressRequestHandler;
+import org.restexpress.pipeline.handler.RestExpressRequestHandlerBuilder;
+import org.restexpress.processor.DefaultContentTypeFinallyProcessor;
+import org.restexpress.processor.FileHeaderPostProcessor;
 import org.restexpress.response.ResponseProcessorManager;
+import org.restexpress.response.SerializationProvider;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.route.RouteResolver;
 import org.restexpress.serialization.Processor;
 
 /**
- * {@link TestUtilities} give utilities method for testing purpose.
+ * {@link TestToolKit} give utilities method for testing purpose.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public enum TestUtilities {
-	;
+public final class TestToolKit {
+	
+
+	public static final String BASE_URL = "http://localhost:8081";
 
 	public static Request newRequest(HttpRequest httpRequest) {
 		return new Request(httpRequest, null);
@@ -64,11 +67,19 @@ public enum TestUtilities {
 		return new ResponseProcessorManager();
 	}
 
-	public static DefaultRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration) {
-		return new DefaultRequestHandler(new RouteResolver(routeDeclaration.createRouteMapping("http://localhost:8081")), new ResponseProcessorManager(), new DefaultHttpResponseWriter(), false);
+	public static RestExpressRequestHandlerBuilder newBuilder(RouteDeclaration routeDeclaration) {
+		RestExpressRequestHandlerBuilder builder = RestExpressRequestHandlerBuilder.newBuilder()//
+				.addFinallyProcessor(new DefaultContentTypeFinallyProcessor())//
+				.addPostprocessor(new FileHeaderPostProcessor());
+		return builder.setRouteResolver(new RouteResolver(routeDeclaration.createRouteMapping(BASE_URL)))//
+				.setShouldEnforceHttpSpec(false);
 	}
 
-	public static DefaultRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration, HttpResponseWriter httpResponseWriter) {
-		return new DefaultRequestHandler(new RouteResolver(routeDeclaration.createRouteMapping("http://localhost:8081")), new ResponseProcessorManager(), httpResponseWriter, false);
+	public static RestExpressRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration) {
+		return (RestExpressRequestHandler) newBuilder(routeDeclaration).build();
+	}
+
+	public static RestExpressRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration, HttpResponseWriter httpResponseWriter) {
+		return (RestExpressRequestHandler) newBuilder(routeDeclaration).setHttpResponseWriter(httpResponseWriter).build();
 	}
 }

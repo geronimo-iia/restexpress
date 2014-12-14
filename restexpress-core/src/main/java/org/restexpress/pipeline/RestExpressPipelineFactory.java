@@ -19,7 +19,6 @@
  */
 package org.restexpress.pipeline;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
@@ -38,39 +37,57 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
 /**
  * Provides a tiny DSL to define the pipeline features.
  * 
  * @author toddf
  * @since Aug 27, 2010
  */
-public class PipelineBuilder implements ChannelPipelineFactory {
-	// SECTION: CONSTANTS
+public class RestExpressPipelineFactory implements ChannelPipelineFactory {
 
-	private static final int DEFAULT_MAX_CONTENT_LENGTH = 20480;
+	/**
+	 * Default max content length of the aggregated (chunked) content. If the
+	 * length of the aggregated content exceeds this value, a
+	 * TooLongFrameException will be raised during the request, which can be
+	 * mapped in the RestExpress server to return a BadRequestException, if
+	 * desired.
+	 */
+	public static final int DEFAULT_MAX_CONTENT_LENGTH = 20480;
 
-	// SECTION: INSTANCE VARIABLES
-
-	private final List<ChannelHandler> requestHandlers = new ArrayList<ChannelHandler>();
+	private final List<ChannelHandler> requestHandlers = Lists.newArrayList();
 	private ExecutionHandler executionHandler = null;
 	private int maxContentLength = DEFAULT_MAX_CONTENT_LENGTH;
 	private SSLContext sslContext = null;
 
-	// SECTION: CONSTRUCTORS
-
-	public PipelineBuilder() {
+	/**
+	 * Build a new instance of {@link RestExpressPipelineFactory}.
+	 */
+	public RestExpressPipelineFactory() {
 		super();
 	}
 
-	// SECTION: BUILDER METHODS
-
-	public PipelineBuilder setExecutionHandler(final ExecutionHandler handler) {
+	/**
+	 * @param handler
+	 *            {@link ExecutionHandler} instance to set onto this pipeline
+	 * @return this RestExpressPipelineFactory for method chaining.
+	 */
+	public RestExpressPipelineFactory setExecutionHandler(final ExecutionHandler handler) {
 		this.executionHandler = handler;
 		return this;
 	}
 
-	public PipelineBuilder addRequestHandler(final ChannelHandler handler) {
-		if (!requestHandlers.contains(handler)) {
+	/**
+	 * @param handler
+	 *            {@link ChannelHandler} to add at pipeline end.
+	 * @return this RestExpressPipelineFactory for method chaining.
+	 * @throws NullPointerException
+	 *             if handler is null
+	 */
+	public RestExpressPipelineFactory addRequestHandler(final ChannelHandler handler) throws NullPointerException {
+		if (!requestHandlers.contains(Preconditions.checkNotNull(handler, "request handler could not be null"))) {
 			requestHandlers.add(handler);
 		}
 
@@ -81,27 +98,53 @@ public class PipelineBuilder implements ChannelPipelineFactory {
 	 * Set the maximum length of the aggregated (chunked) content. If the length
 	 * of the aggregated content exceeds this value, a TooLongFrameException
 	 * will be raised during the request, which can be mapped in the RestExpress
-	 * server to return a BadRequestException, if desired.
+	 * server to return a BadRequestException, if desired. By default the
+	 * maximum length is 20480 (
+	 * {@link RestExpressPipelineFactory#DEFAULT_MAX_CONTENT_LENGTH}.
 	 * 
 	 * @param value
-	 * @return this PipelineBuilder for method chaining.
+	 * @return this RestExpressPipelineFactory for method chaining.
 	 */
-	public PipelineBuilder setMaxContentLength(final int value) {
+	public RestExpressPipelineFactory setMaxContentLength(final int value) {
 		this.maxContentLength = value;
 		return this;
 	}
 
-	public PipelineBuilder setSSLContext(final SSLContext sslContext) {
+	/**
+	 * Set SSL context.
+	 * 
+	 * @param sslContext
+	 * @return this RestExpressPipelineFactory for method chaining.
+	 */
+	public RestExpressPipelineFactory setSSLContext(final SSLContext sslContext) {
 		this.sslContext = sslContext;
 		return this;
 	}
 
-	public SSLContext getSSLContext() {
+	/**
+	 * @return maximum length of the aggregated (chunked) content
+	 */
+	public int maxContentLength() {
+		return maxContentLength;
+	}
+
+	/**
+	 * @return a {@link List} of {@link ChannelHandler} added at pipeline end.
+	 */
+	public List<ChannelHandler> requestHandlers() {
+		return requestHandlers;
+	}
+
+	/**
+	 * @return {@link SSLContext} instance.
+	 */
+	public SSLContext sslContext() {
 		return sslContext;
 	}
 
-	// SECTION: CHANNEL PIPELINE FACTORY
-
+	/**
+	 * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
+	 */
 	@Override
 	public ChannelPipeline getPipeline() throws Exception {
 		final ChannelPipeline pipeline = Channels.pipeline();
@@ -112,18 +155,20 @@ public class PipelineBuilder implements ChannelPipelineFactory {
 			final SslHandler sslHandler = new SslHandler(sslEngine);
 			pipeline.addLast("ssl", sslHandler);
 		}
-
+		// Upstream handlers
 		pipeline.addLast("decoder", new HttpRequestDecoder());
 		pipeline.addLast("aggregator", new HttpChunkAggregator(maxContentLength));
+		pipeline.addLast("inflater", new HttpContentDecompressor());
+		// Downstream handlers
 		pipeline.addLast("encoder", new HttpResponseEncoder());
 		pipeline.addLast("chunkWriter", new ChunkedWriteHandler());
-		pipeline.addLast("inflater", new HttpContentDecompressor());
 		pipeline.addLast("deflater", new HttpContentCompressor());
 
+		// add optional execution handler
 		if (executionHandler != null) {
 			pipeline.addLast("executionHandler", executionHandler);
 		}
-
+		// add all request handler
 		for (final ChannelHandler handler : requestHandlers) {
 			pipeline.addLast(handler.getClass().getSimpleName(), handler);
 		}

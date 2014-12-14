@@ -235,6 +235,30 @@ public class Response {
 		}
 	}
 
+	/**
+	 * Send a redirect response.
+	 * 
+	 * TODO With HTTP 1.1 we should use 303/307 (
+	 * {@link HttpResponseStatus#SEE_OTHER} and
+	 * {@link HttpResponseStatus#TEMPORARY_REDIRECT} )
+	 * 
+	 * @param location
+	 *            URL of redirect
+	 * @param permanent
+	 *            if true, this will be a permanent redirect (301) else just a
+	 *            redirect 302 (Found).
+	 */
+	public void redirect(String location, boolean permanent) {
+		// set response code
+		if (permanent) {
+			responseCode = HttpResponseStatus.MOVED_PERMANENTLY;
+		} else {
+			responseCode = HttpResponseStatus.FOUND;
+		}
+		// add location header
+		addHeader(ResponseHeader.LOCATION.getHeader(), location);
+	}
+
 	public boolean isSerialized() {
 		return isSerialized;
 	}

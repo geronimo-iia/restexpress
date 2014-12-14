@@ -26,11 +26,11 @@ import java.util.Map;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.pipeline.HttpResponseWriter;
-import org.restexpress.util.HttpSpecification;
 
 /**
  * {@link StringBufferHttpResponseWriter} implement {@link HttpResponseWriter} for testing purpose. This class write content into a

@@ -17,33 +17,33 @@
  *        under the License.
  *
  */
-package org.restexpress.util;
+package org.restexpress.plugin;
 
-import org.restexpress.RestExpress;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
- * {@link DefaultShutdownHook} implements an hook which try to shutdown our
- * server when JVM stop.
+ * {@link PluginManagerTest} test for {@link PluginManager}.
  * 
- * @author toddf
- * @since Feb 1, 2011
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
-public class DefaultShutdownHook extends Thread {
-	private final RestExpress server;
+public class PluginManagerTest {
 
-	/**
-	 * Build a new instance of {@link DefaultShutdownHook}.
-	 * 
-	 * @param server
-	 */
-	public DefaultShutdownHook(final RestExpress server) {
-		super();
-		this.server = server;
+	@Test
+	public void lookupPluginByInterface() {
+		PluginManager pluginManager = new PluginManager();
+		pluginManager.register(new PluginA());
+		pluginManager.register(new PluginB());
+		assertTrue(pluginManager.find(DummyPluginInterface.class) != null);
 	}
 
-	@Override
-	public void run() {
-		System.out.println(server.settings().serverSettings().getName() + " server detected JVM shutdown...");
-		server.shutdown();
+	@Test
+	public void lookupPluginByName() {
+		PluginManager pluginManager = new PluginManager();
+		assertTrue(pluginManager.find("PluginB") == null);
+		pluginManager.register(new PluginB());
+		assertTrue(pluginManager.find("PluginB") != null);
 	}
+
 }

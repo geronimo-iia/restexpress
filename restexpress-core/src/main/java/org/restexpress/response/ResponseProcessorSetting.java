@@ -99,7 +99,7 @@ public final class ResponseProcessorSetting implements Serializer {
 	 * <li>Use selected {@link ResponseWrapper}</li>
 	 * <li>Serialize the response if needed (depends on which
 	 * {@link ResponseWrapper} is used</li>
-	 * <li>add {@link ResponseHeader#CONTENT_TYPE} if not defined</li>
+	 * <li>add {@link ResponseHeader#CONTENT_TYPE}</li>
 	 * </ul>
 	 * 
 	 * @see org.restexpress.response.Serializer#serialize(org.restexpress.Response)
@@ -112,7 +112,11 @@ public final class ResponseProcessorSetting implements Serializer {
 			response.setBody(wrapped);
 		}
 		responseProcessor.serialize(response);
-		if ((response.hasException() || response.isSerialized()) && !response.hasHeader(ResponseHeader.CONTENT_TYPE.getHeader())) {
+		// serialized way: don't override
+		if (response.isSerialized() && !response.hasHeader(ResponseHeader.CONTENT_TYPE.getHeader())) {
+			response.setContentType(mediaType);
+		} else if (response.hasException()) {
+			// in case of exception we must set right content type
 			response.setContentType(mediaType);
 		}
 	}

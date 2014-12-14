@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.server;
+package org.restexpress;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,22 +43,18 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.restexpress.Request;
-import org.restexpress.Response;
-import org.restexpress.RestExpress;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
 import org.restexpress.observer.SimpleConsoleLogMessageObserver;
+import org.restexpress.processor.ErrorPreprocessor;
+import org.restexpress.processor.TestPostprocessor;
 import org.restexpress.query.QueryRange;
 import org.restexpress.response.Wrapper;
 import org.restexpress.serialization.JacksonJsonProcessor;
 import org.restexpress.serialization.JacksonXmlProcessor;
-import org.restexpress.server.processor.ErrorPreprocessor;
-import org.restexpress.server.processor.TestPostprocessor;
-import org.restexpress.util.TestUtilities;
 
-public class ServerTest {
+public class RestExpressServiceTest {
     private static String JSON = MediaType.APPLICATION_JSON.withCharset(CharacterSet.UTF_8.getCharsetName());
     private static String XML = MediaType.APPLICATION_XML.withCharset(CharacterSet.UTF_8.getCharsetName());
     private static String HAL_JSON = MediaType.APPLICATION_HAL_JSON.withCharset(CharacterSet.UTF_8.getCharsetName());
@@ -90,12 +86,13 @@ public class ServerTest {
     private static final String URL_EXCEPTION_STRING = SERVER_HOST + PATTERN_EXCEPTION_STRING;
     private static final String URL_EXCEPTION_LITTLE_O = SERVER_HOST + PATTERN_EXCEPTION_LITTLE_O;
 
-    private RestExpress server;
+    private RestExpressService server;
+    
     private HttpClient http = new DefaultHttpClient();
 
     @Before
     public void createServer() {
-        server = new RestExpress();
+        server = RestExpressService.newBuilder();
 
         StringTestController stringTestController = new StringTestController();
         ObjectTestController objectTestController = new ObjectTestController();
@@ -151,7 +148,6 @@ public class ServerTest {
     @Test
     public void shouldHandlePostRequests() throws Exception {
         server.bind(SERVER_PORT);
-
         HttpPost request = new HttpPost(URL1_PLAIN);
         HttpResponse response = (HttpResponse) http.execute(request);
         assertEquals(HttpResponseStatus.CREATED.getCode(), response.getStatusLine().getStatusCode());
@@ -313,7 +309,7 @@ public class ServerTest {
 
     @Test
     public void shouldReturnWrappedJsonAsDefaultIfSet() throws Exception {
-        server.serializationProvider().add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
+        server.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
         server.bind(SERVER_PORT);
 
         HttpGet request = new HttpGet(URL1_PLAIN);
@@ -346,7 +342,7 @@ public class ServerTest {
 
     @Test
     public void shouldReturnWrappedXmlAsDefaultIfSet() throws Exception {
-        server.serializationProvider().add(new JacksonXmlProcessor(), Wrapper.newJsendResponseWrapper(), true);
+        server.add(new JacksonXmlProcessor(), Wrapper.newJsendResponseWrapper(), true);
         server.bind(SERVER_PORT);
 
         HttpGet request = new HttpGet(URL1_PLAIN);
@@ -414,7 +410,7 @@ public class ServerTest {
         HttpEntity entity = response.getEntity();
         assertTrue(entity.getContentLength() > 0l);
         assertEquals(JSON, entity.getContentType().getValue());
-        LittleO o = TestUtilities.deserialize(EntityUtils.toString(entity), LittleO.class,
+        LittleO o = TestToolKit.deserialize(EntityUtils.toString(entity), LittleO.class,
                 server.serializationProvider().processor(Format.JSON.getMediaType()));
         verifyObject(o);
         request.releaseConnection();
@@ -433,7 +429,7 @@ public class ServerTest {
         Header range = response.getFirstHeader(HttpHeaders.Names.CONTENT_RANGE);
         assertNotNull(range);
         assertEquals("items 0-2/3", range.getValue());
-        LittleO[] result = TestUtilities.deserialize(EntityUtils.toString(entity), LittleO[].class, server.serializationProvider()
+        LittleO[] result = TestToolKit.deserialize(EntityUtils.toString(entity), LittleO[].class, server.serializationProvider()
                 .processor(Format.JSON.getMediaType()));
         verifyList(result);
         request.releaseConnection();
@@ -465,8 +461,8 @@ public class ServerTest {
         assertTrue(entity.getContentLength() > 0l);
         assertEquals(JSON, entity.getContentType().getValue());
         String result = EntityUtils.toString(entity);
-        LittleO o = TestUtilities.deserialize(result, LittleO.class,
-                server.serializationProvider().processor(Format.WJSON.getMediaType()));
+        LittleO o = TestToolKit.deserialize(result, LittleO.class,
+        		server.serializationProvider().processor(Format.WJSON.getMediaType()));
         verifyObject(o);
         request.releaseConnection();
     }
@@ -486,8 +482,8 @@ public class ServerTest {
         assertEquals("items 0-2/3", range.getValue());
         String result = EntityUtils.toString(entity);
         assertEquals(200, response.getStatusLine().getStatusCode());
-        LittleO[] o = TestUtilities.deserialize(result, LittleO[].class,
-                server.serializationProvider().processor(Format.WJSON.getMediaType()));
+        LittleO[] o = TestToolKit.deserialize(result, LittleO[].class,
+        		server.serializationProvider().processor(Format.WJSON.getMediaType()));
         verifyList(o);
         request.releaseConnection();
     }
@@ -502,8 +498,8 @@ public class ServerTest {
         HttpEntity entity = response.getEntity();
         assertTrue(entity.getContentLength() > 0l);
         assertEquals(XML, entity.getContentType().getValue());
-        LittleO o = TestUtilities.deserialize(EntityUtils.toString(entity), LittleO.class,
-                server.serializationProvider().processor(Format.XML.getMediaType()));
+        LittleO o = TestToolKit.deserialize(EntityUtils.toString(entity), LittleO.class,
+        		server.serializationProvider().processor(Format.XML.getMediaType()));
         verifyObject(o);
         request.releaseConnection();
     }
@@ -521,8 +517,8 @@ public class ServerTest {
         Header range = response.getFirstHeader(HttpHeaders.Names.CONTENT_RANGE);
         assertNotNull(range);
         assertEquals("items 0-2/3", range.getValue());
-        LittleO[] o = TestUtilities.deserialize(EntityUtils.toString(entity), new LittleO[0].getClass(), server
-                .serializationProvider().processor(Format.XML.getMediaType()));
+        LittleO[] o = TestToolKit.deserialize(EntityUtils.toString(entity), new LittleO[0].getClass(), server.serializationProvider()
+                .processor(Format.XML.getMediaType()));
         verifyList(o);
         request.releaseConnection();
     }
@@ -537,8 +533,8 @@ public class ServerTest {
         HttpEntity entity = response.getEntity();
         assertTrue(entity.getContentLength() > 0l);
         assertEquals(XML, entity.getContentType().getValue());
-        LittleO o = TestUtilities.deserialize(EntityUtils.toString(entity), LittleO.class,
-                server.serializationProvider().processor(Format.WXML.getMediaType()));
+        LittleO o = TestToolKit.deserialize(EntityUtils.toString(entity), LittleO.class,
+        		server.serializationProvider().processor(Format.WXML.getMediaType()));
         verifyObject(o);
         request.releaseConnection();
     }
@@ -557,8 +553,8 @@ public class ServerTest {
         assertNotNull(range);
         assertEquals("items 0-2/3", range.getValue());
 
-        LittleO[] o = TestUtilities.deserialize(EntityUtils.toString(entity), new LittleO[0].getClass(), server
-                .serializationProvider().processor(Format.WXML.getMediaType()));
+        LittleO[] o = TestToolKit.deserialize(EntityUtils.toString(entity), new LittleO[0].getClass(), server.serializationProvider()
+                .processor(Format.WXML.getMediaType()));
         verifyList(o);
         request.releaseConnection();
     }
@@ -577,7 +573,7 @@ public class ServerTest {
         Header range = response.getFirstHeader(HttpHeaders.Names.CONTENT_RANGE);
         assertNotNull(range);
         assertEquals("items 0-2/3", range.getValue());
-        LittleO[] os = TestUtilities.deserialize(EntityUtils.toString(entity), LittleO[].class, server.serializationProvider()
+        LittleO[] os = TestToolKit.deserialize(EntityUtils.toString(entity), LittleO[].class, server.serializationProvider()
                 .processor(Format.JSON.getMediaType()));
         verifyList(os);
         request.releaseConnection();

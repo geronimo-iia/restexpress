@@ -61,7 +61,7 @@ import java.util.Map;
  * @author toddf
  * @since Feb 17, 2014
  */
-public class RequestContext {
+public final class RequestContext {
 	final static RequestContext RC = new RequestContext();
 
 	private final ThreadLocal<Map<String, Object>> tlm;

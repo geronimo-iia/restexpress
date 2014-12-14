@@ -19,7 +19,8 @@
  */
 package org.restexpress.pipeline;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.RestExpress;
+import org.restexpress.RestExpressService;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
 import org.restexpress.domain.response.ErrorResult;
@@ -61,7 +62,7 @@ public class PipelineExceptionTest {
 	private static String TEXT_PLAIN = MediaType.TEXT_PLAIN.withCharset(CharacterSet.UTF_8.getCharsetName());
 	private static String TEXT_ALL = MediaType.TEXT_ALL.withCharset(CharacterSet.UTF_8.getCharsetName());
 
-	protected RestExpress restExpress;
+	protected RestExpressService restExpress;
 	protected FailurePostprocessor failurePostprocessor;
 	protected HttpClient client;
 
@@ -214,7 +215,10 @@ public class PipelineExceptionTest {
 		HttpResponse response = (HttpResponse) client.execute(request);
 		assertEquals(200, response.getStatusLine().getStatusCode());
 		HttpEntity entity = response.getEntity();
-		assertEquals(TEXT_PLAIN, entity.getContentType().getValue());
+		// No way to guest correct encoding. 
+		//assertEquals(TEXT_PLAIN, entity.getContentType().getValue());
+		// it came from File processor
+		assertEquals(MediaType.TEXT_PLAIN.getMime(), entity.getContentType().getValue());
 		assertEquals("", EntityUtils.toString(entity));
 		request.releaseConnection();
 
@@ -254,10 +258,10 @@ public class PipelineExceptionTest {
 	}
 
 	@Before
-	public void initialize() {
+	public void initialize() throws IOException {
 		client = new DefaultHttpClient();
 
-		restExpress = new RestExpress();
+		restExpress = RestExpressService.newBuilder();
 		NoopController controller = new NoopController();
 		restExpress.uri("/serializationEnabled.{format}", controller)//
 				.name("route.noop.serializationEnabled")//
@@ -327,8 +331,12 @@ public class PipelineExceptionTest {
 	 */
 	public class NoopController {
 
-		private File hello = null;
+		private File hello;
 
+		public NoopController() throws IOException {
+			hello = new File(Files.createTempDir(), "hello.txt");
+			hello.createNewFile();
+		}
 		public void serializationEnabled(Request request, Response response) {
 			response.setBody(new DummyDto("A simple content"));
 		}
@@ -343,9 +351,6 @@ public class PipelineExceptionTest {
 		}
 
 		public File fileRequest(Request request, Response response) throws IOException {
-			if (hello == null) {
-				hello = new File(Files.createTempDir(), "hello.txt");
-			}
 			return hello;
 		}
 

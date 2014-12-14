@@ -17,12 +17,10 @@
  *        under the License.
  *
  */
-package org.restexpress;
+package org.restexpress.response;
 
 import java.util.Set;
 
-import org.restexpress.response.ResponseProcessorManager;
-import org.restexpress.response.ResponseWrapper;
 import org.restexpress.serialization.Processor;
 
 /**
@@ -36,7 +34,7 @@ public interface SerializationProvider {
     /**
      * Add the specified {@link Processor} and {@link ResponseWrapper}.
      * 
-     * @param org .restexpress.processor
+     * @param processor
      * @param responseWrapper
      * @return this {@link ResponseProcessorManager} instance.
      */
@@ -45,7 +43,7 @@ public interface SerializationProvider {
     /**
      * Add the specified {@link Processor} and {@link ResponseWrapper}.
      * 
-     * @param org .restexpress.processor
+     * @param processor
      * @param responseWrapper
      * @param isDefault
      * @return this {@link ResponseProcessorManager} instance.
