@@ -48,7 +48,7 @@ import org.restexpress.plugin.PluginB;
  */
 public class RestExpressTest {
 	private static final String TEST_PATH = "/restexpress/test1";
-	private static final int TEST_PORT = 8901;
+	private static final int TEST_PORT = 8101;
 	private static final String TEST_URL = "http://localhost:" + TEST_PORT + TEST_PATH;
 
 	@Test
@@ -96,7 +96,6 @@ public class RestExpressTest {
 		NoopController controller = new NoopController();
 		restExpress.uri(TEST_PATH, controller);
 		try {
-			restExpress.bind();
 			restExpress.bind(TEST_PORT);
 
 			HttpClient client = new DefaultHttpClient();
