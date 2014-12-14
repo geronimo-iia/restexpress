@@ -37,33 +37,24 @@ package org.restexpress.pipeline;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import org.intelligentsia.commons.http.exception.BadRequestException;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.UpstreamMessageEvent;
-import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.SerializationProvider;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
-import org.restexpress.pipeline.handler.DefaultRequestHandler;
-import org.restexpress.pipeline.writer.StringBufferHttpResponseWriter;
+import org.restexpress.pipeline.handler.RestExpressRequestHandler;
+import org.restexpress.pipeline.handler.RestExpressRequestHandlerBuilder;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.serialization.JacksonJsonProcessor;
 import org.restexpress.serialization.JacksonXmlProcessor;
-import org.restexpress.util.TestUtilities;
 
 /**
  * @author toddf
@@ -73,18 +64,18 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 
 	protected DummyRoutes routes = null;
 
-	public void initializeSerializationProvider() {
-		SerializationProvider provider = messageHandler.serializationProvider();
-		provider.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper());
-		provider.add(new JacksonXmlProcessor(Format.XML.getMediaType()), Wrapper.newJsendResponseWrapper());
-	}
-
 	@Before
 	public void initialize() throws Exception {
 		routes = new DummyRoutes();
 		routes.defineRoutes();
 		initialize(routes);
-		initializeSerializationProvider();
+	}
+
+	@Override
+	protected RestExpressRequestHandler build(RestExpressRequestHandlerBuilder builder) throws Exception {
+		builder.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper(), true);
+		builder.add(new JacksonXmlProcessor(Format.XML.getMediaType()), Wrapper.newJsendResponseWrapper());
+		return super.build(builder);
 	}
 
 	@Test
@@ -313,69 +304,6 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		assertTrue(responseBody.toString().endsWith("</response>"));
 	}
 
-	@Test
-	public void shouldCallAllFinallyProcessors() throws Exception {
-		NoopPostprocessor p1 = new NoopPostprocessor();
-		NoopPostprocessor p2 = new NoopPostprocessor();
-		NoopPostprocessor p3 = new NoopPostprocessor();
-
-		ChannelHandlerBuilder builder = TestUtilities.newBuilder(routes);
-		builder.setResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody));
-		builder.addPostprocessor(p1);
-		builder.addPostprocessor(p2);
-		builder.addPostprocessor(p3);
-		builder.addFinallyProcessor(p1);
-		builder.addFinallyProcessor(p2);
-		builder.addFinallyProcessor(p3);
-		initialize((DefaultRequestHandler) builder.build());
-		initializeSerializationProvider();
-		sendGetEvent("/foo");
-		assertEquals(2, p1.getCallCount());
-		assertEquals(2, p2.getCallCount());
-		assertEquals(2, p3.getCallCount());
-	}
-
-	@Test
-	public void shouldCallAllFinallyProcessorsOnRouteException() throws Exception {
-		NoopPostprocessor p1 = new NoopPostprocessor();
-		NoopPostprocessor p2 = new NoopPostprocessor();
-		NoopPostprocessor p3 = new NoopPostprocessor();
-		ChannelHandlerBuilder builder = TestUtilities.newBuilder(routes);
-		builder.setResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody));
-		builder.addPostprocessor(p1);
-		builder.addPostprocessor(p2);
-		builder.addPostprocessor(p3);
-		builder.addFinallyProcessor(p1);
-		builder.addFinallyProcessor(p2);
-		builder.addFinallyProcessor(p3);
-		initialize((DefaultRequestHandler) builder.build());
-		initializeSerializationProvider();
-		sendGetEvent("/xyzt.html");
-		assertEquals(1, p1.getCallCount());
-		assertEquals(1, p2.getCallCount());
-		assertEquals(1, p3.getCallCount());
-	}
-
-	@Test
-	public void shouldCallAllFinallyProcessorsOnProcessorException() throws Exception {
-		NoopPostprocessor p1 = new ExceptionPostprocessor();
-		NoopPostprocessor p2 = new ExceptionPostprocessor();
-		NoopPostprocessor p3 = new ExceptionPostprocessor();
-		ChannelHandlerBuilder builder = TestUtilities.newBuilder(routes);
-		builder.setResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody));
-		builder.addPostprocessor(p1);
-		builder.addPostprocessor(p2);
-		builder.addPostprocessor(p3);
-		builder.addFinallyProcessor(p1);
-		builder.addFinallyProcessor(p2);
-		builder.addFinallyProcessor(p3);
-		initialize((DefaultRequestHandler) builder.build());
-		initializeSerializationProvider();
-		sendGetEvent("/foo");
-		assertEquals(2, p1.getCallCount());
-		assertEquals(1, p2.getCallCount());
-		assertEquals(1, p3.getCallCount());
-	}
 
 	@Test
 	public void shouldSetJSONContentType() throws Exception {
@@ -405,26 +333,8 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		assertEquals("{\"status\":\"success\"}", responseBody.toString());
 	}
 
-	private void sendGetEvent(String path) {
-		try {
-			pl.sendUpstream(new UpstreamMessageEvent(channel, new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, path), new InetSocketAddress(1)));
-		} catch (Throwable t) {
-			System.out.println(t.getMessage());
-		}
-	}
 
-	private void sendGetEvent(String path, String body) {
-		try {
-			HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, path);
-			request.setContent(ChannelBuffers.copiedBuffer(body, Charset.defaultCharset()));
-
-			pl.sendUpstream(new UpstreamMessageEvent(channel, request, new InetSocketAddress(1)));
-		} catch (Throwable t) {
-			System.out.println(t.getMessage());
-		}
-	}
-
-	public class DummyRoutes extends RouteDeclaration {
+	public static class DummyRoutes extends RouteDeclaration {
 		private Object controller = new FooBarController();
 
 		public DummyRoutes defineRoutes() {
@@ -449,7 +359,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		}
 	}
 
-	public class FooBarController {
+	public static class FooBarController {
 		public void fooAction(Request request, Response response) {
 			// do nothing.
 		}
@@ -494,24 +404,4 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
 		}
 	}
 
-	private class NoopPostprocessor implements Postprocessor {
-		private int callCount = 0;
-
-		@Override
-		public void process(MessageContext context) {
-			++callCount;
-		}
-
-		public int getCallCount() {
-			return callCount;
-		}
-	}
-
-	private class ExceptionPostprocessor extends NoopPostprocessor {
-		@Override
-		public void process(MessageContext context) {
-			super.process(context);
-			throw new RuntimeException("RuntimeException thrown...");
-		}
-	}
 }

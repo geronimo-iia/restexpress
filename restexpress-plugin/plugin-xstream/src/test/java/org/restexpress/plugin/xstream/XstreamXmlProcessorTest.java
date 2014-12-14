@@ -34,11 +34,11 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Before;
 import org.junit.Test;
+import org.restexpress.TestToolKit;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
 import org.restexpress.domain.metadata.UriMetadata;
-import org.restexpress.util.TestUtilities;
 
 /**
  * @author toddf
@@ -59,13 +59,13 @@ public class XstreamXmlProcessorTest {
 		List<RouteMetadata> list = new ArrayList<RouteMetadata>();
 		list.add(new RouteMetadata("api", new UriMetadata("uri"), new ArrayList<String>(), new ArrayList<String>(), true));
 		ServerMetadata serverMetadata = new ServerMetadata("test", 8081, "httpl/localhost:80801", new HashSet<String>(), "json", list);
-		String xml = TestUtilities.serialize(serverMetadata, processor);
-		TestUtilities.deserialize(xml, ServerMetadata.class, processor);
+		String xml = TestToolKit.serialize(serverMetadata, processor);
+		TestToolKit.deserialize(xml, ServerMetadata.class, processor);
 	}
 
 	@Test
 	public void shouldSerializeObject() {
-		String xml = TestUtilities.serialize(new KnownObject(), processor);
+		String xml = TestToolKit.serialize(new KnownObject(), processor);
 		assertNotNull(xml);
 		// System.out.println(xml);
 		assertTrue(xml.startsWith("<KnownObject>"));
@@ -77,13 +77,13 @@ public class XstreamXmlProcessorTest {
 
 	@Test
 	public void shouldSerializeNull() {
-		String xml = TestUtilities.serialize(null, processor);
+		String xml = TestToolKit.serialize(null, processor);
 		assertEquals("", xml);
 	}
 
 	@Test
 	public void shouldDeserializeObject() {
-		KnownObject o = TestUtilities.deserialize(XML, KnownObject.class, processor);
+		KnownObject o = TestToolKit.deserialize(XML, KnownObject.class, processor);
 		assertNotNull(o);
 		assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
 		assertEquals(2, o.integer);
@@ -97,34 +97,34 @@ public class XstreamXmlProcessorTest {
 
 	@Test
 	public void shouldDeserializeEmptyObject() {
-		KnownObject o = TestUtilities.deserialize("<KnownObject/>", KnownObject.class, processor);
+		KnownObject o = TestToolKit.deserialize("<KnownObject/>", KnownObject.class, processor);
 		assertNotNull(o);
 		assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
 	}
 
 	@Test
 	public void shouldDeserializeEmptyString() {
-		Object o = TestUtilities.deserialize("", KnownObject.class, processor);
+		Object o = TestToolKit.deserialize("", KnownObject.class, processor);
 		assertNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeNullString() {
-		Object o = TestUtilities.deserialize((String) null, KnownObject.class, processor);
+		Object o = TestToolKit.deserialize((String) null, KnownObject.class, processor);
 		assertNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeChannelBuffer() {
 		ChannelBuffer buf = ChannelBuffers.copiedBuffer(XML, CharacterSet.UTF_8.getCharset());
-		Object o = TestUtilities.deserialize(buf, KnownObject.class, processor);
+		Object o = TestToolKit.deserialize(buf, KnownObject.class, processor);
 		assertNotNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeEmptyChannelBuffer() {
 		ChannelBuffer buf = ChannelBuffers.EMPTY_BUFFER;
-		Object o = TestUtilities.deserialize(buf, KnownObject.class, processor);
+		Object o = TestToolKit.deserialize(buf, KnownObject.class, processor);
 		assertNull(o);
 	}
 
@@ -132,7 +132,7 @@ public class XstreamXmlProcessorTest {
 	public void shouldEncodeSerializedXssArray() {
 		KnownObject ko = new KnownObject();
 		ko.sa = new String[] { "this", "is", "an", "evil", "Json", "<script>alert(\'xss')</script>" };
-		String xml = TestUtilities.serialize(ko, processor);
+		String xml = TestToolKit.serialize(ko, processor);
 		assertNotNull(xml);
 		assertTrue(xml.startsWith("<KnownObject>"));
 		assertTrue(xml.contains("<integer>1</integer>"));
@@ -149,7 +149,7 @@ public class XstreamXmlProcessorTest {
 	public void shouldEncodeSerializedXssString() {
 		KnownObject ko = new KnownObject();
 		ko.string = "<script>alert('xss')</script>";
-		String xml = TestUtilities.serialize(ko, processor);
+		String xml = TestToolKit.serialize(ko, processor);
 		assertNotNull(xml);
 		assertTrue(xml.startsWith("<KnownObject>"));
 		assertTrue(xml.contains("<integer>1</integer>"));

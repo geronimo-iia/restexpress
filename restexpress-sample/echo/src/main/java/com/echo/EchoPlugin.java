@@ -31,16 +31,13 @@ public class EchoPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public AbstractPlugin register(RestExpress server) {
-		super.register(server);
+	public void initialize(RestExpress server) {
 		controller = new EchoController();
 		server.uri("/", controller).name("echo.routes");
-		return this;
 	}
 
 	@Override
-	public void shutdown(RestExpress server) {
-		super.shutdown(server);
+	public void destroy(RestExpress server) {
 		controller = null;
 	}
 }

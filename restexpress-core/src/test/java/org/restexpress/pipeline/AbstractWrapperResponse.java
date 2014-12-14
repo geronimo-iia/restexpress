@@ -34,13 +34,14 @@ import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.restexpress.TestToolKit;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.observer.CounterMessageObserver;
-import org.restexpress.pipeline.handler.DefaultRequestHandler;
+import org.restexpress.pipeline.handler.RestExpressRequestHandler;
+import org.restexpress.pipeline.handler.RestExpressRequestHandlerBuilder;
 import org.restexpress.pipeline.writer.StringBufferHttpResponseWriter;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.serialization.Processor;
-import org.restexpress.util.TestUtilities;
 
 /**
  * {@link AbstractWrapperResponse} is a class facility for testing all wrapper.
@@ -49,12 +50,13 @@ import org.restexpress.util.TestUtilities;
  */
 public class AbstractWrapperResponse {
 
-	protected DefaultRequestHandler messageHandler;
+	protected RestExpressRequestHandler messageHandler;
 	protected CounterMessageObserver observer;
 	protected Channel channel;
 	protected ChannelPipeline pl;
 	protected StringBuffer responseBody;
 	protected Map<String, List<String>> responseHeaders;
+	protected RestExpressRequestHandlerBuilder builder;
 
 	/**
 	 * Utility to read result.
@@ -74,20 +76,30 @@ public class AbstractWrapperResponse {
 	 * @throws Exception
 	 */
 	protected void initialize(RouteDeclaration routes) throws Exception {
-		responseBody = new StringBuffer();
-		responseHeaders = new HashMap<String, List<String>>();
-		initialize(TestUtilities.newDefaultRequestHandler(routes, new StringBufferHttpResponseWriter(responseHeaders, responseBody)));
+		preInitialize(routes);
+		messageHandler = build(builder);
+		postInitialize();
 	}
 
-	protected void initialize(DefaultRequestHandler messageHandler) throws Exception {
-		this.messageHandler = messageHandler;
-		observer = new CounterMessageObserver();
-		messageHandler.dispatcher().addMessageObserver(observer);
-
-		RestExpressPipelineFactory pf = new RestExpressPipelineFactory().addRequestHandler(messageHandler);
-		pl = pf.getPipeline();
+	protected void postInitialize() throws Exception {
+		messageHandler = build(builder);
+		RestExpressPipelineFactory pipelineFactory = new RestExpressPipelineFactory().addRequestHandler(messageHandler);
+		pl = pipelineFactory.getPipeline();
 		ChannelFactory channelFactory = new DefaultLocalServerChannelFactory();
 		channel = channelFactory.newChannel(pl);
+	}
+
+	protected void preInitialize(RouteDeclaration routes) {
+		responseBody = new StringBuffer();
+		responseHeaders = new HashMap<String, List<String>>();
+		observer = new CounterMessageObserver();
+		builder = TestToolKit.newBuilder(routes)//
+				.setHttpResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody))//
+				.addMessageObserver(observer);
+	}
+
+	protected RestExpressRequestHandler build(RestExpressRequestHandlerBuilder builder) throws Exception {
+		return builder.build();
 	}
 
 	/**
@@ -105,8 +117,17 @@ public class AbstractWrapperResponse {
 		pl.sendUpstream(new UpstreamMessageEvent(channel, request, new InetSocketAddress(1)));
 	}
 
+	protected void sendGetEvent(String path, String body) {
+		sendEvent(HttpMethod.GET, path, body);
+	}
+
+	protected void sendGetEvent(String path) {
+		sendEvent(HttpMethod.GET, path, null);
+	}
+
 	/**
-	 * Route Declaration for JSendResult test.
+	 * Route Declaration for JSendResult and {@link RawWrappedResponseTest}
+	 * test.
 	 */
 	public class DummyRoutes extends RouteDeclaration {
 

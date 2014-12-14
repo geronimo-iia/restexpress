@@ -18,7 +18,7 @@
  *
  */
 /*
-    Copyright 2013, Strategic Gains, Inc.
+    Copyright 2014, Strategic Gains, Inc.
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -32,12 +32,18 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
  */
-package org.restexpress.util;
+package org.restexpress.processor;
+
+import org.restexpress.pipeline.MessageContext;
+import org.restexpress.pipeline.Preprocessor;
 
 /**
  * @author toddf
- * @since Jun 14, 2013
+ * @since Jul 2, 2014
  */
-public interface Callback<T> {
-	public void process(T object);
+public class ErrorPreprocessor implements Preprocessor {
+	@Override
+	public void process(MessageContext context) {
+		throw new RuntimeException("ErrorPreprocessor");
+	}
 }

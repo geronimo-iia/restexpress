@@ -26,7 +26,8 @@ import org.restexpress.processor.EtagHeaderPostprocessor;
 import org.restexpress.processor.LastModifiedHeaderPostprocessor;
 
 /**
- * {@link CacheControlPlugin} adds caching-related headers to GET and HEAD responses.
+ * {@link CacheControlPlugin} adds caching-related headers to GET and HEAD
+ * responses.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
@@ -34,15 +35,28 @@ import org.restexpress.processor.LastModifiedHeaderPostprocessor;
  */
 public class CacheControlPlugin extends AbstractPlugin {
 
-    @Override
-    public CacheControlPlugin register(final RestExpress server) {
-        if (isRegistered())
-            return this;
-        super.register(server);
-        server.addPostprocessor(new DateHeaderPostprocessor())//
-                .addPostprocessor(new CacheHeaderPostprocessor())//
-                .addPostprocessor(new EtagHeaderPostprocessor())//
-                .addPostprocessor(new LastModifiedHeaderPostprocessor());
-        return this;
-    }
+	/**
+	 * Build a new instance.
+	 */
+	public CacheControlPlugin() {
+		super();
+	}
+
+	/**
+	 * Build a new instance.
+	 * 
+	 * @param priority
+	 */
+	public CacheControlPlugin(int priority) {
+		super(priority);
+	}
+
+	@Override
+	public void initialize(RestExpress server) {
+		server.addPostprocessor(new DateHeaderPostprocessor())//
+				.addPostprocessor(new CacheHeaderPostprocessor())//
+				.addPostprocessor(new EtagHeaderPostprocessor())//
+				.addPostprocessor(new LastModifiedHeaderPostprocessor());
+	}
+
 }

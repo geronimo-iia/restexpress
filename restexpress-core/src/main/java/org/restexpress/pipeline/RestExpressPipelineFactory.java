@@ -37,6 +37,7 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 /**
@@ -82,9 +83,11 @@ public class RestExpressPipelineFactory implements ChannelPipelineFactory {
 	 * @param handler
 	 *            {@link ChannelHandler} to add at pipeline end.
 	 * @return this RestExpressPipelineFactory for method chaining.
+	 * @throws NullPointerException
+	 *             if handler is null
 	 */
-	public RestExpressPipelineFactory addRequestHandler(final ChannelHandler handler) {
-		if (!requestHandlers.contains(handler)) {
+	public RestExpressPipelineFactory addRequestHandler(final ChannelHandler handler) throws NullPointerException {
+		if (!requestHandlers.contains(Preconditions.checkNotNull(handler, "request handler could not be null"))) {
 			requestHandlers.add(handler);
 		}
 
@@ -152,13 +155,15 @@ public class RestExpressPipelineFactory implements ChannelPipelineFactory {
 			final SslHandler sslHandler = new SslHandler(sslEngine);
 			pipeline.addLast("ssl", sslHandler);
 		}
-
+		// Upstream handlers
 		pipeline.addLast("decoder", new HttpRequestDecoder());
 		pipeline.addLast("aggregator", new HttpChunkAggregator(maxContentLength));
+		pipeline.addLast("inflater", new HttpContentDecompressor());
+		// Downstream handlers
 		pipeline.addLast("encoder", new HttpResponseEncoder());
 		pipeline.addLast("chunkWriter", new ChunkedWriteHandler());
-		pipeline.addLast("inflater", new HttpContentDecompressor());
 		pipeline.addLast("deflater", new HttpContentCompressor());
+
 		// add optional execution handler
 		if (executionHandler != null) {
 			pipeline.addLast("executionHandler", executionHandler);

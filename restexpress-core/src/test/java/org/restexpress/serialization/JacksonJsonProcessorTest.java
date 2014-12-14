@@ -30,9 +30,9 @@ import java.util.Calendar;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
+import org.restexpress.TestToolKit;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.serialization.Processor;
-import org.restexpress.util.TestUtilities;
 
 /**
  * @author toddf
@@ -46,7 +46,7 @@ public class JacksonJsonProcessorTest {
 
     @Test
     public void shouldSerializeObject() {
-        String json = TestUtilities.serialize(new KnownObject(), processor);
+        String json = TestToolKit.serialize(new KnownObject(), processor);
         // System.out.println(json);
         assertNotNull(json);
         assertTrue(json.startsWith("{"));
@@ -60,13 +60,13 @@ public class JacksonJsonProcessorTest {
 
     @Test
     public void shouldSerializeNull() {
-        String json = TestUtilities.serialize(null, processor);
+        String json = TestToolKit.serialize(null, processor);
         assertEquals("", json);
     }
 
     @Test
     public void shouldDeserializeObject() {
-        KnownObject o = TestUtilities.deserialize(JSON, KnownObject.class, processor);
+        KnownObject o = TestToolKit.deserialize(JSON, KnownObject.class, processor);
         assertNotNull(o);
         assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
         assertEquals(2, o.integer);
@@ -81,40 +81,40 @@ public class JacksonJsonProcessorTest {
 
     @Test
     public void shouldDeserializeEmptyObject() {
-        KnownObject o = TestUtilities.deserialize("{}", KnownObject.class, processor);
+        KnownObject o = TestToolKit.deserialize("{}", KnownObject.class, processor);
         assertNotNull(o);
         assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
     }
 
     @Test
     public void shouldDeserializeEmptyString() {
-        Object o = TestUtilities.deserialize("", KnownObject.class, processor);
+        Object o = TestToolKit.deserialize("", KnownObject.class, processor);
         assertNull(o);
     }
 
     @Test
     public void shouldDeserializeNullString() {
-        Object o = TestUtilities.deserialize((String) null, KnownObject.class, processor);
+        Object o = TestToolKit.deserialize((String) null, KnownObject.class, processor);
         assertNull(o);
     }
 
     @Test
     public void shouldDeserializeChannelBuffer() {
         ChannelBuffer buf = ChannelBuffers.copiedBuffer(JSON, CharacterSet.UTF_8.getCharset());
-        Object o = TestUtilities.deserialize(buf, KnownObject.class, processor);
+        Object o = TestToolKit.deserialize(buf, KnownObject.class, processor);
         assertNotNull(o);
     }
 
     @Test
     public void shouldDeserializeEmptyChannelBuffer() {
         ChannelBuffer buf = ChannelBuffers.EMPTY_BUFFER;
-        Object o = TestUtilities.deserialize(buf, KnownObject.class, processor);
+        Object o = TestToolKit.deserialize(buf, KnownObject.class, processor);
         assertNull(o);
     }
 
     @Test
     public void shouldDeserializeUTF8ChannelBuffer() {
-        KnownObject o = TestUtilities.deserialize(ChannelBuffers.wrappedBuffer(JSON_UTF8.getBytes(CharacterSet.UTF_8.getCharset())),
+        KnownObject o = TestToolKit.deserialize(ChannelBuffers.wrappedBuffer(JSON_UTF8.getBytes(CharacterSet.UTF_8.getCharset())),
                 KnownObject.class, processor);
         assertNotNull(o);
         assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
@@ -131,7 +131,7 @@ public class JacksonJsonProcessorTest {
     public void shouldEncodeSerializedXssJsonArray() {
         KnownObject ko = new KnownObject();
         ko.sa = new String[] { "this", "is", "an", "evil", "Json", "<script>alert(\'xss')</script>" };
-        String json = TestUtilities.serialize(ko, processor);
+        String json = TestToolKit.serialize(ko, processor);
         assertNotNull(json);
         assertTrue(json.startsWith("{"));
         assertTrue(json.contains("\"integer\":1"));
@@ -147,7 +147,7 @@ public class JacksonJsonProcessorTest {
     public void shouldEncodeSerializedXssJsonString() {
         KnownObject ko = new KnownObject();
         ko.string = "<script>alert('xss')</script>";
-        String json = TestUtilities.serialize(ko, processor);
+        String json = TestToolKit.serialize(ko, processor);
         assertNotNull(json);
         assertTrue(json.startsWith("{"));
         assertTrue(json.contains("\"integer\":1"));

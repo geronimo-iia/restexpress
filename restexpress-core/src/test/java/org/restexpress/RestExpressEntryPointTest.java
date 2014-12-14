@@ -19,11 +19,22 @@
  */
 package org.restexpress;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restexpress.observer.SimpleConsoleLogMessageObserver;
+import org.restexpress.plugin.RouteMetadataPlugin;
 
 /**
  * {@link RestExpressEntryPointTest} test {@link RestExpressEntryPoint}.
@@ -38,20 +49,40 @@ public class RestExpressEntryPointTest {
 	 */
 	private static RestExpressLauncher launcher;
 
+	private HttpClient httpClient;
+	
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		launcher = new RestExpressLauncher();
 		launcher.server().addMessageObserver(new SimpleConsoleLogMessageObserver());
-		launcher.bind();
+		launcher.server().register(new RouteMetadataPlugin());
+		launcher.restExpressLifeCycle().bind();
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		launcher.shutdown();
+		launcher.restExpressLifeCycle().shutdown();;
+	}
+	@Before
+	public void beforeEach() {
+		httpClient = new DefaultHttpClient();
+	}
+
+	@After
+	public void afterEach() {
+		httpClient = null;
 	}
 
 	@Test
 	public void checkFakeEntryPointIsLoaded() {
 		Assert.assertEquals(Boolean.TRUE, launcher.server().context().get("TEST"));
+	}
+	
+
+	@Test
+	public void testGetAllRoute() throws IOException {
+		HttpGet getRequest = new HttpGet(launcher.server().settings().serverSettings().getBaseUrl() + "/routes/metadata");
+		final HttpResponse response = httpClient.execute(getRequest);
+		assertEquals(200, response.getStatusLine().getStatusCode());
 	}
 }

@@ -34,11 +34,11 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.pipeline.HttpResponseWriter;
-import org.restexpress.util.HttpSpecification;
 
 /**
  * {@link DefaultHttpResponseWriter} implements an {@link HttpResponseWriter}.
@@ -70,7 +70,6 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 
 		// add all header
 		addHeaders(response, httpResponse);
-
 		// manage content
 		File resource = null;
 		try {
@@ -80,7 +79,8 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 				// it.
 				Class<?> bodyClass = response.getBody().getClass();
 				if (ChannelBuffer.class.isAssignableFrom(bodyClass)) {
-					httpResponse.setContent(ChannelBuffers.wrappedBuffer((ChannelBuffer) response.getBody()));
+					//httpResponse.setContent(ChannelBuffers.wrappedBuffer((ChannelBuffer) response.getBody()));
+					httpResponse.setContent((ChannelBuffer) response.getBody());
 				} else if (File.class.isAssignableFrom(bodyClass)) {
 					resource = (File) response.getBody();
 				} else { // response body is assumed to be a string

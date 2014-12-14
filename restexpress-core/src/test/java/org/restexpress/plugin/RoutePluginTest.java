@@ -34,7 +34,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restexpress.RestExpressLauncher;
 import org.restexpress.observer.SimpleConsoleLogMessageObserver;
-import org.restexpress.plugin.RouteMetadataPlugin;
 
 /**
  * RoutePluginTest.
@@ -52,14 +51,14 @@ public class RoutePluginTest {
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		launcher = new RestExpressLauncher();
-		launcher.server().registerPlugin(new RouteMetadataPlugin());
+		launcher.server().register(new RouteMetadataPlugin());
 		launcher.server().addMessageObserver(new SimpleConsoleLogMessageObserver());
-		launcher.bind();
+		launcher.restExpressLifeCycle().bind();
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		launcher.shutdown();
+		launcher.restExpressLifeCycle().shutdown();
 	}
 
 	@Before

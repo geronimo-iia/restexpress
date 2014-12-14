@@ -47,9 +47,9 @@ public class ServerRestExpressEntryPoint implements RestExpressEntryPoint {
 	@Override
 	public void onLoad(RestExpress restExpress) throws RuntimeException {
 		// add Route Metadata plugin
-		restExpress.registerPlugin(new RouteMetadataPlugin());
+		restExpress.register(new RouteMetadataPlugin());
 		// add cache plugin
-		restExpress.registerPlugin(new CacheControlPlugin());
+		restExpress.register(new CacheControlPlugin());
 	}
 
 }

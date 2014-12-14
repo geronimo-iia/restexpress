@@ -26,6 +26,7 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.Before;
 import org.junit.Test;
+import org.restexpress.HttpSpecification;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;

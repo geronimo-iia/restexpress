@@ -1,3 +1,22 @@
+/**
+ *        Licensed to the Apache Software Foundation (ASF) under one
+ *        or more contributor license agreements.  See the NOTICE file
+ *        distributed with this work for additional information
+ *        regarding copyright ownership.  The ASF licenses this file
+ *        to you under the Apache License, Version 2.0 (the
+ *        "License"); you may not use this file except in compliance
+ *        with the License.  You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *        Unless required by applicable law or agreed to in writing,
+ *        software distributed under the License is distributed on an
+ *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *        KIND, either express or implied.  See the License for the
+ *        specific language governing permissions and limitations
+ *        under the License.
+ *
+ */
 package org.restexpress.processor;
 
 import java.io.File;
@@ -12,12 +31,12 @@ import org.intelligentsia.commons.http.ResponseHeader;
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.intelligentsia.commons.http.status.HttpResponseStandardStatus;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.Format;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
-import org.restexpress.util.HttpSpecification;
 
 /**
  * {@link FileHeaderPostProcessor} implements a {@link Postprocessor} which
@@ -72,7 +91,7 @@ public final class FileHeaderPostProcessor implements Postprocessor {
 			final String resourceName = resource.getName();
 			final int index = resourceName.indexOf(".");
 			if (index >= 0) {
-				final String extension = resourceName.substring(index);
+				final String extension = resourceName.substring(index + 1);
 				mediaType = Format.asMap().get(extension);
 			}
 			response.addHeader(ResponseHeader.CONTENT_TYPE.getHeader(), mediaType);

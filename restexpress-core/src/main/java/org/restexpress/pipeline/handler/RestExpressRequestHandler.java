@@ -20,49 +20,68 @@
 package org.restexpress.pipeline.handler;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.SerializationProvider;
 import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.MessageContext;
-import org.restexpress.pipeline.MessageObserverDispatcher;
+import org.restexpress.pipeline.MessageObserver;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.response.ResponseProcessorSetting;
+import org.restexpress.response.SerializationProvider;
 import org.restexpress.route.Action;
 import org.restexpress.route.RouteResolver;
-import org.restexpress.util.HttpSpecification;
 
 import com.google.common.base.Preconditions;
 
 /**
- * {@link DefaultRequestHandler} implements an {@link AbstractRequestHandler}
- * for our {@link ResponseProcessorSetting} and {@link RouteResolver}.
+ * {@link RestExpressRequestHandler} implements an
+ * {@link AbstractRequestHandler} for our {@link ResponseProcessorSetting} and
+ * {@link RouteResolver}.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since Nov 13, 2009
  */
 @Sharable
-public final class DefaultRequestHandler extends AbstractRequestHandler {
+public final class RestExpressRequestHandler extends AbstractRequestHandler {
 
 	private final RouteResolver routeResolver;
+
 	private final ResponseProcessorManager responseProcessorManager;
 
-	public DefaultRequestHandler(final Preprocessor[] preprocessors, final Postprocessor[] postprocessors, final Postprocessor[] finallyProcessors, final HttpResponseWriter responseWriter, final boolean shouldEnforceHttpSpec,
-			final MessageObserverDispatcher dispatcher, final RouteResolver routeResolver, final ResponseProcessorManager responseProcessorManager) {
-		super(preprocessors, postprocessors, finallyProcessors, responseWriter, shouldEnforceHttpSpec, dispatcher);
+	/**
+	 * Build a new instance of {@link RestExpressRequestHandler}.
+	 * 
+	 * @param preprocessors
+	 * @param postprocessors
+	 * @param finallyProcessors
+	 * @param responseWriter
+	 * @param shouldEnforceHttpSpec
+	 * @param observer
+	 * @param routeResolver
+	 * @param responseProcessorManager
+	 */
+	public RestExpressRequestHandler(List<Preprocessor> preprocessors, List<Postprocessor> postprocessors, List<Postprocessor> finallyProcessors, //
+			final HttpResponseWriter responseWriter, final boolean shouldEnforceHttpSpec, //
+			final MessageObserver observer, final RouteResolver routeResolver, //
+			final ResponseProcessorManager responseProcessorManager) {
+		super(preprocessors, postprocessors, finallyProcessors, responseWriter, shouldEnforceHttpSpec, observer);
 		this.routeResolver = Preconditions.checkNotNull(routeResolver);
 		this.responseProcessorManager = Preconditions.checkNotNull(responseProcessorManager);
 	}
 
 	/**
+	 * Used for runtime information.
+	 * 
 	 * @return {@link SerializationProvider}.
 	 */
 	public SerializationProvider serializationProvider() {
@@ -70,6 +89,8 @@ public final class DefaultRequestHandler extends AbstractRequestHandler {
 	}
 
 	/**
+	 * Used for runtime information.
+	 * 
 	 * @return {@link RouteResolver}.
 	 */
 	public RouteResolver routeResolver() {

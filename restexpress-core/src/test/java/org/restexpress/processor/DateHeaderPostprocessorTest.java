@@ -34,9 +34,9 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.restexpress.Response;
+import org.restexpress.TestToolKit;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
-import org.restexpress.util.TestUtilities;
 
 /**
  * 
@@ -52,7 +52,7 @@ public class DateHeaderPostprocessorTest {
         HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/foo?param1=bar&param2=blah&yada");
         httpRequest.headers().add("Host", "testing-host");
         Response response = new Response();
-        processor.process(new MessageContext(TestUtilities.newRequest(httpRequest), response));
+        processor.process(new MessageContext(TestToolKit.newRequest(httpRequest), response));
         assertTrue(response.hasHeaders());
         String dateHeader = response.getHeader(HttpHeaders.Names.DATE);
         assertNotNull(dateHeader);
@@ -65,7 +65,7 @@ public class DateHeaderPostprocessorTest {
         HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.HEAD, "/foo?param1=bar&param2=blah&yada");
         httpRequest.headers().add("Host", "testing-host");
         Response response = new Response();
-        processor.process(new MessageContext(TestUtilities.newRequest(httpRequest), response));
+        processor.process(new MessageContext(TestToolKit.newRequest(httpRequest), response));
         assertTrue(response.hasHeaders());
         String dateHeader = response.getHeader(HttpHeaders.Names.DATE);
         assertNotNull(dateHeader);
@@ -78,7 +78,7 @@ public class DateHeaderPostprocessorTest {
         HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/foo?param1=bar&param2=blah&yada");
         httpRequest.headers().add("Host", "testing-host");
         Response response = new Response();
-        processor.process(new MessageContext(TestUtilities.newRequest(httpRequest), response));
+        processor.process(new MessageContext(TestToolKit.newRequest(httpRequest), response));
         assertFalse(response.hasHeader(HttpHeaders.Names.DATE));
     }
 
@@ -87,7 +87,7 @@ public class DateHeaderPostprocessorTest {
         HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.PUT, "/foo?param1=bar&param2=blah&yada");
         httpRequest.headers().add("Host", "testing-host");
         Response response = new Response();
-        processor.process(new MessageContext(TestUtilities.newRequest(httpRequest), response));
+        processor.process(new MessageContext(TestToolKit.newRequest(httpRequest), response));
         assertFalse(response.hasHeader(HttpHeaders.Names.DATE));
     }
 
@@ -96,7 +96,7 @@ public class DateHeaderPostprocessorTest {
         HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/foo?param1=bar&param2=blah&yada");
         httpRequest.headers().add("Host", "testing-host");
         Response response = new Response();
-        processor.process(new MessageContext(TestUtilities.newRequest(httpRequest), response));
+        processor.process(new MessageContext(TestToolKit.newRequest(httpRequest), response));
         assertFalse(response.hasHeader(HttpHeaders.Names.DATE));
     }
 
@@ -105,7 +105,7 @@ public class DateHeaderPostprocessorTest {
         HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.OPTIONS, "/foo?param1=bar&param2=blah&yada");
         httpRequest.headers().add("Host", "testing-host");
         Response response = new Response();
-        processor.process(new MessageContext(TestUtilities.newRequest(httpRequest), response));
+        processor.process(new MessageContext(TestToolKit.newRequest(httpRequest), response));
         assertFalse(response.hasHeader(HttpHeaders.Names.DATE));
     }
 }

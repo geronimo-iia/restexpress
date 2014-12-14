@@ -23,151 +23,186 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
-import java.util.ServiceLoader;
+
+import javax.net.ssl.SSLContext;
 
 import org.jboss.netty.channel.Channel;
 import org.restexpress.settings.RestExpressSettings;
 import org.restexpress.settings.Settings;
 
 /**
- * {@link RestExpressLauncher} is the main entry point
+ * {@link RestExpressLauncher} is the main entry point.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class RestExpressLauncher implements Runnable {
+public class RestExpressLauncher implements Runnable, RestExpressLifeCycle {
 
-    /**
-     * {@link RestExpress} instance.
-     */
-    private RestExpress restExpress;
+	/**
+	 * {@link RestExpressService} instance.
+	 */
+	private RestExpressService restExpressService;
 
-    /**
-     * Build a new instance with default parameter.
-     */
-    public RestExpressLauncher() {
-        this(new RestExpressSettings());
-    }
+	/**
+	 * Build a new instance with default parameter.
+	 */
+	public RestExpressLauncher() {
+		this(new RestExpressSettings());
+	}
 
-    /**
-     * Build a new instance.
-     * 
-     * @param settingsPath settings file path
-     * @throws IOException
-     */
-    public RestExpressLauncher(Path settingsPath) throws IOException {
-        this(Settings.loadFrom(settingsPath));
-    }
+	/**
+	 * Build a new instance.
+	 * 
+	 * @param settingsPath
+	 *            settings file path
+	 * @throws IOException
+	 */
+	public RestExpressLauncher(Path settingsPath) throws IOException {
+		this(Settings.loadFrom(settingsPath));
+	}
 
-    /**
-     * Build a new instance.
-     * 
-     * @param settingsStream settings stream
-     * @param settings format
-     * @throws IOException
-     */
-    public RestExpressLauncher(InputStream settingsStream, Settings settings) throws IOException {
-        this(Settings.loadFrom(settingsStream, settings));
-    }
+	/**
+	 * Build a new instance.
+	 * 
+	 * @param settingsStream
+	 *            settings stream
+	 * @param settings
+	 *            format
+	 * @throws IOException
+	 */
+	public RestExpressLauncher(InputStream settingsStream, Settings settings) throws IOException {
+		this(Settings.loadFrom(settingsStream, settings));
+	}
 
-    /**
-     * Build a new instance.
-     * 
-     * @param serializationProvider
-     * @param settings
-     */
-    public RestExpressLauncher(RestExpressSettings settings) {
-        server(new RestExpress(settings));
-    }
+	/**
+	 * Build a new instance.
+	 * 
+	 * @param serializationProvider
+	 * @param settings
+	 */
+	public RestExpressLauncher(RestExpressSettings settings) {
+		this.restExpressService = RestExpressService.newBuilder(settings)//
+				.lookupRestExpressEntryPoint();
+	}
 
-    protected void server(RestExpress restExpress) {
-        this.restExpress = restExpress;
-    }
+	@Override
+	public void run() {
+		restExpressService.bind();
+		restExpressService.awaitShutdown();
+	}
 
-    /**
-     * Lookup for {@link RestExpressEntryPoint} in class path with {@link ServiceLoader} and initialize them.
-     */
-    protected void initialize() {
-        final ServiceLoader<RestExpressEntryPoint> loader = ServiceLoader.load(RestExpressEntryPoint.class, this.getClass()
-                .getClassLoader());
-        final Iterator<RestExpressEntryPoint> iterator = loader.iterator();
-        while (iterator.hasNext()) {
-            RestExpressEntryPoint entryPoint = iterator.next();
-            System.out.println("Load : " + entryPoint.getClass().getName());
-            entryPoint.onLoad(restExpress);
-        }
-    }
+	/**
+	 * @return {@link RestExpress} server instance.
+	 */
+	public RestExpress server() {
+		return restExpressService;
+	}
 
-    protected void destroy() {
-        // nothing todo
-    }
+	/**
+	 * @return {@link RestExpressLifeCycle} instance.
+	 */
+	public RestExpressLifeCycle restExpressLifeCycle() {
+		return restExpressService;
+	}
 
-    @Override
-    public void run() {
-        initialize();
-        bind();
-        awaitShutdown();
-        destroy();
-    }
+	/**
+	 * @return
+	 * @see org.restexpress.RestExpressService#bind()
+	 */
+	public Channel bind() {
+		return restExpressService.bind();
+	}
 
-    public Channel bind() {
-        initialize();
-        return server().bind();
-    }
+	/**
+	 * @param port
+	 * @return
+	 * @see org.restexpress.RestExpressService#bind(int)
+	 */
+	public Channel bind(int port) {
+		return restExpressService.bind(port);
+	}
 
-    public void awaitShutdown() {
-        server().awaitShutdown();
-    }
+	/**
+	 * @param sslContext
+	 * @param port
+	 * @return
+	 * @see org.restexpress.RestExpressService#bind(javax.net.ssl.SSLContext,
+	 *      int)
+	 */
+	public Channel bind(SSLContext sslContext, int port) {
+		return restExpressService.bind(sslContext, port);
+	}
 
-    public void shutdown() {
-        server().shutdown();
-        destroy();
-    }
+	/**
+	 * 
+	 * @see org.restexpress.RestExpressService#awaitShutdown()
+	 */
+	public void awaitShutdown() {
+		restExpressService.awaitShutdown();
+	}
 
-    public RestExpress server() {
-        return restExpress;
-    }
+	/**
+	 * 
+	 * @see org.restexpress.RestExpressService#shutdown()
+	 */
+	public void shutdown() {
+		restExpressService.shutdown();
+	}
 
-    /**
-     * Instantiate a new {@link RestExpressLauncher} from argument.
-     * 
-     * @param args
-     * @param defaultEnvironmentName
-     * @return a {@link RestExpressLauncher} instance.
-     * @throws IOException
-     */
-    public static RestExpressLauncher instanciateFrom(String[] args, String defaultEnvironmentName) throws IOException {
-        String environmentName = defaultEnvironmentName;
-        if (args.length > 0) {
-            environmentName = args[0];
-        }
+	/**
+	 * Create an {@link SSLContext}.
+	 * 
+	 * @param keyStore
+	 * @param filePassword
+	 * @param keyPassword
+	 * @return {@link SSLContext} instance.
+	 * @throws Exception
+	 * @see {@link RestExpressService#loadContext(String, String, String)}
+	 */
+	public static SSLContext loadContext(final String keyStore, final String filePassword, final String keyPassword) throws Exception {
+		return RestExpressService.loadContext(keyStore, filePassword, keyPassword);
+	}
 
-        for (Settings settings : Settings.values()) {
-            Path settingsPath = Paths.get(".", "config", environmentName + "." + settings.name().toLowerCase());
-            if (settingsPath.toFile().exists()) {
-                return new RestExpressLauncher(settingsPath);
-            }
-            InputStream stream = RestExpressLauncher.class.getClassLoader().getResourceAsStream(environmentName);
-            if (stream != null) {
-                return new RestExpressLauncher(stream, settings);
-            }
-        }
-        return new RestExpressLauncher();
-    }
+	/**
+	 * Instantiate a new {@link RestExpressLauncher} from argument.
+	 * 
+	 * @param args
+	 * @param defaultEnvironmentName
+	 * @return a {@link RestExpressLauncher} instance.
+	 * @throws IOException
+	 */
+	public static RestExpressLauncher instanciateFrom(String[] args, String defaultEnvironmentName) throws IOException {
+		String environmentName = defaultEnvironmentName;
+		if (args.length > 0) {
+			environmentName = args[0];
+		}
 
-    /**
-     * Mains methods instantiate {@link RestExpress} and add all existing {@link RestExpressEntryPoint} finded in class path.
-     * 
-     * @param args
-     * @throws IOException
-     */
-    public static int main(String[] args) throws IOException {
-        // load from settings
-        RestExpressLauncher restExpressLauncher = instanciateFrom(args, "restexpress");
-        // create and run
-        restExpressLauncher.run();
-        return 0;
-    }
+		for (Settings settings : Settings.values()) {
+			Path settingsPath = Paths.get(".", "config", environmentName + "." + settings.name().toLowerCase());
+			if (settingsPath.toFile().exists()) {
+				return new RestExpressLauncher(settingsPath);
+			}
+			InputStream stream = RestExpressLauncher.class.getClassLoader().getResourceAsStream(environmentName);
+			if (stream != null) {
+				return new RestExpressLauncher(stream, settings);
+			}
+		}
+		return new RestExpressLauncher();
+	}
+
+	/**
+	 * Mains methods instantiate {@link RestExpress} and add all existing
+	 * {@link RestExpressEntryPoint} find in class path.
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
+	public static int main(String[] args) throws IOException {
+		// load from settings
+		RestExpressLauncher restExpressLauncher = instanciateFrom(args, "restexpress");
+		// create and run
+		restExpressLauncher.run();
+		return 0;
+	}
 
 }

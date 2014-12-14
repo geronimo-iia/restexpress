@@ -36,7 +36,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.RestExpress;
+import org.restexpress.RestExpressService;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
@@ -48,67 +48,67 @@ import com.google.common.io.Closer;
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
 public class HttpResponseWriterTest {
-    private static final String TEST_PATH = "/restexpress/test1";
-    private static final int TEST_PORT = 8901;
-    private static final String TEST_URL = "http://localhost:" + TEST_PORT + TEST_PATH;
+	private static final String TEST_PATH = "/restexpress/test1";
+	private static final int TEST_PORT = 8901;
+	private static final String TEST_URL = "http://localhost:" + TEST_PORT + TEST_PATH;
 
-    public HttpResponseWriterTest() {
+	public HttpResponseWriterTest() {
 
-    }
+	}
 
-    // Useful for debug..
-    public static void main(String[] args) {
-        RestExpress restExpress = new RestExpress();
-        NoopController controller = new NoopController();
-        restExpress.uri(TEST_PATH, controller);
-        restExpress.bind(TEST_PORT);
-        restExpress.awaitShutdown();
-        restExpress.shutdown();
-    }
+	// Useful for debug..
+	public static void main(String[] args) {
+		RestExpressService restExpress = RestExpressService.newBuilder();
+		NoopController controller = new NoopController();
+		restExpress.uri(TEST_PATH, controller);
+		restExpress.bind(TEST_PORT);
+		restExpress.awaitShutdown();
+		restExpress.shutdown();
+	}
 
-    @Test
-    public void testFileAccess() throws ClientProtocolException, IOException {
-        RestExpress restExpress = new RestExpress();
-        NoopController controller = new NoopController();
-        restExpress.uri(TEST_PATH, controller);
-        restExpress.bind(TEST_PORT);
+	@Test
+	public void testFileAccess() throws ClientProtocolException, IOException {
+		RestExpressService restExpress = RestExpressService.newBuilder();
+		NoopController controller = new NoopController();
+		restExpress.uri(TEST_PATH, controller);
+		restExpress.bind(TEST_PORT);
 
-        HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(TEST_URL);
-        HttpResponse response = (HttpResponse) client.execute(get);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-        File result = File.createTempFile("restexpress", "result");
+		HttpClient client = new DefaultHttpClient();
+		HttpGet get = new HttpGet(TEST_URL);
+		HttpResponse response = (HttpResponse) client.execute(get);
+		assertEquals(200, response.getStatusLine().getStatusCode());
+		File result = File.createTempFile("restexpress", "result");
 
-        final Closer closer = Closer.create();
-        try {
-            // get a copy.
+		final Closer closer = Closer.create();
+		try {
+			// get a copy.
 
-            final OutputStream out = closer.register(new FileOutputStream(result));
-            response.getEntity().writeTo(out);
+			final OutputStream out = closer.register(new FileOutputStream(result));
+			response.getEntity().writeTo(out);
 
-            out.flush();
-        } catch (final Throwable e) {
-            e.printStackTrace();
-            if (result != null)
-                result.delete();
-            result = null;
-        } finally {
-            closer.close();
-        }
+			out.flush();
+		} catch (final Throwable e) {
+			e.printStackTrace();
+			if (result != null)
+				result.delete();
+			result = null;
+		} finally {
+			closer.close();
+		}
 
-        get.releaseConnection();
+		get.releaseConnection();
 
-        final InputStream in = closer.register(new FileInputStream(result));
-        ByteStreams.copy(in, System.out);
-        closer.close();
+		final InputStream in = closer.register(new FileInputStream(result));
+		ByteStreams.copy(in, System.out);
+		closer.close();
 
-    }
+	}
 
-    public static class NoopController {
+	public static class NoopController {
 
-        public File read(Request req, Response res) {
-            return new File("src/test/resources/unicode-chinese.json");
-        }
+		public File read(Request req, Response res) {
+			return new File("src/test/resources/unicode-chinese.json");
+		}
 
-    }
+	}
 }

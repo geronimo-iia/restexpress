@@ -38,7 +38,8 @@ import com.google.common.io.Files;
  * <li>{@link ContentService}</li>
  * <li>{@link ContextAdapter}</li>
  * </ul>
- * in order to be able to change at runtime all content controller configuration. By default:
+ * in order to be able to change at runtime all content controller
+ * configuration. By default:
  * <ul>
  * <li>cache is disabled</li>
  * <li>temporary directory is created under JVM temporary directory</li>
@@ -48,149 +49,158 @@ import com.google.common.io.Files;
  */
 public class ContentPlugin extends AbstractRoutePlugin implements ContentService {
 
-    /**
-     * Default value entry point.
-     */
-    public final static String DEFAULT_ENTRYPOINT = "/static";
+	/**
+	 * Default value entry point.
+	 */
+	public final static String DEFAULT_ENTRYPOINT = "/static";
 
-    /**
-     * Temporary directory.
-     */
-    protected File tempDirectory;
+	/**
+	 * Temporary directory.
+	 */
+	protected File tempDirectory;
 
-    protected String entryPoint;
+	protected String entryPoint;
 
-    private final Map<String, ContextAdapter> adapters = Maps.newHashMap();
+	private final Map<String, ContextAdapter> adapters = Maps.newHashMap();
 
-    private boolean enableCache = false;
-    private int initialCapacity;
-    private int maximumSize;
-    private int expireAfterWrite;
+	private boolean enableCache = false;
+	private int initialCapacity;
+	private int maximumSize;
+	private int expireAfterWrite;
 
-    public boolean binded = false;
+	public boolean binded = false;
 
-    private ContextAdapter contextAdapter;
+	private ContextAdapter contextAdapter;
 
-    public ContentPlugin() {
-        super();
-    }
+	/**
+	 * Build a new instance.
+	 */
+	public ContentPlugin() {
+		super();
+	}
 
-    @Override
-    public void bind(final RestExpress server) {
-        super.bind(server);
-        entryPoint = DEFAULT_ENTRYPOINT;
-        tempDirectory = Files.createTempDir();
-        binded = true;
-        build();
-        final ContentController controller = new ContentController(this);
-        server.uri(DEFAULT_ENTRYPOINT, controller).name("content.routes").noSerialization();
-    }
+	/**
+	 * Build a new instance.
+	 * 
+	 * @param priority
+	 */
+	public ContentPlugin(int priority) {
+		super(priority);
+	}
 
-    @Override
-    public void shutdown(final RestExpress server) {
-        super.shutdown(server);
-        binded = false;
-        enableCache = false;
-        adapters.clear();
-        contextAdapter = null;
-        FileRemovals.cleanDirectory(tempDirectory);
-    }
+	@Override
+	public void initialize(final RestExpress server) {
+		entryPoint = DEFAULT_ENTRYPOINT;
+		tempDirectory = Files.createTempDir();
+		binded = true;
+		build();
+		final ContentController controller = new ContentController(this);
+		server.uri(DEFAULT_ENTRYPOINT, controller).name("content.routes").noSerialization();
+	}
 
-    @Override
-    public String entryPoint() {
-        return entryPoint;
-    }
+	@Override
+	public void destroy(final RestExpress server) {
+		binded = false;
+		enableCache = false;
+		adapters.clear();
+		contextAdapter = null;
+		FileRemovals.cleanDirectory(tempDirectory);
+	}
 
-    @Override
-    public void enableCache() {
-        enableCache(300, 25000, 10);
-    }
+	@Override
+	public String entryPoint() {
+		return entryPoint;
+	}
 
-    @Override
-    public void enableCache(final int initialCapacity, final int maximumSize, final int expireAfterWrite) {
-        enableCache = true;
-        this.initialCapacity = initialCapacity;
-        this.maximumSize = maximumSize;
-        this.expireAfterWrite = expireAfterWrite;
-        build();
-    }
+	@Override
+	public void enableCache() {
+		enableCache(300, 25000, 10);
+	}
 
-    @Override
-    public void disableCache() {
-        enableCache = false;
-        build();
-    }
+	@Override
+	public void enableCache(final int initialCapacity, final int maximumSize, final int expireAfterWrite) {
+		enableCache = true;
+		this.initialCapacity = initialCapacity;
+		this.maximumSize = maximumSize;
+		this.expireAfterWrite = expireAfterWrite;
+		build();
+	}
 
-    @Override
-    public boolean isCacheEnabled() {
-        return enableCache;
-    }
+	@Override
+	public void disableCache() {
+		enableCache = false;
+		build();
+	}
 
-    @Override
-    public int expireAfterWrite() {
-        return enableCache ? expireAfterWrite : -1;
-    }
+	@Override
+	public boolean isCacheEnabled() {
+		return enableCache;
+	}
 
-    @Override
-    public File temporaryDirectory() {
-        return tempDirectory;
-    }
+	@Override
+	public int expireAfterWrite() {
+		return enableCache ? expireAfterWrite : -1;
+	}
 
-    @Override
-    public void temporaryDirectory(File temporaryDirectory) {
-        Preconditions.checkNotNull(temporaryDirectory);
-        Preconditions.checkArgument(temporaryDirectory.exists(), "temporary directory must exists");
-        Preconditions.checkArgument(temporaryDirectory.isDirectory(), "temporary directory must be a directory");
-        this.tempDirectory = temporaryDirectory;
-        build();
-    }
+	@Override
+	public File temporaryDirectory() {
+		return tempDirectory;
+	}
 
-    @Override
-    public void register(final ContextAdapter contextAdapter) {
-        adapters.put(contextAdapter.name(), contextAdapter);
-        build();
-    }
+	@Override
+	public void temporaryDirectory(File temporaryDirectory) {
+		Preconditions.checkNotNull(temporaryDirectory);
+		Preconditions.checkArgument(temporaryDirectory.exists(), "temporary directory must exists");
+		Preconditions.checkArgument(temporaryDirectory.isDirectory(), "temporary directory must be a directory");
+		this.tempDirectory = temporaryDirectory;
+		build();
+	}
 
-    @Override
-    public ContextAdapter find(final String name) {
-        return adapters.get(name);
-    }
+	@Override
+	public void register(final ContextAdapter contextAdapter) {
+		adapters.put(contextAdapter.name(), contextAdapter);
+		build();
+	}
 
-    @Override
-    public boolean remove(final String name) {
-        final boolean result = adapters.remove(name) != null;
-        if (result)
-            build();
-        return result;
-    }
+	@Override
+	public ContextAdapter find(final String name) {
+		return adapters.get(name);
+	}
 
-    /**
-     * Build and refresh controller if plugin is binded.
-     */
-    protected void build() {
-        if (binded) {
-            ContextAdapter contextAdapter = new CompositeContextAdapter(adapters.values());
-            if (enableCache)
-                contextAdapter = new CachedContextAdapter(contextAdapter, tempDirectory, initialCapacity, maximumSize,
-                        expireAfterWrite);
-            // swap configuration
-            this.contextAdapter = contextAdapter;
-        }
-    }
+	@Override
+	public boolean remove(final String name) {
+		final boolean result = adapters.remove(name) != null;
+		if (result)
+			build();
+		return result;
+	}
 
-    @Override
-    public String name() {
-        return contextAdapter.name();
-    }
+	/**
+	 * Build and refresh controller if plugin is binded.
+	 */
+	protected void build() {
+		if (binded) {
+			ContextAdapter contextAdapter = new CompositeContextAdapter(adapters.values());
+			if (enableCache)
+				contextAdapter = new CachedContextAdapter(contextAdapter, tempDirectory, initialCapacity, maximumSize, expireAfterWrite);
+			// swap configuration
+			this.contextAdapter = contextAdapter;
+		}
+	}
 
-    @Override
-    public Boolean match(final String name) {
-        return contextAdapter.match(name);
-    }
+	@Override
+	public String name() {
+		return contextAdapter.name();
+	}
 
-    @Override
-    public File retrieve(final String name) throws IOException {
-        return contextAdapter.retrieve(name);
-    }
+	@Override
+	public Boolean match(final String name) {
+		return contextAdapter.match(name);
+	}
+
+	@Override
+	public File retrieve(final String name) throws IOException {
+		return contextAdapter.retrieve(name);
+	}
 
 }

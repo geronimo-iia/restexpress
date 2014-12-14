@@ -22,96 +22,96 @@ package org.restexpress.plugin;
 import org.restexpress.RestExpress;
 
 /**
- * {@link AbstractPlugin} implements basic functionality of {@link Plugin} and provide a priority level to determine in which order
- * server will load them. Basically, on bind, all plugins are sorted and initialized into ascending order. So high priority means that
- * plugins will be initialized later.
+ * {@link AbstractPlugin} implements basic functionality of {@link Plugin} and
+ * provide a priority level to determine in which order server will load them.
+ * Basically, on bind, all plugins are sorted and initialized into ascending
+ * order. So high priority means that plugins will be initialized later. See
+ * {@link PluginService}.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since Jul 20, 2011
  */
 public abstract class AbstractPlugin implements Plugin, Comparable<Plugin> {
-    /**
-     * Registered flag.
-     */
-    private boolean isRegistered;
-    /**
-     * Priority level (default is 0).
-     */
-    private int priority = 0;
 
-    /**
-     * Register this instance onto {@link RestExpress}.
-     * 
-     * @see org.restexpress.plugin.Plugin#register(org.restexpress.RestExpress)
-     */
-    @Override
-    public AbstractPlugin register(final RestExpress server) {
-        if (!isRegistered()) {
-            setRegistered(true);
-            server.registerPlugin(this);
-        }
-        return this;
-    }
+	/**
+	 * Priority level (default is 0).
+	 */
+	private final int priority;
 
-    @Override
-    public void bind(final RestExpress server) {
-        // default behavior is to do nothing.
-    }
+	/**
+	 * Build a new instance with default priority.
+	 */
+	public AbstractPlugin() {
+		this(0);
+	}
 
-    @Override
-    public void shutdown(final RestExpress server) {
-        // default behavior is to do essentially nothing.
-        setRegistered(false);
-    }
+	/**
+	 * Build a new instance with specified priority.
+	 * 
+	 * @param priority
+	 */
+	public AbstractPlugin(int priority) {
+		super();
+		this.priority = priority;
+	}
 
-    /**
-     * This AbstractPlugin is assumed to be equal to other when: 1) This class is assignable from other and<br/>
-     * 2) other has the same simple class name.
-     */
-    @Override
-    public boolean equals(final Object other) {
-        if (AbstractPlugin.class.isAssignableFrom(other.getClass()))
-            return equals((AbstractPlugin) other);
-        return false;
-    }
+	@Override
+	public void initialize(RestExpress server) {
+		// do nothing
+	}
 
-    public boolean equals(final AbstractPlugin plugin) {
-        return this.getClass().getSimpleName().equals(plugin.getClass().getSimpleName());
-    }
+	@Override
+	public void bind(final RestExpress server) {
+		// do nothing
+	}
 
-    /**
-     * Generates a hash code based on the class of this instance. All instances of the same class will have the same hash code.
-     */
-    @Override
-    public int hashCode() {
-        return this.getClass().hashCode() ^ 17;
-    }
+	@Override
+	public void destroy(final RestExpress server) {
+		// do nothing
+	}
 
-    @Override
-    public int compareTo(final Plugin o) {
-        return priority - o.priority();
-    }
+	@Override
+	public final int priority() {
+		return priority;
+	}
 
-    protected boolean isRegistered() {
-        return isRegistered;
-    }
+	/**
+	 * This AbstractPlugin is assumed to be equal to other when:
+	 * 
+	 * <ol>
+	 * <li>This class is assignable from other and</li>
+	 * <li>other has the same simple class name.</li>
+	 * </ol>
+	 */
+	@Override
+	public final boolean equals(final Object other) {
+		if (AbstractPlugin.class.isAssignableFrom(other.getClass()))
+			return equals((AbstractPlugin) other);
+		return false;
+	}
 
-    protected void setRegistered(final boolean value) {
-        isRegistered = value;
-    }
+	public final boolean equals(final AbstractPlugin plugin) {
+		return this.getClass().getSimpleName().equals(plugin.getClass().getSimpleName());
+	}
 
-    @Override
-    public int priority() {
-        return priority;
-    }
+	/**
+	 * Generates a hash code based on the class of this instance. All instances
+	 * of the same class will have the same hash code.
+	 */
+	@Override
+	public final int hashCode() {
+		return this.getClass().hashCode() ^ 17;
+	}
 
-    /**
-     * set priority level for loading order.
-     * 
-     * @param priority
-     */
-    public void priority(final int priority) {
-        this.priority = priority;
-    }
+	/**
+	 * We compare {@link Plugin} according their priority.
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public final int compareTo(final Plugin o) {
+		return priority - o.priority();
+	}
+
 }

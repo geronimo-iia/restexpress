@@ -19,23 +19,39 @@
  */
 package org.restexpress.plugin;
 
-import java.io.IOException;
+import java.util.List;
 
-import org.restexpress.RestExpressLauncher;
-import org.restexpress.observer.SimpleConsoleLogMessageObserver;
+import org.restexpress.RestExpress;
 
 /**
- * RoutePluginDebug is just for see page and ...
+ * {@link PluginService} define methods to expose {@link Plugin} used with
+ * {@link RestExpress}.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- * 
  */
-public class RoutePluginDebug {
+public interface PluginService extends Iterable<Plugin> {
 
-	public static void main(String[] args) throws IOException {
-		RestExpressLauncher launcher = new RestExpressLauncher();
-		launcher.server().register(new RouteMetadataPlugin());
-		launcher.server().addMessageObserver(new SimpleConsoleLogMessageObserver());
-		launcher.restExpressLifeCycle().bind();
-	}
+	/**
+	 * @return a sorted unmodifiable {@link List} of registered {@link Plugin}.
+	 */
+	public List<Plugin> plugins();
+
+	/**
+	 * Find the first {@link Plugin} which implements the specified interface.
+	 * 
+	 * @param interfaceName
+	 *            class of wished interface.
+	 * @return an instance of {@link Plugin} which implement the specified
+	 *         interface or null if none is found.
+	 */
+	public <T> T find(final Class<T> interfaceName);
+
+	/**
+	 * @param simplePluginClassName
+	 *            simple Plugin Class Name
+	 * @return an instance of {@link Plugin} named simplePluginClassName or null
+	 *         if none is found.
+	 */
+	public <T extends Plugin> T find(final String simplePluginClassName);
+
 }

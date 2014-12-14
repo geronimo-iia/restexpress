@@ -1,195 +1,30 @@
-/**
- *        Licensed to the Apache Software Foundation (ASF) under one
- *        or more contributor license agreements.  See the NOTICE file
- *        distributed with this work for additional information
- *        regarding copyright ownership.  The ASF licenses this file
- *        to you under the Apache License, Version 2.0 (the
- *        "License"); you may not use this file except in compliance
- *        with the License.  You may obtain a copy of the License at
- *
- *          http://www.apache.org/licenses/LICENSE-2.0
- *
- *        Unless required by applicable law or agreed to in writing,
- *        software distributed under the License is distributed on an
- *        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *        KIND, either express or implied.  See the License for the
- *        specific language governing permissions and limitations
- *        under the License.
- *
- */
 package org.restexpress;
 
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.SSLContext;
-
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandler;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.restexpress.context.ServerContext;
-import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
-import org.restexpress.domain.response.ErrorResult;
-import org.restexpress.pipeline.ChannelHandlerBuilder;
 import org.restexpress.pipeline.MessageObserver;
-import org.restexpress.pipeline.RestExpressPipelineFactory;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;
 import org.restexpress.plugin.Plugin;
-import org.restexpress.processor.DefaultContentTypePostprocessor;
-import org.restexpress.processor.FileHeaderPostProcessor;
-import org.restexpress.response.Wrapper;
-import org.restexpress.route.RouteBuilder;
-import org.restexpress.route.RouteDeclaration;
-import org.restexpress.route.RouteResolver;
+import org.restexpress.plugin.PluginService;
+import org.restexpress.response.ResponseProcessorManager;
+import org.restexpress.response.ResponseWrapper;
 import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
-import org.restexpress.serialization.JacksonJsonProcessor;
-import org.restexpress.serialization.JacksonXmlProcessor;
-import org.restexpress.serialization.TextProcessor;
+import org.restexpress.serialization.Processor;
 import org.restexpress.settings.RestExpressSettings;
-import org.restexpress.settings.Settings;
-import org.restexpress.util.Bootstraps;
-import org.restexpress.util.Callback;
-import org.restexpress.util.DefaultShutdownHook;
 
 /**
- * Primary entry point to create a RestExpress service. All that's required is a
- * RouteDeclaration. By default: port is 8081, serialization format is JSON,
- * supported formats are JSON and XML.
+ * {@link RestExpress} declare methods to manage configuration of an instance.
+ * 
+ * @see RestExpressService.
+ * 
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- * @author toddf
  */
-public class RestExpress implements RestExpressService{
-
-	private static final ChannelGroup allChannels = new DefaultChannelGroup("RestExpress");
-
-	/**
-	 * {@link RestExpressSettings} instance.
-	 */
-	private final RestExpressSettings settings;
-
-	/**
-	 * {@link ServerContext} instance.
-	 */
-	private final ServerContext context;
-
-	/**
-	 * {@link ServerBootstrap}.
-	 */
-	private ServerBootstrap bootstrap;
-	/**
-	 * {@link List} of {@link Plugin}.
-	 */
-	private final List<Plugin> plugins;
-
-	private final RouteDeclaration routeDeclarations;
-
-	private ChannelHandlerBuilder channelHandlerBuilder;
-
-	private SSLContext sslContext = null;
-
-	/**
-	 * Create a new RestExpress service. By default, RestExpress uses port 8081.
-	 * Supports JSON, XML, etc.. And displays some messages on System.out. These
-	 * can be altered with the with settings(). By default, all error are
-	 * wrapper using this format (@see {@link ErrorResult}.
-	 * <p>
-	 * The default input and output format for messages is JSON. To change that,
-	 * use the setDefaultFormat(String) DSL modifier, passing the format to use
-	 * by default. Make sure there's a corresponding SerializationProcessor for
-	 * that particular format. The Format class has the basics.
-	 * </p>
-	 * <p>
-	 * This DSL was created as a thin veneer on Netty functionality. The bind()
-	 * method simply builds a Netty pipeline and uses this builder class to
-	 * create it. Underneath the covers, RestExpress uses Jackson for JSON
-	 * handling and XStream for XML processing. However, both of those can be
-	 * swapped out using the {@link #serializationProvider()} as necessary.
-	 * </p>
-	 * 
-	 */
-	public RestExpress() {
-		this(Settings.defaultRestExpressSettings());
-	}
-
-	/**
-	 * Build a new instance of {@link RestExpress}.
-	 * 
-	 * @param settings
-	 *            {@link RestExpressSettings} to use.
-	 */
-	public RestExpress(RestExpressSettings settings) {
-		super();
-		if (settings == null)
-			throw new NullPointerException("RestExpressSettings can not be null");
-		this.settings = settings;
-		channelHandlerBuilder = new ChannelHandlerBuilder();
-
-		plugins = new ArrayList<Plugin>();
-		routeDeclarations = new RouteDeclaration();
-		context = new ServerContext();
-		if (settings.serverSettings().isUseDefaultSerializationConfiguration()) {
-			channelHandlerBuilder.responseProcessorManager().add(new JacksonJsonProcessor(), Wrapper.newErrorResponseWrapper(), true);
-			channelHandlerBuilder.responseProcessorManager().add(new JacksonXmlProcessor(), Wrapper.newErrorResponseWrapper());
-			channelHandlerBuilder.responseProcessorManager().add(new TextProcessor(), Wrapper.newErrorResponseWrapper());
-		}
-		// add standard Post Processor
-		channelHandlerBuilder.addPostprocessor(new FileHeaderPostProcessor());
-		channelHandlerBuilder.addPostprocessor(new DefaultContentTypePostprocessor());
-	}
-
-	/**
-	 * @see org.restexpress.RestExpressService#settings()
-	 */
-	@Override
-	public RestExpressSettings settings() {
-		return settings;
-	}
-
-	/**
-	 * @see org.restexpress.RestExpressService#context()
-	 */
-	@Override
-	public ServerContext context() {
-		return context;
-	}
-
-	/**
-	 * @return {@link SerializationProvider} instance.
-	 */
-	public SerializationProvider serializationProvider() {
-		return channelHandlerBuilder.responseProcessorManager();
-	}
-
-	/**
-	 * Sets SSL context.
-	 * 
-	 * @param sslContext
-	 * @return {@link RestExpress} instance.
-	 */
-	public RestExpress setSSLContext(final SSLContext sslContext) {
-		this.sslContext = sslContext;
-		return this;
-	}
-
-	/**
-	 * @return {@link SSLContext} instance.
-	 */
-	public SSLContext getSSLContext() {
-		return sslContext;
-	}
+public interface RestExpress {
 
 	/**
 	 * Adds a {@link MessageObserver} if not ever added.
@@ -197,17 +32,7 @@ public class RestExpress implements RestExpressService{
 	 * @param observer
 	 * @return {@link RestExpress} instance.
 	 */
-	public RestExpress addMessageObserver(final MessageObserver observer) {
-		channelHandlerBuilder.dispatcher().addMessageObserver(observer);
-		return this;
-	}
-
-	/**
-	 * @return an unmodifiable {@link List} of {@link MessageObserver}.
-	 */
-	public List<MessageObserver> messageObservers() {
-		return Collections.unmodifiableList(channelHandlerBuilder.dispatcher().messageObservers());
-	}
+	public RestExpress addMessageObserver(MessageObserver observer);
 
 	/**
 	 * Add a {@link Preprocessor} instance that gets called before an incoming
@@ -215,19 +40,9 @@ public class RestExpress implements RestExpressService{
 	 * they are added. To break out of the chain, simply throw an exception.
 	 * 
 	 * @param processor
-	 * @return
+	 * @return {@link RestExpress} instance.
 	 */
-	public RestExpress addPreprocessor(final Preprocessor preprocessor) {
-		channelHandlerBuilder.addPreprocessor(preprocessor);
-		return this;
-	}
-
-	/**
-	 * @return an unmodifiable {@link List} of {@link Preprocessor}.
-	 */
-	public List<Preprocessor> preprocessors() {
-		return Collections.unmodifiableList(channelHandlerBuilder.preprocessors());
-	}
+	public RestExpress addPreprocessor(Preprocessor preprocessor);
 
 	/**
 	 * Add a {@link Postprocessor} instance that gets called after an incoming
@@ -238,19 +53,9 @@ public class RestExpress implements RestExpressService{
 	 * within the route.
 	 * 
 	 * @param processor
-	 * @return
+	 * @return {@link RestExpress} instance.
 	 */
-	public RestExpress addPostprocessor(final Postprocessor processor) {
-		channelHandlerBuilder.addPostprocessor(processor);
-		return this;
-	}
-
-	/**
-	 * @return an unmodifiable {@link List} of {@link Postprocessor}.
-	 */
-	public List<Postprocessor> postprocessors() {
-		return Collections.unmodifiableList(channelHandlerBuilder.postprocessors());
-	}
+	public RestExpress addPostprocessor(Postprocessor processor);
 
 	/**
 	 * Add a {@link Postprocessor} instance that gets called right before the
@@ -269,148 +74,98 @@ public class RestExpress implements RestExpressService{
 	 * @param processor
 	 * @return RestExpress for method chaining.
 	 */
-	public RestExpress addFinallyProcessor(final Postprocessor processor) {
-		channelHandlerBuilder.addFinallyProcessor(processor);
-		return this;
-	}
+	public RestExpress addFinallyProcessor(Postprocessor processor);
 
 	/**
-	 * @return an unmodifiable {@link List} of finally {@link Postprocessor}.
-	 */
-	public List<Postprocessor> finallyProcessors() {
-		return Collections.unmodifiableList(channelHandlerBuilder.finallyProcessors());
-	}
-
-	/**
-	 * Can be called after routes are defined to augment or get data from all
-	 * the currently-defined routes.
+	 * Add the specified {@link Processor} and {@link ResponseWrapper}.
 	 * 
-	 * @param callback
-	 *            a Callback implementor.
+	 * @param processor
+	 *            {@link Processor} instance
+	 * @param responseWrapper
+	 *            associated {@link ResponseWrapper}
+	 * @return {@link RestExpress} instance.
 	 */
-	public void iterateRouteBuilders(final Callback<RouteBuilder> callback) {
-		routeDeclarations.iterateRouteBuilders(callback);
-	}
+	public RestExpress add(Processor processor, ResponseWrapper responseWrapper);
 
 	/**
-	 * Build a default request handler. Used instead of bind() so it may be used
-	 * injected into any existing Netty pipeline.
+	 * Add the specified {@link Processor} and {@link ResponseWrapper}.
 	 * 
-	 * @return ChannelHandler
+	 * @param processor
+	 *            {@link Processor} instance
+	 * @param responseWrapper
+	 *            associated {@link ResponseWrapper}
+	 * @param isDefault
+	 *            if true, this configuration will be used as default
+	 * @return this {@link RestExpress} instance.
 	 */
-	public ChannelHandler buildRequestHandler() {
-		// Set up the event pipeline factory.
-		ChannelHandlerBuilder builder = new ChannelHandlerBuilder();
-		builder.setRouteResolver(new RouteResolver(routeDeclarations.createRouteMapping(settings.serverSettings().getBaseUrl())));
-		builder.setShouldEnforceHttpSpec(settings.serverSettings().isEnforceHttpSpec());
-		return builder.build();
-	}
+	public RestExpress add(Processor processor, ResponseWrapper responseWrapper, boolean isDefault);
 
 	/**
-	 * @see org.restexpress.RestExpressService#bind()
+	 * Verifies the response contents prior to writing it to the output stream
+	 * to ensure that it conforms to the HTTP 1.1. specification.
+	 * 
+	 * @return this {@link ResponseProcessorManager} instance.
 	 */
-	@Override
-	public Channel bind() {
-		return bind(settings.serverSettings().getPort());
-	}
+	public RestExpress shouldEnforceHttpSpec();
 
 	/**
-	 * @see org.restexpress.RestExpressService#bind(int)
+	 * Do not ensure that response content conforms to the HTTP 1.1.
+	 * specification (default setting).
+	 * 
+	 * @return this {@link ResponseProcessorManager} instance.
 	 */
-	@Override
-	public Channel bind(final int port) {
-
-		settings.serverSettings().setPort(port);
-
-		// Configure the server.
-		if (settings.serverSettings().getIoThreadCount() == 0) {
-			bootstrap = Bootstraps.createServerNioBootstrap();
-		} else {
-			bootstrap = Bootstraps.createServerNioBootstrap(settings.serverSettings().getIoThreadCount());
-		}
-
-		final ChannelHandler requestHandler = buildRequestHandler();
-
-		final RestExpressPipelineFactory pf = new RestExpressPipelineFactory().addRequestHandler(requestHandler).setSSLContext(sslContext).setMaxContentLength(settings.serverSettings().getMaxContentSize());
-
-		if (settings.serverSettings().getExecutorThreadPoolSize() > 0) {
-			final ExecutionHandler executionHandler = new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(settings.serverSettings().getExecutorThreadPoolSize(), 0, 0));
-			pf.setExecutionHandler(executionHandler);
-		}
-
-		bootstrap.setPipelineFactory(pf);
-		bootstrap.setOption("child.tcpNoDelay", settings.socketSettings().useTcpNoDelay());
-		bootstrap.setOption("child.keepAlive", settings.serverSettings().isKeepAlive());
-		bootstrap.setOption("reuseAddress", settings.serverSettings().isReuseAddress());
-		bootstrap.setOption("child.soLinger", settings.socketSettings().getSoLinger());
-		bootstrap.setOption("connectTimeoutMillis", settings.socketSettings().getConnectTimeoutMillis());
-		bootstrap.setOption("receiveBufferSize", settings.socketSettings().getReceiveBufferSize());
-
-		// Bind and start to accept incoming connections.
-		if (settings.serverSettings().isUseSystemOut()) {
-			System.out.println(settings.serverSettings().getName() + " server listening on port " + port);
-		}
-
-		final Channel channel = bootstrap.bind(new InetSocketAddress(port));
-		allChannels.add(channel);
-
-		// bind all plugins
-		Collections.sort(plugins);
-		for (final Plugin plugin : plugins) {
-			plugin.bind(this);
-		}
-
-		return channel;
-	}
+	public RestExpress shouldNotEnforceHttpSpec();
 
 	/**
-	 * @see org.restexpress.RestExpressService#awaitShutdown()
+	 * Register specified {@link Plugin}. If the specified {@link Plugin} is
+	 * ever registered, {@link #register(Plugin)} will do nothing.
+	 * 
+	 * 
+	 * @param plugin
+	 *            {@link Plugin} instance to register.
+	 * @return this {@link RestExpress} instance.
 	 */
-	@Override
-	public void awaitShutdown() {
-		Runtime.getRuntime().addShutdownHook(new DefaultShutdownHook(this));
-		boolean interrupted = false;
-
-		do {
-			try {
-				Thread.sleep(300);
-			} catch (final InterruptedException e) {
-				interrupted = true;
-			}
-		} while (!interrupted);
-	}
+	public RestExpress register(Plugin plugin);
 
 	/**
-	 * @see org.restexpress.RestExpressService#shutdown()
+	 * @return {@link PluginService} instance.
 	 */
-	@Override
-	public void shutdown() {
-		final ChannelGroupFuture future = allChannels.close();
-		future.awaitUninterruptibly();
-		// shut down all plugins
-		Collections.reverse(plugins);
-		for (final Plugin plugin : plugins) {
-			plugin.shutdown(this);
-		}
-		bootstrap.getFactory().releaseExternalResources();
-		context.clear();
-	}
+	public PluginService plugin();
+
+	/**
+	 * @return {@link RestExpressSettings} instance.
+	 */
+	public RestExpressSettings settings();
+
+	/**
+	 * @return {@link ServerContext} instance.
+	 */
+	public ServerContext context();
+
+	/**
+	 * Create a route.
+	 * 
+	 * @param uriPattern
+	 * @param controller
+	 * @return {@link ParameterizedRouteBuilder}.
+	 */
+	public ParameterizedRouteBuilder uri(String uriPattern, Object controller);
+
+	/**
+	 * Create a route.
+	 * 
+	 * @param uriPattern
+	 * @param controller
+	 * @return {@link RegexRouteBuilder}.
+	 */
+	public RegexRouteBuilder regex(String uriPattern, Object controller);
 
 	/**
 	 * Retrieve meta data about the routes in this RestExpress server.
 	 * 
 	 * @return ServerMetadata instance.
 	 */
-	public ServerMetadata getRouteMetadata() {
-		final ServerMetadata metadata = new ServerMetadata( //
-				settings.serverSettings().getName(), //
-				settings.serverSettings().getPort(), //
-				settings.serverSettings().getBaseUrl(), //
-				channelHandlerBuilder.responseProcessorManager().supportedMediaType(), //
-				channelHandlerBuilder.responseProcessorManager().defaultProcessor().mediaType(), //
-				routeDeclarations.getMetadata());
-		return metadata;
-	}
+	public ServerMetadata getRouteMetadata();
 
 	/**
 	 * Retrieve the named routes in this RestExpress server, creating a Map of
@@ -423,96 +178,6 @@ public class RestExpress implements RestExpressService{
 	 * 
 	 * @return a Map of Route Name/URL pairs.
 	 */
-	public Map<String, String> getRouteUrlsByName() {
-		final Map<String, String> urlsByName = new HashMap<String, String>();
+	public Map<String, String> getRouteUrlsByName();
 
-		iterateRouteBuilders(new Callback<RouteBuilder>() {
-			@Override
-			public void process(final RouteBuilder routeBuilder) {
-				final RouteMetadata route = routeBuilder.asMetadata();
-
-				if (route.getName() != null) {
-					urlsByName.put(route.getName(), settings.serverSettings().getBaseUrl() + route.getUri().getPattern().replace(".{format}", ""));
-				}
-			}
-		});
-
-		return urlsByName;
-	}
-
-	/**
-	 * Register specified plugin.
-	 * 
-	 * @param plugin
-	 * @return {@link RestExpress} instance.
-	 */
-	public RestExpress registerPlugin(final Plugin plugin) {
-		if (!plugins.contains(plugin)) {
-			plugins.add(plugin);
-			plugin.register(this);
-		}
-
-		return this;
-	}
-
-	/**
-	 * @return an unmodifiable {@link List} of registered {@link Plugin}.
-	 */
-	public List<Plugin> plugins() {
-		return Collections.unmodifiableList(plugins);
-	}
-
-	/**
-	 * @param interfaceName
-	 *            class of wished interface.
-	 * @return an instance of {@link Plugin} which implement the specified
-	 *         interface or null if none is found.
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> T findPlugin(final Class<T> interfaceName) {
-		for (Plugin plugin : plugins) {
-			if (interfaceName.isAssignableFrom(plugin.getClass())) {
-				return (T) plugin;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * @param simplePluginClassName
-	 *            simple Plugin Class Name
-	 * @return an instance of {@link Plugin} named simplePluginClassName or null
-	 *         if none is found.
-	 */
-	@SuppressWarnings("unchecked")
-	public <T extends Plugin> T findPlugin(final String simplePluginClassName) {
-		for (Plugin plugin : plugins) {
-			if (plugin.getClass().getSimpleName().equals(simplePluginClassName)) {
-				return (T) plugin;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Create a route.
-	 * 
-	 * @param uriPattern
-	 * @param controller
-	 * @return {@link ParameterizedRouteBuilder}.
-	 */
-	public ParameterizedRouteBuilder uri(final String uriPattern, final Object controller) {
-		return routeDeclarations.uri(uriPattern, controller);
-	}
-
-	/**
-	 * Create a route.
-	 * 
-	 * @param uriPattern
-	 * @param controller
-	 * @return {@link RegexRouteBuilder}.
-	 */
-	public RegexRouteBuilder regex(final String uriPattern, final Object controller) {
-		return routeDeclarations.regex(uriPattern, controller);
-	}
 }
