@@ -19,24 +19,37 @@
  */
 package org.restexpress.pipeline.writer;
 
-import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
-import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Map;
 
+import org.intelligentsia.commons.http.ResponseHeader;
+import org.intelligentsia.commons.http.exception.HttpRuntimeException;
+import org.intelligentsia.commons.http.status.HttpResponseStandardStatus;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.pipeline.HttpResponseWriter;
-import org.restexpress.util.HttpSpecification;
 
 /**
- * {@link DefaultHttpResponseWriter} implements an {@link HttpResponseWriter}. If response.getBody() return a {@link ChannelBuffer}
- * then we used it, else we assume that object is a string.
+ * {@link DefaultHttpResponseWriter} implements an {@link HttpResponseWriter}.
+ * 
+ * 
+ * <ul>
+ * <li>If response.getBody() return a {@link ChannelBuffer} then we used it</li>
+ * <li>if response.getBody() return a {@link File} the we use a special code to
+ * transfer it</li>
+ * <li>else we assume that object is a string</li>
+ * </ul>
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
@@ -44,55 +57,102 @@ import org.restexpress.util.HttpSpecification;
  */
 public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 
-    /**
-     * Build a new instance of {@link DefaultHttpResponseWriter}.
-     */
-    public DefaultHttpResponseWriter() {
-        super();
-    }
+	/**
+	 * Build a new instance of {@link DefaultHttpResponseWriter}.
+	 */
+	public DefaultHttpResponseWriter() {
+		super();
+	}
 
-    @Override
-    public void write(final ChannelHandlerContext ctx, final Request request, final Response response) {
-        final HttpResponse httpResponse = new DefaultHttpResponse(request.getHttpVersion(), response.getResponseStatus());
-        // add all header
-        addHeaders(response, httpResponse);
-        // set content
-        if (response.hasBody() && HttpSpecification.isContentAllowed(response)) {
-            // If the response body already contains a ChannelBuffer, use it.
-            if (ChannelBuffer.class.isAssignableFrom(response.getBody().getClass())) {
-                httpResponse.setContent(ChannelBuffers.wrappedBuffer((ChannelBuffer) response.getBody()));
-            } else { // response body is assumed to be a string
-                httpResponse.setContent(ChannelBuffers.copiedBuffer(response.getBody().toString(), CharacterSet.UTF_8.getCharset()));
-            }
-        }
-        if (request.isKeepAlive()) {
-            // Add 'Content-Length' header only for a keep-alive connection.
-            if (HttpSpecification.isContentLengthAllowed(response)) {
-                httpResponse.headers().set(CONTENT_LENGTH, String.valueOf(httpResponse.getContent().readableBytes()));
-            }
-            // Support "Connection: Keep-Alive" for HTTP 1.0 requests.
-            if (request.isHttpVersion1_0()) {
-                httpResponse.headers().add(CONNECTION, "Keep-Alive");
-            }
-            ctx.getChannel().write(httpResponse).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-        } else {
-            httpResponse.headers().set(CONNECTION, "close");
-            // Close the connection as soon as the message is sent.
-            ctx.getChannel().write(httpResponse).addListener(ChannelFutureListener.CLOSE);
-        }
-    }
+	@Override
+	public void write(final ChannelHandlerContext ctx, final Request request, final Response response) {
+		final HttpResponse httpResponse = new DefaultHttpResponse(request.getHttpVersion(), response.getResponseStatus());
 
-    /**
-     * Adds all {@link Response} header into {@link HttpResponse}.
-     * 
-     * @param response {@link Response}
-     * @param httpResponse {@link HttpResponse}
-     */
-    private static void addHeaders(final Response response, final HttpResponse httpResponse) {
-        for (final String name : response.getHeaderNames()) {
-            for (final String value : response.getHeaders(name)) {
-                httpResponse.headers().add(name, value);
-            }
-        }
-    }
+		// add all header
+		addHeaders(response, httpResponse);
+		// manage content
+		File resource = null;
+		try {
+			// set content
+			if (response.hasBody() && HttpSpecification.isContentAllowed(response)) {
+				// If the response body already contains a ChannelBuffer, use
+				// it.
+				Class<?> bodyClass = response.getBody().getClass();
+				if (ChannelBuffer.class.isAssignableFrom(bodyClass)) {
+					//httpResponse.setContent(ChannelBuffers.wrappedBuffer((ChannelBuffer) response.getBody()));
+					httpResponse.setContent((ChannelBuffer) response.getBody());
+				} else if (File.class.isAssignableFrom(bodyClass)) {
+					resource = (File) response.getBody();
+				} else { // response body is assumed to be a string
+					httpResponse.setContent(ChannelBuffers.copiedBuffer(response.getBody().toString(), CharacterSet.UTF_8.getCharset()));
+				}
+			}
+
+			// find witch ChannelFutureListener to use
+			final ChannelFutureListener channelFutureListener = keepAlive(request, response, httpResponse);
+
+			// write the content
+			writeContent(ctx, httpResponse, resource, channelFutureListener);
+
+		} catch (FileNotFoundException e) {
+			throw new HttpRuntimeException(HttpResponseStandardStatus.NOT_FOUND, e);
+		}
+	}
+
+	private static void writeContent(final ChannelHandlerContext ctx, final HttpResponse httpResponse, final File resource, final ChannelFutureListener channelFutureListener) throws FileNotFoundException {
+		final ChannelFuture contentFuture;
+		if (resource == null) {
+			contentFuture = ctx.getChannel().write(httpResponse);
+			// add final listener
+			if (channelFutureListener != null)
+				contentFuture.addListener(channelFutureListener);
+		} else {
+			ChannelFuture writeFuture = ctx.getChannel().write(httpResponse);
+			writeFuture.addListener(new FileWritingChannelFutureListener(resource, channelFutureListener));
+		}
+	}
+
+	/**
+	 * @param request
+	 *            {@link Request}
+	 * @param response
+	 *            {@link Response}
+	 * @param httpResponse
+	 *            {@link HttpResponse}
+	 * @return instance of {@link ChannelFutureListener} to use.
+	 */
+	private static ChannelFutureListener keepAlive(final Request request, final Response response, final HttpResponse httpResponse) {
+		ChannelFutureListener channelFutureListener;
+		if (request.isKeepAlive()) {
+			// Add 'Content-Length' header only for a keep-alive connection.
+			if (HttpSpecification.isContentLengthAllowed(response) && !httpResponse.headers().contains(ResponseHeader.CONTENT_LENGTH.getHeader())) {
+				httpResponse.headers().set(ResponseHeader.CONTENT_LENGTH.getHeader(), String.valueOf(httpResponse.getContent().readableBytes()));
+			}
+			// Support "Connection: Keep-Alive" for HTTP 1.0 requests.
+			if (request.isHttpVersion1_0()) {
+				httpResponse.headers().add(ResponseHeader.CONNECTION.getHeader(), "Keep-Alive");
+			}
+			channelFutureListener = ChannelFutureListener.CLOSE_ON_FAILURE;
+		} else {
+			httpResponse.headers().set(ResponseHeader.CONNECTION.getHeader(), "close");
+			// Close the connection as soon as the message is sent.
+			channelFutureListener = ChannelFutureListener.CLOSE;
+		}
+		return channelFutureListener;
+	}
+
+	/**
+	 * Adds all {@link Response} header into {@link HttpResponse}.
+	 * 
+	 * @param response
+	 *            {@link Response}
+	 * @param httpResponse
+	 *            {@link HttpResponse}
+	 */
+	private static void addHeaders(final Response response, final HttpResponse httpResponse) {
+		for (Map.Entry<String, List<String>> entry : response.headers().entrySet()) {
+			httpResponse.headers().add(entry.getKey(), entry.getValue());
+		}
+	}
+
 }

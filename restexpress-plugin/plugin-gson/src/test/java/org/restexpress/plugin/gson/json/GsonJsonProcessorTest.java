@@ -17,21 +17,6 @@
  *        under the License.
  *
  */
-/*
- Copyright 2011, Strategic Gains, Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
 package org.restexpress.plugin.gson.json;
 
 import static org.junit.Assert.assertEquals;
@@ -45,9 +30,9 @@ import java.util.Calendar;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
+import org.restexpress.TestToolKit;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.serialization.Processor;
-import org.restexpress.util.TestUtilities;
 
 /**
  * @author toddf
@@ -62,7 +47,7 @@ public class GsonJsonProcessorTest {
 	@Test
 	public void shouldSerializeObject() {
 
-		final String json = TestUtilities.serialize(new KnownObject(), processor);
+		final String json = TestToolKit.serialize(new KnownObject(), processor);
 		assertNotNull(json);
 		assertTrue(json.startsWith("{"));
 		assertTrue(json.contains("\"integer\":1"));
@@ -75,13 +60,13 @@ public class GsonJsonProcessorTest {
 
 	@Test
 	public void shouldSerializeNull() {
-		final String json = TestUtilities.serialize(null, processor);
+		final String json = TestToolKit.serialize(null, processor);
 		assertEquals("", json);
 	}
 
 	@Test
 	public void shouldDeserializeObject() {
-		final KnownObject o = TestUtilities.deserialize(JSON, KnownObject.class, processor);
+		final KnownObject o = TestToolKit.deserialize(JSON, KnownObject.class, processor);
 		assertNotNull(o);
 		assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
 		assertEquals(2, o.integer);
@@ -96,40 +81,40 @@ public class GsonJsonProcessorTest {
 
 	@Test
 	public void shouldDeserializeEmptyObject() {
-		final KnownObject o = TestUtilities.deserialize("{}", KnownObject.class, processor);
+		final KnownObject o = TestToolKit.deserialize("{}", KnownObject.class, processor);
 		assertNotNull(o);
 		assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
 	}
 
 	@Test
 	public void shouldDeserializeEmptyString() {
-		final Object o = TestUtilities.deserialize("", KnownObject.class, processor);
+		final Object o = TestToolKit.deserialize("", KnownObject.class, processor);
 		assertNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeNullString() {
-		final Object o = TestUtilities.deserialize((String) null, KnownObject.class, processor);
+		final Object o = TestToolKit.deserialize((String) null, KnownObject.class, processor);
 		assertNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeChannelBuffer() {
 		final ChannelBuffer buf = ChannelBuffers.copiedBuffer(JSON, CharacterSet.UTF_8.getCharset());
-		final Object o = TestUtilities.deserialize(buf, KnownObject.class, processor);
+		final Object o = TestToolKit.deserialize(buf, KnownObject.class, processor);
 		assertNotNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeEmptyChannelBuffer() {
 		final ChannelBuffer buf = ChannelBuffers.EMPTY_BUFFER;
-		final Object o = TestUtilities.deserialize(buf, KnownObject.class, processor);
+		final Object o = TestToolKit.deserialize(buf, KnownObject.class, processor);
 		assertNull(o);
 	}
 
 	@Test
 	public void shouldDeserializeUTF8ChannelBuffer() {
-		final KnownObject o = TestUtilities.deserialize(ChannelBuffers.wrappedBuffer(JSON_UTF8.getBytes(CharacterSet.UTF_8.getCharset())), KnownObject.class, processor);
+		final KnownObject o = TestToolKit.deserialize(ChannelBuffers.wrappedBuffer(JSON_UTF8.getBytes(CharacterSet.UTF_8.getCharset())), KnownObject.class, processor);
 		assertNotNull(o);
 		assertTrue(o.getClass().isAssignableFrom(KnownObject.class));
 		assertEquals(2, o.integer);

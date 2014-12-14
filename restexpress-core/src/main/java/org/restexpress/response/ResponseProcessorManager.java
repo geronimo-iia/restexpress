@@ -31,9 +31,10 @@ import org.intelligentsia.commons.http.exception.NotAcceptableException;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.SerializationProvider;
 import org.restexpress.common.StringUtils;
 import org.restexpress.domain.Format;
+import org.restexpress.domain.MediaRange;
+import org.restexpress.domain.MediaRanges;
 import org.restexpress.serialization.Processor;
 
 /**
@@ -41,14 +42,13 @@ import org.restexpress.serialization.Processor;
  * {@link ResponseProcessorSettingResolver}.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- * 
  */
 public class ResponseProcessorManager implements ResponseProcessorSettingResolver, SerializationProvider {
 
     /**
      * {@link List} of {@link MediaRange}.
      */
-    private final List<MediaRange> supportedMediaRanges = new ArrayList<>();
+    protected final List<MediaRange> supportedMediaRanges = new ArrayList<>();
 
     /**
      * {@link Map} of {@link ResponseProcessor} per media type
@@ -72,7 +72,7 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
         super();
         mediaTypePerFormat = new HashMap<>();
         // compute media range
-        for (Entry<String, String> entry : Format.toMap().entrySet()) {
+        for (Entry<String, String> entry : Format.asMap().entrySet()) {
             mediaTypePerFormat.put(entry.getKey(), MediaRanges.parse(entry.getValue()));
         }
     }
@@ -163,7 +163,7 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
     }
 
     /**
-     * @param format
+     * @param format format parameter
      * @return a {@link ResponseProcessor} instance or null if no {@link ResponseProcessor} is found for specified format parameter.
      */
     protected ResponseProcessor getProcessorsByFormat(String format) {
@@ -200,9 +200,9 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
     }
 
     /**
-     * Add specified {@link MediaRange} if they're not ever exists. TODO add test case
+     * Add specified {@link MediaRange} if they're not ever exists.
      * 
-     * @param mediaRanges
+     * @param mediaRanges a List of {@link MediaRange} to add
      */
     protected void addMediaRanges(final List<MediaRange> mediaRanges) {
         if (mediaRanges != null) {
@@ -214,15 +214,25 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
     }
 
     /**
-     * Utility to obtain extension of an url. TODO add test case
+     * Utility to obtain extension of an url.
      * 
-     * @param url
+     * @param url url which contains format information
      * @return extension or null if none was found.
      */
-    protected static String parseFormatFromUrl(final String url) {
+    public static String parseFormatFromUrl(final String url) {
         final int queryDelimiterIndex = url.indexOf('?');
+        /* remove query parameters */
         final String path = (queryDelimiterIndex > 0 ? url.substring(0, queryDelimiterIndex) : url);
-        final int formatDelimiterIndex = path.lastIndexOf('.');
-        return (formatDelimiterIndex > 0 ? path.substring(formatDelimiterIndex + 1) : null);
+        if (path.endsWith("."))
+            return null;
+        // check if we are not in domain name part
+        final int startIndex = path.indexOf("/", path.indexOf("://") + 3);
+        if (startIndex < 0) {
+            return null;
+        }
+        final String subPath = path.substring(startIndex);
+        final int formatDelimiterIndex = subPath.lastIndexOf('.');
+        return formatDelimiterIndex < 0 ? null : subPath.substring(formatDelimiterIndex + 1);
     }
+
 }

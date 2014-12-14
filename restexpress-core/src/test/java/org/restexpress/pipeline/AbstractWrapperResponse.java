@@ -34,96 +34,121 @@ import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.restexpress.TestToolKit;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.observer.CounterMessageObserver;
-import org.restexpress.pipeline.handler.DefaultRequestHandler;
+import org.restexpress.pipeline.handler.RestExpressRequestHandler;
+import org.restexpress.pipeline.handler.RestExpressRequestHandlerBuilder;
 import org.restexpress.pipeline.writer.StringBufferHttpResponseWriter;
 import org.restexpress.route.RouteDeclaration;
 import org.restexpress.serialization.Processor;
-import org.restexpress.util.TestUtilities;
 
+/**
+ * {@link AbstractWrapperResponse} is a class facility for testing all wrapper.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ */
 public class AbstractWrapperResponse {
 
-    protected DefaultRequestHandler messageHandler;
-    protected CounterMessageObserver observer;
-    protected Channel channel;
-    protected ChannelPipeline pl;
-    protected StringBuffer responseBody;
-    protected Map<String, List<String>> responseHeaders;
+	protected RestExpressRequestHandler messageHandler;
+	protected CounterMessageObserver observer;
+	protected Channel channel;
+	protected ChannelPipeline pl;
+	protected StringBuffer responseBody;
+	protected Map<String, List<String>> responseHeaders;
+	protected RestExpressRequestHandlerBuilder builder;
 
-    /**
-     * Utility to read result.
-     * 
-     * @param processor
-     * @param valueType
-     * @return
-     */
-    protected <T> T read(Processor processor, Class<T> valueType) {
-        return processor.read(ChannelBuffers.copiedBuffer(responseBody.toString(), CharacterSet.UTF_8.getCharset()), valueType);
-    }
+	/**
+	 * Utility to read result.
+	 * 
+	 * @param processor
+	 * @param valueType
+	 * @return
+	 */
+	protected <T> T read(Processor processor, Class<T> valueType) {
+		return processor.read(ChannelBuffers.copiedBuffer(responseBody.toString(), CharacterSet.UTF_8.getCharset()), valueType);
+	}
 
-    /**
-     * Initialize route and pipeline.
-     * 
-     * @param routes
-     * @throws Exception
-     */
-    protected void initialize(RouteDeclaration routes) throws Exception {
+	/**
+	 * Initialize route and pipeline.
+	 * 
+	 * @param routes
+	 * @throws Exception
+	 */
+	protected void initialize(RouteDeclaration routes) throws Exception {
+		preInitialize(routes);
+		messageHandler = build(builder);
+		postInitialize();
+	}
 
-        responseBody = new StringBuffer();
-        responseHeaders = new HashMap<String, List<String>>();
+	protected void postInitialize() throws Exception {
+		messageHandler = build(builder);
+		RestExpressPipelineFactory pipelineFactory = new RestExpressPipelineFactory().addRequestHandler(messageHandler);
+		pl = pipelineFactory.getPipeline();
+		ChannelFactory channelFactory = new DefaultLocalServerChannelFactory();
+		channel = channelFactory.newChannel(pl);
+	}
 
-        messageHandler = TestUtilities.newDefaultRequestHandler(routes, new StringBufferHttpResponseWriter(responseHeaders,
-                responseBody));
+	protected void preInitialize(RouteDeclaration routes) {
+		responseBody = new StringBuffer();
+		responseHeaders = new HashMap<String, List<String>>();
+		observer = new CounterMessageObserver();
+		builder = TestToolKit.newBuilder(routes)//
+				.setHttpResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody))//
+				.addMessageObserver(observer);
+	}
 
-        observer = new CounterMessageObserver();
-        messageHandler.dispatcher().addMessageObserver(observer);
+	protected RestExpressRequestHandler build(RestExpressRequestHandlerBuilder builder) throws Exception {
+		return builder.build();
+	}
 
-        PipelineBuilder pf = new PipelineBuilder().addRequestHandler(messageHandler);
-        pl = pf.getPipeline();
-        ChannelFactory channelFactory = new DefaultLocalServerChannelFactory();
-        channel = channelFactory.newChannel(pl);
-    }
+	/**
+	 * Utility to send an event.
+	 * 
+	 * @param method
+	 * @param path
+	 * @param body
+	 */
+	protected void sendEvent(HttpMethod method, String path, String body) {
+		HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1, method, path);
+		if (body != null) {
+			request.setContent(ChannelBuffers.copiedBuffer(body, CharacterSet.UTF_8.getCharset()));
+		}
+		pl.sendUpstream(new UpstreamMessageEvent(channel, request, new InetSocketAddress(1)));
+	}
 
-    /**
-     * Utility to send an event.
-     * 
-     * @param method
-     * @param path
-     * @param body
-     */
-    protected void sendEvent(HttpMethod method, String path, String body) {
-        HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1, method, path);
-        if (body != null) {
-            request.setContent(ChannelBuffers.copiedBuffer(body, CharacterSet.UTF_8.getCharset()));
-        }
-        pl.sendUpstream(new UpstreamMessageEvent(channel, request, new InetSocketAddress(1)));
-    }
+	protected void sendGetEvent(String path, String body) {
+		sendEvent(HttpMethod.GET, path, body);
+	}
 
-    /**
-     * Route Declaration for JSendResult test.
-     */
-    public class DummyRoutes extends RouteDeclaration {
+	protected void sendGetEvent(String path) {
+		sendEvent(HttpMethod.GET, path, null);
+	}
 
-        private Object controller = new WrappedResponseController();
+	/**
+	 * Route Declaration for JSendResult and {@link RawWrappedResponseTest}
+	 * test.
+	 */
+	public class DummyRoutes extends RouteDeclaration {
 
-        public DummyRoutes defineRoutes() {
-            uri("/normal_get.{format}", controller).action("normalGetAction", HttpMethod.GET);
+		private Object controller = new WrappedResponseController();
 
-            uri("/normal_put.{format}", controller).action("normalPutAction", HttpMethod.PUT);
+		public DummyRoutes defineRoutes() {
+			uri("/normal_get.{format}", controller).action("normalGetAction", HttpMethod.GET);
 
-            uri("/normal_post.{format}", controller).action("normalPostAction", HttpMethod.POST);
+			uri("/normal_put.{format}", controller).action("normalPutAction", HttpMethod.PUT);
 
-            uri("/normal_delete.{format}", controller).action("normalDeleteAction", HttpMethod.DELETE);
+			uri("/normal_post.{format}", controller).action("normalPostAction", HttpMethod.POST);
 
-            uri("/no_content_delete.{format}", controller).action("noContentDeleteAction", HttpMethod.DELETE);
+			uri("/normal_delete.{format}", controller).action("normalDeleteAction", HttpMethod.DELETE);
 
-            uri("/no_content_with_body_delete.{format}", controller).action("noContentWithBodyDeleteActionThrowException",
-                    HttpMethod.DELETE);
-            uri("/not_found.{format}", controller).action("notFoundAction", HttpMethod.GET);
+			uri("/no_content_delete.{format}", controller).action("noContentDeleteAction", HttpMethod.DELETE);
 
-            uri("/null_pointer.{format}", controller).action("nullPointerAction", HttpMethod.GET);
-            return this;
-        }
-    }
+			uri("/no_content_with_body_delete.{format}", controller).action("noContentWithBodyDeleteActionThrowException", HttpMethod.DELETE);
+			uri("/not_found.{format}", controller).action("notFoundAction", HttpMethod.GET);
+
+			uri("/null_pointer.{format}", controller).action("nullPointerAction", HttpMethod.GET);
+			return this;
+		}
+	}
 }

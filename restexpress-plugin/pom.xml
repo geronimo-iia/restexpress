@@ -17,7 +17,7 @@
 	<modules>
 		<module>plugin-gson</module>
 		<module>plugin-xstream</module>
-		<module>plugin-static</module>
+		<module>plugin-content</module>
 	</modules>
 	<dependencies>
 		<dependency>

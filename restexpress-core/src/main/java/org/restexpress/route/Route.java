@@ -73,7 +73,6 @@ public abstract class Route {
 		this.urlMatcher = urlMatcher;
 		this.controller = controller;
 		this.action = action;
-		this.action.setAccessible(true);
 		this.method = method;
 		this.shouldSerializeResponse = shouldSerializeResponse;
 		this.name = name;
@@ -86,7 +85,7 @@ public abstract class Route {
 	}
 
 	public boolean isFlagged(final Flags flag) {
-		return flags.contains(flag.toString());
+		return isFlagged(flag.toString());
 	}
 
 	public boolean hasParameter(final String name) {

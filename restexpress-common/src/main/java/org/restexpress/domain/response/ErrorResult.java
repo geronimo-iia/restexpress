@@ -72,6 +72,7 @@ public class ErrorResult implements Serializable {
 
     @Override
     public String toString() {
+    	// maybe little confusing with real json format
         return "ErrorResult {httpStatusCode=\"" + httpStatus + "\", message=\"" + message + "\", errorType=\"" + errorType + "\"}";
     }
 

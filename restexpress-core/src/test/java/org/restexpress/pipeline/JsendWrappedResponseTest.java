@@ -24,19 +24,18 @@ import static org.junit.Assert.assertEquals;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.Before;
 import org.junit.Test;
-import org.restexpress.SerializationProvider;
 import org.restexpress.domain.response.JsendResult;
+import org.restexpress.response.SerializationProvider;
 import org.restexpress.response.Wrapper;
+import org.restexpress.response.Wrapper.JsendResponseWrapper;
 import org.restexpress.serialization.JacksonJsonProcessor;
 import org.restexpress.serialization.JacksonXmlProcessor;
 import org.restexpress.serialization.Processor;
 
 /**
- * 
- * {@link JsendWrappedResponseTest}.
+ * {@link JsendResponseWrapper} test case.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- * 
  * @author toddf
  * @since Dec 15, 2010
  */

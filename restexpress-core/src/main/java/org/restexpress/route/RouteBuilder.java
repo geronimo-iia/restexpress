@@ -26,6 +26,7 @@ import static org.jboss.netty.handler.codec.http.HttpMethod.OPTIONS;
 import static org.jboss.netty.handler.codec.http.HttpMethod.POST;
 import static org.jboss.netty.handler.codec.http.HttpMethod.PUT;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,284 +36,308 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.UriMetadata;
 import org.restexpress.exception.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Builds a route for a single URI. If a URI is given with no methods or
- * actions, the builder creates routes for the GET, POST, PUT, and DELETE HTTP
- * methods for the given URI.
+ * Builds a route for a single URI. If a URI is given with no methods or actions, the builder creates routes for the GET, POST, PUT,
+ * and DELETE HTTP methods for the given URI.
  * 
+ * Change
+ * <ul>
+ * <li>When using default mapping only, this builder did not raise an exception if a declared action has no method, but log a warning.</li>
+ * <li>Turn off serialization option when a method return a {@link File}</li>
+ * </ul>
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since 2010
  */
 public abstract class RouteBuilder {
-	// SECTION: CONSTANTS
 
-	static final String DELETE_ACTION_NAME = "delete";
-	static final String GET_ACTION_NAME = "read";
-	static final String POST_ACTION_NAME = "create";
-	static final String PUT_ACTION_NAME = "update";
-	static final String HEAD_ACTION_NAME = "headers";
-	static final String OPTION_ACTION_NAME = "options";
-	static final List<HttpMethod> DEFAULT_HTTP_METHODS = Arrays.asList(new HttpMethod[] { GET, POST, PUT, DELETE });
-	static final Map<HttpMethod, String> ACTION_MAPPING = new HashMap<HttpMethod, String>();
+    public static Logger logger = LoggerFactory.getLogger(RouteBuilder.class);
 
-	static {
-		ACTION_MAPPING.put(DELETE, DELETE_ACTION_NAME);
-		ACTION_MAPPING.put(GET, GET_ACTION_NAME);
-		ACTION_MAPPING.put(POST, POST_ACTION_NAME);
-		ACTION_MAPPING.put(PUT, PUT_ACTION_NAME);
-		ACTION_MAPPING.put(HEAD, HEAD_ACTION_NAME);
-		ACTION_MAPPING.put(OPTIONS, OPTION_ACTION_NAME);
-	}
+    // SECTION: CONSTANTS
 
-	private final String uri;
-	private List<HttpMethod> methods = new ArrayList<HttpMethod>();
-	private final Map<HttpMethod, String> actionNames = new HashMap<HttpMethod, String>();
-	private final Object controller;
-	private boolean shouldSerializeResponse = true;
-	private String name;
-	private final Set<String> flags = new HashSet<>();
-	private final Map<String, Object> parameters = new HashMap<String, Object>();
-	protected final List<String> aliases = new ArrayList<String>();
+    static final String DELETE_ACTION_NAME = "delete";
+    static final String GET_ACTION_NAME = "read";
+    static final String POST_ACTION_NAME = "create";
+    static final String PUT_ACTION_NAME = "update";
+    static final String HEAD_ACTION_NAME = "headers";
+    static final String OPTION_ACTION_NAME = "options";
+    static final List<HttpMethod> DEFAULT_HTTP_METHODS = Arrays.asList(new HttpMethod[] { GET, POST, PUT, DELETE });
+    static final Map<HttpMethod, String> ACTION_MAPPING = new HashMap<HttpMethod, String>();
 
-	/**
-	 * Create a RouteBuilder instance for the given URI pattern. URIs that match
-	 * the pattern will map to methods on the POJO controller.
-	 * 
-	 * @param uri
-	 *            a URI pattern
-	 * @param controller
-	 *            the POJO service controller.
-	 */
-	public RouteBuilder(final String uri, final Object controller) {
-		super();
-		this.uri = uri;
-		this.controller = controller;
-	}
+    static {
+        ACTION_MAPPING.put(DELETE, DELETE_ACTION_NAME);
+        ACTION_MAPPING.put(GET, GET_ACTION_NAME);
+        ACTION_MAPPING.put(POST, POST_ACTION_NAME);
+        ACTION_MAPPING.put(PUT, PUT_ACTION_NAME);
+        ACTION_MAPPING.put(HEAD, HEAD_ACTION_NAME);
+        ACTION_MAPPING.put(OPTIONS, OPTION_ACTION_NAME);
+    }
 
-	/**
-	 * Child builder must implements this method.
-	 * 
-	 * @param pattern
-	 * @param controller
-	 * @param action
-	 * @param method
-	 * @param shouldSerializeResponse
-	 * @param name
-	 * @param supportedFormats
-	 * @param flags
-	 * @param parameters
-	 * @param baseUrl
-	 * @return
-	 */
-	protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method, boolean shouldSerializeResponse, String name, Set<String> flags, Map<String, Object> parameters);
+    private final String uri;
+    private List<HttpMethod> methods = new ArrayList<HttpMethod>();
+    private final Map<HttpMethod, String> actionNames = new HashMap<HttpMethod, String>();
+    private final Object controller;
+    private boolean shouldSerializeResponse = true;
+    private String name;
+    private final Set<String> flags = new HashSet<>();
+    private final Map<String, Object> parameters = new HashMap<String, Object>();
+    protected final List<String> aliases = new ArrayList<String>();
 
-	/**
-	 * Child builder must implements this method.
-	 * 
-	 * @param uri
-	 * @return
-	 */
-	protected abstract String toRegexPattern(String uri);
+    /**
+     * Create a RouteBuilder instance for the given URI pattern. URIs that match the pattern will map to methods on the POJO
+     * controller.
+     * 
+     * @param uri a URI pattern
+     * @param controller the POJO service controller.
+     */
+    public RouteBuilder(final String uri, final Object controller) {
+        super();
+        this.uri = uri;
+        this.controller = controller;
+    }
 
-	/**
-	 * Map a service method name (action) to a particular HTTP method (e.g. GET,
-	 * POST, PUT, DELETE, HEAD, OPTIONS)
-	 * 
-	 * @param action
-	 *            the name of a method within the service POJO.
-	 * @param method
-	 *            the HTTP method that should invoke the service method.
-	 * @return the RouteBuilder instance.
-	 */
-	public RouteBuilder action(final String action, final HttpMethod method) {
-		if (!actionNames.containsKey(method)) {
-			actionNames.put(method, action);
-		}
+    /**
+     * Child builder must implements this method.
+     * 
+     * @param pattern
+     * @param controller
+     * @param action
+     * @param method
+     * @param shouldSerializeResponse
+     * @param name
+     * @param supportedFormats
+     * @param flags
+     * @param parameters
+     * @param baseUrl
+     * @return
+     */
+    protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method,
+            boolean shouldSerializeResponse, String name, Set<String> flags, Map<String, Object> parameters);
 
-		if (!methods.contains(method)) {
-			methods.add(method);
-		}
+    /**
+     * Child builder must implements this method.
+     * 
+     * @param uri
+     * @return
+     */
+    protected abstract String toRegexPattern(String uri);
 
-		return this;
-	}
+    /**
+     * Map a service method name (action) to a particular HTTP method (e.g. GET, POST, PUT, DELETE, HEAD, OPTIONS)
+     * 
+     * @param action the name of a method within the service POJO.
+     * @param method the HTTP method that should invoke the service method.
+     * @return the RouteBuilder instance.
+     */
+    public RouteBuilder action(final String action, final HttpMethod method) {
+        if (!actionNames.containsKey(method)) {
+            actionNames.put(method, action);
+        }
 
-	/**
-	 * Defines HTTP methods that the route will support (e.g. GET, PUT, POST,
-	 * DELETE, OPTIONS, HEAD). This utilizes the default HTTP method to service
-	 * action mapping (e.g. GET maps to read(), PUT to update(), etc.).
-	 * 
-	 * @param methods
-	 *            the HTTP methods supported by the route.
-	 * @return the RouteBuilder instance.
-	 */
-	public RouteBuilder method(final HttpMethod... methods) {
-		for (final HttpMethod method : methods) {
-			if (!this.methods.contains(method)) {
-				this.methods.add(method);
-			}
-		}
+        if (!methods.contains(method)) {
+            methods.add(method);
+        }
 
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Turns off serialization of the response--returns the response body as
-	 * pain text.
-	 * 
-	 * @return the RouteBuilder instance.
-	 */
-	public RouteBuilder noSerialization() {
-		this.shouldSerializeResponse = false;
-		return this;
-	}
+    /**
+     * Defines HTTP methods that the route will support (e.g. GET, PUT, POST, DELETE, OPTIONS, HEAD). This utilizes the default HTTP
+     * method to service action mapping (e.g. GET maps to read(), PUT to update(), etc.).
+     * 
+     * @param methods the HTTP methods supported by the route.
+     * @return the RouteBuilder instance.
+     */
+    public RouteBuilder method(final HttpMethod... methods) {
+        for (final HttpMethod method : methods) {
+            if (!this.methods.contains(method)) {
+                this.methods.add(method);
+            }
+        }
 
-	/**
-	 * Turns on response serialization (the default) so the response body will
-	 * be serialized (e.g. into JSON or XML).
-	 * 
-	 * @return the RouteBuilder instance.
-	 */
-	public RouteBuilder performSerialization() {
-		this.shouldSerializeResponse = true;
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Give the route a known name to facilitate retrieving the route by name.
-	 * This facilitates using the route URI pattern to create Link instances via
-	 * LinkUtils.asLinks().
-	 * 
-	 * The name must be unique for each URI pattern.
-	 * 
-	 * @param name
-	 *            the given name of the route for later retrieval.
-	 * @return the RouteBuilder instance.
-	 */
-	public RouteBuilder name(final String name) {
-		this.name = name;
-		return this;
-	}
+    /**
+     * Turns off serialization of the response--returns the response body as pain text.
+     * 
+     * @return the RouteBuilder instance.
+     */
+    public RouteBuilder noSerialization() {
+        this.shouldSerializeResponse = false;
+        return this;
+    }
 
-	/**
-	 * Flags are boolean settings that are created at route definition time.
-	 * These flags can be used to pass booleans to preprocessors, controllers,
-	 * or postprocessors. An example might be: flag(NO_AUTHORIZATION), which
-	 * might inform an authorization preprocessor to skip authorization for this
-	 * route.
-	 * 
-	 * @param flagValue
-	 *            the name of the flag.
-	 * @return this RouteBuilder to facilitate method chaining.
-	 */
-	public RouteBuilder flag(final String flagValue) {
-		flags.add(flagValue);
-		return this;
-	}
+    /**
+     * Turns on response serialization (the default) so the response body will be serialized (e.g. into JSON or XML).
+     * 
+     * @return the RouteBuilder instance.
+     */
+    public RouteBuilder performSerialization() {
+        this.shouldSerializeResponse = true;
+        return this;
+    }
 
-	/**
-	 * Parameters are named settings that are created at route definition time.
-	 * These parameters can be used to pass data to subsequent preprocessors,
-	 * controllers, or postprocessors. This is a way to pass data from a route
-	 * definition down to subsequent controllers, etc. An example might be:
-	 * setParameter("route", "read_foo") setParameter("permission",
-	 * "view_private_data"), which might inform an authorization preprocessor of
-	 * what permission is being requested on a given resource.
-	 * 
-	 * @param name
-	 *            the name of the parameter.
-	 * @param value
-	 *            an object that is the parameter value.
-	 * @return this RouteBuilder to facilitate method chaining.
-	 */
-	public RouteBuilder parameter(final String name, final Object value) {
-		parameters.put(name, value);
-		return this;
-	}
+    /**
+     * Give the route a known name to facilitate retrieving the route by name. This facilitates using the route URI pattern to create
+     * Link instances via LinkUtils.asLinks().
+     * 
+     * The name must be unique for each URI pattern.
+     * 
+     * @param name the given name of the route for later retrieval.
+     * @return the RouteBuilder instance.
+     */
+    public RouteBuilder name(final String name) {
+        this.name = name;
+        return this;
+    }
 
-	public RouteBuilder useStreamingMultipartUpload() {
-		// TODO: complete supportMultipart()
-		return this;
-	}
+    /**
+     * Flags are boolean settings that are created at route definition time. These flags can be used to pass booleans to preprocessors,
+     * controllers, or postprocessors. An example might be: flag(NO_AUTHORIZATION), which might inform an authorization preprocessor to
+     * skip authorization for this route.
+     * 
+     * @param flagValue the name of the flag.
+     * @return this RouteBuilder to facilitate method chaining.
+     */
+    public RouteBuilder flag(final String flagValue) {
+        flags.add(flagValue);
+        return this;
+    }
 
-	public RouteBuilder useStreamingDownload() {
-		// TODO: complete useStreamingdownload()
-		return this;
-	}
+    /**
+     * Parameters are named settings that are created at route definition time. These parameters can be used to pass data to subsequent
+     * preprocessors, controllers, or postprocessors. This is a way to pass data from a route definition down to subsequent
+     * controllers, etc. An example might be: setParameter("route", "read_foo") setParameter("permission", "view_private_data"), which
+     * might inform an authorization preprocessor of what permission is being requested on a given resource.
+     * 
+     * @param name the name of the parameter.
+     * @param value an object that is the parameter value.
+     * @return this RouteBuilder to facilitate method chaining.
+     */
+    public RouteBuilder parameter(final String name, final Object value) {
+        parameters.put(name, value);
+        return this;
+    }
 
-	/**
-	 * Build the Route instances. The last step in the Builder process.
-	 * 
-	 * @return a List of {@link Route} instances.
-	 */
-	public List<Route> build() {
-		if (methods.isEmpty()) {
-			methods = DEFAULT_HTTP_METHODS;
-		}
+    public RouteBuilder useStreamingMultipartUpload() {
+        // TODO: complete supportMultipart()
+        return this;
+    }
 
-		final List<Route> routes = new ArrayList<Route>();
-		final String pattern = toRegexPattern(uri);
+    public RouteBuilder useStreamingDownload() {
+        // TODO: complete useStreamingdownload()
+        return this;
+    }
 
-		for (final HttpMethod method : methods) {
-			String actionName = actionNames.get(method);
+    /**
+     * Build the Route instances. The last step in the Builder process.
+     * 
+     * @return a List of {@link Route} instances.
+     */
+    public List<Route> build() {
+        if (methods.isEmpty()) {
+            methods = DEFAULT_HTTP_METHODS;
+        }
 
-			if (actionName == null) {
-				actionName = ACTION_MAPPING.get(method);
-			}
+        final List<Route> routes = new ArrayList<Route>();
+        final String pattern = toRegexPattern(uri);
 
-			final Method action = determineActionMethod(controller, actionName);
-			routes.add(newRoute(pattern, controller, action, method, shouldSerializeResponse, name, flags, parameters));
-		}
+        for (final HttpMethod method : methods) {
+            String actionName = actionNames.get(method);
+            Method action = null;
+            if (actionName == null) {
+                // on default mapping, if method is not found we did not raise a configuration exception
+                actionName = ACTION_MAPPING.get(method);
+                try {
+                    action = determineActionMethod(controller, actionName);
+                } catch (ConfigurationException e) {
+                    logger.warn("{} did not support HTTP {} method.", controller.getClass().getSimpleName(), method);
+                }
+            } else {
+                action = determineActionMethod(controller, actionName);
+            }
 
-		return routes;
-	}
+            if (action != null) {
+                // set accessible
+                action.setAccessible(true);
+                // compute serialization
+                boolean serializeResponse = shouldSerializeResponse(action);
+                // create route
+                Route route = newRoute(pattern, controller, action, method, serializeResponse, name, flags, parameters);
+                // add result
+                routes.add(route);
+            }
+        }
 
-	/**
-	 * @return {@link RouteMetadata}
-	 */
-	public RouteMetadata asMetadata() {
-		final List<String> methods = new ArrayList<String>();
-		final UriMetadata uriMeta = new UriMetadata(uri);
-		final List<Route> routes = build();
+        return routes;
+    }
 
-		for (final Route route : routes) {
-			uriMeta.addAllParameters(route.getUrlParameters());
-			methods.add(route.getMethod().getName());
-		}
-		final RouteMetadata metadata = new RouteMetadata(name, uriMeta,//
-				aliases, methods, shouldSerializeResponse);
+    /**
+     * Should Serialize Response for specified action ? This method return false if action return type is
+     * <ul>
+     * <li>a {@link File}</li>
+     * <li>a {@link ChannelBuffer}</li>
+     * <li>shouldSerializeResponse flag is false (from call on {@link #noSerialization()})</li>
+     * </ul>
+     * 
+     * @param action {@link Method} to check
+     * @return True if we should use serialization
+     */
+    private boolean shouldSerializeResponse(Method action) {
+        if (shouldSerializeResponse) {
+            Class<?> returnType = action.getReturnType();
+            return !(File.class.isAssignableFrom(returnType) || ChannelBuffer.class.isAssignableFrom(returnType));
+        }
+        return Boolean.FALSE;
+    }
 
-		return metadata;
-	}
+    /**
+     * TODO a lot of refactoring here
+     * 
+     * @return {@link RouteMetadata}
+     */
+    public RouteMetadata asMetadata() {
+        final List<String> methods = new ArrayList<String>();
+        final UriMetadata uriMeta = new UriMetadata(uri);
+        final List<Route> routes = build();
 
-	// SECTION: UTILITY - PRIVATE
+        for (final Route route : routes) {
+            uriMeta.addAllParameters(route.getUrlParameters());
+            methods.add(route.getMethod().getName());
+        }
+        final RouteMetadata metadata = new RouteMetadata(name, uriMeta,//
+                aliases, methods, shouldSerializeResponse);
 
-	/**
-	 * Attempts to find the actionName on the controller, assuming a signature
-	 * of actionName(Request, Response), and returns the action as a Method to
-	 * be used later when the route is invoked.
-	 * 
-	 * @param controller
-	 *            a pojo that implements a method named by the action, with
-	 *            Request and Response as parameters.
-	 * @param actionName
-	 *            the name of a method on the given controller pojo.
-	 * @return a Method instance referring to the action on the controller.
-	 * @throws ConfigurationException
-	 *             if an error occurs.
-	 */
-	private Method determineActionMethod(final Object controller, final String actionName) {
-		try {
-			return controller.getClass().getMethod(actionName, Request.class, Response.class);
-		} catch (final Exception e) {
-			throw new ConfigurationException(e);
-		}
-	}
+        return metadata;
+    }
+
+    /**
+     * Attempts to find the actionName on the controller, assuming a signature of actionName(Request, Response), and returns the action
+     * as a Method to be used later when the route is invoked.
+     * 
+     * @param controller a pojo that implements a method named by the action, with Request and Response as parameters.
+     * @param actionName the name of a method on the given controller pojo.
+     * @return a Method instance referring to the action on the controller.
+     * @throws ConfigurationException if an error occurs.
+     */
+    private Method determineActionMethod(final Object controller, final String actionName) {
+        try {
+            return controller.getClass().getMethod(actionName, Request.class, Response.class);
+        } catch (final Exception e) {
+            throw new ConfigurationException(e);
+        }
+    }
 
 }

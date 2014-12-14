@@ -43,7 +43,6 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.pipeline.MessageContext;
-import org.restexpress.util.Resolver;
 
 /**
  * @author toddf

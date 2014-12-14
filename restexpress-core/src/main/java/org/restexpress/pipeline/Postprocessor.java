@@ -22,7 +22,7 @@ package org.restexpress.pipeline;
 /**
  * Defines the interface for processing that happens after the service is called
  * but before the response is returned. Postprocessors do not get called in an
- * exception case. Furuthermore, if a Postprocessor throws an exception, the
+ * exception case. Furthermore, if a Postprocessor throws an exception, the
  * rest of the Postprocessors in the chain are skipped.
  * 
  * @author toddf

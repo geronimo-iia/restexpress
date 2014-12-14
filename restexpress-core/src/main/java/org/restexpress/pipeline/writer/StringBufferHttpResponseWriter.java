@@ -17,18 +17,6 @@
  *        under the License.
  *
  */
-/*
- * Copyright 2011, Strategic Gains, Inc.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You
- * may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
- * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
 package org.restexpress.pipeline.writer;
 
 import java.util.ArrayList;
@@ -38,11 +26,11 @@ import java.util.Map;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.pipeline.HttpResponseWriter;
-import org.restexpress.util.HttpSpecification;
 
 /**
  * {@link StringBufferHttpResponseWriter} implement {@link HttpResponseWriter} for testing purpose. This class write content into a

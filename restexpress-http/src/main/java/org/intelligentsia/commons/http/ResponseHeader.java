@@ -216,4 +216,14 @@ public enum ResponseHeader {
 	public String getHeader() {
 		return header;
 	}
+
+	/**
+	 * Return header value.
+	 * 
+	 * @see java.lang.Enum#toString()
+	 */
+	@Override
+	public String toString() {
+		return header;
+	}
 }

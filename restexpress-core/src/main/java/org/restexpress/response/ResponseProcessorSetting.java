@@ -38,56 +38,87 @@ import org.restexpress.exception.DeserializationException;
 import org.restexpress.exception.SerializationException;
 
 /**
- * {@link ResponseProcessorSetting} represent a selection of a media Type with his {@link ResponseProcessor} in order to deal with
- * serialization for a {@link Request} or a {@link Response}.
+ * {@link ResponseProcessorSetting} represent a selection of a specific media
+ * Type with his {@link ResponseProcessor} in order to deal with serialization
+ * for a {@link Request} or a {@link Response}.
+ * 
+ * 
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
 public final class ResponseProcessorSetting implements Serializer {
-    /**
-     * media type.
-     */
-    private final String mediaType;
-    /**
-     * {@link ResponseProcessor} instance.
-     */
-    private final ResponseProcessor responseProcessor;
+	/**
+	 * media type.
+	 */
+	private final String mediaType;
+	/**
+	 * {@link ResponseProcessor} instance.
+	 */
+	private final ResponseProcessor responseProcessor;
 
-    /**
-     * Build a new instance of {@link ResponseProcessorSetting}.
-     * 
-     * @param mediaType
-     * @param responseProcessor
-     */
-    public ResponseProcessorSetting(final String mediaType, final ResponseProcessor responseProcessor) {
-        super();
-        this.mediaType = mediaType;
-        this.responseProcessor = responseProcessor;
-    }
+	/**
+	 * Build a new instance of {@link ResponseProcessorSetting}.
+	 * 
+	 * @param mediaType
+	 * @param responseProcessor
+	 */
+	public ResponseProcessorSetting(final String mediaType, final ResponseProcessor responseProcessor) {
+		super();
+		this.mediaType = mediaType;
+		this.responseProcessor = responseProcessor;
+	}
 
-    /**
-     * @return media type.
-     */
-    public String mediaType() {
-        return mediaType;
-    }
+	/**
+	 * @return media type.
+	 */
+	public String mediaType() {
+		return mediaType;
+	}
 
-    @Override
-    public <T> T deserialize(Request request, Class<T> type) throws DeserializationException {
-        return responseProcessor.deserialize(request, type);
-    }
+	/**
+	 * @return {@link ResponseProcessor} instance
+	 */
+	public ResponseProcessor responseProcessor() {
+		return responseProcessor;
+	}
 
-    /**
-     * Add {@link ResponseHeader#CONTENT_TYPE} if not defined.
-     * 
-     * @see org.restexpress.response.Serializer#serialize(org.restexpress.Response)
-     */
-    @Override
-    public void serialize(Response response) throws SerializationException {
-        if (!response.hasHeader(ResponseHeader.CONTENT_TYPE.getHeader())) {
-            response.setContentType(mediaType);
-        }
-        responseProcessor.serialize(response);
-    }
+	@Override
+	public <T> T deserialize(Request request, Class<T> type) throws DeserializationException {
+		return responseProcessor.deserialize(request, type);
+	}
+
+	/**
+	 * If {@link Response#isSerialized()} then
+	 * <ul>
+	 * <li>add {@link ResponseHeader#CONTENT_TYPE} if not defined</li>
+	 * <li>Use selected {@link ResponseWrapper}</li>
+	 * <li>Serialize the response</li>
+	 * </ul>
+	 * If {@link Response#hasException()} then
+	 * <ul>
+	 * <li>Use selected {@link ResponseWrapper}</li>
+	 * <li>Serialize the response if needed (depends on which
+	 * {@link ResponseWrapper} is used</li>
+	 * <li>add {@link ResponseHeader#CONTENT_TYPE}</li>
+	 * </ul>
+	 * 
+	 * @see org.restexpress.response.Serializer#serialize(org.restexpress.Response)
+	 */
+	@Override
+	public void serialize(Response response) throws SerializationException {
+		if (response.hasException() || response.isSerialized()) {
+			// serialization configuration can change
+			final Object wrapped = responseProcessor.wrapper().wrap(response);
+			response.setBody(wrapped);
+		}
+		responseProcessor.serialize(response);
+		// serialized way: don't override
+		if (response.isSerialized() && !response.hasHeader(ResponseHeader.CONTENT_TYPE.getHeader())) {
+			response.setContentType(mediaType);
+		} else if (response.hasException()) {
+			// in case of exception we must set right content type
+			response.setContentType(mediaType);
+		}
+	}
 
 }

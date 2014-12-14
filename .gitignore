@@ -9,3 +9,5 @@ target/
 .settings
 *.swp
 git.properties
+*.iml
+.idea

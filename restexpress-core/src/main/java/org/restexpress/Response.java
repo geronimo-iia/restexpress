@@ -22,52 +22,65 @@ package org.restexpress;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.OK;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.intelligentsia.commons.http.ResponseHeader;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.query.QueryRange;
 
+import com.google.common.collect.Maps;
+
 /**
+ * {@link Response} definition for RestExpress.
+ * 
  * @author toddf
  * @since Nov 20, 2009
  */
 public class Response {
-	private static final String CONTENT_RANGE_HEADER_NAME = "Content-Range";
-
-	// SECTION: INSTANCE VARIABLES
 
 	private HttpResponseStatus responseCode = OK;
 	private Object body;
-	private final Map<String, List<String>> headers = new HashMap<String, List<String>>();
+	private final Map<String, List<String>> headers = Maps.newHashMap();
 	private boolean isSerialized = true;
 	private Throwable exception = null;
-
-	// SECTION: CONSTRUCTORS
 
 	public Response() {
 		super();
 	}
 
-	// SECTION: ACCESSORS/MUTATORS
-
+	/**
+	 * @return response body as {@link Object}
+	 */
 	public Object getBody() {
 		return body;
 	}
 
+	/**
+	 * @return True if body member is not null
+	 */
 	public boolean hasBody() {
 		return (getBody() != null);
 	}
 
+	/**
+	 * Set response body.
+	 * 
+	 * @param body
+	 *            response body
+	 */
 	public void setBody(final Object body) {
 		this.body = body;
 	}
 
 	public void clearHeaders() {
 		headers.clear();
+	}
+
+	public Map<String, List<String>> headers() {
+		return headers;
 	}
 
 	public String getHeader(final String name) {
@@ -123,11 +136,17 @@ public class Response {
 	 * @param size
 	 */
 	public void addRangeHeader(final QueryRange range, final long count) {
-		addHeader(CONTENT_RANGE_HEADER_NAME, range.asContentRange(count));
+		addHeader(ResponseHeader.CONTENT_RANGE.getHeader(), range.asContentRange(count));
 	}
 
+	/**
+	 * Add a "Location" header to the response.
+	 * 
+	 * @param url
+	 *            URL location
+	 */
 	public void addLocationHeader(final String url) {
-		addHeader(HttpHeaders.Names.LOCATION, url);
+		addHeader(ResponseHeader.LOCATION.getHeader(), url);
 	}
 
 	/**
@@ -149,10 +168,10 @@ public class Response {
 			range.setLimitViaEnd((count > 1 ? count - 1 : 0));
 
 			if ((count > 0) && !range.spans(size, count)) {
-				setResponseCode(206);
+				setResponseStatus(HttpResponseStatus.PARTIAL_CONTENT);
 			}
 		} else if (range.isInside(size, count)) {
-			setResponseCode(206);
+			setResponseStatus(HttpResponseStatus.PARTIAL_CONTENT);
 		}
 
 		addRangeHeader(range, count);
@@ -189,11 +208,7 @@ public class Response {
 	 * body will contain content).
 	 */
 	public void setResponseNoContent() {
-		// TODO: fix this...
-		// if (!responseProcessor.getWrapper().addsBodyContent(this))
-		// {
 		setResponseStatus(HttpResponseStatus.NO_CONTENT);
-		// }
 	}
 
 	/**
@@ -218,6 +233,30 @@ public class Response {
 		} else if (list == null) {
 			addHeader(HttpHeaders.Names.CONTENT_TYPE, contentType);
 		}
+	}
+
+	/**
+	 * Send a redirect response.
+	 * 
+	 * TODO With HTTP 1.1 we should use 303/307 (
+	 * {@link HttpResponseStatus#SEE_OTHER} and
+	 * {@link HttpResponseStatus#TEMPORARY_REDIRECT} )
+	 * 
+	 * @param location
+	 *            URL of redirect
+	 * @param permanent
+	 *            if true, this will be a permanent redirect (301) else just a
+	 *            redirect 302 (Found).
+	 */
+	public void redirect(String location, boolean permanent) {
+		// set response code
+		if (permanent) {
+			responseCode = HttpResponseStatus.MOVED_PERMANENTLY;
+		} else {
+			responseCode = HttpResponseStatus.FOUND;
+		}
+		// add location header
+		addHeader(ResponseHeader.LOCATION.getHeader(), location);
 	}
 
 	public boolean isSerialized() {

@@ -34,7 +34,7 @@ public interface ResponseWrapper {
      * Wrap the response.
      * 
      * @param response
-     * @return wrapper response object/
+     * @return wrapper response object that should replace response body.
      */
     public Object wrap(Response response);
 

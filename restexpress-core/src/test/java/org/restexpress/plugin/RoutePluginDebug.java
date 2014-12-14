@@ -23,23 +23,19 @@ import java.io.IOException;
 
 import org.restexpress.RestExpressLauncher;
 import org.restexpress.observer.SimpleConsoleLogMessageObserver;
-import org.restexpress.plugin.RouteMetadataPlugin;
 
 /**
- * RoutePluginDebug is just for see page and ... 
- *
+ * RoutePluginDebug is just for see page and ...
+ * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- *
+ * 
  */
 public class RoutePluginDebug {
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
+
 	public static void main(String[] args) throws IOException {
 		RestExpressLauncher launcher = new RestExpressLauncher();
-		launcher.server().registerPlugin(new RouteMetadataPlugin());
+		launcher.server().register(new RouteMetadataPlugin());
 		launcher.server().addMessageObserver(new SimpleConsoleLogMessageObserver());
-		launcher.bind();
+		launcher.restExpressLifeCycle().bind();
 	}
 }

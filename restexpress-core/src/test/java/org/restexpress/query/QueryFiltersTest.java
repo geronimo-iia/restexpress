@@ -48,7 +48,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.restexpress.Request;
-import org.restexpress.util.TestUtilities;
+import org.restexpress.TestToolKit;
 
 /**
  * @author toddf
@@ -60,7 +60,7 @@ public class QueryFiltersTest
 	public void shouldParseQueryString()
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings?filter=name::todd|description::amazing");
-		Request request = TestUtilities.newRequest(httpRequest);
+		Request request = TestToolKit.newRequest(httpRequest);
 		QueryFilter f = QueryFilters.parseFrom(request);
 		assertTrue(f.hasFilters());
 		FCallback callback = new FCallback();
@@ -75,7 +75,7 @@ public class QueryFiltersTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("filter", "name::todd|description::amazing");
-		Request request = TestUtilities.newRequest(httpRequest);
+		Request request = TestToolKit.newRequest(httpRequest);
 		QueryFilter f = QueryFilters.parseFrom(request);
 		assertTrue(f.hasFilters());
 		FCallback callback = new FCallback();
@@ -90,7 +90,7 @@ public class QueryFiltersTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("filter", "name::todd|description::amazing");
-		Request request = TestUtilities.newRequest(httpRequest);
+		Request request = TestToolKit.newRequest(httpRequest);
 		QueryFilter f = QueryFilters.parseFrom(request, Arrays.asList(new String[] {"name", "description"}));
 		assertTrue(f.hasFilters());
 		FCallback callback = new FCallback();
@@ -105,7 +105,7 @@ public class QueryFiltersTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("filter", "name::todd|description::amazing");
-		Request request = TestUtilities.newRequest(httpRequest);
+		Request request = TestToolKit.newRequest(httpRequest);
 		 QueryFilters.parseFrom(request, Arrays.asList(new String[] {"abc", "def", "ghi"}));
 	}
 
@@ -114,7 +114,7 @@ public class QueryFiltersTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("filter", "abc::todd");
-		Request request = TestUtilities.newRequest(httpRequest);
+		Request request = TestToolKit.newRequest(httpRequest);
 		 QueryFilters.parseFrom(request, Arrays.asList(new String[] {"abc", "def", "ghi"}));
 	}
 
@@ -123,7 +123,7 @@ public class QueryFiltersTest
 	{
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "http://www.example.com/somethings");
 		httpRequest.headers().add("filter", "name::todd");
-		Request request = TestUtilities.newRequest(httpRequest);
+		Request request = TestToolKit.newRequest(httpRequest);
 		 QueryFilters.parseFrom(request, Arrays.asList(new String[] {"abc", "def", "ghi"}));
 	}
 	

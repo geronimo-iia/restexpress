@@ -20,11 +20,21 @@
 package org.restexpress.settings;
 
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.nio.file.Path;
 
 import org.restexpress.RestExpress;
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.introspector.BeanAccess;
+import org.yaml.snakeyaml.introspector.PropertyUtils;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -45,72 +55,136 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
+ * use extention .json or .yaml
  */
 public enum Settings {
-	;
+    JSON, YAML;
+    ;
 
-	/**
-	 * @return default {@link RestExpressSettings}.
-	 */
-	public static RestExpressSettings defaultRestExpressSettings() {
-		return new RestExpressSettings();
-	}
-	/**
-	 * @param jsonSettingsPath
-	 *            json settings source path
-	 * @return a new instance of {@link RestExpressSettings}.
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 * @throws IllegalArgumentException
-	 *             if jsonSettingsPath did not exists.
-	 */
-	public static RestExpressSettings loadFromJson(final Path jsonSettingsPath) throws JsonParseException, JsonMappingException, IOException, IllegalArgumentException {
-		if (!jsonSettingsPath.toFile().exists()) {
-			throw new IllegalArgumentException("Unable to find settings " + jsonSettingsPath.toAbsolutePath());
-		}
-		return loadFromJson(new FileInputStream(jsonSettingsPath.toFile()));
-	}
+    /**
+     * @return default {@link RestExpressSettings}.
+     */
+    public static RestExpressSettings defaultRestExpressSettings() {
+        return new RestExpressSettings();
+    }
 
-	/**
-	 * @param jsonSettingsStream
-	 *            json settings source
-	 * @return a new instance of settingClassName which extends
-	 *         {@link RestExpressSettings}
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 */
-	public static RestExpressSettings loadFromJson(final InputStream jsonSettingsStream) throws JsonParseException, JsonMappingException, IOException {
-		return getObjectMapper().readValue(jsonSettingsStream, RestExpressSettings.class);
-	}
+    /**
+     * Load from file. Determine format by extention (.json or .yaml)
+     * 
+     * @param settingsPath settings source path
+     * @return a new instance of {@link RestExpressSettings}.
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     * @throws IllegalArgumentException if jsonSettingsPath did not exists.
+     */
+    public static RestExpressSettings loadFrom(final Path settingsPath) throws JsonParseException, JsonMappingException, IOException,
+            IllegalArgumentException {
+        if (settingsPath.getFileName().endsWith("yaml")) {
+            return loadFrom(settingsPath, Settings.YAML);
+        }
+        return loadFrom(settingsPath, Settings.JSON);
+    }
 
-	/**
-	 * Save settings in specified file.
-	 * 
-	 * @param jsonSettingsPath
-	 *            json settings source path
-	 * @param settings
-	 *            settings instance to save
-	 * @throws IOException
-	 * @throws JsonMappingException
-	 * @throws JsonGenerationException
-	 */
-	public static void save(final Path jsonSettingsPath, final RestExpressSettings settings) throws JsonGenerationException, JsonMappingException, IOException {
-		getObjectMapper().writeValue(jsonSettingsPath.toFile(), settings);
-	}
+    /**
+     * @param settingsPath settings source path
+     * @param settings format
+     * @return a new instance of {@link RestExpressSettings}.
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     * @throws IllegalArgumentException if jsonSettingsPath did not exists.
+     */
+    public static RestExpressSettings loadFrom(final Path settingsPath, final Settings settings) throws JsonParseException,
+            JsonMappingException, IOException, IllegalArgumentException {
+        if (!settingsPath.toFile().exists()) {
+            throw new IllegalArgumentException("Unable to find settings " + settingsPath.toAbsolutePath());
+        }
+        return loadFrom(new FileInputStream(settingsPath.toFile()), settings);
+    }
 
-	/**
-	 * @return an {@link ObjectMapper} instance used only here.
-	 */
-	private static ObjectMapper getObjectMapper() {
-		return new ObjectMapper()//
-				.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)//
-				.setSerializationInclusion(JsonInclude.Include.NON_NULL)//
-				.setVisibility(PropertyAccessor.FIELD, Visibility.ANY)//
-				.setVisibility(PropertyAccessor.GETTER, Visibility.NONE)//
-				.setVisibility(PropertyAccessor.SETTER, Visibility.NONE)//
-				.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)//
-				.enable(SerializationFeature.INDENT_OUTPUT);
-	}
+    /**
+     * @param settingsStream settings source
+     * @param settings format
+     * @return a new instance of settingClassName which extends {@link RestExpressSettings}
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
+    public static RestExpressSettings loadFrom(final InputStream settingsStream, final Settings settings) throws JsonParseException,
+            JsonMappingException, IOException {
+        RestExpressSettings expressSettings = null;
+        switch (settings) {
+            case JSON:
+                expressSettings = getObjectMapper().readValue(settingsStream, RestExpressSettings.class);
+                break;
+            case YAML:
+                expressSettings = (RestExpressSettings) getYaml().load(settingsStream);
+                break;
+            default:
+                expressSettings = defaultRestExpressSettings();
+                break;
+        }
+        return expressSettings;
+    }
+
+    /**
+     * Save settings in specified file.
+     * 
+     * @param settingsPath settings source path
+     * @param restExpressSettings settings instance to save
+     * @param settings format
+     * @throws IOException
+     * @throws JsonMappingException
+     * @throws JsonGenerationException
+     */
+    public static void save(final Path settingsPath, final RestExpressSettings restExpressSettings, final Settings settings)
+            throws JsonGenerationException, JsonMappingException, IOException {
+        switch (settings) {
+            case YAML:
+                Writer writer = null;
+                try {
+                    writer = new FileWriter(settingsPath.toFile());
+                    getYaml().dump(restExpressSettings, writer);
+                } finally {
+                    writer.close();
+                }
+                break;
+            case JSON:
+            default:
+                getObjectMapper().writeValue(settingsPath.toFile(), restExpressSettings);
+                break;
+        }
+
+    }
+
+    /**
+     * @return an {@link ObjectMapper} instance used only here.
+     */
+    static ObjectMapper getObjectMapper() {
+        return new ObjectMapper()//
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)//
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)//
+                .setVisibility(PropertyAccessor.FIELD, Visibility.ANY)//
+                .setVisibility(PropertyAccessor.GETTER, Visibility.NONE)//
+                .setVisibility(PropertyAccessor.SETTER, Visibility.NONE)//
+                .setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE)//
+                .enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
+    /**
+     * @return a configured {@link Yaml} instance.
+     */
+    static Yaml getYaml() {
+        PropertyUtils propUtils = new PropertyUtils();
+        propUtils.setBeanAccess(BeanAccess.FIELD);
+        Representer repr = new Representer();
+        repr.setPropertyUtils(propUtils);
+        repr.addClassTag(RestExpressSettings.class, new Tag("!restexpress"));
+        repr.setDefaultFlowStyle(FlowStyle.AUTO);
+        Constructor constructor = new Constructor();
+        constructor.setPropertyUtils(propUtils);
+        constructor.addTypeDescription(new TypeDescription(RestExpressSettings.class, "!restexpress"));
+        return new Yaml(constructor, repr);
+    }
 }

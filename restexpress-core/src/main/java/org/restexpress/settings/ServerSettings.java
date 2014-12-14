@@ -39,7 +39,11 @@ import java.io.Serializable;
 
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
+import org.restexpress.pipeline.RestExpressPipelineFactory;
+import org.restexpress.processor.DefaultContentTypeFinallyProcessor;
+import org.restexpress.processor.FileHeaderPostProcessor;
 import org.restexpress.response.ResponseProcessorManager;
+import org.restexpress.response.Wrapper.ErrorResponseWrapper;
 
 /**
  * {@link ServerSettings} group all server settings.
@@ -61,7 +65,7 @@ public class ServerSettings implements Serializable {
 	private int port = 8081;
 	private boolean keepAlive = Boolean.TRUE;
 	private boolean reuseAddress = Boolean.TRUE;
-	private int maxContentSize = 25600;
+	private int maxContentSize = RestExpressPipelineFactory.DEFAULT_MAX_CONTENT_LENGTH;
 
 	/**
 	 * This controls the number of concurrent connections the application can
@@ -82,13 +86,9 @@ public class ServerSettings implements Serializable {
 	 */
 	private String defaultFormat = MediaType.APPLICATION_JSON.withCharset(CharacterSet.UTF_8.getCharsetName());
 
-	/**
-	 * If true (per default it is) serialization provider use Jackson for Json,
-	 * Xstream for xml, and raw response wrapper.
-	 * 
-	 * @see ResponseProcessorManager for more information.
-	 */
 	private boolean useDefaultSerializationConfiguration = Boolean.TRUE;
+
+	private boolean useDefaultPipelineProcessor = Boolean.TRUE;
 
 	/**
 	 * Build a new instance.
@@ -106,13 +106,45 @@ public class ServerSettings implements Serializable {
 		return this;
 	}
 
+	/**
+	 * @see #setUseDefaultSerializationConfiguration(boolean).
+	 * @return
+	 */
 	public boolean isUseDefaultSerializationConfiguration() {
 		return useDefaultSerializationConfiguration;
 	}
 
+	/**
+	 * USe or not default serialization configuration. If true (per default it
+	 * is) serialization provider use Jackson for Json, Jackson for xml, and
+	 * standard Text Processor. Alls came with an error response wrapper (@see
+	 * {@link ErrorResponseWrapper}).
+	 * 
+	 * @see ResponseProcessorManager for more information.
+	 * 
+	 * 
+	 */
 	public ServerSettings setUseDefaultSerializationConfiguration(final boolean useDefaultSerializationConfiguration) {
 		this.useDefaultSerializationConfiguration = useDefaultSerializationConfiguration;
 		return this;
+	}
+
+	/**
+	 * @see ServerSettings#setUseDefaultPipelineProcessor(boolean).
+	 */
+	public boolean isUseDefaultPipelineProcessor() {
+		return useDefaultPipelineProcessor;
+	}
+
+	/**
+	 * If true (per default it is) pipeline use :
+	 * <ul>
+	 * <li>a post processor: {@link FileHeaderPostProcessor}.</li>
+	 * <li>a finally processor {@link DefaultContentTypeFinallyProcessor}</li>
+	 * </ul>
+	 */
+	public void setUseDefaultPipelineProcessor(boolean useDefaultPipelineProcessor) {
+		this.useDefaultPipelineProcessor = useDefaultPipelineProcessor;
 	}
 
 	public boolean isKeepAlive() {
@@ -190,6 +222,10 @@ public class ServerSettings implements Serializable {
 		return this;
 	}
 
+	/**
+	 * @see #getMaxContentSize().
+	 * @return
+	 */
 	public int getMaxContentSize() {
 		return maxContentSize;
 	}
@@ -198,6 +234,9 @@ public class ServerSettings implements Serializable {
 	 * Set the maximum length of the content in a request. If the length of the
 	 * content exceeds this value, the server closes the connection immediately
 	 * without sending a response.
+	 * 
+	 * Default value:
+	 * {@link RestExpressPipelineFactory#DEFAULT_MAX_CONTENT_LENGTH}.
 	 * 
 	 * @param size
 	 *            the maximum size in bytes.

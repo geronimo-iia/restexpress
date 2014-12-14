@@ -46,7 +46,7 @@ public class EchoEntryPoint implements RestExpressEntryPoint {
 	 */
 	@Override
 	public void onLoad(RestExpress restExpress) throws RuntimeException {
-		restExpress.registerPlugin(new EchoPlugin());
+		restExpress.register(new EchoPlugin());
 		restExpress.addMessageObserver(new ConsoleAccesLogMessageObserver(System.err));
 		restExpress.addMessageObserver(new SimpleConsoleLogMessageObserver());
 	}
