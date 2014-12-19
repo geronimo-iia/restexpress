@@ -6,7 +6,7 @@
 	<version>0.10.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>RestExpress is a thin wrapper on the JBOSS Netty HTTP stack to provide a simple and easy way to create RESTful services in Java that support massive Internet Scale and performance.</description>
-	<url>https://github.com/geronimo-iia/RestExpress</url>
+	<url>https://github.com/geronimo-iia/restexpress</url>
 	<inceptionYear>2012</inceptionYear>
 
 	<developers>
@@ -30,14 +30,14 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/geronimo-iia/RestExpress.git</url>
-		<connection>scm:git:https://github.com/geronimo-iia/RestExpress.git</connection>
-		<developerConnection>scm:git:https://github.com/geronimo-iia/RestExpress.git</developerConnection>
+		<url>https://github.com/geronimo-iia/restexpress.git</url>
+		<connection>scm:git:https://github.com/geronimo-iia/restexpress.git</connection>
+		<developerConnection>scm:git:https://github.com/geronimo-iia/restexpress.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 	<issueManagement>
 		<system>GitHub.com</system>
-		<url>https://github.com/geronimo-iia/RestExpress/issues</url>
+		<url>https://github.com/geronimo-iia/restexpress/issues</url>
 	</issueManagement>
 	<organization>
 		<name>Intelligents-ia</name>
