@@ -8,7 +8,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.intelligents-ia.restexpress.sample</groupId>
-	<artifactId>sample-echo</artifactId>
+	<artifactId>sample-benchmark</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<license.header.path>../../header.txt</license.header.path>
@@ -19,13 +19,7 @@
 			<artifactId>restexpress-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<build>
+	</dependencies><build>
 		<plugins>
 			<plugin>
 				<groupId>org.intelligents-ia</groupId>

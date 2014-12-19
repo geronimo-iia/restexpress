@@ -16,6 +16,7 @@
 	</properties>
 	<modules>
 		<module>echo</module>
+		<module>benchmark</module>
 	</modules>
 	<build>
 		<pluginManagement>
@@ -29,16 +30,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	<dependencies>
-		<dependency>
-			<groupId>org.intelligents-ia.restexpress</groupId>
-			<artifactId>restexpress-server</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 </project>
