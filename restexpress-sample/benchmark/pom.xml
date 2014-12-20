@@ -12,6 +12,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<license.header.path>../../header.txt</license.header.path>
+		<maven.test.skip>true</maven.test.skip>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -19,7 +20,19 @@
 			<artifactId>restexpress-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-	</dependencies><build>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junitperf</groupId>
+			<artifactId>junitperf</artifactId>
+			<version>1.8</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.intelligents-ia</groupId>
