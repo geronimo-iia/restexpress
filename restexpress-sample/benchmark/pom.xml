@@ -24,7 +24,6 @@
 			<plugin>
 				<groupId>org.intelligents-ia</groupId>
 				<artifactId>keystone-plugin</artifactId>
-				<version>${keystone-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>make-assembly</id>

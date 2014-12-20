@@ -12,8 +12,7 @@
 	<packaging>jar</packaging>
 	<description>Internet scale, high-performance RESTful Services in Java</description>
 	<properties>
-		<license.header.path>../header.txt</license.header.path>
-		<keystone-plugin.version>3.3</keystone-plugin.version>
+		<license.header.path>../header.txt</license.header.path>		
 	</properties>
 	<dependencies>
 		<dependency>
@@ -31,7 +30,6 @@
 			<plugin>
 				<groupId>org.intelligents-ia</groupId>
 				<artifactId>keystone-plugin</artifactId>
-				<version>${keystone-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>make-assembly</id>

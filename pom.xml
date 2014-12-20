@@ -117,6 +117,9 @@
 		<gson.version>2.2.4</gson.version>
 		<encoder.version>1.1.1</encoder.version>
 		<snakeyaml.version>1.14</snakeyaml.version>
+
+		<!-- Keystone Plugin version -->
+		<keystone-plugin.version>3.3</keystone-plugin.version>
 	</properties>
 
 
@@ -192,7 +195,7 @@
 				<artifactId>slf4j-api</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
-				<dependency>
+			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
 				<version>${slf4j.version}</version>
@@ -523,6 +526,14 @@
 							</configuration>
 						</execution>
 					</executions>
+				</plugin>
+				<!-- ******************************************************************* -->
+				<!-- Keystone Plugin Declaration -->
+				<!-- ******************************************************************* -->
+				<plugin>
+					<groupId>org.intelligents-ia</groupId>
+					<artifactId>keystone-plugin</artifactId>
+					<version>${keystone-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
