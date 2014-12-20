@@ -19,6 +19,11 @@
  */
 package org.restexpress.plugin.swagger;
 
+import org.restexpress.Request;
+import org.restexpress.Response;
+
+import com.wordnik.swagger.model.ApiDescription;
+
 /**
  * {@link SwaggerController} implement a controller accoring swagger
  * specification.
@@ -27,4 +32,11 @@ package org.restexpress.plugin.swagger;
  */
 public class SwaggerController {
 
+	public SwaggerController() {
+		super();
+	}
+
+	public ApiDescription read(Request request, Response response) {
+		return null;
+	}
 }
