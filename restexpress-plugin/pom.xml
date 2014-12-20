@@ -18,6 +18,7 @@
 		<module>plugin-gson</module>
 		<module>plugin-xstream</module>
 		<module>plugin-content</module>
+		<module>plugin-swagger</module>
 	</modules>
 	<dependencies>
 		<dependency>
