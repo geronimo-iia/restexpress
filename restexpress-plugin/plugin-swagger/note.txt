@@ -24,3 +24,23 @@ https://github.com/swagger-api/swagger-core/wiki/Servlet-Quickstart
 
 integrate this model into our controller handler
 
+few idea:
+* scan some package
+* extract api-doc for 
+  * swagger
+  * route declaration
+
+==> extention point:
+* customize server
+* add plugin
+* declare controller
+* annotation to declare route, etc
+
+
+  
+  
+
+
+
+
+
