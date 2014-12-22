@@ -73,7 +73,6 @@ public class Request {
     private static AtomicLong nextCorrelationId = new AtomicLong(0);
 
     private final HttpRequest httpRequest;
-    private final HttpVersion httpVersion;
     private final RouteResolver routeResolver;
     private final ResponseProcessorSettingResolver responseProcessorSettingResolver;
     private final Map<String, String> queryStringMap;
@@ -110,7 +109,6 @@ public class Request {
             final ResponseProcessorSettingResolver responseProcessorSettingResolver, InetSocketAddress remoteAddress) {
         super();
         this.httpRequest = httpRequest;
-        this.httpVersion = httpRequest.getProtocolVersion();
         this.routeResolver = routeResolver;
         this.responseProcessorSettingResolver = responseProcessorSettingResolver;
         this.queryStringMap = parseQueryString(httpRequest);
@@ -592,13 +590,14 @@ public class Request {
      * @return {@link HttpVersion}/
      */
     public HttpVersion getHttpVersion() {
-        return httpVersion;
+        return httpRequest.getProtocolVersion();
     }
 
     /**
      * @return {@link Boolean#TRUE} if HTTP version is 1.0
      */
     public boolean isHttpVersion1_0() {
+        HttpVersion httpVersion = getHttpVersion();
         return ((httpVersion.getMajorVersion() == 1) && (httpVersion.getMinorVersion() == 0));
     }
 
