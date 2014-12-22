@@ -58,8 +58,20 @@ public final class Action {
         this.match = match;
     }
 
-    public Route getRoute() {
+    /**
+     * @return resolved {@link Route}.
+     */
+    public Route resolvedRoute() {
         return route;
+    }
+
+    /**
+     * Retrieves the parameters from the URL match. These are used as Request headers before invocation of the route.
+     * 
+     * @return a Collection of Map Entry name/value pairs to be used for headers.
+     */
+    public Collection<Entry<String, String>> parameters() {
+        return match.parameterSet();
     }
 
     /**
@@ -68,7 +80,7 @@ public final class Action {
      * @return
      */
     public boolean shouldSerializeResponse() {
-        return getRoute().shouldSerializeResponse();
+        return resolvedRoute().shouldSerializeResponse();
     }
 
     /**
@@ -79,19 +91,7 @@ public final class Action {
      * @return
      */
     public Object invoke(final Request request, final Response response) {
-        return getRoute().invoke(request, response);
+        return resolvedRoute().invoke(request, response);
     }
 
-    /**
-     * Retrieves the parameters from the URL match. These are used as Request headers before invocation of the route.
-     * 
-     * @return a Collection of Map Entry name/value pairs to be used for headers.
-     */
-    public Collection<Entry<String, String>> getParameters() {
-        return match.parameterSet();
-    }
-
-    public String getParameter(final String key) {
-        return match.get(key);
-    }
 }

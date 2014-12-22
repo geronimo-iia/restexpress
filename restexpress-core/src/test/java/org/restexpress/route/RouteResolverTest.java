@@ -76,8 +76,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.GET, action.getRoute().getMethod());
-        assertEquals("/foo/bar/{barId}", action.getRoute().getPattern());
+        assertEquals(HttpMethod.GET, action.resolvedRoute().getMethod());
+        assertEquals("/foo/bar/{barId}", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -87,8 +87,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.GET, action.getRoute().getMethod());
-        assertEquals("/foo/bar/{barId}", action.getRoute().getPattern());
+        assertEquals(HttpMethod.GET, action.resolvedRoute().getMethod());
+        assertEquals("/foo/bar/{barId}", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -98,8 +98,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.POST, action.getRoute().getMethod());
-        assertEquals("/foo", action.getRoute().getPattern());
+        assertEquals(HttpMethod.POST, action.resolvedRoute().getMethod());
+        assertEquals("/foo", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -109,8 +109,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.POST, action.getRoute().getMethod());
-        assertEquals("/foo", action.getRoute().getPattern());
+        assertEquals(HttpMethod.POST, action.resolvedRoute().getMethod());
+        assertEquals("/foo", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -120,8 +120,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.GET, action.getRoute().getMethod());
-        assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+        assertEquals(HttpMethod.GET, action.resolvedRoute().getMethod());
+        assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -131,8 +131,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.GET, action.getRoute().getMethod());
-        assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+        assertEquals(HttpMethod.GET, action.resolvedRoute().getMethod());
+        assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -142,8 +142,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.PUT, action.getRoute().getMethod());
-        assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+        assertEquals(HttpMethod.PUT, action.resolvedRoute().getMethod());
+        assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -153,8 +153,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.PUT, action.getRoute().getMethod());
-        assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+        assertEquals(HttpMethod.PUT, action.resolvedRoute().getMethod());
+        assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -164,8 +164,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.POST, action.getRoute().getMethod());
-        assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+        assertEquals(HttpMethod.POST, action.resolvedRoute().getMethod());
+        assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -175,8 +175,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.POST, action.getRoute().getMethod());
-        assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+        assertEquals(HttpMethod.POST, action.resolvedRoute().getMethod());
+        assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -186,8 +186,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.DELETE, action.getRoute().getMethod());
-        assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+        assertEquals(HttpMethod.DELETE, action.resolvedRoute().getMethod());
+        assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
     }
 
     @Test
@@ -197,8 +197,8 @@ public class RouteResolverTest {
         Request request = TestToolKit.newRequest(httpRequest);
         Action action = resolver.resolve(new MessageContext(request, new Response()));
         assertNotNull(action);
-        assertEquals(HttpMethod.DELETE, action.getRoute().getMethod());
-        assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+        assertEquals(HttpMethod.DELETE, action.resolvedRoute().getMethod());
+        assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
     }
 
     @Test(expected = MethodNotAllowedException.class)

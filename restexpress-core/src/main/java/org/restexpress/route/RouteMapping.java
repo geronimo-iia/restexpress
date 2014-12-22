@@ -72,9 +72,12 @@ public final class RouteMapping implements RouteResolver {
     private final Map<String, Map<HttpMethod, Route>> routesByName = new HashMap<String, Map<HttpMethod, Route>>();
     private final Map<String, List<Route>> routesByPattern = new LinkedHashMap<String, List<Route>>();
 
-    // SECTION: CONSTRUCTOR
-
-    public RouteMapping(String baseUrl) {
+    /**
+     * Build a new instance of {@link RouteMapping} with specified base url.
+     * 
+     * @param baseUrl base URL
+     */
+    public RouteMapping(final String baseUrl) {
         super();
         this.baseUrl = baseUrl;
         routes = new HashMap<HttpMethod, List<Route>>();
@@ -101,9 +104,8 @@ public final class RouteMapping implements RouteResolver {
     public List<Route> getRoutesFor(final HttpMethod method) {
         final List<Route> routesFor = routes.get(method);
 
-        if (routesFor == null) {
+        if (routesFor == null)
             return Collections.emptyList();
-        }
 
         return Collections.unmodifiableList(routesFor);
     }
@@ -120,9 +122,8 @@ public final class RouteMapping implements RouteResolver {
         for (final Route route : routes.get(method)) {
             final UrlMatch match = route.match(path);
 
-            if (match != null) {
+            if (match != null)
                 return new Action(route, match);
-            }
         }
 
         return null;
@@ -135,11 +136,9 @@ public final class RouteMapping implements RouteResolver {
      * @return A list of Route instances matching the given path. Never null.
      */
     public List<Route> getMatchingRoutes(final String path) {
-        for (final List<Route> patternRoutes : routesByPattern.values()) {
-            if (patternRoutes.get(0).match(path) != null) {
+        for (final List<Route> patternRoutes : routesByPattern.values())
+            if (patternRoutes.get(0).match(path) != null)
                 return Collections.unmodifiableList(patternRoutes);
-            }
-        }
 
         return Collections.emptyList();
     }
@@ -153,15 +152,13 @@ public final class RouteMapping implements RouteResolver {
     public List<HttpMethod> getAllowedMethods(final String path) {
         final List<Route> matchingRoutes = getMatchingRoutes(path);
 
-        if (matchingRoutes.isEmpty()) {
+        if (matchingRoutes.isEmpty())
             return Collections.emptyList();
-        }
 
         final List<HttpMethod> methods = new ArrayList<HttpMethod>();
 
-        for (final Route route : matchingRoutes) {
+        for (final Route route : matchingRoutes)
             methods.add(route.getMethod());
-        }
 
         return methods;
     }
@@ -172,11 +169,11 @@ public final class RouteMapping implements RouteResolver {
      * @param name
      * @return
      */
+    @Override
     public Route getNamedRoute(final String name, final HttpMethod method) {
         final Map<HttpMethod, Route> routesByMethod = routesByName.get(name);
-        if (routesByMethod == null) {
+        if (routesByMethod == null)
             return null;
-        }
         return routesByMethod.get(method);
     }
 
@@ -191,16 +188,14 @@ public final class RouteMapping implements RouteResolver {
         final Request request = context.getRequest();
         final Action action = getActionFor(request.getEffectiveHttpMethod(), request.getPath());
 
-        if (action != null) {
+        if (action != null)
             return action;
-        }
 
         final List<HttpMethod> allowedMethods = getAllowedMethods(request.getPath());
-        if ((allowedMethods != null) && !allowedMethods.isEmpty()) {
+        if (allowedMethods != null && !allowedMethods.isEmpty()) {
             final Response response = context.getResponse();
-            for (final HttpMethod httpMethod : allowedMethods) {
+            for (final HttpMethod httpMethod : allowedMethods)
                 response.addHeader(ResponseHeader.ALLOW.getHeader(), httpMethod.getName());
-            }
             throw new MethodNotAllowedException(request.getUrl());
         }
 
@@ -215,9 +210,8 @@ public final class RouteMapping implements RouteResolver {
     public void addRoute(final Route route) {
         routes.get(route.getMethod()).add(route);
         addByPattern(route);
-        if (route.hasName()) {
+        if (route.hasName())
             addNamedRoute(route);
-        }
     }
 
     private void addNamedRoute(final Route route) {

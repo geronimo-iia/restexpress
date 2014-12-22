@@ -31,7 +31,7 @@ import org.restexpress.route.RouteBuilder;
  * @author toddf
  * @since Jan 13, 2011
  */
-public class ParameterizedRouteBuilder extends RouteBuilder {
+public final class ParameterizedRouteBuilder extends RouteBuilder {
 
 	/**
 	 * @param uri

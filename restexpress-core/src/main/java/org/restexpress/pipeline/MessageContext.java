@@ -87,8 +87,8 @@ public final class MessageContext {
 
 	public void setAction(final Action action) {
 		this.action = action;
-		addUrlParametersAsHeaders(getRequest(), action.getParameters());
-		getRequest().setResolvedRoute(action.getRoute());
+		addUrlParametersAsHeaders(getRequest(), action.parameters());
+		getRequest().setResolvedRoute(action.resolvedRoute());
 		getResponse().setIsSerialized(action.shouldSerializeResponse());
 	}
 

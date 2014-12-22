@@ -31,7 +31,7 @@ import org.restexpress.url.UrlRegex;
  * @author toddf
  * @since Jan 7, 2011
  */
-public class RegexRoute extends Route {
+public final class RegexRoute extends Route {
 
 	public RegexRoute(final UrlRegex urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name,  final Set<String> flags,
 			final Map<String, Object> parameters) {
