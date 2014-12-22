@@ -19,32 +19,19 @@
  */
 package org.restexpress.plugin.jaxrs;
 
-import org.restexpress.RestExpress;
-import org.restexpress.plugin.AbstractRoutePlugin;
+import org.junit.Test;
 
-/**
- * {@link JaxRsPlugin} declare service to register JAXRS controller.
- * 
- * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- */
-public class JaxRsPlugin extends AbstractRoutePlugin {
+public class JaxRsReaderTest {
 
-    public JaxRsPlugin() {
+    public JaxRsReaderTest() {
 
     }
 
-    @Override
-    public void initialize(RestExpress server) {
-        // TODO
-    }
+    @Test
+    public void readEchoService() {
 
-    @Override
-    public void bind(RestExpress server) {
-        // TODO
-    }
+        JaxRsReader jaxRsReader = new JaxRsReader();
 
-    @Override
-    public void destroy(RestExpress server) {
-        // TODO
+        jaxRsReader.read(EchoService.class);
     }
 }

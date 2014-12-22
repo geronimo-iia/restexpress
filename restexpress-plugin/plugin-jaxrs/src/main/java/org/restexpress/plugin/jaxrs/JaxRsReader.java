@@ -19,32 +19,43 @@
  */
 package org.restexpress.plugin.jaxrs;
 
+import java.lang.reflect.Method;
+
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+
 import org.restexpress.RestExpress;
-import org.restexpress.plugin.AbstractRoutePlugin;
 
 /**
- * {@link JaxRsPlugin} declare service to register JAXRS controller.
+ * {@link JaxRsReader} read class.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
-public class JaxRsPlugin extends AbstractRoutePlugin {
+public class JaxRsReader {
 
-    public JaxRsPlugin() {
+    /**
+     * {@link RestExpress} configuration service.
+     */
+    RestExpress restExpress;
 
+    public void read(Class<?> cls) {
+        Path path = cls.getAnnotation(Path.class);
+        
+        for (Method method : cls.getMethods()) {
+            Path methodPath = method.getAnnotation(Path.class);
+            HEAD head = method.getAnnotation(HEAD.class);
+            GET get = method.getAnnotation(GET.class);
+            POST post = method.getAnnotation(POST.class);
+            PUT put = method.getAnnotation(PUT.class);
+            DELETE delete = method.getAnnotation(DELETE.class);
+            
+            
+        }
+        
     }
 
-    @Override
-    public void initialize(RestExpress server) {
-        // TODO
-    }
-
-    @Override
-    public void bind(RestExpress server) {
-        // TODO
-    }
-
-    @Override
-    public void destroy(RestExpress server) {
-        // TODO
-    }
 }
