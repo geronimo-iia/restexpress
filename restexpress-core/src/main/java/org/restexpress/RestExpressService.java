@@ -57,7 +57,6 @@ import org.restexpress.response.ResponseWrapper;
 import org.restexpress.response.SerializationProvider;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
-import org.restexpress.route.RouteResolver;
 import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
 import org.restexpress.serialization.JacksonJsonProcessor;
@@ -224,7 +223,7 @@ public class RestExpressService implements RestExpress, RestExpressLifeCycle {
 		pluginManager.initialize(this);
 		
 		/* finalize RequestHandler */
-		requestHandlerBuilder.setRouteResolver(new RouteResolver(routeDeclarations.createRouteMapping(settings.serverSettings().getBaseUrl())));
+		requestHandlerBuilder.setRouteResolver(routeDeclarations.createRouteMapping(settings.serverSettings().getBaseUrl()));
 		
 		/* bind plugins */
 		pluginManager.bind(this);

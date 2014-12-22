@@ -36,8 +36,6 @@ package org.restexpress.route;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,107 +48,115 @@ import org.restexpress.Response;
 import org.restexpress.url.UrlMatch;
 import org.restexpress.url.UrlMatcher;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 /**
- * A Route is an immutable relationship between a URL pattern and a REST
- * service.
+ * A {@link Route} is an immutable relationship between a URL pattern and a REST service.
  * 
  * @author toddf
  * @since May 4, 2010
  */
 public abstract class Route {
 
-	private final UrlMatcher urlMatcher;
-	private final Object controller;
-	private final Method action;
-	private final HttpMethod method;
-	private boolean shouldSerializeResponse = true;
-	private final String name;
-	private final Set<String> flags = new HashSet<>();
-	private final Map<String, Object> parameters = new HashMap<String, Object>();
+    private final UrlMatcher urlMatcher;
+    private final Object controller;
+    private final Method action;
+    private final HttpMethod method;
+    private boolean shouldSerializeResponse = true;
+    private final String name;
+    private final Set<String> flags = Sets.newHashSet();
+    private final Map<String, Object> parameters = Maps.newHashMap();
 
-	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
-		super();
-		this.urlMatcher = urlMatcher;
-		this.controller = controller;
-		this.action = action;
-		this.method = method;
-		this.shouldSerializeResponse = shouldSerializeResponse;
-		this.name = name;
-		this.flags.addAll(flags);
-		this.parameters.putAll(parameters);
-	}
+    public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method,
+            final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
+        super();
+        this.urlMatcher = urlMatcher;
+        this.controller = controller;
+        this.action = action;
+        this.method = method;
+        this.shouldSerializeResponse = shouldSerializeResponse;
+        this.name = name;
+        this.flags.addAll(flags);
+        this.parameters.putAll(parameters);
+    }
 
-	public boolean isFlagged(final String flag) {
-		return flags.contains(flag);
-	}
+    /**
+     * Invoke underlying controller method.
+     * @param request
+     * @param response
+     * @return result object
+     */
+    public Object invoke(final Request request, final Response response) {
+        try {
+            return action.invoke(controller, request, response);
+        } catch (final InvocationTargetException e) {
+            final Throwable cause = e.getCause();
+            if (RuntimeException.class.isAssignableFrom(cause.getClass())) {
+                throw (RuntimeException) e.getCause();
+            } else {
+                throw new RuntimeException(cause);
+            }
+        } catch (final Exception e) {
+            throw new HttpRuntimeException(e);
+        }
+    }
 
-	public boolean isFlagged(final Flags flag) {
-		return isFlagged(flag.toString());
-	}
+    public boolean isFlagged(final String flag) {
+        return flags.contains(flag);
+    }
 
-	public boolean hasParameter(final String name) {
-		return (getParameter(name) != null);
-	}
+    public boolean isFlagged(final Flags flag) {
+        return isFlagged(flag.toString());
+    }
 
-	public Object getParameter(final String name) {
-		return parameters.get(name);
-	}
+    public boolean hasParameter(final String name) {
+        return (getParameter(name) != null);
+    }
 
-	public Method getAction() {
-		return action;
-	}
+    public Object getParameter(final String name) {
+        return parameters.get(name);
+    }
 
-	public Object getController() {
-		return controller;
-	}
+    public Method getAction() {
+        return action;
+    }
 
-	public HttpMethod getMethod() {
-		return method;
-	}
+    public Object getController() {
+        return controller;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public HttpMethod getMethod() {
+        return method;
+    }
 
-	public boolean hasName() {
-		return ((getName() != null) && !getName().trim().isEmpty());
-	}
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Returns the URL pattern without any '.{format}' at the end. In essence, a
-	 * 'short' URL pattern.
-	 * 
-	 * @return a URL pattern
-	 */
-	public String getPattern() {
-		return urlMatcher.getPattern();
-	}
+    public boolean hasName() {
+        return ((getName() != null) && !getName().trim().isEmpty());
+    }
 
-	public boolean shouldSerializeResponse() {
-		return shouldSerializeResponse;
-	}
+    /**
+     * Returns the URL pattern without any '.{format}' at the end. In essence, a 'short' URL pattern.
+     * 
+     * @return a URL pattern
+     */
+    public String getPattern() {
+        return urlMatcher.getPattern();
+    }
 
-	public UrlMatch match(final String url) {
-		return urlMatcher.match(url);
-	}
+    public boolean shouldSerializeResponse() {
+        return shouldSerializeResponse;
+    }
 
-	public List<String> getUrlParameters() {
-		return urlMatcher.getParameterNames();
-	}
+    public UrlMatch match(final String url) {
+        return urlMatcher.match(url);
+    }
 
-	public Object invoke(final Request request, final Response response) {
-		try {
-			return action.invoke(controller, request, response);
-		} catch (final InvocationTargetException e) {
-			final Throwable cause = e.getCause();
+    public List<String> getUrlParameters() {
+        return urlMatcher.getParameterNames();
+    }
 
-			if (RuntimeException.class.isAssignableFrom(cause.getClass())) {
-				throw (RuntimeException) e.getCause();
-			} else {
-				throw new RuntimeException(cause);
-			}
-		} catch (final Exception e) {
-			throw new HttpRuntimeException(e);
-		}
-	}
 }

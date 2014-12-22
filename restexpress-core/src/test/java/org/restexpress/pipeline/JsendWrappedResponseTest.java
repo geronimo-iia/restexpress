@@ -45,8 +45,7 @@ public class JsendWrappedResponseTest extends AbstractWrapperResponse {
 
     @Before
     public void initialize() throws Exception {
-        DummyRoutes routes = new DummyRoutes();
-        routes.defineRoutes();
+        defineRoutes(routes);
         initialize(routes);
         SerializationProvider provider = messageHandler.serializationProvider();
         processor = new JacksonJsonProcessor();
