@@ -197,12 +197,11 @@ public class RestExpressLauncher implements Runnable, RestExpressLifeCycle {
 	 * @param args
 	 * @throws IOException
 	 */
-	public static int main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
 		// load from settings
 		RestExpressLauncher restExpressLauncher = instanciateFrom(args, "restexpress");
 		// create and run
 		restExpressLauncher.run();
-		return 0;
 	}
 
 }
