@@ -30,6 +30,18 @@ import org.restexpress.plugin.AbstractRoutePlugin;
  */
 public class SwaggerPlugin extends AbstractRoutePlugin {
 
+	public static final String SWAGGER_VERSION = "1.2";
+
+	public static final String URL_PATH = "/api-docs";
+	
+	private String basePath = URL_PATH;
+
+	private String apiVersion;
+
+	private String swaggerVersion = SWAGGER_VERSION;
+	
+	
+	
 	public SwaggerPlugin() {
 
 	}

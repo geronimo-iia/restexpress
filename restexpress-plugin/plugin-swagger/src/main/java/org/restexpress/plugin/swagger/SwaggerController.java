@@ -19,10 +19,13 @@
  */
 package org.restexpress.plugin.swagger;
 
+import java.util.Map;
+
+import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.restexpress.Request;
 import org.restexpress.Response;
-
-import com.wordnik.swagger.model.ApiDescription;
+import org.restexpress.plugin.swagger.model.ApiDescription;
+import org.restexpress.plugin.swagger.model.ResourceListing;
 
 /**
  * {@link SwaggerController} implement a controller accoring swagger
@@ -32,11 +35,23 @@ import com.wordnik.swagger.model.ApiDescription;
  */
 public class SwaggerController {
 
+	protected ResourceListing resourceListing;
+
+	protected Map<String, ApiDescription> apisByPath;
+
 	public SwaggerController() {
 		super();
 	}
 
-	public ApiDescription read(Request request, Response response) {
-		return null;
+	public ResourceListing read(Request request, Response response) {
+		return resourceListing;
+	}
+
+	public ApiDescription readPath(Request request, Response response) {
+		String path = request.getHeader("path");
+		ApiDescription api = apisByPath.get("/" + path);
+		if (api == null)
+			throw new NotFoundException();
+		return api;
 	}
 }

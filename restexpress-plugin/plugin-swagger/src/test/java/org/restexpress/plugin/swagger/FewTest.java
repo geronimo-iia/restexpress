@@ -28,29 +28,6 @@ public class FewTest {
 		ScannerFactory.setScanner(new RestExpressScanner());
 	}
 
-	public class Configuration {
-		// api.version
-		private String apiVersion;
-		// swagger.api.basepath
-		private String basePath;
-		// resource.package
-		String resoucePackage;
-
-		// filter: swagger.filter
-		// do FilterFactory.filter =
-		// SwaggerContext.loadClass(e).newInstance.asInstanceOf[SwaggerSpecFilter]
-		// else DefaultSpecFilter
-
-		// SwaggerConfig config = new SwaggerConfig(apiVersion, "1.2", basePath,
-		// "");
-
-		public SwaggerConfig config() {
-			new SwaggerConfig(apiVersion, SwaggerSpec.version(), basePath, "", List, None.get());
-			SwaggerConfig.this;
-			return null;
-		}
-
-	}
 
 	public class RestExpressReader {
 
@@ -99,24 +76,4 @@ public class FewTest {
 		}
 	}
 
-	/**
-	 * 
-	 * RestExpressScanner.
-	 *
-	 * {@link Api} class marks a class as a Swagger resource. Extends scanner
-	 * 
-	 * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
-	 *
-	 */
-	// public class RestExpressScanner implements Scanner {
-	// String resoucePackage = "org.restexpress.plugin.swagger";
-	//
-	// public List<Class<?>> classes() {
-	// ListSet<Class<?>> result = new ListSet<>();
-	// return new ListSet(new
-	// Reflections(resoucePackage).getTypesAnnotatedWith(Api.class));
-	// return null;
-	// }
-	//
-	// }
 }

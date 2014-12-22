@@ -30,6 +30,11 @@ package org.restexpress.plugin.swagger.model;
 //  tokenEndpoint: TokenEndpoint) extends GrantType {
 //  def `type` = "authorization_code"
 //}
+// to transform
+//public enum AuthorizationTypes
+//{
+//	basicAuth, apiKey, oauth2
+//}
 
 public interface AuthorizationType {
 	String type();
