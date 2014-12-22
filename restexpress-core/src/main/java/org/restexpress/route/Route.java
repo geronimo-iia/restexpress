@@ -36,8 +36,6 @@ package org.restexpress.route;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +47,9 @@ import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.url.UrlMatch;
 import org.restexpress.url.UrlMatcher;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * A Route is an immutable relationship between a URL pattern and a REST
@@ -65,8 +66,8 @@ public abstract class Route {
 	private final HttpMethod method;
 	private boolean shouldSerializeResponse = true;
 	private final String name;
-	private final Set<String> flags = new HashSet<>();
-	private final Map<String, Object> parameters = new HashMap<String, Object>();
+	private final Set<String> flags = Sets.newHashSet();
+	private final Map<String, Object> parameters = Maps.newHashMap();
 
 	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
 		super();

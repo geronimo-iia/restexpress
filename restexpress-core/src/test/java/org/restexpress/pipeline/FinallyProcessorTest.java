@@ -36,125 +36,118 @@ import org.restexpress.serialization.JacksonXmlProcessor;
 
 public class FinallyProcessorTest extends AbstractWrapperResponse {
 
-	protected DummyRoutes routes;
+    @Before
+    public void initialize() {
+        defineRoutes(routes);
+    }
 
-	@Before
-	public void initialize() {
-		routes = new DummyRoutes();
-		routes.defineRoutes();
-	}
+    @Override
+    protected RestExpressRequestHandler build(RestExpressRequestHandlerBuilder builder) throws Exception {
+        builder.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper());
+        builder.add(new JacksonXmlProcessor(Format.XML.getMediaType()), Wrapper.newJsendResponseWrapper());
+        return super.build(builder);
+    }
 
-	@Override
-	protected RestExpressRequestHandler build(RestExpressRequestHandlerBuilder builder) throws Exception {
-		builder.add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper());
-		builder.add(new JacksonXmlProcessor(Format.XML.getMediaType()), Wrapper.newJsendResponseWrapper());
-		return super.build(builder);
-	}
+    @Test
+    public void shouldCallAllFinallyProcessors() throws Exception {
+        NoopPostprocessor p1 = new NoopPostprocessor();
+        NoopPostprocessor p2 = new NoopPostprocessor();
+        NoopPostprocessor p3 = new NoopPostprocessor();
 
-	@Test
-	public void shouldCallAllFinallyProcessors() throws Exception {
-		NoopPostprocessor p1 = new NoopPostprocessor();
-		NoopPostprocessor p2 = new NoopPostprocessor();
-		NoopPostprocessor p3 = new NoopPostprocessor();
+        preInitialize(routes);
 
-		preInitialize(routes);
+        builder.addPostprocessor(p1);
+        builder.addPostprocessor(p2);
+        builder.addPostprocessor(p3);
+        builder.addFinallyProcessor(p1);
+        builder.addFinallyProcessor(p2);
+        builder.addFinallyProcessor(p3);
 
-		builder.addPostprocessor(p1);
-		builder.addPostprocessor(p2);
-		builder.addPostprocessor(p3);
-		builder.addFinallyProcessor(p1);
-		builder.addFinallyProcessor(p2);
-		builder.addFinallyProcessor(p3);
+        postInitialize();
 
-		postInitialize();
+        sendGetEvent("/foo");
+        assertEquals(2, p1.getCallCount());
+        assertEquals(2, p2.getCallCount());
+        assertEquals(2, p3.getCallCount());
+    }
 
-		sendGetEvent("/foo");
-		assertEquals(2, p1.getCallCount());
-		assertEquals(2, p2.getCallCount());
-		assertEquals(2, p3.getCallCount());
-	}
+    @Test
+    public void shouldCallAllFinallyProcessorsOnRouteException() throws Exception {
+        NoopPostprocessor p1 = new NoopPostprocessor();
+        NoopPostprocessor p2 = new NoopPostprocessor();
+        NoopPostprocessor p3 = new NoopPostprocessor();
 
-	@Test
-	public void shouldCallAllFinallyProcessorsOnRouteException() throws Exception {
-		NoopPostprocessor p1 = new NoopPostprocessor();
-		NoopPostprocessor p2 = new NoopPostprocessor();
-		NoopPostprocessor p3 = new NoopPostprocessor();
+        preInitialize(routes);
 
-		preInitialize(routes);
+        builder.addPostprocessor(p1);
+        builder.addPostprocessor(p2);
+        builder.addPostprocessor(p3);
+        builder.addFinallyProcessor(p1);
+        builder.addFinallyProcessor(p2);
+        builder.addFinallyProcessor(p3);
 
-		builder.addPostprocessor(p1);
-		builder.addPostprocessor(p2);
-		builder.addPostprocessor(p3);
-		builder.addFinallyProcessor(p1);
-		builder.addFinallyProcessor(p2);
-		builder.addFinallyProcessor(p3);
+        postInitialize();
 
-		postInitialize();
+        sendGetEvent("/xyzt.html");
+        assertEquals(1, p1.getCallCount());
+        assertEquals(1, p2.getCallCount());
+        assertEquals(1, p3.getCallCount());
+    }
 
-		sendGetEvent("/xyzt.html");
-		assertEquals(1, p1.getCallCount());
-		assertEquals(1, p2.getCallCount());
-		assertEquals(1, p3.getCallCount());
-	}
+    @Test
+    public void shouldCallAllFinallyProcessorsOnProcessorException() throws Exception {
+        NoopPostprocessor p1 = new ExceptionPostprocessor();
+        NoopPostprocessor p2 = new ExceptionPostprocessor();
+        NoopPostprocessor p3 = new ExceptionPostprocessor();
 
-	@Test
-	public void shouldCallAllFinallyProcessorsOnProcessorException() throws Exception {
-		NoopPostprocessor p1 = new ExceptionPostprocessor();
-		NoopPostprocessor p2 = new ExceptionPostprocessor();
-		NoopPostprocessor p3 = new ExceptionPostprocessor();
+        preInitialize(routes);
 
-		preInitialize(routes);
+        builder.addPostprocessor(p1);
+        builder.addPostprocessor(p2);
+        builder.addPostprocessor(p3);
+        builder.addFinallyProcessor(p1);
+        builder.addFinallyProcessor(p2);
+        builder.addFinallyProcessor(p3);
 
-		builder.addPostprocessor(p1);
-		builder.addPostprocessor(p2);
-		builder.addPostprocessor(p3);
-		builder.addFinallyProcessor(p1);
-		builder.addFinallyProcessor(p2);
-		builder.addFinallyProcessor(p3);
+        postInitialize();
 
-		postInitialize();
+        sendGetEvent("/foo");
+        assertEquals(2, p1.getCallCount());
+        assertEquals(1, p2.getCallCount());
+        assertEquals(1, p3.getCallCount());
+    }
 
-		sendGetEvent("/foo");
-		assertEquals(2, p1.getCallCount());
-		assertEquals(1, p2.getCallCount());
-		assertEquals(1, p3.getCallCount());
-	}
+    private class NoopPostprocessor implements Postprocessor {
+        private int callCount = 0;
 
-	private class NoopPostprocessor implements Postprocessor {
-		private int callCount = 0;
+        @Override
+        public void process(MessageContext context) {
+            ++callCount;
+        }
 
-		@Override
-		public void process(MessageContext context) {
-			++callCount;
-		}
+        public int getCallCount() {
+            return callCount;
+        }
+    }
 
-		public int getCallCount() {
-			return callCount;
-		}
-	}
+    private class ExceptionPostprocessor extends NoopPostprocessor {
+        @Override
+        public void process(MessageContext context) {
+            super.process(context);
+            throw new RuntimeException("RuntimeException thrown...");
+        }
+    }
 
-	private class ExceptionPostprocessor extends NoopPostprocessor {
-		@Override
-		public void process(MessageContext context) {
-			super.process(context);
-			throw new RuntimeException("RuntimeException thrown...");
-		}
-	}
+    public RouteDeclaration defineRoutes(RouteDeclaration routeDeclaration) {
+        Object controller = new FooBarController();
+        routeDeclaration.uri("/foo.{format}", controller).action("fooAction", HttpMethod.GET);
+        return routeDeclaration;
+    }
 
-	public static class DummyRoutes extends RouteDeclaration {
-		private Object controller = new FooBarController();
+    public static class FooBarController {
+        public void fooAction(Request request, Response response) {
+            // do nothing.
+        }
 
-		public DummyRoutes defineRoutes() {
-			uri("/foo.{format}", controller).action("fooAction", HttpMethod.GET);
-
-			return this;
-		}
-	}
-
-	public static class FooBarController {
-		public void fooAction(Request request, Response response) {
-			// do nothing.
-		}
-
-	}
+    }
 }
