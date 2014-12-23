@@ -27,6 +27,8 @@ import static org.jboss.netty.handler.codec.http.HttpMethod.POST;
 import static org.jboss.netty.handler.codec.http.HttpMethod.PUT;
 import static org.reflections.ReflectionUtils.getAllMethods;
 import static org.reflections.ReflectionUtils.withName;
+import static org.reflections.ReflectionUtils.withParameters;
+import static org.reflections.ReflectionUtils.withParametersCount;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -40,13 +42,19 @@ import java.util.Set;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.Request;
+import org.restexpress.Response;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.UriMetadata;
 import org.restexpress.exception.ConfigurationException;
 import org.restexpress.route.invoker.Invoker;
-import org.restexpress.route.invoker.StandardInvoker;
+import org.restexpress.route.invoker.Invokers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Predicates;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * Builds a route for a single URI. If a URI is given with no methods or actions, the builder creates routes for the GET, POST, PUT,
@@ -66,16 +74,23 @@ public abstract class RouteBuilder {
 
     public static Logger logger = LoggerFactory.getLogger(RouteBuilder.class);
 
-    // SECTION: CONSTANTS
-
+    /**
+     * Default action name.
+     */
     static final String DELETE_ACTION_NAME = "delete";
     static final String GET_ACTION_NAME = "read";
     static final String POST_ACTION_NAME = "create";
     static final String PUT_ACTION_NAME = "update";
     static final String HEAD_ACTION_NAME = "headers";
     static final String OPTION_ACTION_NAME = "options";
+    /**
+     * Default supported HTTP methods.
+     */
     static final List<HttpMethod> DEFAULT_HTTP_METHODS = Arrays.asList(new HttpMethod[] { GET, POST, PUT, DELETE });
-    static final Map<HttpMethod, String> ACTION_MAPPING = new HashMap<HttpMethod, String>();
+    /**
+     * Default action mapping
+     */
+    static final Map<HttpMethod, String> ACTION_MAPPING = Maps.newHashMap();
 
     static {
         ACTION_MAPPING.put(DELETE, DELETE_ACTION_NAME);
@@ -87,13 +102,41 @@ public abstract class RouteBuilder {
     }
 
     private final String uri;
-    private List<HttpMethod> methods = new ArrayList<HttpMethod>();
-    private final Map<HttpMethod, String> actionNames = new HashMap<HttpMethod, String>();
+    /**
+     * Set of supported HTTP method.
+     */
+    private List<HttpMethod> methods = Lists.newArrayList();
+    /**
+     * List of action name by HTTP method.
+     */
+    private final Map<HttpMethod, String> actionNames = Maps.newHashMap();
+    /**
+     * List of action method by HTTP method.
+     */
+    private final Map<HttpMethod, Method> actionMethod = Maps.newHashMap();
+    /**
+     * Controller object.
+     */
     private final Object controller;
+    /**
+     * Should user serialization flag.
+     */
     private boolean shouldSerializeResponse = true;
+    /**
+     * Route name.
+     */
     private String name;
+    /**
+     * Set of flag.
+     */
     private final Set<String> flags = new HashSet<>();
+    /**
+     * Set of parameter.
+     */
     private final Map<String, Object> parameters = new HashMap<String, Object>();
+    /**
+     * Aliases.
+     */
     protected final List<String> aliases = new ArrayList<String>();
 
     /**
@@ -145,11 +188,24 @@ public abstract class RouteBuilder {
         if (!actionNames.containsKey(method)) {
             actionNames.put(method, action);
         }
-
-        if (!methods.contains(method)) {
+        if (!methods.contains(method))
             methods.add(method);
-        }
+        return this;
+    }
 
+    /**
+     * Map a service method (action) to a particular HTTP method (e.g. GET, POST, PUT, DELETE, HEAD, OPTIONS)
+     * 
+     * @param action the method within the service POJO.
+     * @param method the HTTP method that should invoke the service method.
+     * @return the RouteBuilder instance.
+     */
+    public RouteBuilder action(final Method action, final HttpMethod method) {
+        if (!actionMethod.containsKey(method)) {
+            actionMethod.put(method, action);
+        }
+        if (!methods.contains(method))
+            methods.add(method);
         return this;
     }
 
@@ -161,12 +217,11 @@ public abstract class RouteBuilder {
      * @return the RouteBuilder instance.
      */
     public RouteBuilder method(final HttpMethod... methods) {
-        for (final HttpMethod method : methods) {
+        for (HttpMethod method : methods) {
             if (!this.methods.contains(method)) {
                 this.methods.add(method);
             }
         }
-
         return this;
     }
 
@@ -249,25 +304,30 @@ public abstract class RouteBuilder {
      */
     public List<Route> build() {
         if (methods.isEmpty()) {
-            methods = DEFAULT_HTTP_METHODS;
+            methods.addAll(DEFAULT_HTTP_METHODS);
         }
 
         final List<Route> routes = new ArrayList<Route>();
         final String pattern = toRegexPattern(uri);
 
-        for (final HttpMethod method : methods) {
-            String actionName = actionNames.get(method);
+        for (final HttpMethod httpMethod : methods) {
+            String actionName = actionNames.get(httpMethod);
             Method action = null;
             if (actionName == null) {
-                // on default mapping, if method is not found we did not raise a configuration exception
-                actionName = ACTION_MAPPING.get(method);
-                try {
+                action = actionMethod.get(httpMethod);
+            }
+            if (action == null) {
+                if (actionName == null) {
+                    // on default mapping, if method is not found we did not raise a configuration exception
+                    actionName = ACTION_MAPPING.get(httpMethod);
+                    try {
+                        action = determineActionMethod(controller, actionName);
+                    } catch (ConfigurationException e) {
+                        logger.warn("{} did not support HTTP {} method.", controller.getClass().getSimpleName(), httpMethod);
+                    }
+                } else {
                     action = determineActionMethod(controller, actionName);
-                } catch (ConfigurationException e) {
-                    logger.warn("{} did not support HTTP {} method.", controller.getClass().getSimpleName(), method);
                 }
-            } else {
-                action = determineActionMethod(controller, actionName);
             }
 
             if (action != null) {
@@ -275,26 +335,15 @@ public abstract class RouteBuilder {
                 action.setAccessible(true);
                 // compute serialization
                 boolean serializeResponse = shouldSerializeResponse(action);
-                Invoker invoker = analysis(controller, action);
+                Invoker invoker = Invokers.newInvoker(controller, action);
                 // create route
-                Route route = newRoute(pattern, invoker, method, serializeResponse, name, flags, parameters);
+                Route route = newRoute(pattern, invoker, httpMethod, serializeResponse, name, flags, parameters);
                 // add result
                 routes.add(route);
             }
         }
 
         return routes;
-    }
-
-    /**
-     * Analysis method profile and return {@link Invoker} instance.
-     * 
-     * @param controller Controller object
-     * @param action method to call
-     * @return {@link Invoker}.
-     */
-    protected Invoker analysis(Object controller, Method action) {
-        return new StandardInvoker(controller, action);
     }
 
     /**
@@ -339,10 +388,10 @@ public abstract class RouteBuilder {
     /**
      * Attempts to find the actionName on the controller.
      * 
-     * Not Assuming a signature of actionName(Request, Response), and returns the action as a Method to be used later when the route is
+     * Assuming a signature of actionName(Request, Response), and returns the action as a Method to be used later when the route is
      * invoked.
      * 
-     * TODO assuming that we pass a Method rather than a name. If we have multiple name..
+     * 
      * 
      * @param controller a pojo that implements a method named by the action, with Request and Response as parameters.
      * @param actionName the name of a method on the given controller pojo.
@@ -351,13 +400,15 @@ public abstract class RouteBuilder {
      */
     private Method determineActionMethod(final Object controller, final String actionName) {
         try {
-            Set<Method> methods = getAllMethods(controller.getClass(), withName(actionName));
-            if (methods.size()==1) {
-                return methods.iterator().next();            }
-            throw new ConfigurationException("Found " + methods.size() );
+            @SuppressWarnings("unchecked")
+            Set<Method> methods = getAllMethods(controller.getClass(),
+                    Predicates.and(withName(actionName), withParameters(Request.class, Response.class), withParametersCount(2)));
+            if (methods.size() == 1) {
+                return methods.iterator().next();
+            }
+            throw new ConfigurationException(String.format("Method %s(Request request, Response response) NOT FOUND", actionName));
         } catch (final Exception e) {
             throw new ConfigurationException(e);
         }
     }
-
 }

@@ -95,7 +95,7 @@ public class JaxRsReader {
             if (!Strings.isNullOrEmpty(actionPath) && httpMethod != null) {
                 String routeName = formatRouteName(cls, actionPath, httpMethod);
                 restExpress.uri(actionPath, controller)//
-                        .action(method.getName(), httpMethod)//
+                        .action(method, httpMethod)//
                         .name(routeName);
                 result++;
             }
