@@ -19,6 +19,8 @@
  */
 package org.restexpress.plugin.jaxrs;
 
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.RestExpressService;
@@ -45,6 +47,12 @@ public class JaxRsReaderTest {
         
         assertEquals(3, result);
         
-        System.err.println(restExpress.getRouteUrlsByName());
+        Map<String, String> routes = restExpress.getRouteUrlsByName();
+        
+        assertEquals(3, routes.size());
+        assertTrue(routes.containsKey("echoservice.root.get"));
+        assertTrue(routes.containsKey("echoservice.hello.get"));
+        assertTrue(routes.containsKey("echoservice.greeting.get"));
+        
     }
 }
