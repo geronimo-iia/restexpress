@@ -25,6 +25,8 @@ import static org.jboss.netty.handler.codec.http.HttpMethod.HEAD;
 import static org.jboss.netty.handler.codec.http.HttpMethod.OPTIONS;
 import static org.jboss.netty.handler.codec.http.HttpMethod.POST;
 import static org.jboss.netty.handler.codec.http.HttpMethod.PUT;
+import static org.reflections.ReflectionUtils.getAllMethods;
+import static org.reflections.ReflectionUtils.withName;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -38,8 +40,6 @@ import java.util.Set;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.restexpress.Request;
-import org.restexpress.Response;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.UriMetadata;
 import org.restexpress.exception.ConfigurationException;
@@ -123,8 +123,8 @@ public abstract class RouteBuilder {
      * @param baseUrl
      * @return
      */
-    protected abstract Route newRoute(String pattern, Invoker invoker, HttpMethod method,
-            boolean shouldSerializeResponse, String name, Set<String> flags, Map<String, Object> parameters);
+    protected abstract Route newRoute(String pattern, Invoker invoker, HttpMethod method, boolean shouldSerializeResponse,
+            String name, Set<String> flags, Map<String, Object> parameters);
 
     /**
      * Child builder must implements this method.
@@ -288,15 +288,16 @@ public abstract class RouteBuilder {
 
     /**
      * Analysis method profile and return {@link Invoker} instance.
+     * 
      * @param controller Controller object
      * @param action method to call
      * @return {@link Invoker}.
      */
     protected Invoker analysis(Object controller, Method action) {
-		return new StandardInvoker(controller, action);
-	}
+        return new StandardInvoker(controller, action);
+    }
 
-	/**
+    /**
      * Should Serialize Response for specified action ? This method return false if action return type is
      * <ul>
      * <li>a {@link File}</li>
@@ -336,8 +337,12 @@ public abstract class RouteBuilder {
     }
 
     /**
-     * Attempts to find the actionName on the controller, assuming a signature of actionName(Request, Response), and returns the action
-     * as a Method to be used later when the route is invoked.
+     * Attempts to find the actionName on the controller.
+     * 
+     * Not Assuming a signature of actionName(Request, Response), and returns the action as a Method to be used later when the route is
+     * invoked.
+     * 
+     * TODO assuming that we pass a Method rather than a name. If we have multiple name..
      * 
      * @param controller a pojo that implements a method named by the action, with Request and Response as parameters.
      * @param actionName the name of a method on the given controller pojo.
@@ -346,7 +351,10 @@ public abstract class RouteBuilder {
      */
     private Method determineActionMethod(final Object controller, final String actionName) {
         try {
-            return controller.getClass().getMethod(actionName, Request.class, Response.class);
+            Set<Method> methods = getAllMethods(controller.getClass(), withName(actionName));
+            if (methods.size()==1) {
+                return methods.iterator().next();            }
+            throw new ConfigurationException("Found " + methods.size() );
         } catch (final Exception e) {
             throw new ConfigurationException(e);
         }

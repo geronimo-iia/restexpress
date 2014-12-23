@@ -19,19 +19,32 @@
  */
 package org.restexpress.plugin.jaxrs;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.restexpress.RestExpressService;
+
+import static org.junit.Assert.*;
 
 public class JaxRsReaderTest {
 
-    public JaxRsReaderTest() {
-
+    private RestExpressService restExpress;
+    
+    @Before
+    public void initialize() {
+        restExpress = RestExpressService.newBuilder();
     }
-
+    
     @Test
     public void readEchoService() {
 
-        JaxRsReader jaxRsReader = new JaxRsReader();
+        JaxRsReader jaxRsReader = new JaxRsReader(restExpress);
 
-        jaxRsReader.read(EchoService.class);
+        EchoService echoService = new EchoService();
+        
+        int result = jaxRsReader.read(echoService);
+        
+        assertEquals(3, result);
+        
+        System.err.println(restExpress.getRouteUrlsByName());
     }
 }

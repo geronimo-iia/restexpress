@@ -20,15 +20,20 @@
 package org.restexpress.plugin.jaxrs;
 
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.RestExpress;
+
+import com.google.common.base.Strings;
 
 /**
  * {@link JaxRsReader} read class.
@@ -40,22 +45,79 @@ public class JaxRsReader {
     /**
      * {@link RestExpress} configuration service.
      */
-    RestExpress restExpress;
+    private final RestExpress restExpress;
 
-    public void read(Class<?> cls) {
+    public JaxRsReader(final RestExpress restExpress) {
+        super();
+        this.restExpress = restExpress;
+    }
+
+    /**
+     * Read class of specified controller and declare route.
+     * 
+     * @param controller
+     * @return number of route declared
+     */
+
+    public int read(final Object controller) {
+        int result = 0;
+        Class<?> cls = controller.getClass();
+        String controllerPath = null;
         Path path = cls.getAnnotation(Path.class);
-        
-        for (Method method : cls.getMethods()) {
-            Path methodPath = method.getAnnotation(Path.class);
-            HEAD head = method.getAnnotation(HEAD.class);
-            GET get = method.getAnnotation(GET.class);
-            POST post = method.getAnnotation(POST.class);
-            PUT put = method.getAnnotation(PUT.class);
-            DELETE delete = method.getAnnotation(DELETE.class);
-            
-            
+        if (path != null) {
+            controllerPath = path.value();
         }
-        
+        for (Method method : cls.getMethods()) {
+
+            String actionPath = controllerPath;
+            HttpMethod httpMethod = null;
+
+            Path methodPath = method.getAnnotation(Path.class);
+            if (methodPath != null) {
+                actionPath = methodPath.value();
+            }
+
+            // find HTTP Method
+            if (method.getAnnotation(HEAD.class) != null) {
+                httpMethod = HttpMethod.HEAD;
+            } else if (method.getAnnotation(GET.class) != null) {
+                httpMethod = HttpMethod.GET;
+            } else if (method.getAnnotation(POST.class) != null) {
+                httpMethod = HttpMethod.POST;
+            } else if (method.getAnnotation(PUT.class) != null) {
+                httpMethod = HttpMethod.PUT;
+            } else if (method.getAnnotation(DELETE.class) != null) {
+                httpMethod = HttpMethod.DELETE;
+            } else if (method.getAnnotation(OPTIONS.class) != null) {
+                httpMethod = HttpMethod.OPTIONS;
+            }
+            // good for define toute ?
+            if (!Strings.isNullOrEmpty(actionPath) && httpMethod != null) {
+                String routeName = formatRouteName(cls, actionPath, httpMethod);
+                restExpress.uri(actionPath, controller)//
+                        .action(method.getName(), httpMethod)//
+                        .name(routeName);
+                result++;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Format a route name.
+     * 
+     * @param cls
+     * @param actionPath
+     * @param httpMethod
+     * @return a route name
+     */
+    private static String formatRouteName(Class<?> cls, String actionPath, HttpMethod httpMethod) {
+        String name = actionPath.replaceAll("/", "\\.").replaceAll("\\{", "").replaceAll("\\}", "");
+        if (".".equals(name)) {
+            name = ".root";
+        }
+        name = cls.getSimpleName() + name + "." + httpMethod.getName();
+        return name.toLowerCase(Locale.US);
     }
 
 }
