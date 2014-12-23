@@ -250,10 +250,17 @@
 				<scope>compile</scope>
 				<optional>true</optional>
 			</dependency>
+			<!-- YAML -->
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
 				<version>${snakeyaml.version}</version>
+			</dependency>
+			<dependency>
+				<!-- REFLEXIONS -->
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.9.8</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
