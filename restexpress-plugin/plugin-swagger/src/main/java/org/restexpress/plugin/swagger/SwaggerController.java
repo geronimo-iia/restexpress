@@ -43,10 +43,12 @@ public class SwaggerController {
 		super();
 	}
 
+	// on call /api-doc
 	public ResourceListing read(Request request, Response response) {
 		return resourceListing;
 	}
 
+	// on call /api-doc/{path}
 	public ApiDescription readPath(Request request, Response response) {
 		String path = request.getHeader("path");
 		ApiDescription api = apisByPath.get("/" + path);
