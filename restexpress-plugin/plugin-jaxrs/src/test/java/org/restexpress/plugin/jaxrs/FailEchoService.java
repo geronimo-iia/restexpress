@@ -20,49 +20,23 @@
 package org.restexpress.plugin.jaxrs;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-
-import org.restexpress.Request;
-import org.restexpress.Response;
 
 /**
- * {@link EchoService} implmentation.
+ * {@link FailEchoService} implmentation.
  * 
  */
 @Path("/")
-public class EchoService {
+public class FailEchoService {
 
-    public EchoService() {
+    public FailEchoService() {
     }
 
     @GET
-    public String read(@QueryParam("echo") String echo) {
+    public String withError(String echo) {
         if (echo == null) {
             return "Please set query-string parameter 'echo' (e.g. ?echo=value)";
         }
         return echo;
     }
-
-    @GET
-    @Path("/hello")
-    public String hello() {
-        return "hello";
-    }
-
-    @GET
-    @Path("/greeting")
-    public String greeting(Request request) {
-        String who = request.getQueryStringMap().get("who");
-        return "hello " + who + "!";
-    }
-
-    @POST
-    @Path("/restexpress")
-    public String restexpress(Request request, Response response) {
-        String who = request.getQueryStringMap().get("who");
-        return "hello " + who + "!";
-    }
-
 }

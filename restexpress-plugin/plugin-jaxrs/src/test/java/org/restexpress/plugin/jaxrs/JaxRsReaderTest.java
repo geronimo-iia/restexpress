@@ -19,40 +19,132 @@
  */
 package org.restexpress.plugin.jaxrs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
 import java.util.Map;
 
-import org.junit.Before;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.Test;
 import org.restexpress.RestExpressService;
-
-import static org.junit.Assert.*;
+import org.restexpress.exception.ConfigurationException;
 
 public class JaxRsReaderTest {
 
-    private RestExpressService restExpress;
-    
-    @Before
-    public void initialize() {
-        restExpress = RestExpressService.newBuilder();
+    @Test(expected = ConfigurationException.class)
+    public void shouldFailWhenNoMapping() {
+        RestExpressService restExpress = RestExpressService.newBuilder();
+        JaxRsReader jaxRsReader = new JaxRsReader(restExpress);
+        jaxRsReader.read(new FailEchoService());
     }
-    
+
     @Test
     public void readEchoService() {
-
+        RestExpressService restExpress = RestExpressService.newBuilder();
         JaxRsReader jaxRsReader = new JaxRsReader(restExpress);
 
-        EchoService echoService = new EchoService();
-        
-        int result = jaxRsReader.read(echoService);
-        
-        assertEquals(3, result);
-        
+        int result = jaxRsReader.read(new EchoService());
+
+        assertEquals(4, result);
+
         Map<String, String> routes = restExpress.getRouteUrlsByName();
-        
-        assertEquals(3, routes.size());
+
+        assertEquals(4, routes.size());
         assertTrue(routes.containsKey("echoservice.root.get"));
         assertTrue(routes.containsKey("echoservice.hello.get"));
         assertTrue(routes.containsKey("echoservice.greeting.get"));
-        
+        assertTrue(routes.containsKey("echoservice.restexpress.post"));
+
+    }
+
+    @Test
+    public void sayHello() throws ClientProtocolException, IOException {
+        RestExpressService restExpress = RestExpressService.newBuilder();
+        JaxRsReader jaxRsReader = new JaxRsReader(restExpress);
+        EchoService echoService = new EchoService();
+        assertEquals(4, jaxRsReader.read(echoService));
+        HttpGet request = null;
+        try {
+            restExpress.bind();
+
+            HttpClient http = new DefaultHttpClient();
+            request = new HttpGet("http://localhost:8081/hello");
+            HttpResponse response = (HttpResponse) http.execute(request);
+            assertEquals(HttpResponseStatus.OK.getCode(), response.getStatusLine().getStatusCode());
+            HttpEntity entity = response.getEntity();
+            assertEquals("\"hello\"", EntityUtils.toString(entity));
+            request.releaseConnection();
+
+            request = new HttpGet("http://localhost:8081/?echo=ping");
+            response = (HttpResponse) http.execute(request);
+            assertEquals(HttpResponseStatus.OK.getCode(), response.getStatusLine().getStatusCode());
+            entity = response.getEntity();
+            assertEquals("\"ping\"", EntityUtils.toString(entity));
+            request.releaseConnection();
+
+        } finally {
+            if (request != null)
+                request.releaseConnection();
+            restExpress.shutdown();
+        }
+
+    }
+
+    @Test
+    public void sendEcho() throws ClientProtocolException, IOException {
+        RestExpressService restExpress = RestExpressService.newBuilder();
+        JaxRsReader jaxRsReader = new JaxRsReader(restExpress);
+        EchoService echoService = new EchoService();
+        assertEquals(4, jaxRsReader.read(echoService));
+        HttpGet request = null;
+        try {
+            restExpress.bind();
+
+            HttpClient http = new DefaultHttpClient();
+            request = new HttpGet("http://localhost:8081/?echo=ping");
+            HttpResponse response = (HttpResponse) http.execute(request);
+            assertEquals(HttpResponseStatus.OK.getCode(), response.getStatusLine().getStatusCode());
+            HttpEntity entity = response.getEntity();
+            assertEquals("\"ping\"", EntityUtils.toString(entity));
+            request.releaseConnection();
+
+        } finally {
+            if (request != null)
+                request.releaseConnection();
+            restExpress.shutdown();
+        }
+    }
+
+    @Test
+    public void sendGretting() throws ClientProtocolException, IOException {
+        RestExpressService restExpress = RestExpressService.newBuilder();
+        JaxRsReader jaxRsReader = new JaxRsReader(restExpress);
+        EchoService echoService = new EchoService();
+        assertEquals(4, jaxRsReader.read(echoService));
+        HttpGet request = null;
+        try {
+            restExpress.bind();
+
+            HttpClient http = new DefaultHttpClient();
+            request = new HttpGet("http://localhost:8081/greeting?who=Hal");
+            HttpResponse response = (HttpResponse) http.execute(request);
+            assertEquals(HttpResponseStatus.OK.getCode(), response.getStatusLine().getStatusCode());
+            HttpEntity entity = response.getEntity();
+            assertEquals("\"hello Hal!\"", EntityUtils.toString(entity));
+            request.releaseConnection();
+
+        } finally {
+            if (request != null)
+                request.releaseConnection();
+            restExpress.shutdown();
+        }
     }
 }

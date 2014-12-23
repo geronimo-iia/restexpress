@@ -34,6 +34,7 @@
  */
 package org.restexpress.route;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,94 +51,103 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * A {@link Route} is an immutable relationship between a URL pattern and a REST
- * service.
+ * A {@link Route} is an immutable relationship between a URL pattern and a REST service.
  * 
  * @author toddf
  * @since May 4, 2010
  */
 public abstract class Route implements Invoker {
 
-	private final UrlMatcher urlMatcher;
-	private final Invoker invoker;
-	private final HttpMethod method;
-	private boolean shouldSerializeResponse = true;
-	private final String name;
-	private final Set<String> flags = Sets.newHashSet();
-	private final Map<String, Object> parameters = Maps.newHashMap();
+    private final UrlMatcher urlMatcher;
+    private final Invoker invoker;
+    private final HttpMethod method;
+    private boolean shouldSerializeResponse = true;
+    private final String name;
+    private final Set<String> flags = Sets.newHashSet();
+    private final Map<String, Object> parameters = Maps.newHashMap();
 
-	public Route(final UrlMatcher urlMatcher, final Invoker invoker, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
-		super();
-		this.urlMatcher = urlMatcher;
-		this.invoker = invoker;
-		this.method = method;
-		this.shouldSerializeResponse = shouldSerializeResponse;
-		this.name = name;
-		this.flags.addAll(flags);
-		this.parameters.putAll(parameters);
-	}
+    public Route(final UrlMatcher urlMatcher, final Invoker invoker, final HttpMethod method, final boolean shouldSerializeResponse,
+            final String name, final Set<String> flags, final Map<String, Object> parameters) {
+        super();
+        this.urlMatcher = urlMatcher;
+        this.invoker = invoker;
+        this.method = method;
+        this.shouldSerializeResponse = shouldSerializeResponse;
+        this.name = name;
+        this.flags.addAll(flags);
+        this.parameters.putAll(parameters);
+    }
 
-	/**
-	 * @return {@link Invoker} instance.
-	 */
-	@VisibleForTesting
-	public Invoker invoker() {
-		return invoker;
-	}
+    /**
+     * @return {@link Invoker} instance.
+     */
+    @VisibleForTesting
+    public final Invoker invoker() {
+        return invoker;
+    }
 
-	@Override
-	public Object invoke(final MessageContext context) {
-		return invoker.invoke(context);
-	}
+    @Override
+    public final Object invoke(final MessageContext context) {
+        return invoker.invoke(context);
+    }
 
-	public boolean isFlagged(final String flag) {
-		return flags.contains(flag);
-	}
+    @Override
+    public final Object controller() {
+        return invoker.controller();
+    }
 
-	public boolean isFlagged(final Flags flag) {
-		return isFlagged(flag.toString());
-	}
+    @Override
+    public final Method action() {
+        return invoker.action();
+    }
 
-	public boolean hasParameter(final String name) {
-		return (getParameter(name) != null);
-	}
+    public boolean isFlagged(final String flag) {
+        return flags.contains(flag);
+    }
 
-	public Object getParameter(final String name) {
-		return parameters.get(name);
-	}
+    public final boolean isFlagged(final Flags flag) {
+        return isFlagged(flag.toString());
+    }
 
-	public HttpMethod getMethod() {
-		return method;
-	}
+    public final boolean hasParameter(final String name) {
+        return (getParameter(name) != null);
+    }
 
-	public String getName() {
-		return name;
-	}
+    public final Object getParameter(final String name) {
+        return parameters.get(name);
+    }
 
-	public boolean hasName() {
-		return ((getName() != null) && !getName().trim().isEmpty());
-	}
+    public final HttpMethod getMethod() {
+        return method;
+    }
 
-	/**
-	 * Returns the URL pattern without any '.{format}' at the end. In essence, a
-	 * 'short' URL pattern.
-	 * 
-	 * @return a URL pattern
-	 */
-	public String getPattern() {
-		return urlMatcher.getPattern();
-	}
+    public final String getName() {
+        return name;
+    }
 
-	public boolean shouldSerializeResponse() {
-		return shouldSerializeResponse;
-	}
+    public final boolean hasName() {
+        return ((getName() != null) && !getName().trim().isEmpty());
+    }
 
-	public UrlMatch match(final String url) {
-		return urlMatcher.match(url);
-	}
+    /**
+     * Returns the URL pattern without any '.{format}' at the end. In essence, a 'short' URL pattern.
+     * 
+     * @return a URL pattern
+     */
+    public final String getPattern() {
+        return urlMatcher.getPattern();
+    }
 
-	public List<String> getUrlParameters() {
-		return urlMatcher.getParameterNames();
-	}
+    public final boolean shouldSerializeResponse() {
+        return shouldSerializeResponse;
+    }
+
+    public UrlMatch match(final String url) {
+        return urlMatcher.match(url);
+    }
+
+    public final List<String> getUrlParameters() {
+        return urlMatcher.getParameterNames();
+    }
 
 }

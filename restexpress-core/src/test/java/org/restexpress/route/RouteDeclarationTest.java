@@ -32,7 +32,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.route.invoker.Invokers.AbstractInvoker;
 
 /**
  * @author toddf
@@ -51,7 +50,7 @@ public class RouteDeclarationTest {
 	}
 
 	private String findInvokeMethodName(Route r) {
-		return ((AbstractInvoker) r.invoker()).action().getName();
+		return r.invoker().action().getName();
 	}
 
 	@Test

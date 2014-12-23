@@ -19,7 +19,9 @@
  */
 package org.restexpress.plugin.jaxrs;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Locale;
 
 import javax.ws.rs.DELETE;
@@ -29,11 +31,24 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.Request;
+import org.restexpress.Response;
 import org.restexpress.RestExpress;
+import org.restexpress.exception.ConfigurationException;
+import org.restexpress.route.invoker.FieldSet.ArrayFieldMap;
+import org.restexpress.route.invoker.FieldSet.FieldMap;
+import org.restexpress.route.invoker.FieldSet.HeaderFieldMap;
+import org.restexpress.route.invoker.FieldSet.RequestFieldMap;
+import org.restexpress.route.invoker.FieldSet.ResponseFieldMap;
+import org.restexpress.route.invoker.Invoker;
+import org.restexpress.route.invoker.Invokers;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 /**
  * {@link JaxRsReader} read class.
@@ -94,13 +109,63 @@ public class JaxRsReader {
             // good for define toute ?
             if (!Strings.isNullOrEmpty(actionPath) && httpMethod != null) {
                 String routeName = formatRouteName(cls, actionPath, httpMethod);
+                Invoker invoker = buildInvoker(controller, method);
+                method.setAccessible(true);
                 restExpress.uri(actionPath, controller)//
-                        .action(method, httpMethod)//
+                        .action(invoker, httpMethod)//
                         .name(routeName);
                 result++;
             }
         }
         return result;
+    }
+
+    /**
+     * Build an Field Map Invoker.
+     * 
+     * @param controller
+     * @param method
+     * @return
+     */
+    private Invoker buildInvoker(Object controller, Method method) {
+        List<FieldMap> fieldMaps = Lists.newArrayList();
+
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        Annotation[][] annotations = method.getParameterAnnotations();
+
+        for (int i = 0; i < parameterTypes.length; i++) {
+            if (Request.class.isAssignableFrom(parameterTypes[i])) {
+                fieldMaps.add(new RequestFieldMap());
+            } else if (Response.class.isAssignableFrom(parameterTypes[i])) {
+                fieldMaps.add(new ResponseFieldMap());
+            } else {
+                String name = extractName(annotations[i]);
+                if (name == null) {
+                    throw new ConfigurationException("No annotation found for parameter " + i + " of method " + method.getName());
+                }
+                fieldMaps.add(new HeaderFieldMap(name));
+            }
+        }
+
+        return Invokers.newInvoker(controller, method, new ArrayFieldMap(fieldMaps.toArray(new FieldMap[fieldMaps.size()])));
+    }
+
+    /**
+     * Extract name of parameter from annotation.
+     * 
+     * @param annotations
+     * @return name of parameter or null if it cannot be found.
+     */
+    private static String extractName(Annotation[] annotations) throws ConfigurationException {
+        for (int i = 0; i < annotations.length; i++) {
+            if (PathParam.class.isAssignableFrom(annotations[i].getClass())) {
+                return ((PathParam) annotations[i]).value();
+            }
+            if (QueryParam.class.isAssignableFrom(annotations[i].getClass())) {
+                return ((QueryParam) annotations[i]).value();
+            }
+        }
+        return null;
     }
 
     /**

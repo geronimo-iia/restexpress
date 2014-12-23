@@ -34,6 +34,7 @@
  */
 package org.restexpress.route;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map.Entry;
 
@@ -96,4 +97,13 @@ public final class Action implements Invoker {
         return resolvedRoute().invoke(context);
     }
 
+    @Override
+    public Method action() {
+        return resolvedRoute().action();
+    }
+
+    @Override
+    public Object controller() {
+        return resolvedRoute().controller();
+    }
 }

@@ -26,6 +26,7 @@ import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.pipeline.MessageContext;
+import org.restexpress.route.invoker.FieldSet.ArrayFieldMap;
 
 /**
  * {@link Invokers} build {@link Invoker} according {@link Method} profile.
@@ -36,7 +37,7 @@ public enum Invokers {
     ;
 
     /**
-     * @param controller contrller object
+     * @param controller controller object
      * @param action {@link Method} to call
      * @return {@link Invoker} instance for specified method.
      * @throws IllegalStateException if method is not supported
@@ -54,9 +55,21 @@ public enum Invokers {
                 return new StandardInvoker(controller, action);
             }
         }
-        // here we use a field set
-        // TODO implements
         throw new IllegalStateException("Not yet supported");
+    }
+
+    /**
+     * 
+     * If arrayFieldMap as no field, this return an {@link NoArgInvoker} instance.
+     * 
+     * @param controller controller object
+     * @param action {@link Method} to call
+     * @param arrayFieldMap {@link ArrayFieldMap} instance
+     * @return {@link Invoker} instance for specified method.
+     */
+    public static Invoker newInvoker(Object controller, Method action, ArrayFieldMap arrayFieldMap) {
+        return arrayFieldMap.length() == 0 ? new NoArgInvoker(controller, action) : new FieldMapInvoker(controller, action,
+                arrayFieldMap);
     }
 
     /**
@@ -87,6 +100,37 @@ public enum Invokers {
 
         public final Method action() {
             return action;
+        }
+    }
+
+    public static final class FieldMapInvoker extends AbstractInvoker {
+        private final ArrayFieldMap arrayFieldMap;
+
+        /**
+         * Build a new instance.
+         * 
+         * @param controller
+         * @param action
+         */
+        public FieldMapInvoker(Object controller, Method action, ArrayFieldMap arrayFieldMap) {
+            super(controller, action);
+            this.arrayFieldMap = arrayFieldMap;
+        }
+
+        @Override
+        public Object invoke(MessageContext context) {
+            try {
+                return action.invoke(controller, (Object[]) arrayFieldMap.map(context));
+            } catch (final InvocationTargetException e) {
+                final Throwable cause = e.getCause();
+                if (RuntimeException.class.isAssignableFrom(cause.getClass())) {
+                    throw (RuntimeException) e.getCause();
+                } else {
+                    throw new RuntimeException(cause);
+                }
+            } catch (final Exception e) {
+                throw new HttpRuntimeException(e);
+            }
         }
     }
 

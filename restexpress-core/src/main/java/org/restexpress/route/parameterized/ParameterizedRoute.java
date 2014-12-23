@@ -36,43 +36,42 @@ import org.restexpress.url.UrlPattern;
  * @since Jan 7, 2011
  */
 public final class ParameterizedRoute extends Route {
-	private UrlPattern[] aliases;
+    private UrlPattern[] aliases;
 
-	public ParameterizedRoute(final UrlPattern urlMatcher, final Invoker invoker, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
-		super(urlMatcher, invoker, method, shouldSerializeResponse, name, flags, parameters);
-	}
+    public ParameterizedRoute(final UrlPattern urlMatcher, final Invoker invoker, final HttpMethod method,
+            final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
+        super(urlMatcher, invoker, method, shouldSerializeResponse, name, flags, parameters);
+    }
 
-	public ParameterizedRoute(final String urlPattern, final Invoker invoker, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
-		this(new UrlPattern(urlPattern), invoker, method, shouldSerializeResponse, name, flags, parameters);
-	}
+    public ParameterizedRoute(final String urlPattern, final Invoker invoker, final HttpMethod method,
+            final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
+        this(new UrlPattern(urlPattern), invoker, method, shouldSerializeResponse, name, flags, parameters);
+    }
 
-	public void addAliases(final List<String> uris) {
-		if (uris == null) {
-			return;
-		}
+    public void addAliases(final List<String> uris) {
+        if (uris == null) {
+            return;
+        }
 
-		aliases = new UrlPattern[uris.size()];
-		int i = 0;
+        aliases = new UrlPattern[uris.size()];
+        int i = 0;
 
-		for (final String uri : uris) {
-			aliases[i++] = new UrlPattern(uri);
-		}
-	}
+        for (final String uri : uris) {
+            aliases[i++] = new UrlPattern(uri);
+        }
+    }
 
-	@Override
-	public UrlMatch match(final String url) {
-		UrlMatch match = super.match(url);
-
-		if ((match == null) && (aliases != null)) {
-			for (final UrlPattern alias : aliases) {
-				match = alias.match(url);
-
-				if (match != null) {
-					break;
-				}
-			}
-		}
-
-		return match;
-	}
+    @Override
+    public UrlMatch match(final String url) {
+        UrlMatch match = super.match(url);
+        if ((match == null) && (aliases != null)) {
+            for (final UrlPattern alias : aliases) {
+                match = alias.match(url);
+                if (match != null) {
+                    break;
+                }
+            }
+        }
+        return match;
+    }
 }

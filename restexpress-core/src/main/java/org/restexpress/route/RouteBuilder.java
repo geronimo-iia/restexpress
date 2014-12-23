@@ -111,9 +111,9 @@ public abstract class RouteBuilder {
      */
     private final Map<HttpMethod, String> actionNames = Maps.newHashMap();
     /**
-     * List of action method by HTTP method.
+     * List of Invoker method by HTTP method.
      */
-    private final Map<HttpMethod, Method> actionMethod = Maps.newHashMap();
+    private final Map<HttpMethod, Invoker> invokers = Maps.newHashMap();
     /**
      * Controller object.
      */
@@ -196,13 +196,13 @@ public abstract class RouteBuilder {
     /**
      * Map a service method (action) to a particular HTTP method (e.g. GET, POST, PUT, DELETE, HEAD, OPTIONS)
      * 
-     * @param action the method within the service POJO.
+     * @param invoker {@link Invoker} instance to call the method within the service POJO.
      * @param method the HTTP method that should invoke the service method.
      * @return the RouteBuilder instance.
      */
-    public RouteBuilder action(final Method action, final HttpMethod method) {
-        if (!actionMethod.containsKey(method)) {
-            actionMethod.put(method, action);
+    public RouteBuilder action(final Invoker invoker, final HttpMethod method) {
+        if (!invokers.containsKey(method)) {
+            invokers.put(method, invoker);
         }
         if (!methods.contains(method))
             methods.add(method);
@@ -311,14 +311,21 @@ public abstract class RouteBuilder {
         final String pattern = toRegexPattern(uri);
 
         for (final HttpMethod httpMethod : methods) {
+            
+            boolean serializeResponse = this.shouldSerializeResponse;
             String actionName = actionNames.get(httpMethod);
-            Method action = null;
+            
+            Invoker invoker = null;
+            // no method name, maybe an invoker ?
             if (actionName == null) {
-                action = actionMethod.get(httpMethod);
+                invoker = invokers.get(httpMethod);
             }
-            if (action == null) {
+            // no invoker
+            if (invoker == null) {
+                Method action = null;
+                // lookup in default action
                 if (actionName == null) {
-                    // on default mapping, if method is not found we did not raise a configuration exception
+                    // on default mapping, if method is not found we did not raise a configuration exception. We just log a warning.
                     actionName = ACTION_MAPPING.get(httpMethod);
                     try {
                         action = determineActionMethod(controller, actionName);
@@ -328,14 +335,23 @@ public abstract class RouteBuilder {
                 } else {
                     action = determineActionMethod(controller, actionName);
                 }
-            }
 
-            if (action != null) {
-                // set accessible
-                action.setAccessible(true);
-                // compute serialization
-                boolean serializeResponse = shouldSerializeResponse(action);
-                Invoker invoker = Invokers.newInvoker(controller, action);
+                if (action != null) {
+                    // set accessible
+                    action.setAccessible(true);
+                    // compute serialization
+                    serializeResponse = shouldSerializeResponse(action);
+                    // find a good invoker
+                    invoker = Invokers.newInvoker(controller, action);
+                }
+
+            } else {
+                // we have an invoker
+                serializeResponse = shouldSerializeResponse(invoker.action());
+            }
+            
+            // add route
+            if (invoker != null) {
                 // create route
                 Route route = newRoute(pattern, invoker, httpMethod, serializeResponse, name, flags, parameters);
                 // add result

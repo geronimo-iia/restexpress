@@ -19,22 +19,32 @@
  */
 package org.restexpress.route.invoker;
 
+import java.lang.reflect.Method;
+
 import org.restexpress.pipeline.MessageContext;
 
 /**
  * {@link Invoker} define method to invoke a method on a controller.
- *
+ * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- *
+ * 
  */
 public interface Invoker {
-	/**
-	 * Invoke underlying controller method.
-	 * 
-	 * @param context
-	 *            {@link MessageContext} instance
-	 * @return result object
-	 */
-	public Object invoke(MessageContext context);
+    /**
+     * Invoke underlying controller method.
+     * 
+     * @param context {@link MessageContext} instance
+     * @return result object
+     */
+    public Object invoke(MessageContext context);
 
+    /**
+     * @return controller instance.
+     */
+    public Object controller();
+
+    /**
+     * @return Method to call.
+     */
+    public Method action();
 }
