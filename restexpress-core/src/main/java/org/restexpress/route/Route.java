@@ -34,129 +34,110 @@
  */
 package org.restexpress.route;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Flags;
-import org.restexpress.Request;
-import org.restexpress.Response;
+import org.restexpress.pipeline.MessageContext;
+import org.restexpress.route.invoker.Invoker;
 import org.restexpress.url.UrlMatch;
 import org.restexpress.url.UrlMatcher;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * A {@link Route} is an immutable relationship between a URL pattern and a REST service.
+ * A {@link Route} is an immutable relationship between a URL pattern and a REST
+ * service.
  * 
  * @author toddf
  * @since May 4, 2010
  */
-public abstract class Route {
+public abstract class Route implements Invoker {
 
-    private final UrlMatcher urlMatcher;
-    private final Object controller;
-    private final Method action;
-    private final HttpMethod method;
-    private boolean shouldSerializeResponse = true;
-    private final String name;
-    private final Set<String> flags = Sets.newHashSet();
-    private final Map<String, Object> parameters = Maps.newHashMap();
+	private final UrlMatcher urlMatcher;
+	private final Invoker invoker;
+	private final HttpMethod method;
+	private boolean shouldSerializeResponse = true;
+	private final String name;
+	private final Set<String> flags = Sets.newHashSet();
+	private final Map<String, Object> parameters = Maps.newHashMap();
 
-    public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method,
-            final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
-        super();
-        this.urlMatcher = urlMatcher;
-        this.controller = controller;
-        this.action = action;
-        this.method = method;
-        this.shouldSerializeResponse = shouldSerializeResponse;
-        this.name = name;
-        this.flags.addAll(flags);
-        this.parameters.putAll(parameters);
-    }
+	public Route(final UrlMatcher urlMatcher, final Invoker invoker, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
+		super();
+		this.urlMatcher = urlMatcher;
+		this.invoker = invoker;
+		this.method = method;
+		this.shouldSerializeResponse = shouldSerializeResponse;
+		this.name = name;
+		this.flags.addAll(flags);
+		this.parameters.putAll(parameters);
+	}
 
-    /**
-     * Invoke underlying controller method.
-     * @param request
-     * @param response
-     * @return result object
-     */
-    public Object invoke(final Request request, final Response response) {
-        try {
-            return action.invoke(controller, request, response);
-        } catch (final InvocationTargetException e) {
-            final Throwable cause = e.getCause();
-            if (RuntimeException.class.isAssignableFrom(cause.getClass())) {
-                throw (RuntimeException) e.getCause();
-            } else {
-                throw new RuntimeException(cause);
-            }
-        } catch (final Exception e) {
-            throw new HttpRuntimeException(e);
-        }
-    }
+	/**
+	 * @return {@link Invoker} instance.
+	 */
+	@VisibleForTesting
+	public Invoker invoker() {
+		return invoker;
+	}
 
-    public boolean isFlagged(final String flag) {
-        return flags.contains(flag);
-    }
+	@Override
+	public Object invoke(final MessageContext context) {
+		return invoker.invoke(context);
+	}
 
-    public boolean isFlagged(final Flags flag) {
-        return isFlagged(flag.toString());
-    }
+	public boolean isFlagged(final String flag) {
+		return flags.contains(flag);
+	}
 
-    public boolean hasParameter(final String name) {
-        return (getParameter(name) != null);
-    }
+	public boolean isFlagged(final Flags flag) {
+		return isFlagged(flag.toString());
+	}
 
-    public Object getParameter(final String name) {
-        return parameters.get(name);
-    }
+	public boolean hasParameter(final String name) {
+		return (getParameter(name) != null);
+	}
 
-    public Method getAction() {
-        return action;
-    }
+	public Object getParameter(final String name) {
+		return parameters.get(name);
+	}
 
-    public Object getController() {
-        return controller;
-    }
+	public HttpMethod getMethod() {
+		return method;
+	}
 
-    public HttpMethod getMethod() {
-        return method;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public boolean hasName() {
+		return ((getName() != null) && !getName().trim().isEmpty());
+	}
 
-    public boolean hasName() {
-        return ((getName() != null) && !getName().trim().isEmpty());
-    }
+	/**
+	 * Returns the URL pattern without any '.{format}' at the end. In essence, a
+	 * 'short' URL pattern.
+	 * 
+	 * @return a URL pattern
+	 */
+	public String getPattern() {
+		return urlMatcher.getPattern();
+	}
 
-    /**
-     * Returns the URL pattern without any '.{format}' at the end. In essence, a 'short' URL pattern.
-     * 
-     * @return a URL pattern
-     */
-    public String getPattern() {
-        return urlMatcher.getPattern();
-    }
+	public boolean shouldSerializeResponse() {
+		return shouldSerializeResponse;
+	}
 
-    public boolean shouldSerializeResponse() {
-        return shouldSerializeResponse;
-    }
+	public UrlMatch match(final String url) {
+		return urlMatcher.match(url);
+	}
 
-    public UrlMatch match(final String url) {
-        return urlMatcher.match(url);
-    }
-
-    public List<String> getUrlParameters() {
-        return urlMatcher.getParameterNames();
-    }
+	public List<String> getUrlParameters() {
+		return urlMatcher.getParameterNames();
+	}
 
 }

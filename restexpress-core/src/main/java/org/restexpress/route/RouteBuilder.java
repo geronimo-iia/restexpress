@@ -43,6 +43,8 @@ import org.restexpress.Response;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.UriMetadata;
 import org.restexpress.exception.ConfigurationException;
+import org.restexpress.route.invoker.Invoker;
+import org.restexpress.route.invoker.StandardInvoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,8 +113,7 @@ public abstract class RouteBuilder {
      * Child builder must implements this method.
      * 
      * @param pattern
-     * @param controller
-     * @param action
+     * @param invoker
      * @param method
      * @param shouldSerializeResponse
      * @param name
@@ -122,7 +123,7 @@ public abstract class RouteBuilder {
      * @param baseUrl
      * @return
      */
-    protected abstract Route newRoute(String pattern, Object controller, Method action, HttpMethod method,
+    protected abstract Route newRoute(String pattern, Invoker invoker, HttpMethod method,
             boolean shouldSerializeResponse, String name, Set<String> flags, Map<String, Object> parameters);
 
     /**
@@ -274,8 +275,9 @@ public abstract class RouteBuilder {
                 action.setAccessible(true);
                 // compute serialization
                 boolean serializeResponse = shouldSerializeResponse(action);
+                Invoker invoker = analysis(controller, action);
                 // create route
-                Route route = newRoute(pattern, controller, action, method, serializeResponse, name, flags, parameters);
+                Route route = newRoute(pattern, invoker, method, serializeResponse, name, flags, parameters);
                 // add result
                 routes.add(route);
             }
@@ -285,6 +287,16 @@ public abstract class RouteBuilder {
     }
 
     /**
+     * Analysis method profile and return {@link Invoker} instance.
+     * @param controller Controller object
+     * @param action method to call
+     * @return {@link Invoker}.
+     */
+    protected Invoker analysis(Object controller, Method action) {
+		return new StandardInvoker(controller, action);
+	}
+
+	/**
      * Should Serialize Response for specified action ? This method return false if action return type is
      * <ul>
      * <li>a {@link File}</li>

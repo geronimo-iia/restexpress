@@ -38,16 +38,18 @@ import java.util.Collection;
 import java.util.Map.Entry;
 
 import org.restexpress.Request;
-import org.restexpress.Response;
+import org.restexpress.pipeline.MessageContext;
+import org.restexpress.route.invoker.Invoker;
 import org.restexpress.url.UrlMatch;
 
 /**
  * {@link Action} is a {@link Route} for a specific {@link Request} (ie result of {@link UrlMatch} .
  * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since July 30, 2010
  */
-public final class Action {
+public final class Action implements Invoker {
 
     private final Route route;
     private final UrlMatch match;
@@ -86,12 +88,12 @@ public final class Action {
     /**
      * Invokes the underlying Route, returning the result of the call, if any.
      * 
-     * @param request
-     * @param response
-     * @return
+     * @param context {@link MessageContext} instance.
+     * @return result object if any.
      */
-    public Object invoke(final Request request, final Response response) {
-        return resolvedRoute().invoke(request, response);
+    @Override
+    public Object invoke(final MessageContext context) {
+        return resolvedRoute().invoke(context);
     }
 
 }

@@ -98,7 +98,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 			resolveResponseProcessor(context);
 			invokePreprocessors(context);
 			// invoke controller
-			final Object result = context.getAction().invoke(context.getRequest(), context.getResponse());
+			final Object result = context.getAction().invoke(context);
 			if (result != null) {
 				context.getResponse().setBody(result);
 			}
