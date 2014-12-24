@@ -19,7 +19,10 @@
  */
 package org.restexpress.plugin.jaxrs;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -34,35 +37,45 @@ import org.restexpress.Response;
 @Path("/")
 public class EchoService {
 
-    public EchoService() {
-    }
+	public EchoService() {
+	}
 
-    @GET
-    public String read(@QueryParam("echo") String echo) {
-        if (echo == null) {
-            return "Please set query-string parameter 'echo' (e.g. ?echo=value)";
-        }
-        return echo;
-    }
+	@GET
+	public String read(@DefaultValue("arf") @QueryParam("echo") String echo) {
+		if (echo == null) {
+			return "Please set query-string parameter 'echo' (e.g. ?echo=value)";
+		}
+		return echo;
+	}
 
-    @GET
-    @Path("/hello")
-    public String hello() {
-        return "hello";
-    }
+	@GET
+	@Path("/hello")
+	public String hello() {
+		return "hello";
+	}
 
-    @GET
-    @Path("/greeting")
-    public String greeting(Request request) {
-        String who = request.getQueryStringMap().get("who");
-        return "hello " + who + "!";
-    }
+	@GET
+	@Path("/greeting")
+	public String greeting(Request request) {
+		String who = request.getQueryStringMap().get("who");
+		return "hello " + who + "!";
+	}
 
-    @POST
-    @Path("/restexpress")
-    public String restexpress(Request request, Response response) {
-        String who = request.getQueryStringMap().get("who");
-        return "hello " + who + "!";
-    }
+	@POST
+	@Path("/restexpress")
+	public String restexpress(Request request, Response response) {
+		String who = request.getQueryStringMap().get("who");
+		return "hello " + who + "!";
+	}
 
+	@POST
+	@DELETE
+	public void dummy(Request request, Response response) {
+
+	}
+
+	@HEAD
+    public String info() {
+    	return "some info";
+    }
 }

@@ -26,63 +26,66 @@ import org.restexpress.pipeline.MessageContext;
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
 public enum FieldSet {
-    ;
+	;
 
-    public static interface FieldMap {
+	public static interface FieldMap {
 
-        public Object map(MessageContext context);
-    }
+		public Object map(MessageContext context);
+	}
 
-    public static class ArrayFieldMap implements FieldMap {
+	public static class ArrayFieldMap implements FieldMap {
 
-        private final FieldMap[] fieldMaps;
-        private final int length;
+		private final FieldMap[] fieldMaps;
+		private final int length;
 
-        public ArrayFieldMap(final FieldMap[] fieldMaps) {
-            super();
-            this.fieldMaps = fieldMaps;
-            length = fieldMaps.length;
-        }
+		public ArrayFieldMap(final FieldMap[] fieldMaps) {
+			super();
+			this.fieldMaps = fieldMaps;
+			length = fieldMaps.length;
+		}
 
-        public int length() {
-            return length;
-        }
+		public int length() {
+			return length;
+		}
 
-        @Override
-        public Object map(final MessageContext context) {
-            final Object[] parameters = new Object[length];
-            for (int i = 0; i < length; i++)
-                parameters[i] = fieldMaps[i].map(context);
-            return parameters;
-        }
-    }
+		@Override
+		public Object map(final MessageContext context) {
+			final Object[] parameters = new Object[length];
+			for (int i = 0; i < length; i++)
+				parameters[i] = fieldMaps[i].map(context);
+			return parameters;
+		}
+	}
 
-    public static class RequestFieldMap implements FieldMap {
-        @Override
-        public Object map(final MessageContext context) {
-            return context.getRequest();
-        }
-    }
+	public static class RequestFieldMap implements FieldMap {
+		@Override
+		public Object map(final MessageContext context) {
+			return context.getRequest();
+		}
+	}
 
-    public static class ResponseFieldMap implements FieldMap {
-        @Override
-        public Object map(final MessageContext context) {
-            return context.getResponse();
-        }
-    }
+	public static class ResponseFieldMap implements FieldMap {
+		@Override
+		public Object map(final MessageContext context) {
+			return context.getResponse();
+		}
+	}
 
-    public static class HeaderFieldMap implements FieldMap {
+	public static class HeaderFieldMap implements FieldMap {
 
-        private final String name;
+		private final String name;
+		private final String defaultValue;
 
-        public HeaderFieldMap(final String name) {
-            this.name = name;
-        }
+		public HeaderFieldMap(final String name, final String defaultValue) {
+			this.name = name;
+			this.defaultValue = defaultValue;
+		}
 
-        @Override
-        public Object map(final MessageContext context) {
-            return context.getRequest().getHeader(name);
-        }
-    }
+		@Override
+		public Object map(final MessageContext context) {
+			String result = context.getRequest().getHeader(name);
+			return result != null ? result : defaultValue;
+		}
+	}
 
 }

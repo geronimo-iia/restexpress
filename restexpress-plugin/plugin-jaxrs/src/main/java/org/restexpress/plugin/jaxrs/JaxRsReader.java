@@ -23,8 +23,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.OPTIONS;
@@ -39,6 +41,7 @@ import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.RestExpress;
 import org.restexpress.exception.ConfigurationException;
+import org.restexpress.route.RouteBuilder;
 import org.restexpress.route.invoker.FieldSet.ArrayFieldMap;
 import org.restexpress.route.invoker.FieldSet.FieldMap;
 import org.restexpress.route.invoker.FieldSet.HeaderFieldMap;
@@ -49,6 +52,7 @@ import org.restexpress.route.invoker.Invokers;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * {@link JaxRsReader} read class.
@@ -57,132 +61,160 @@ import com.google.common.collect.Lists;
  */
 public class JaxRsReader {
 
-    /**
-     * {@link RestExpress} configuration service.
-     */
-    private final RestExpress restExpress;
+	/**
+	 * {@link RestExpress} configuration service.
+	 */
+	private final RestExpress restExpress;
 
-    public JaxRsReader(final RestExpress restExpress) {
-        super();
-        this.restExpress = restExpress;
-    }
+	public JaxRsReader(final RestExpress restExpress) {
+		super();
+		this.restExpress = restExpress;
+	}
 
-    /**
-     * Read class of specified controller and declare route.
-     * 
-     * @param controller
-     * @return number of route declared
-     */
+	/**
+	 * Read class of specified controller and declare route.
+	 * 
+	 * @param controller
+	 * @return number of route declared
+	 */
 
-    public int read(final Object controller) {
-        int result = 0;
-        Class<?> cls = controller.getClass();
-        String controllerPath = null;
-        Path path = cls.getAnnotation(Path.class);
-        if (path != null) {
-            controllerPath = path.value();
-        }
-        for (Method method : cls.getMethods()) {
+	public int read(final Object controller) {
+		Class<?> cls = controller.getClass();
+		Map<String, RouteBuilder> routes = Maps.newHashMap();
+		// load controller Path
+		String controllerPath = null;
+		Path path = cls.getAnnotation(Path.class);
+		if (path != null) {
+			controllerPath = path.value();
+		}
+		for (Method method : cls.getMethods()) {
+			String actionPath = controllerPath;
+			List<HttpMethod> httpMethods = Lists.newArrayList();
 
-            String actionPath = controllerPath;
-            HttpMethod httpMethod = null;
+			Path methodPath = method.getAnnotation(Path.class);
+			if (methodPath != null) {
+				actionPath = methodPath.value();
+			}
 
-            Path methodPath = method.getAnnotation(Path.class);
-            if (methodPath != null) {
-                actionPath = methodPath.value();
-            }
+			// find HTTP Method
+			if (method.getAnnotation(HEAD.class) != null) {
+				httpMethods.add(HttpMethod.HEAD);
+			}
+			if (method.getAnnotation(GET.class) != null) {
+				httpMethods.add(HttpMethod.GET);
+			}
+			if (method.getAnnotation(POST.class) != null) {
+				httpMethods.add(HttpMethod.POST);
+			}
+			if (method.getAnnotation(PUT.class) != null) {
+				httpMethods.add(HttpMethod.PUT);
+			}
+			if (method.getAnnotation(DELETE.class) != null) {
+				httpMethods.add(HttpMethod.DELETE);
+			}
+			if (method.getAnnotation(OPTIONS.class) != null) {
+				httpMethods.add(HttpMethod.OPTIONS);
+			}
 
-            // find HTTP Method
-            if (method.getAnnotation(HEAD.class) != null) {
-                httpMethod = HttpMethod.HEAD;
-            } else if (method.getAnnotation(GET.class) != null) {
-                httpMethod = HttpMethod.GET;
-            } else if (method.getAnnotation(POST.class) != null) {
-                httpMethod = HttpMethod.POST;
-            } else if (method.getAnnotation(PUT.class) != null) {
-                httpMethod = HttpMethod.PUT;
-            } else if (method.getAnnotation(DELETE.class) != null) {
-                httpMethod = HttpMethod.DELETE;
-            } else if (method.getAnnotation(OPTIONS.class) != null) {
-                httpMethod = HttpMethod.OPTIONS;
-            }
-            // good for define toute ?
-            if (!Strings.isNullOrEmpty(actionPath) && httpMethod != null) {
-                String routeName = formatRouteName(cls, actionPath, httpMethod);
-                Invoker invoker = buildInvoker(controller, method);
-                method.setAccessible(true);
-                restExpress.uri(actionPath, controller)//
-                        .action(invoker, httpMethod)//
-                        .name(routeName);
-                result++;
-            }
-        }
-        return result;
-    }
+			if (!Strings.isNullOrEmpty(actionPath) && !httpMethods.isEmpty()) {
+				// create builder if necessary
+				RouteBuilder builder = null;
+				if (!routes.containsKey(actionPath)) {
+					String routeName = formatRouteName(cls, actionPath, routes.size());
+					builder = restExpress.uri(actionPath, controller).name(routeName);
+					routes.put(actionPath, builder);
+				} else {
+					builder = routes.get(actionPath);
+				}
+				// create invoker
+				Invoker invoker = buildInvoker(controller, method);
+				method.setAccessible(true);
+				// add HTTP method
+				for (HttpMethod httpMethod : httpMethods) {
+					builder.action(invoker, httpMethod);
+				}
+			}
+		}
+		return routes.size();
+	}
 
-    /**
-     * Build an Field Map Invoker.
-     * 
-     * @param controller
-     * @param method
-     * @return
-     */
-    private Invoker buildInvoker(Object controller, Method method) {
-        List<FieldMap> fieldMaps = Lists.newArrayList();
+	/**
+	 * Build an Field Map Invoker.
+	 * 
+	 * @param controller
+	 * @param method
+	 * @return
+	 */
+	private Invoker buildInvoker(Object controller, Method method) {
+		List<FieldMap> fieldMaps = Lists.newArrayList();
 
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        Annotation[][] annotations = method.getParameterAnnotations();
+		Class<?>[] parameterTypes = method.getParameterTypes();
+		Annotation[][] annotations = method.getParameterAnnotations();
 
-        for (int i = 0; i < parameterTypes.length; i++) {
-            if (Request.class.isAssignableFrom(parameterTypes[i])) {
-                fieldMaps.add(new RequestFieldMap());
-            } else if (Response.class.isAssignableFrom(parameterTypes[i])) {
-                fieldMaps.add(new ResponseFieldMap());
-            } else {
-                String name = extractName(annotations[i]);
-                if (name == null) {
-                    throw new ConfigurationException("No annotation found for parameter " + i + " of method " + method.getName());
-                }
-                fieldMaps.add(new HeaderFieldMap(name));
-            }
-        }
+		for (int i = 0; i < parameterTypes.length; i++) {
+			if (Request.class.isAssignableFrom(parameterTypes[i])) {
+				fieldMaps.add(new RequestFieldMap());
+			} else if (Response.class.isAssignableFrom(parameterTypes[i])) {
+				fieldMaps.add(new ResponseFieldMap());
+			} else {
+				String name = extractName(annotations[i]);
+				if (name == null) {
+					throw new ConfigurationException("No annotation found for parameter " + i + " of method " + method.getName());
+				}
+				String defaultValue = extractDefaultValue(annotations[i]);
+				fieldMaps.add(new HeaderFieldMap(name, defaultValue));
+			}
+		}
+		return Invokers.newInvoker(controller, method, new ArrayFieldMap(fieldMaps.toArray(new FieldMap[fieldMaps.size()])));
+	}
 
-        return Invokers.newInvoker(controller, method, new ArrayFieldMap(fieldMaps.toArray(new FieldMap[fieldMaps.size()])));
-    }
+	/**
+	 * Extract name of parameter from annotation.
+	 * 
+	 * @param annotations
+	 * @return name of parameter or null if it cannot be found.
+	 */
+	protected static String extractName(Annotation[] annotations) throws ConfigurationException {
+		for (int i = 0; i < annotations.length; i++) {
+			if (PathParam.class.isAssignableFrom(annotations[i].getClass())) {
+				return ((PathParam) annotations[i]).value();
+			}
+			if (QueryParam.class.isAssignableFrom(annotations[i].getClass())) {
+				return ((QueryParam) annotations[i]).value();
+			}
+		}
+		return null;
+	}
 
-    /**
-     * Extract name of parameter from annotation.
-     * 
-     * @param annotations
-     * @return name of parameter or null if it cannot be found.
-     */
-    private static String extractName(Annotation[] annotations) throws ConfigurationException {
-        for (int i = 0; i < annotations.length; i++) {
-            if (PathParam.class.isAssignableFrom(annotations[i].getClass())) {
-                return ((PathParam) annotations[i]).value();
-            }
-            if (QueryParam.class.isAssignableFrom(annotations[i].getClass())) {
-                return ((QueryParam) annotations[i]).value();
-            }
-        }
-        return null;
-    }
+	/**
+	 * Extract default value of parameter from annotation.
+	 * 
+	 * @param annotations
+	 * @return default of parameter or null if it cannot be found.
+	 */
+	protected static String extractDefaultValue(Annotation[] annotations) throws ConfigurationException {
+		for (int i = 0; i < annotations.length; i++) {
+			if (DefaultValue.class.isAssignableFrom(annotations[i].getClass())) {
+				return ((DefaultValue) annotations[i]).value();
+			}
+		}
+		return null;
+	}
 
-    /**
-     * Format a route name.
-     * 
-     * @param cls
-     * @param actionPath
-     * @param httpMethod
-     * @return a route name
-     */
-    private static String formatRouteName(Class<?> cls, String actionPath, HttpMethod httpMethod) {
-        String name = actionPath.replaceAll("/", "\\.").replaceAll("\\{", "").replaceAll("\\}", "");
-        if (".".equals(name)) {
-            name = ".root";
-        }
-        name = cls.getSimpleName() + name + "." + httpMethod.getName();
-        return name.toLowerCase(Locale.US);
-    }
+	/**
+	 * Format a route name.
+	 * 
+	 * @param cls
+	 * @param actionPath
+	 * @return a route name
+	 */
+	private static String formatRouteName(Class<?> cls, String actionPath, int index) {
+		String name = actionPath.replaceAll("/", "\\.").replaceAll("\\{", "").replaceAll("\\}", "");
+		if (".".equals(name)) {
+			name = ".root";
+		}
+		name = cls.getSimpleName() + name + "." + index;
+		return name.toLowerCase(Locale.US);
+	}
 
 }

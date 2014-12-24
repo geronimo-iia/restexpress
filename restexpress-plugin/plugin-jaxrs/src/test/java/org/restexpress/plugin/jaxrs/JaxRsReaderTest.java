@@ -58,11 +58,10 @@ public class JaxRsReaderTest {
         Map<String, String> routes = restExpress.getRouteUrlsByName();
 
         assertEquals(4, routes.size());
-        assertTrue(routes.containsKey("echoservice.root.get"));
-        assertTrue(routes.containsKey("echoservice.hello.get"));
-        assertTrue(routes.containsKey("echoservice.greeting.get"));
-        assertTrue(routes.containsKey("echoservice.restexpress.post"));
-
+        assertTrue(routes.containsKey("echoservice.root.0"));
+        assertTrue(routes.containsKey("echoservice.hello.1"));
+        assertTrue(routes.containsKey("echoservice.greeting.2"));
+        assertTrue(routes.containsKey("echoservice.restexpress.3"));
     }
 
     @Test
@@ -123,6 +122,32 @@ public class JaxRsReaderTest {
         }
     }
 
+    @Test
+    public void sendEchoWithDefaultValue() throws ClientProtocolException, IOException {
+        RestExpressService restExpress = RestExpressService.newBuilder();
+        JaxRsReader jaxRsReader = new JaxRsReader(restExpress);
+        EchoService echoService = new EchoService();
+        assertEquals(4, jaxRsReader.read(echoService));
+        HttpGet request = null;
+        try {
+            restExpress.bind();
+
+            HttpClient http = new DefaultHttpClient();
+            request = new HttpGet("http://localhost:8081/");
+            HttpResponse response = (HttpResponse) http.execute(request);
+            assertEquals(HttpResponseStatus.OK.getCode(), response.getStatusLine().getStatusCode());
+            HttpEntity entity = response.getEntity();
+            assertEquals("\"arf\"", EntityUtils.toString(entity));
+            request.releaseConnection();
+
+        } finally {
+            if (request != null)
+                request.releaseConnection();
+            restExpress.shutdown();
+        }
+    }
+
+    
     @Test
     public void sendGretting() throws ClientProtocolException, IOException {
         RestExpressService restExpress = RestExpressService.newBuilder();
