@@ -157,48 +157,27 @@ public class JaxRsReader {
 			} else if (Response.class.isAssignableFrom(parameterTypes[i])) {
 				fieldMaps.add(new ResponseFieldMap());
 			} else {
-				String name = extractName(annotations[i]);
+				// extract name and default value
+				String name = null;
+				String defaultValue = null;
+				for (int j = 0; j < annotations[i].length; j++) {
+					if (PathParam.class.isAssignableFrom(annotations[i][j].getClass())) {
+						name = ((PathParam) annotations[i][j]).value();
+					}
+					if (QueryParam.class.isAssignableFrom(annotations[i][j].getClass())) {
+						name = ((QueryParam) annotations[i][j]).value();
+					}
+					if (DefaultValue.class.isAssignableFrom(annotations[i][j].getClass())) {
+						defaultValue = ((DefaultValue) annotations[i][j]).value();
+					}
+				}
 				if (name == null) {
 					throw new ConfigurationException("No annotation found for parameter " + i + " of method " + method.getName());
 				}
-				String defaultValue = extractDefaultValue(annotations[i]);
 				fieldMaps.add(new HeaderFieldMap(name, defaultValue));
 			}
 		}
 		return Invokers.newInvoker(controller, method, new ArrayFieldMap(fieldMaps.toArray(new FieldMap[fieldMaps.size()])));
-	}
-
-	/**
-	 * Extract name of parameter from annotation.
-	 * 
-	 * @param annotations
-	 * @return name of parameter or null if it cannot be found.
-	 */
-	protected static String extractName(Annotation[] annotations) throws ConfigurationException {
-		for (int i = 0; i < annotations.length; i++) {
-			if (PathParam.class.isAssignableFrom(annotations[i].getClass())) {
-				return ((PathParam) annotations[i]).value();
-			}
-			if (QueryParam.class.isAssignableFrom(annotations[i].getClass())) {
-				return ((QueryParam) annotations[i]).value();
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Extract default value of parameter from annotation.
-	 * 
-	 * @param annotations
-	 * @return default of parameter or null if it cannot be found.
-	 */
-	protected static String extractDefaultValue(Annotation[] annotations) throws ConfigurationException {
-		for (int i = 0; i < annotations.length; i++) {
-			if (DefaultValue.class.isAssignableFrom(annotations[i].getClass())) {
-				return ((DefaultValue) annotations[i]).value();
-			}
-		}
-		return null;
 	}
 
 	/**
