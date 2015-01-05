@@ -21,8 +21,11 @@ package org.restexpress;
 
 import java.util.Map;
 
+import javax.ws.rs.ext.ParamConverterProvider;
+
 import org.restexpress.context.ServerContext;
 import org.restexpress.domain.metadata.ServerMetadata;
+import org.restexpress.exception.ConfigurationException;
 import org.restexpress.pipeline.MessageObserver;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;
@@ -30,6 +33,7 @@ import org.restexpress.plugin.Plugin;
 import org.restexpress.plugin.PluginService;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.response.ResponseWrapper;
+import org.restexpress.route.RouteMapping;
 import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
 import org.restexpress.serialization.Processor;
@@ -183,6 +187,8 @@ public interface RestExpress {
 	 * Retrieve meta data about the routes in this RestExpress server.
 	 * 
 	 * @return ServerMetadata instance.
+	 * @throws IllegalStateException
+	 *             if server is not bind.
 	 */
 	public ServerMetadata getRouteMetadata();
 
@@ -194,9 +200,31 @@ public interface RestExpress {
 	 * If the Base URL is set, it is included in the URL pattern.
 	 * <p/>
 	 * Only named routes are included in the output.
-	 * 
+	 *
 	 * @return a Map of Route Name/URL pairs.
 	 */
 	public Map<String, String> getRouteUrlsByName();
+
+	/**
+	 * Register a controller instance by following JAX RS annotation definition,
+	 * and create necessary route declaration.
+	 * 
+	 * @param controller
+	 *            the controller to register.
+	 * @throws ConfigurationException
+	 *             if this controller cannot be mapped
+	 * @return this {@link RestExpress} instance.
+	 */
+	public RestExpress route(Object controller) throws ConfigurationException;
+
+	/**
+	 * @return {@link RouteMapping} instance used to manage toute.
+	 */
+	public RouteMapping routeMapping();
+
+	/**
+	 * @return {@link ParamConverterProvider} used with JaxRs.
+	 */
+	public ParamConverterProvider paramConverterProvider();
 
 }

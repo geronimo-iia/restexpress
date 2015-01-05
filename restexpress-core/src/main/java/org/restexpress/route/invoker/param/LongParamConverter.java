@@ -17,34 +17,25 @@
  *        under the License.
  *
  */
-package org.restexpress.plugin.jaxrs;
+package org.restexpress.route.invoker.param;
 
-import org.restexpress.RestExpress;
-import org.restexpress.plugin.AbstractRoutePlugin;
+import javax.ws.rs.ext.ParamConverter;
 
 /**
- * {@link JaxRsPlugin} declare service to register JAXRS controller.
- * 
+ * {@link LongParamConverter} implements a {@link ParamConverter} for {@link Long}. 
+ *
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ *
  */
-public class JaxRsPlugin extends AbstractRoutePlugin {
+public class LongParamConverter implements ParamConverter<Long> {
 
-    public JaxRsPlugin() {
+	@Override
+	public Long fromString(String value) {
+		return value != null ? Long.valueOf(value) : Long.valueOf("O");
+	}
 
-    }
-
-    @Override
-    public void initialize(RestExpress server) {
-        // TODO
-    }
-
-    @Override
-    public void bind(RestExpress server) {
-        // TODO
-    }
-
-    @Override
-    public void destroy(RestExpress server) {
-        // TODO
-    }
+	@Override
+	public String toString(Long value) {
+		return value != null ? value.toString() : "0";
+	}
 }

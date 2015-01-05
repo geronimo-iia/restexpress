@@ -49,6 +49,7 @@ public class RouteMetadata implements Serializable {
      */
     private boolean serialized;
 
+    
     protected RouteMetadata() {
         super();
     }

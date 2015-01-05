@@ -51,6 +51,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.RestExpress;
+import org.restexpress.RestExpressService;
 import org.restexpress.TestToolKit;
 import org.restexpress.pipeline.MessageContext;
 
@@ -61,12 +63,16 @@ import org.restexpress.pipeline.MessageContext;
 public class RouteResolverTest {
     private static RouteResolver resolver;
     private static RouteDeclaration routeDeclarations;
+	private static RestExpress restExpress;
+
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         routeDeclarations = new RouteDeclaration();
         defineRoutes(routeDeclarations);
-        resolver = routeDeclarations.createRouteMapping("http://localhost:8081");
+    	restExpress = RestExpressService.newBuilder();
+    	restExpress.settings().serverSettings().setBaseUrl("http://localhost:8081");
+        resolver = routeDeclarations.createRouteMapping(restExpress);
     }
 
     @Test

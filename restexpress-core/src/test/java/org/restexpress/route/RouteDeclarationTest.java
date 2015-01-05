@@ -32,6 +32,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.RestExpress;
+import org.restexpress.RestExpressService;
 
 /**
  * @author toddf
@@ -41,12 +43,15 @@ public class RouteDeclarationTest {
 	private static final String RAH_ROUTE_NAME = "POST_ONLY";
 	private static RouteDeclaration routeDeclarations;
 	private static RouteMapping routeMapping;
+	private static RestExpress restExpress;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		routeDeclarations = new RouteDeclaration();
 		defineRoutes(routeDeclarations);
-		routeMapping = routeDeclarations.createRouteMapping("http://localhost:8081");
+		restExpress = RestExpressService.newBuilder();
+    	restExpress.settings().serverSettings().setBaseUrl("http://localhost:8081");
+    	routeMapping = routeDeclarations.createRouteMapping(restExpress);
 	}
 
 	private String findInvokeMethodName(Route r) {

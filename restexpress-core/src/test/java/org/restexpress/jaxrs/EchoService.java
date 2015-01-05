@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.plugin.jaxrs;
+package org.restexpress.jaxrs;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -25,6 +25,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.restexpress.Request;
@@ -61,10 +62,9 @@ public class EchoService {
 		return "hello " + who + "!";
 	}
 
-	@POST
-	@Path("/restexpress")
-	public String restexpress(Request request, Response response) {
-		String who = request.getQueryStringMap().get("who");
+	@GET
+	@Path("/restexpress/{who}")
+	public String restexpress(@PathParam("who") String who) {
 		return "hello " + who + "!";
 	}
 

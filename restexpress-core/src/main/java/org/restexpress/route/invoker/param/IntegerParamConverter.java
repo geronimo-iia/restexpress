@@ -17,26 +17,25 @@
  *        under the License.
  *
  */
-package org.restexpress.plugin.jaxrs;
+package org.restexpress.route.invoker.param;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import javax.ws.rs.ext.ParamConverter;
 
 /**
- * {@link FailEchoService} implmentation.
- * 
+ * {@link IntegerParamConverter} implements a {@link ParamConverter} for {@link Integer}. 
+ *
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ *
  */
-@Path("/")
-public class FailEchoService {
+public class IntegerParamConverter implements ParamConverter<Integer> {
 
-    public FailEchoService() {
-    }
+	@Override
+	public Integer fromString(String value) {
+		return value != null ? Integer.valueOf(value) : Integer.valueOf("O");
+	}
 
-    @GET
-    public String withError(String echo) {
-        if (echo == null) {
-            return "Please set query-string parameter 'echo' (e.g. ?echo=value)";
-        }
-        return echo;
-    }
+	@Override
+	public String toString(Integer value) {
+		return value != null ? value.toString() : "0";
+	}
 }
