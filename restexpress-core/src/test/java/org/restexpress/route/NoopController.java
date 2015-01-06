@@ -40,4 +40,7 @@ public class NoopController {
 
 	public void delete(Request request, Response response) {
 	}
+	
+	public void readAll() {
+	}
 }

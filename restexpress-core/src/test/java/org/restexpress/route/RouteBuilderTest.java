@@ -24,12 +24,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.Test;
-import org.restexpress.Request;
-import org.restexpress.Response;
 import org.restexpress.RestExpress;
 import org.restexpress.RestExpressService;
 import org.restexpress.domain.metadata.RouteMetadata;
-import org.restexpress.route.RouteBuilder;
 
 public class RouteBuilderTest {
 	@Test
@@ -64,21 +61,4 @@ public class RouteBuilderTest {
 		assertTrue(md1.getMethods().contains("POST"));
 	}
 
-	@SuppressWarnings("unused")
-	private class NoopController {
-		public void create(Request request, Response response) {
-		}
-
-		public void read(Request request, Response response) {
-		}
-
-		public void update(Request request, Response response) {
-		}
-
-		public void delete(Request request, Response response) {
-		}
-
-		public void readAll(Request request, Response response) {
-		}
-	}
 }

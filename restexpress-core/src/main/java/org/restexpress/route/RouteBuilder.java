@@ -435,8 +435,9 @@ public abstract class RouteBuilder {
 	/**
 	 * Attempts to find the actionName on the controller.
 	 * 
-	 * Assuming a signature of actionName(Request, Response), and returns the
-	 * action as a Method to be used later when the route is invoked.
+	 * Assuming a signature of actionName(Request, Response),
+	 * actionName(Request), actionName(Response) or actionName(), and returns
+	 * the action as a Method to be used later when the route is invoked.
 	 * 
 	 * 
 	 * 
@@ -449,10 +450,19 @@ public abstract class RouteBuilder {
 	 * @throws ConfigurationException
 	 *             if an error occurs.
 	 */
+	@SuppressWarnings("unchecked")
 	private Method determineActionMethod(final Object controller, final String actionName) {
 		try {
-			@SuppressWarnings("unchecked")
 			Set<Method> methods = getAllMethods(controller.getClass(), Predicates.and(withName(actionName), withParameters(Request.class, Response.class), withParametersCount(2)));
+			if (methods.size() == 1) {
+				return methods.iterator().next();
+			}
+			methods = getAllMethods(controller.getClass(), Predicates.and(withName(actionName), withParametersCount(1), //
+					Predicates.or(withParameters(Request.class), withParameters(Response.class))));
+			if (methods.size() == 1) {
+				return methods.iterator().next();
+			}
+			methods = getAllMethods(controller.getClass(), Predicates.and(withName(actionName), withParametersCount(0)));
 			if (methods.size() == 1) {
 				return methods.iterator().next();
 			}
@@ -469,6 +479,5 @@ public abstract class RouteBuilder {
 	public String toString() {
 		return "RouteBuilder [name=" + name + ", uri=" + uri + ", methods=" + methods + "]";
 	}
-	
-	
+
 }
