@@ -36,7 +36,7 @@ public class RouteBuilderTest {
 	public void shouldGenerateDefaultMethods() {
 		RestExpress server = RestExpressService.newBuilder();
 		RouteBuilder rb1 = server.uri("/route/builder/test1", new NoopController());
-		RouteMetadata md1 = rb1.asMetadata();
+		RouteMetadata md1 = rb1.build(server).metadata();
 		assertEquals(4, md1.getMethods().size());
 		assertTrue(md1.getMethods().contains("GET"));
 		assertTrue(md1.getMethods().contains("PUT"));
@@ -48,7 +48,7 @@ public class RouteBuilderTest {
 	public void shouldGenerateSpecifiedMethods() {
 		RestExpress server = RestExpressService.newBuilder();
 		RouteBuilder rb1 = server.uri("/route/builder/test2", new NoopController()).method(HttpMethod.GET, HttpMethod.POST);
-		RouteMetadata md1 = rb1.asMetadata();
+		RouteMetadata md1 = rb1.build(server).metadata();
 		assertEquals(2, md1.getMethods().size());
 		assertTrue(md1.getMethods().contains("GET"));
 		assertTrue(md1.getMethods().contains("POST"));
@@ -58,7 +58,7 @@ public class RouteBuilderTest {
 	public void shouldGenerateActionMethods() {
 		RestExpress server = RestExpressService.newBuilder();
 		RouteBuilder rb1 = server.uri("/route/builder/test/{id}.{format}", new NoopController()).action("readAll", HttpMethod.GET).method(HttpMethod.POST);
-		RouteMetadata md1 = rb1.asMetadata();
+		RouteMetadata md1 = rb1.build(server).metadata();
 		assertEquals(2, md1.getMethods().size());
 		assertTrue(md1.getMethods().contains("GET"));
 		assertTrue(md1.getMethods().contains("POST"));

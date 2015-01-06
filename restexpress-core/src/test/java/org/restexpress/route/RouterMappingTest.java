@@ -24,42 +24,49 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.restexpress.RestExpress;
+import org.restexpress.RestExpressService;
 import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
 
 public class RouterMappingTest {
 
-    public RouterMappingTest() {
-    }
+	protected RestExpress restExpress;
 
-    @Test
-    public void shouldPrefixUriWithSlash() {
-        String prefix = "foo";
-        ParameterizedRouteBuilder rb = new ParameterizedRouteBuilder(prefix, new NoopController());
-        List<Route> routes = rb.build();
-        assertNotNull(routes);
-        assertEquals(4, routes.size());
-        assertEquals("/" + prefix, routes.get(0).getPattern());
-    }
+	@Before
+	public void before() {
+		restExpress = RestExpressService.newBuilder();
+	}
 
-    @Test
-    public void shouldNotModifyUri() {
-        String pattern = "^/foo(.*)";
-        RegexRouteBuilder rb = new RegexRouteBuilder(pattern, new NoopController());
-        List<Route> routes = rb.build();
-        assertNotNull(routes);
-        assertEquals(4, routes.size());
-        assertEquals(pattern, routes.get(0).getPattern());
-    }
+	@Test
+	public void shouldPrefixUriWithSlash() {
+		String prefix = "foo";
+		ParameterizedRouteBuilder rb = new ParameterizedRouteBuilder(prefix, new NoopController());
+		List<Route> routes = rb.build(restExpress).routes();
+		assertNotNull(routes);
+		assertEquals(4, routes.size());
+		assertEquals("/" + prefix, routes.get(0).getPattern());
+	}
 
-    @Test
-    public void shouldMapBasicController() {
-        String prefix = "foo";
-        ParameterizedRouteBuilder rb = new ParameterizedRouteBuilder(prefix, new BasicController());
-        List<Route> routes = rb.build();
-        assertNotNull(routes);
-        assertEquals(1, routes.size());
-        assertEquals("/" + prefix, routes.get(0).getPattern());
-    }
+	@Test
+	public void shouldNotModifyUri() {
+		String pattern = "^/foo(.*)";
+		RegexRouteBuilder rb = new RegexRouteBuilder(pattern, new NoopController());
+		List<Route> routes = rb.build(restExpress).routes();
+		assertNotNull(routes);
+		assertEquals(4, routes.size());
+		assertEquals(pattern, routes.get(0).getPattern());
+	}
+
+	@Test
+	public void shouldMapBasicController() {
+		String prefix = "foo";
+		ParameterizedRouteBuilder rb = new ParameterizedRouteBuilder(prefix, new BasicController());
+		List<Route> routes = rb.build(restExpress).routes();
+		assertNotNull(routes);
+		assertEquals(1, routes.size());
+		assertEquals("/" + prefix, routes.get(0).getPattern());
+	}
 }

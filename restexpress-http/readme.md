@@ -16,6 +16,7 @@ We provide:
 
 This code is based on different open source project like netty, jackson-databind, rest express, see Notice for more information.
 
+This should be removed and replaced by jax-rs-api.
 
 Maven
 -----

@@ -19,12 +19,12 @@
  */
 package org.restexpress.route.regex;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.route.Route;
+import org.restexpress.route.invoker.Invoker;
 import org.restexpress.url.UrlRegex;
 
 /**
@@ -33,13 +33,13 @@ import org.restexpress.url.UrlRegex;
  */
 public final class RegexRoute extends Route {
 
-	public RegexRoute(final UrlRegex urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name,  final Set<String> flags,
+	public RegexRoute(final UrlRegex urlMatcher, final Invoker invoker, final HttpMethod method, final boolean shouldSerializeResponse, final String name,  final Set<String> flags,
 			final Map<String, Object> parameters) {
-		super(urlMatcher, controller, action, method, shouldSerializeResponse, name, flags, parameters);
+		super(urlMatcher, invoker, method, shouldSerializeResponse, name, flags, parameters);
 	}
 
-	public RegexRoute(final String urlPattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name,  final Set<String> flags,
+	public RegexRoute(final String urlPattern, final Invoker invoker, final HttpMethod method, final boolean shouldSerializeResponse, final String name,  final Set<String> flags,
 			final Map<String, Object> parameters) {
-		this(new UrlRegex(urlPattern), controller, action, method, shouldSerializeResponse, name,  flags, parameters);
+		this(new UrlRegex(urlPattern), invoker, method, shouldSerializeResponse, name,  flags, parameters);
 	}
 }

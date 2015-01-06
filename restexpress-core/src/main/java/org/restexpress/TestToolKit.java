@@ -41,44 +41,45 @@ import org.restexpress.serialization.Processor;
  */
 public final class TestToolKit {
 
-    public static final String BASE_URL = "http://localhost:8081";
+	public static final String BASE_URL = "http://localhost:8081";
 
-    public static Request newRequest(HttpRequest httpRequest) {
-        return new Request(httpRequest, null);
-    }
+	public static Request newRequest(HttpRequest httpRequest) {
+		return new Request(httpRequest, null);
+	}
 
-    public static String serialize(Object value, Processor processor) {
-        ChannelBuffer channelBuffer = ChannelBuffers.dynamicBuffer();
-        processor.write(value, channelBuffer);
-        return channelBuffer.toString(CharacterSet.UTF_8.getCharset());
-    }
+	public static String serialize(Object value, Processor processor) {
+		ChannelBuffer channelBuffer = ChannelBuffers.dynamicBuffer();
+		processor.write(value, channelBuffer);
+		return channelBuffer.toString(CharacterSet.UTF_8.getCharset());
+	}
 
-    public static <T> T deserialize(String buffer, Class<T> valueType, Processor processor) {
-        return buffer == null ? null : processor.read(ChannelBuffers.copiedBuffer(buffer, CharacterSet.UTF_8.getCharset()), valueType);
-    }
+	public static <T> T deserialize(String buffer, Class<T> valueType, Processor processor) {
+		return buffer == null ? null : processor.read(ChannelBuffers.copiedBuffer(buffer, CharacterSet.UTF_8.getCharset()), valueType);
+	}
 
-    public static <T> T deserialize(ChannelBuffer buffer, Class<T> valueType, Processor processor) {
-        return processor.read(buffer, valueType);
-    }
+	public static <T> T deserialize(ChannelBuffer buffer, Class<T> valueType, Processor processor) {
+		return processor.read(buffer, valueType);
+	}
 
-    public static SerializationProvider newSerializationProvider() {
-        return new ResponseProcessorManager();
-    }
+	public static SerializationProvider newSerializationProvider() {
+		return new ResponseProcessorManager();
+	}
 
-    public static RestExpressRequestHandlerBuilder newBuilder(RouteDeclaration routeDeclaration) {
-        RestExpressRequestHandlerBuilder builder = RestExpressRequestHandlerBuilder.newBuilder()//
-                .addFinallyProcessor(new DefaultContentTypeFinallyProcessor())//
-                .addPostprocessor(new FileHeaderPostProcessor());
-        return builder.setRouteResolver(routeDeclaration.createRouteMapping(BASE_URL))//
-                .setShouldEnforceHttpSpec(false);
-    }
+	public static RestExpressRequestHandlerBuilder newBuilder(RouteDeclaration routeDeclaration) {
+		RestExpressRequestHandlerBuilder builder = RestExpressRequestHandlerBuilder.newBuilder()//
+				.addFinallyProcessor(new DefaultContentTypeFinallyProcessor())//
+				.addPostprocessor(new FileHeaderPostProcessor());
+		RestExpress restExpress = RestExpressService.newBuilder();
+		restExpress.settings().serverSettings().setBaseUrl(BASE_URL);
+		return builder.setRouteResolver(routeDeclaration.createRouteMapping(restExpress))//
+				.setShouldEnforceHttpSpec(false);
+	}
 
-    public static RestExpressRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration) {
-        return (RestExpressRequestHandler) newBuilder(routeDeclaration).build();
-    }
+	public static RestExpressRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration) {
+		return (RestExpressRequestHandler) newBuilder(routeDeclaration).build();
+	}
 
-    public static RestExpressRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration,
-            HttpResponseWriter httpResponseWriter) {
-        return (RestExpressRequestHandler) newBuilder(routeDeclaration).setHttpResponseWriter(httpResponseWriter).build();
-    }
+	public static RestExpressRequestHandler newDefaultRequestHandler(RouteDeclaration routeDeclaration, HttpResponseWriter httpResponseWriter) {
+		return (RestExpressRequestHandler) newBuilder(routeDeclaration).setHttpResponseWriter(httpResponseWriter).build();
+	}
 }

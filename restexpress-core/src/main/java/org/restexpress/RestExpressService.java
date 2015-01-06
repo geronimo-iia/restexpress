@@ -30,6 +30,7 @@ import java.util.concurrent.Executors;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.ws.rs.ext.ParamConverterProvider;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -42,6 +43,7 @@ import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.restexpress.context.ServerContext;
 import org.restexpress.domain.metadata.ServerMetadata;
 import org.restexpress.domain.response.ErrorResult;
+import org.restexpress.exception.ConfigurationException;
 import org.restexpress.pipeline.MessageObserver;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;
@@ -53,10 +55,13 @@ import org.restexpress.plugin.PluginManager;
 import org.restexpress.plugin.PluginService;
 import org.restexpress.processor.DefaultContentTypeFinallyProcessor;
 import org.restexpress.processor.FileHeaderPostProcessor;
+import org.restexpress.reader.JaxRsReader;
 import org.restexpress.response.ResponseWrapper;
 import org.restexpress.response.SerializationProvider;
 import org.restexpress.response.Wrapper;
 import org.restexpress.route.RouteDeclaration;
+import org.restexpress.route.RouteMapping;
+import org.restexpress.route.invoker.RestExpressParamConverterProvider;
 import org.restexpress.route.parameterized.ParameterizedRouteBuilder;
 import org.restexpress.route.regex.RegexRouteBuilder;
 import org.restexpress.serialization.JacksonJsonProcessor;
@@ -125,6 +130,11 @@ public class RestExpressService implements RestExpress, RestExpressLifeCycle {
 	private final RouteDeclaration routeDeclarations;
 
 	/**
+	 * {@link RouteMapping} instance.
+	 */
+	private RouteMapping routeMapping;
+
+	/**
 	 * {@link SerializationProvider} instance.
 	 */
 	private SerializationProvider serializationProvider;
@@ -133,6 +143,11 @@ public class RestExpressService implements RestExpress, RestExpressLifeCycle {
 	 * {@link ServerBootstrap} instance.
 	 */
 	private ServerBootstrap bootstrap = null;
+
+	/**
+	 * {@link ParamConverterProvider} instance.
+	 */
+	private ParamConverterProvider paramConverterProvider = null;
 
 	/**
 	 * Build a new instance of {@link RestExpressService} with specified
@@ -159,8 +174,10 @@ public class RestExpressService implements RestExpress, RestExpressLifeCycle {
 			add(new JacksonXmlProcessor(), Wrapper.newErrorResponseWrapper());
 			add(new TextProcessor(), Wrapper.newErrorResponseWrapper());
 			// TODO extends with JSEND Wrapper
-			//add(new JacksonJsonProcessor(), Wrapper.newJsendResponseWrapper());
-			//add(new JacksonXmlProcessor(), Wrapper.newJsendResponseWrapper());
+			// add(new JacksonJsonProcessor(),
+			// Wrapper.newJsendResponseWrapper());
+			// add(new JacksonXmlProcessor(),
+			// Wrapper.newJsendResponseWrapper());
 		}
 
 		// add standard Post Processor
@@ -221,16 +238,17 @@ public class RestExpressService implements RestExpress, RestExpressLifeCycle {
 
 		/* initialize plugins */
 		pluginManager.initialize(this);
-		
+
 		/* finalize RequestHandler */
-		requestHandlerBuilder.setRouteResolver(routeDeclarations.createRouteMapping(settings.serverSettings().getBaseUrl()));
-		
+		routeDeclarations.createRouteMapping(this);
+		routeDeclarations.clear();
+		requestHandlerBuilder.setRouteResolver(routeMapping);
+
 		/* bind plugins */
 		pluginManager.bind(this);
-		
+
 		final RestExpressRequestHandler requestHandler = requestHandlerBuilder.build();
-		
-		
+
 		// for test purpose
 		serializationProvider = requestHandler.serializationProvider();
 
@@ -312,6 +330,8 @@ public class RestExpressService implements RestExpress, RestExpressLifeCycle {
 			context.clear();
 			bootstrap = null;
 			serializationProvider = null;
+			routeDeclarations.clear();
+			routeMapping = null;
 		}
 	}
 
@@ -413,19 +433,46 @@ public class RestExpressService implements RestExpress, RestExpressLifeCycle {
 
 	@Override
 	public ServerMetadata getRouteMetadata() {
+		if (routeMapping == null)
+			throw new IllegalStateException("Server is not yet binded");
 		final ServerMetadata metadata = new ServerMetadata( //
 				settings.serverSettings().getName(), //
 				settings.serverSettings().getPort(), //
 				settings.serverSettings().getBaseUrl(), //
 				serializationProvider != null ? serializationProvider.supportedMediaType() : null, //
 				serializationProvider != null ? serializationProvider.defaultProcessor().mediaType() : null,//
-				routeDeclarations.getMetadata());
+				routeMapping.routeMetadata());
 		return metadata;
 	}
 
 	@Override
+	public RouteMapping routeMapping() {
+		if (routeMapping == null) {
+			routeMapping = new RouteMapping(settings.serverSettings().getBaseUrl());
+		}
+		return routeMapping;
+	}
+
+	@Override
 	public Map<String, String> getRouteUrlsByName() {
-		return routeDeclarations.getRouteUrlsByName(settings.serverSettings().getBaseUrl());
+		if (routeMapping == null) {
+			routeDeclarations.createRouteMapping(this);
+		}
+		return routeMapping().getRouteUrlsByName(settings.serverSettings().getBaseUrl());
+	}
+
+	@Override
+	public RestExpress route(Object controller) throws ConfigurationException {
+		JaxRsReader.register(this, controller);
+		return this;
+	}
+
+	@Override
+	public ParamConverterProvider paramConverterProvider() {
+		if (paramConverterProvider == null) {
+			paramConverterProvider = new RestExpressParamConverterProvider();
+		}
+		return paramConverterProvider;
 	}
 
 	/**

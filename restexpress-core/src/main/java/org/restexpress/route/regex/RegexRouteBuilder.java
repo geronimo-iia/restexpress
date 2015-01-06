@@ -19,13 +19,13 @@
  */
 package org.restexpress.route.regex;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteBuilder;
+import org.restexpress.route.invoker.Invoker;
 
 /**
  * @author toddf
@@ -42,9 +42,9 @@ public final class RegexRouteBuilder extends RouteBuilder {
     }
 
     @Override
-    protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method,
+    protected Route newRoute(final String pattern, final Invoker invoker, final HttpMethod method,
             final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
-        return new RegexRoute(pattern, controller, action, method, shouldSerializeResponse, name, flags, parameters);
+        return new RegexRoute(pattern, invoker, method, shouldSerializeResponse, name, flags, parameters);
     }
 
     @Override

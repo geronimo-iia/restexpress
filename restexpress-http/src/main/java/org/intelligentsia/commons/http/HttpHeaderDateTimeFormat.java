@@ -49,12 +49,13 @@ public enum HttpHeaderDateTimeFormat {
         }
 
     }, //
-    RFC_1123("EEE, dd MMM yyyy HH:mm:ss 'GMT'"), //
+    RFC_1123("EEE, dd MMM yyyy HH:mm:ss 'GMT'"), // EEE, dd MMM yyyy HH:mm:ss zzz"
     RFC_822("EEE, dd MMM yyyy HH:mm:ss z"), //
     RFC_850("EEEE, dd-MMM-yy HH:mm:ss z"), //
+    RFC_1036("EEEE, dd-MMM-yy HH:mm:ss zzz"), //
     AINSI_C_ASCTIME("EEE MMM d HH:mm:ss yyyy"), //
     DEFAULT_DATE("yyyy-MM-dd");
-
+    
     private static TimeZone UNIVERSAL_TIMEZONE = TimeZone.getTimeZone("UTC");
 
     private String format;
