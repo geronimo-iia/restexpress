@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * GatewayTimeoutException.
@@ -32,18 +32,18 @@ public class GatewayTimeoutException extends HttpRuntimeException {
 	private static final long serialVersionUID = -2113715167053813305L;
 
 	public GatewayTimeoutException() {
-		super(HttpResponseStandardStatus.GATEWAY_TIMEOUT);
+		super(HttpStatus.GATEWAY_TIMEOUT);
 	}
 
 	public GatewayTimeoutException(final String message) {
-		super(HttpResponseStandardStatus.GATEWAY_TIMEOUT, message);
+		super(HttpStatus.GATEWAY_TIMEOUT, message);
 	}
 
 	public GatewayTimeoutException(final Throwable cause) {
-		super(HttpResponseStandardStatus.GATEWAY_TIMEOUT, cause);
+		super(HttpStatus.GATEWAY_TIMEOUT, cause);
 	}
 
 	public GatewayTimeoutException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.GATEWAY_TIMEOUT, message, cause);
+		super(HttpStatus.GATEWAY_TIMEOUT, message, cause);
 	}
 }

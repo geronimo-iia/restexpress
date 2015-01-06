@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * NotFoundException.
@@ -32,18 +32,18 @@ public class NotFoundException extends HttpRuntimeException {
 	private static final long serialVersionUID = -1574740789203900506L;
 
 	public NotFoundException() {
-		super(HttpResponseStandardStatus.NOT_FOUND);
+		super(HttpStatus.NOT_FOUND);
 	}
 
 	public NotFoundException(final String message) {
-		super(HttpResponseStandardStatus.NOT_FOUND, message);
+		super(HttpStatus.NOT_FOUND, message);
 	}
 
 	public NotFoundException(final Throwable cause) {
-		super(HttpResponseStandardStatus.NOT_FOUND, cause);
+		super(HttpStatus.NOT_FOUND, cause);
 	}
 
 	public NotFoundException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.NOT_FOUND, message, cause);
+		super(HttpStatus.NOT_FOUND, message, cause);
 	}
 }

@@ -23,79 +23,70 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.restexpress.exception.Exceptions;
-import org.restexpress.exception.HttpRuntimeException;
-
 /**
- * ErrorResult is a wrapper class to deal with restexpress error return for java client.
+ * ErrorResult is a wrapper class to deal with restexpress error return for java
+ * client.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-@XmlRootElement(name="response")
+@XmlRootElement(name = "response")
 public class ErrorResult implements Serializable {
 
-    private static final long serialVersionUID = -3700889923122706476L;
-    /**
-     * HTTP response status code. It's a facility to keep status code here.
-     */
-    private int httpStatus;
-    /**
-     * Associated error message.
-     */
-    private String message;
-    /**
-     * class name of root cause.
-     */
-    private String errorType;
+	private static final long serialVersionUID = -3700889923122706476L;
+	/**
+	 * HTTP response status code. It's a facility to keep status code here.
+	 */
+	private int httpStatus;
+	/**
+	 * Associated error message.
+	 */
+	private String message;
+	/**
+	 * class name of root cause.
+	 */
+	private String errorType;
 
-    /**
-     * Build a new instance of {@link ErrorResult}.
-     */
-    public ErrorResult() {
-        super();
-    }
+	/**
+	 * Build a new instance of {@link ErrorResult}.
+	 */
+	public ErrorResult() {
+		super();
+	}
 
-    public ErrorResult(final int httpStatusCode, final String message, final String errorType) {
-        super();
-        this.httpStatus = httpStatusCode;
-        this.message = message;
-        this.errorType = errorType;
-    }
+	public ErrorResult(final int httpStatusCode, final String message, final String errorType) {
+		super();
+		this.httpStatus = httpStatusCode;
+		this.message = message;
+		this.errorType = errorType;
+	}
 
-    /**
-     * @return an {@link HttpRuntimeException} associated with this error.
-     */
-    public HttpRuntimeException toHttpRuntimeException() {
-        return Exceptions.getExceptionFor(httpStatus, message, errorType != null ? new RuntimeException(errorType) : null);
-    }
+	@Override
+	public String toString() {
+		// maybe little confusing with real json format
+		return "ErrorResult {httpStatusCode=\"" + httpStatus + "\", message=\"" + message + "\", errorType=\"" + errorType + "\"}";
+	}
 
-    @Override
-    public String toString() {
-    	// maybe little confusing with real json format
-        return "ErrorResult {httpStatusCode=\"" + httpStatus + "\", message=\"" + message + "\", errorType=\"" + errorType + "\"}";
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + httpStatus;
+		return result;
+	}
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + httpStatus;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ErrorResult other = (ErrorResult) obj;
-        if (httpStatus != other.httpStatus)
-            return false;
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ErrorResult other = (ErrorResult) obj;
+		if (httpStatus != other.httpStatus)
+			return false;
+		return true;
+	}
 
 }

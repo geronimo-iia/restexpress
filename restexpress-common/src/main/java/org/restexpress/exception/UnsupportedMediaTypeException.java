@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * UnsupportedMediaTypeException.
@@ -32,18 +32,18 @@ public class UnsupportedMediaTypeException extends HttpRuntimeException {
 	private static final long serialVersionUID = 2044388736406021134L;
 
 	public UnsupportedMediaTypeException() {
-		super(HttpResponseStandardStatus.UNSUPPORTED_MEDIA_TYPE);
+		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 	}
 
 	public UnsupportedMediaTypeException(final String message) {
-		super(HttpResponseStandardStatus.UNSUPPORTED_MEDIA_TYPE, message);
+		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message);
 	}
 
 	public UnsupportedMediaTypeException(final Throwable cause) {
-		super(HttpResponseStandardStatus.UNSUPPORTED_MEDIA_TYPE, cause);
+		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE, cause);
 	}
 
 	public UnsupportedMediaTypeException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.UNSUPPORTED_MEDIA_TYPE, message, cause);
+		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message, cause);
 	}
 }

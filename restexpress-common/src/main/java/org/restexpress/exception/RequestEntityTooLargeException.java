@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * RequestEntityTooLargeException.
@@ -32,18 +32,18 @@ public class RequestEntityTooLargeException extends HttpRuntimeException {
 	private static final long serialVersionUID = 698643750843281248L;
 
 	public RequestEntityTooLargeException() {
-		super(HttpResponseStandardStatus.REQUEST_ENTITY_TOO_LARGE);
+		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE);
 	}
 
 	public RequestEntityTooLargeException(final String message) {
-		super(HttpResponseStandardStatus.REQUEST_ENTITY_TOO_LARGE, message);
+		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE, message);
 	}
 
 	public RequestEntityTooLargeException(final Throwable cause) {
-		super(HttpResponseStandardStatus.REQUEST_ENTITY_TOO_LARGE, cause);
+		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE, cause);
 	}
 
 	public RequestEntityTooLargeException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.REQUEST_ENTITY_TOO_LARGE, message, cause);
+		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE, message, cause);
 	}
 }

@@ -44,7 +44,7 @@ import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
 import org.restexpress.domain.response.ErrorResult;
 import org.restexpress.exception.HttpRuntimeException;
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 import org.restexpress.response.ResponseWrapper;
 
 import com.google.common.io.Files;
@@ -319,7 +319,7 @@ public class PipelineExceptionTest {
 		@Override
 		public void process(MessageContext context) {
 			if (mustFail)
-				throw new HttpRuntimeException(HttpResponseStandardStatus.EXPECTATION_FAILED, "oups");
+				throw new HttpRuntimeException(HttpStatus.EXPECTATION_FAILED, "oups");
 		}
 	}
 

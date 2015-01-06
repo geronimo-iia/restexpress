@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * NotAcceptableException.
@@ -32,18 +32,18 @@ public class NotAcceptableException extends HttpRuntimeException {
 	private static final long serialVersionUID = 5094190116049133911L;
 
 	public NotAcceptableException() {
-		super(HttpResponseStandardStatus.NOT_ACCEPTABLE);
+		super(HttpStatus.NOT_ACCEPTABLE);
 	}
 
 	public NotAcceptableException(final String message) {
-		super(HttpResponseStandardStatus.NOT_ACCEPTABLE, message);
+		super(HttpStatus.NOT_ACCEPTABLE, message);
 	}
 
 	public NotAcceptableException(final Throwable cause) {
-		super(HttpResponseStandardStatus.NOT_ACCEPTABLE, cause);
+		super(HttpStatus.NOT_ACCEPTABLE, cause);
 	}
 
 	public NotAcceptableException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.NOT_ACCEPTABLE, message, cause);
+		super(HttpStatus.NOT_ACCEPTABLE, message, cause);
 	}
 }

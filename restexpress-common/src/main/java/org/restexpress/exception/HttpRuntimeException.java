@@ -19,8 +19,9 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
-import org.restexpress.http.status.HttpResponseStatus;
+import javax.ws.rs.core.Response.StatusType;
+
+import org.restexpress.http.HttpStatus;
 
 /**
  * 
@@ -33,7 +34,7 @@ public class HttpRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 3962170392582457984L;
 
-	private HttpResponseStatus httpResponseStatus = HttpResponseStandardStatus.INTERNAL_SERVER_ERROR;
+	private StatusType httpResponseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
 	public HttpRuntimeException() {
 		super();
@@ -51,22 +52,22 @@ public class HttpRuntimeException extends RuntimeException {
 		super(message, cause);
 	}
 
-	public HttpRuntimeException(final HttpResponseStatus httpResponseStatus) {
+	public HttpRuntimeException(final StatusType httpResponseStatus) {
 		super();
 		this.httpResponseStatus = httpResponseStatus;
 	}
 
-	public HttpRuntimeException(final HttpResponseStatus httpResponseStatus, final String message) {
+	public HttpRuntimeException(final StatusType httpResponseStatus, final String message) {
 		super(message);
 		this.httpResponseStatus = httpResponseStatus;
 	}
 
-	public HttpRuntimeException(final HttpResponseStatus httpResponseStatus, final Throwable cause) {
+	public HttpRuntimeException(final StatusType httpResponseStatus, final Throwable cause) {
 		super(cause);
 		this.httpResponseStatus = httpResponseStatus;
 	}
 
-	public HttpRuntimeException(final HttpResponseStatus httpResponseStatus, final String message, final Throwable cause) {
+	public HttpRuntimeException(final StatusType httpResponseStatus, final String message, final Throwable cause) {
 		super(message, cause);
 		this.httpResponseStatus = httpResponseStatus;
 	}
@@ -74,7 +75,7 @@ public class HttpRuntimeException extends RuntimeException {
 	/**
 	 * @return associated {@link HttpResponseStatus}.
 	 */
-	public HttpResponseStatus getHttpResponseStatus() {
+	public StatusType getHttpResponseStatus() {
 		return httpResponseStatus;
 	}
 

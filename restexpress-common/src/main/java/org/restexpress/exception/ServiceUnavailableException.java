@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * ServiceUnavailableException.
@@ -32,18 +32,18 @@ public class ServiceUnavailableException extends HttpRuntimeException {
 	private static final long serialVersionUID = 3732813253500357763L;
 
 	public ServiceUnavailableException() {
-		super(HttpResponseStandardStatus.SERVICE_UNAVAILABLE);
+		super(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
 	public ServiceUnavailableException(final String message) {
-		super(HttpResponseStandardStatus.SERVICE_UNAVAILABLE, message);
+		super(HttpStatus.SERVICE_UNAVAILABLE, message);
 	}
 
 	public ServiceUnavailableException(final Throwable cause) {
-		super(HttpResponseStandardStatus.SERVICE_UNAVAILABLE, cause);
+		super(HttpStatus.SERVICE_UNAVAILABLE, cause);
 	}
 
 	public ServiceUnavailableException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.SERVICE_UNAVAILABLE, message, cause);
+		super(HttpStatus.SERVICE_UNAVAILABLE, message, cause);
 	}
 }

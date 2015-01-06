@@ -33,7 +33,7 @@ import org.restexpress.domain.Format;
 import org.restexpress.exception.HttpRuntimeException;
 import org.restexpress.http.HttpHeader;
 import org.restexpress.http.HttpDateTimeFormat;
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
 
@@ -106,7 +106,7 @@ public final class FileHeaderPostProcessor implements Postprocessor {
 	 * @return True if resource is modified since date value read from
 	 *         {@link RequestHeader#IF_MODIFIED_SINCE}.
 	 * @throws HttpRuntimeException
-	 *             {@link HttpResponseStandardStatus#BAD_REQUEST} if header
+	 *             {@link HttpStatus#BAD_REQUEST} if header
 	 *             {@link RequestHeader#IF_MODIFIED_SINCE} cannot be parsed.
 	 */
 	protected static boolean isModifiedSince(final Request request, final File resource) throws HttpRuntimeException {
@@ -119,7 +119,7 @@ public final class FileHeaderPostProcessor implements Postprocessor {
 				final long fileLastModifiedSeconds = resource.lastModified() / 1000;
 				return ifModifiedSinceDateSeconds <= fileLastModifiedSeconds;
 			} catch (final ParseException e) {
-				throw new HttpRuntimeException(HttpResponseStandardStatus.BAD_REQUEST, e);
+				throw new HttpRuntimeException(HttpStatus.BAD_REQUEST, e);
 			}
 		}
 		return true;

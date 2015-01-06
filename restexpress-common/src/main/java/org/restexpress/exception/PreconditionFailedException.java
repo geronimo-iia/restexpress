@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * PreconditionFailedException.
@@ -32,18 +32,18 @@ public class PreconditionFailedException extends HttpRuntimeException {
 	private static final long serialVersionUID = -1991232020269814812L;
 
 	public PreconditionFailedException() {
-		super(HttpResponseStandardStatus.PRECONDITION_FAILED);
+		super(HttpStatus.PRECONDITION_FAILED);
 	}
 
 	public PreconditionFailedException(final String message) {
-		super(HttpResponseStandardStatus.PRECONDITION_FAILED, message);
+		super(HttpStatus.PRECONDITION_FAILED, message);
 	}
 
 	public PreconditionFailedException(final Throwable cause) {
-		super(HttpResponseStandardStatus.PRECONDITION_FAILED, cause);
+		super(HttpStatus.PRECONDITION_FAILED, cause);
 	}
 
 	public PreconditionFailedException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.PRECONDITION_FAILED, message, cause);
+		super(HttpStatus.PRECONDITION_FAILED, message, cause);
 	}
 }

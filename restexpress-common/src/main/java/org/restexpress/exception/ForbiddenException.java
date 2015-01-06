@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * ForbiddenException.
@@ -32,18 +32,18 @@ public class ForbiddenException extends HttpRuntimeException {
 	private static final long serialVersionUID = 374182124797822729L;
 
 	public ForbiddenException() {
-		super(HttpResponseStandardStatus.FORBIDDEN);
+		super(HttpStatus.FORBIDDEN);
 	}
 
 	public ForbiddenException(final String message) {
-		super(HttpResponseStandardStatus.FORBIDDEN, message);
+		super(HttpStatus.FORBIDDEN, message);
 	}
 
 	public ForbiddenException(final Throwable cause) {
-		super(HttpResponseStandardStatus.FORBIDDEN, cause);
+		super(HttpStatus.FORBIDDEN, cause);
 	}
 
 	public ForbiddenException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.FORBIDDEN, message, cause);
+		super(HttpStatus.FORBIDDEN, message, cause);
 	}
 }

@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * BadRequestException.
@@ -32,18 +32,18 @@ public class BadRequestException extends HttpRuntimeException {
 	private static final long serialVersionUID = -2463282880896905448L;
 
 	public BadRequestException() {
-		super(HttpResponseStandardStatus.BAD_REQUEST);
+		super(HttpStatus.BAD_REQUEST);
 	}
 
 	public BadRequestException(final String message) {
-		super(HttpResponseStandardStatus.BAD_REQUEST, message);
+		super(HttpStatus.BAD_REQUEST, message);
 	}
 
 	public BadRequestException(final Throwable cause) {
-		super(HttpResponseStandardStatus.BAD_REQUEST, cause);
+		super(HttpStatus.BAD_REQUEST, cause);
 	}
 
 	public BadRequestException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.BAD_REQUEST, message, cause);
+		super(HttpStatus.BAD_REQUEST, message, cause);
 	}
 }

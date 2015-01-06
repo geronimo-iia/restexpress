@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * UnprocessableEntityException.
@@ -32,18 +32,18 @@ public class UnprocessableEntityException extends HttpRuntimeException {
 	private static final long serialVersionUID = -4617071830987345303L;
 
 	public UnprocessableEntityException() {
-		super(HttpResponseStandardStatus.UNPROCESSABLE_ENTITY);
+		super(HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
 	public UnprocessableEntityException(final String message) {
-		super(HttpResponseStandardStatus.UNPROCESSABLE_ENTITY, message);
+		super(HttpStatus.UNPROCESSABLE_ENTITY, message);
 	}
 
 	public UnprocessableEntityException(final Throwable cause) {
-		super(HttpResponseStandardStatus.UNPROCESSABLE_ENTITY, cause);
+		super(HttpStatus.UNPROCESSABLE_ENTITY, cause);
 	}
 
 	public UnprocessableEntityException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.UNPROCESSABLE_ENTITY, message, cause);
+		super(HttpStatus.UNPROCESSABLE_ENTITY, message, cause);
 	}
 }

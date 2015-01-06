@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * InternalServerErrorException.
@@ -32,18 +32,18 @@ public class InternalServerErrorException extends HttpRuntimeException {
 	private static final long serialVersionUID = 1504044651590300989L;
 
 	public InternalServerErrorException() {
-		super(HttpResponseStandardStatus.INTERNAL_SERVER_ERROR);
+		super(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	public InternalServerErrorException(final String message) {
-		super(HttpResponseStandardStatus.INTERNAL_SERVER_ERROR, message);
+		super(HttpStatus.INTERNAL_SERVER_ERROR, message);
 	}
 
 	public InternalServerErrorException(final Throwable cause) {
-		super(HttpResponseStandardStatus.INTERNAL_SERVER_ERROR, cause);
+		super(HttpStatus.INTERNAL_SERVER_ERROR, cause);
 	}
 
 	public InternalServerErrorException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.INTERNAL_SERVER_ERROR, message, cause);
+		super(HttpStatus.INTERNAL_SERVER_ERROR, message, cause);
 	}
 }

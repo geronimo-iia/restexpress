@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * Exceptions.
@@ -92,7 +92,7 @@ public enum Exceptions {
 		case 415:
 			return new UnsupportedMediaTypeException(message, cause);
 		default:
-			return new HttpRuntimeException(HttpResponseStandardStatus.valueOf(code), message, cause);
+			return new HttpRuntimeException(HttpStatus.valueOf(code), message, cause);
 		}
 	}
 }

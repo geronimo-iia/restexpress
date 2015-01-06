@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStatus;
+import javax.ws.rs.core.Response.StatusType;
 
 public class HttpSpecificationException extends HttpRuntimeException {
 
@@ -29,19 +29,19 @@ public class HttpSpecificationException extends HttpRuntimeException {
 		super();
 	}
 
-	public HttpSpecificationException(final HttpResponseStatus httpResponseStatus, final String message, final Throwable cause) {
+	public HttpSpecificationException(final StatusType httpResponseStatus, final String message, final Throwable cause) {
 		super(httpResponseStatus, message, cause);
 	}
 
-	public HttpSpecificationException(final HttpResponseStatus httpResponseStatus, final String message) {
+	public HttpSpecificationException(final StatusType httpResponseStatus, final String message) {
 		super(httpResponseStatus, message);
 	}
 
-	public HttpSpecificationException(final HttpResponseStatus httpResponseStatus, final Throwable cause) {
+	public HttpSpecificationException(final StatusType httpResponseStatus, final Throwable cause) {
 		super(httpResponseStatus, cause);
 	}
 
-	public HttpSpecificationException(final HttpResponseStatus httpResponseStatus) {
+	public HttpSpecificationException(final StatusType httpResponseStatus) {
 		super(httpResponseStatus);
 	}
 

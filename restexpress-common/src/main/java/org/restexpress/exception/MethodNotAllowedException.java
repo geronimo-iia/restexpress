@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * MethodNotAllowedException.
@@ -32,18 +32,18 @@ public class MethodNotAllowedException extends HttpRuntimeException {
 	private static final long serialVersionUID = -167593829219516789L;
 
 	public MethodNotAllowedException() {
-		super(HttpResponseStandardStatus.METHOD_NOT_ALLOWED);
+		super(HttpStatus.METHOD_NOT_ALLOWED);
 	}
 
 	public MethodNotAllowedException(final String message) {
-		super(HttpResponseStandardStatus.METHOD_NOT_ALLOWED, message);
+		super(HttpStatus.METHOD_NOT_ALLOWED, message);
 	}
 
 	public MethodNotAllowedException(final Throwable cause) {
-		super(HttpResponseStandardStatus.METHOD_NOT_ALLOWED, cause);
+		super(HttpStatus.METHOD_NOT_ALLOWED, cause);
 	}
 
 	public MethodNotAllowedException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.METHOD_NOT_ALLOWED, message, cause);
+		super(HttpStatus.METHOD_NOT_ALLOWED, message, cause);
 	}
 }

@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * HttpVersionNotSupportedException.
@@ -32,18 +32,18 @@ public class HttpVersionNotSupportedException extends HttpRuntimeException {
 	private static final long serialVersionUID = -4193585922038440936L;
 
 	public HttpVersionNotSupportedException() {
-		super(HttpResponseStandardStatus.HTTP_VERSION_NOT_SUPPORTED);
+		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED);
 	}
 
 	public HttpVersionNotSupportedException(final String message) {
-		super(HttpResponseStandardStatus.HTTP_VERSION_NOT_SUPPORTED, message);
+		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, message);
 	}
 
 	public HttpVersionNotSupportedException(final Throwable cause) {
-		super(HttpResponseStandardStatus.HTTP_VERSION_NOT_SUPPORTED, cause);
+		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, cause);
 	}
 
 	public HttpVersionNotSupportedException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.HTTP_VERSION_NOT_SUPPORTED, message, cause);
+		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, message, cause);
 	}
 }

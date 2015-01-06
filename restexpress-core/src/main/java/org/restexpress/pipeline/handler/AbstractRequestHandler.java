@@ -113,7 +113,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 			Throwable rootCause = cause;
 			if (HttpRuntimeException.class.isAssignableFrom(cause.getClass())) {
 				final HttpRuntimeException httpRuntimeException = (HttpRuntimeException) cause;
-				context.setHttpStatus(HttpResponseStatus.valueOf(httpRuntimeException.getHttpResponseStatus().getCode()));
+				context.setHttpStatus(HttpResponseStatus.valueOf(httpRuntimeException.getHttpResponseStatus().getStatusCode()));
 			} else {
 				rootCause = Exceptions.findRootCause(cause);
 				context.setHttpStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);

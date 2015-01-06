@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * UnauthorizedException.
@@ -32,18 +32,18 @@ public class UnauthorizedException extends HttpRuntimeException {
 	private static final long serialVersionUID = 7935920301143675954L;
 
 	public UnauthorizedException() {
-		super(HttpResponseStandardStatus.UNAUTHORIZED);
+		super(HttpStatus.UNAUTHORIZED);
 	}
 
 	public UnauthorizedException(final String message) {
-		super(HttpResponseStandardStatus.UNAUTHORIZED, message);
+		super(HttpStatus.UNAUTHORIZED, message);
 	}
 
 	public UnauthorizedException(final Throwable cause) {
-		super(HttpResponseStandardStatus.UNAUTHORIZED, cause);
+		super(HttpStatus.UNAUTHORIZED, cause);
 	}
 
 	public UnauthorizedException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.UNAUTHORIZED, message, cause);
+		super(HttpStatus.UNAUTHORIZED, message, cause);
 	}
 }

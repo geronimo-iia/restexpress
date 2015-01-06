@@ -37,7 +37,7 @@ import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.exception.HttpRuntimeException;
 import org.restexpress.http.HttpHeader;
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 import org.restexpress.pipeline.HttpResponseWriter;
 
 /**
@@ -96,7 +96,7 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 			writeContent(ctx, httpResponse, resource, channelFutureListener);
 
 		} catch (FileNotFoundException e) {
-			throw new HttpRuntimeException(HttpResponseStandardStatus.NOT_FOUND, e);
+			throw new HttpRuntimeException(HttpStatus.NOT_FOUND, e);
 		}
 	}
 

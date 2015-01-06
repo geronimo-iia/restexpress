@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * ExpectationFailedException.
@@ -32,18 +32,18 @@ public class ExpectationFailedException extends HttpRuntimeException {
 	private static final long serialVersionUID = 5007025212270536321L;
 
 	public ExpectationFailedException() {
-		super(HttpResponseStandardStatus.EXPECTATION_FAILED);
+		super(HttpStatus.EXPECTATION_FAILED);
 	}
 
 	public ExpectationFailedException(final String message) {
-		super(HttpResponseStandardStatus.EXPECTATION_FAILED, message);
+		super(HttpStatus.EXPECTATION_FAILED, message);
 	}
 
 	public ExpectationFailedException(final Throwable cause) {
-		super(HttpResponseStandardStatus.EXPECTATION_FAILED, cause);
+		super(HttpStatus.EXPECTATION_FAILED, cause);
 	}
 
 	public ExpectationFailedException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.EXPECTATION_FAILED, message, cause);
+		super(HttpStatus.EXPECTATION_FAILED, message, cause);
 	}
 }

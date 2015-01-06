@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * ConflictException.
@@ -32,18 +32,18 @@ public class ConflictException extends HttpRuntimeException {
 	private static final long serialVersionUID = -115043137781833730L;
 
 	public ConflictException() {
-		super(HttpResponseStandardStatus.CONFLICT);
+		super(HttpStatus.CONFLICT);
 	}
 
 	public ConflictException(final String message) {
-		super(HttpResponseStandardStatus.CONFLICT, message);
+		super(HttpStatus.CONFLICT, message);
 	}
 
 	public ConflictException(final Throwable cause) {
-		super(HttpResponseStandardStatus.CONFLICT, cause);
+		super(HttpStatus.CONFLICT, cause);
 	}
 
 	public ConflictException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.CONFLICT, message, cause);
+		super(HttpStatus.CONFLICT, message, cause);
 	}
 }

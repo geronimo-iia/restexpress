@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * RequestTimeoutException.
@@ -32,18 +32,18 @@ public class RequestTimeoutException extends HttpRuntimeException {
 	private static final long serialVersionUID = -6180723103106429008L;
 
 	public RequestTimeoutException() {
-		super(HttpResponseStandardStatus.REQUEST_TIMEOUT);
+		super(HttpStatus.REQUEST_TIMEOUT);
 	}
 
 	public RequestTimeoutException(final String message) {
-		super(HttpResponseStandardStatus.REQUEST_TIMEOUT, message);
+		super(HttpStatus.REQUEST_TIMEOUT, message);
 	}
 
 	public RequestTimeoutException(final Throwable cause) {
-		super(HttpResponseStandardStatus.REQUEST_TIMEOUT, cause);
+		super(HttpStatus.REQUEST_TIMEOUT, cause);
 	}
 
 	public RequestTimeoutException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.REQUEST_TIMEOUT, message, cause);
+		super(HttpStatus.REQUEST_TIMEOUT, message, cause);
 	}
 }

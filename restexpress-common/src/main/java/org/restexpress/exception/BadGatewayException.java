@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * BadGatewayException.
@@ -32,18 +32,18 @@ public class BadGatewayException extends HttpRuntimeException {
 	private static final long serialVersionUID = -7616759496703759227L;
 
 	public BadGatewayException() {
-		super(HttpResponseStandardStatus.BAD_GATEWAY);
+		super(HttpStatus.BAD_GATEWAY);
 	}
 
 	public BadGatewayException(final String message) {
-		super(HttpResponseStandardStatus.BAD_GATEWAY, message);
+		super(HttpStatus.BAD_GATEWAY, message);
 	}
 
 	public BadGatewayException(final Throwable cause) {
-		super(HttpResponseStandardStatus.BAD_GATEWAY, cause);
+		super(HttpStatus.BAD_GATEWAY, cause);
 	}
 
 	public BadGatewayException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.BAD_GATEWAY, message, cause);
+		super(HttpStatus.BAD_GATEWAY, message, cause);
 	}
 }

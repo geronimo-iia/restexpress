@@ -19,7 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.restexpress.http.status.HttpResponseStandardStatus;
+import org.restexpress.http.HttpStatus;
 
 /**
  * RequestUriTooLongException.
@@ -32,18 +32,18 @@ public class RequestUriTooLongException extends HttpRuntimeException {
 	private static final long serialVersionUID = 4463345798955463381L;
 
 	public RequestUriTooLongException() {
-		super(HttpResponseStandardStatus.REQUEST_URI_TOO_LONG);
+		super(HttpStatus.REQUEST_URI_TOO_LONG);
 	}
 
 	public RequestUriTooLongException(final String message) {
-		super(HttpResponseStandardStatus.REQUEST_URI_TOO_LONG, message);
+		super(HttpStatus.REQUEST_URI_TOO_LONG, message);
 	}
 
 	public RequestUriTooLongException(final Throwable cause) {
-		super(HttpResponseStandardStatus.REQUEST_URI_TOO_LONG, cause);
+		super(HttpStatus.REQUEST_URI_TOO_LONG, cause);
 	}
 
 	public RequestUriTooLongException(final String message, final Throwable cause) {
-		super(HttpResponseStandardStatus.REQUEST_URI_TOO_LONG, message, cause);
+		super(HttpStatus.REQUEST_URI_TOO_LONG, message, cause);
 	}
 }
