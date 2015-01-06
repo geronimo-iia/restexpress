@@ -17,65 +17,29 @@
  *        under the License.
  *
  */
-package org.restexpress.jaxrs;
+package org.restexpress.reader;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import org.restexpress.Request;
-import org.restexpress.Response;
-
 /**
- * {@link EchoService} implmentation.
+ * {@link MapperService} implmentation.
  * 
  */
 @Path("/")
-public class EchoService {
+public class MapperService {
 
-	public EchoService() {
+	public MapperService() {
 	}
 
 	@GET
-	public String read(@DefaultValue("arf") @QueryParam("echo") String echo) {
+	public String read(@DefaultValue("arf") @QueryParam("echo") String echo, @QueryParam("i") @DefaultValue("0") int i) {
 		if (echo == null) {
 			return "Please set query-string parameter 'echo' (e.g. ?echo=value)";
 		}
-		return echo;
+		return echo + " index " + i;
 	}
 
-	@GET
-	@Path("/hello")
-	public String hello() {
-		return "hello";
-	}
-
-	@GET
-	@Path("/greeting")
-	public String greeting(Request request) {
-		String who = request.getQueryStringMap().get("who");
-		return "hello " + who + "!";
-	}
-
-	@GET
-	@Path("/restexpress/{who}")
-	public String restexpress(@PathParam("who") String who) {
-		return "hello " + who + "!";
-	}
-
-	@POST
-	@DELETE
-	public void dummy(Request request, Response response) {
-
-	}
-
-	@HEAD
-    public String info() {
-    	return "some info";
-    }
 }

@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.jaxrs;
+package org.restexpress.reader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -34,9 +34,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.Test;
-import org.restexpress.JaxRsReader;
 import org.restexpress.RestExpressService;
 import org.restexpress.exception.ConfigurationException;
+import org.restexpress.reader.JaxRsReader;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;

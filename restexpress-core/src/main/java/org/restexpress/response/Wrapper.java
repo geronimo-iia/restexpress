@@ -33,6 +33,7 @@ import org.restexpress.exception.Exceptions;
  * 
  */
 public enum Wrapper {
+	JSEND, ERROR, RAW
 	;
 
 	/**

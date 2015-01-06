@@ -55,6 +55,7 @@ import org.restexpress.plugin.PluginManager;
 import org.restexpress.plugin.PluginService;
 import org.restexpress.processor.DefaultContentTypeFinallyProcessor;
 import org.restexpress.processor.FileHeaderPostProcessor;
+import org.restexpress.reader.JaxRsReader;
 import org.restexpress.response.ResponseWrapper;
 import org.restexpress.response.SerializationProvider;
 import org.restexpress.response.Wrapper;

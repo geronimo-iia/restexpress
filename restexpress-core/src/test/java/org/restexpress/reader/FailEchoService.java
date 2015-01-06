@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.jaxrs;
+package org.restexpress.reader;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
