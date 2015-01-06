@@ -15,10 +15,6 @@
 		<license.header.path>../header.txt</license.header.path>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>org.intelligents-ia.restexpress</groupId>
-			<artifactId>restexpress-http</artifactId>
-		</dependency>
 		<!-- JAXRS API -->
 		<dependency>
 			<groupId>javax.ws.rs</groupId>

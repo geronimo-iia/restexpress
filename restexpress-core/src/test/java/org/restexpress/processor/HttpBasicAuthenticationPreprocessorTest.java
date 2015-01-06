@@ -37,8 +37,6 @@ package org.restexpress.processor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.intelligentsia.commons.http.HttpHeader;
-import org.intelligentsia.commons.http.exception.UnauthorizedException;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -46,6 +44,8 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.restexpress.Response;
 import org.restexpress.TestToolKit;
+import org.restexpress.exception.UnauthorizedException;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Preprocessor;
 

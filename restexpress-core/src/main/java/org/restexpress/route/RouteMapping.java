@@ -41,13 +41,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.intelligentsia.commons.http.HttpHeader;
-import org.intelligentsia.commons.http.exception.MethodNotAllowedException;
-import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.metadata.RouteMetadata;
+import org.restexpress.exception.MethodNotAllowedException;
+import org.restexpress.exception.NotFoundException;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.url.UrlMatch;
 

@@ -22,7 +22,7 @@ package org.restexpress.serialization.jackson;
 import java.io.IOException;
 import java.util.Date;
 
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
+import org.restexpress.http.HttpDateTimeFormat;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * {@link JacksonTimepointSerializer} serialize date in {@link HttpHeaderDateTimeFormat#ISO_8601} format.
+ * {@link JacksonTimepointSerializer} serialize date in {@link HttpDateTimeFormat#ISO_8601} format.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
@@ -43,6 +43,6 @@ public class JacksonTimepointSerializer extends JsonSerializer<Date> {
     @Override
     public void serialize(final Date date, final JsonGenerator jsonGenerator, final SerializerProvider sp) throws IOException,
             JsonProcessingException {
-        jsonGenerator.writeString(HttpHeaderDateTimeFormat.ISO_8601.format(date));
+        jsonGenerator.writeString(HttpDateTimeFormat.ISO_8601.format(date));
     }
 }

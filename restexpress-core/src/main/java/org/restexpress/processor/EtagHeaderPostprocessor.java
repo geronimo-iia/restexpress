@@ -19,10 +19,10 @@
  */
 package org.restexpress.processor;
 
-import org.intelligentsia.commons.http.HttpHeader;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
 

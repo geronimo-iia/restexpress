@@ -21,10 +21,10 @@ package org.restexpress.processor;
 
 import java.util.Date;
 
-import org.intelligentsia.commons.http.HttpHeader;
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
+import org.restexpress.http.HttpHeader;
+import org.restexpress.http.HttpDateTimeFormat;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
 
@@ -49,7 +49,7 @@ public class DateHeaderPostprocessor implements Postprocessor {
         if ((request.isMethodGet() || HttpMethod.HEAD.equals(request.getHttpMethod()))
                 && !context.getResponse().hasHeader(HttpHeader.DATE)) {
             final Date date = new Date(System.currentTimeMillis());
-            context.getResponse().addHeader(HttpHeader.DATE, HttpHeaderDateTimeFormat.RFC_1123.format(date));
+            context.getResponse().addHeader(HttpHeader.DATE, HttpDateTimeFormat.RFC_1123.format(date));
         }
     }
 }

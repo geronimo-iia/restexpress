@@ -40,9 +40,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.intelligentsia.commons.http.HttpHeader;
-import org.intelligentsia.commons.http.HttpMethods;
-import org.intelligentsia.commons.http.exception.MethodNotAllowedException;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
@@ -54,6 +51,9 @@ import org.restexpress.Response;
 import org.restexpress.RestExpress;
 import org.restexpress.RestExpressService;
 import org.restexpress.TestToolKit;
+import org.restexpress.exception.MethodNotAllowedException;
+import org.restexpress.http.HttpHeader;
+import org.restexpress.http.HttpMethods;
 import org.restexpress.pipeline.MessageContext;
 
 /**

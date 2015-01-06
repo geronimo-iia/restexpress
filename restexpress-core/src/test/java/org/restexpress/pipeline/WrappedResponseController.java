@@ -19,10 +19,10 @@
  */
 package org.restexpress.pipeline;
 
-import org.intelligentsia.commons.http.exception.NotAcceptableException;
-import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.exception.NotAcceptableException;
+import org.restexpress.exception.NotFoundException;
 
 /**
  * {@link WrappedResponseController} is a dummy controller for test case.

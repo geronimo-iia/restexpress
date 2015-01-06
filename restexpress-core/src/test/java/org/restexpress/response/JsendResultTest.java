@@ -25,11 +25,11 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.junit.Test;
 import org.restexpress.Response;
 import org.restexpress.domain.response.JsendResult;
 import org.restexpress.domain.response.JsendResult.State;
+import org.restexpress.exception.HttpRuntimeException;
 
 
 /**

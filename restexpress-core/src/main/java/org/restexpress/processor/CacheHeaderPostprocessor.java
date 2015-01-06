@@ -21,13 +21,13 @@ package org.restexpress.processor;
 
 import java.util.Date;
 
-import org.intelligentsia.commons.http.HttpHeader;
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Flags;
 import org.restexpress.Parameters;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.http.HttpHeader;
+import org.restexpress.http.HttpDateTimeFormat;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
 
@@ -74,7 +74,7 @@ public class CacheHeaderPostprocessor implements Postprocessor {
         if (maxAge != null) {
             response.addHeader(HttpHeader.CACHE_CONTROL, String.format("max-age=%s", maxAge));
             response.addHeader(HttpHeader.EXPIRES,
-                    HttpHeaderDateTimeFormat.RFC_1123.format(computeExpiresDate((Integer) maxAge)));
+                    HttpDateTimeFormat.RFC_1123.format(computeExpiresDate((Integer) maxAge)));
         } else if (request.isFlagged(Flags.NO_CACHE)) {
             response.addHeader(HttpHeader.CACHE_CONTROL, NO_CACHE);
             response.addHeader(HttpHeader.PRAGMA, NO_CACHE);

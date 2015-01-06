@@ -21,7 +21,6 @@ package org.restexpress.pipeline.handler;
 
 import java.util.List;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
@@ -31,6 +30,7 @@ import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.exception.Exceptions;
+import org.restexpress.exception.HttpRuntimeException;
 import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.MessageObserver;

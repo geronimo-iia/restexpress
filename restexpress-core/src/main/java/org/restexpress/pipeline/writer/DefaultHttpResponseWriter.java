@@ -24,9 +24,6 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
-import org.intelligentsia.commons.http.HttpHeader;
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
-import org.intelligentsia.commons.http.status.HttpResponseStandardStatus;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelFuture;
@@ -38,6 +35,9 @@ import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
+import org.restexpress.exception.HttpRuntimeException;
+import org.restexpress.http.HttpHeader;
+import org.restexpress.http.status.HttpResponseStandardStatus;
 import org.restexpress.pipeline.HttpResponseWriter;
 
 /**

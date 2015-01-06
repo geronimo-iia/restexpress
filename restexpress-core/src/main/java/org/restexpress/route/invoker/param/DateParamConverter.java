@@ -24,7 +24,7 @@ import java.util.Date;
 
 import javax.ws.rs.ext.ParamConverter;
 
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
+import org.restexpress.http.HttpDateTimeFormat;
 
 /**
  * {@link DateParamConverter} implements a {@link ParamConverter} for
@@ -38,7 +38,7 @@ public class DateParamConverter implements ParamConverter<Date> {
 	@Override
 	public Date fromString(String value) {
 		try {
-			return value != null ? HttpHeaderDateTimeFormat.parseAny(value) : null;
+			return value != null ? HttpDateTimeFormat.parseAny(value) : null;
 		} catch (ParseException e) {
 			throw new IllegalArgumentException(e);
 		}
@@ -46,6 +46,6 @@ public class DateParamConverter implements ParamConverter<Date> {
 
 	@Override
 	public String toString(Date value) {
-		return value != null ? HttpHeaderDateTimeFormat.ISO_8601.format(value) : "";
+		return value != null ? HttpDateTimeFormat.ISO_8601.format(value) : "";
 	}
 }

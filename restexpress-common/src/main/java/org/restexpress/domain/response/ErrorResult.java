@@ -23,8 +23,8 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.intelligentsia.commons.http.exception.Exceptions;
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
+import org.restexpress.exception.Exceptions;
+import org.restexpress.exception.HttpRuntimeException;
 
 /**
  * ErrorResult is a wrapper class to deal with restexpress error return for java client.

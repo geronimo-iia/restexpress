@@ -19,11 +19,11 @@
  */
 package org.restexpress.processor;
 
-import org.intelligentsia.commons.http.HttpHeader;
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
-import org.intelligentsia.commons.http.HttpMethods;
 import org.restexpress.Response;
 import org.restexpress.domain.TimeStamped;
+import org.restexpress.http.HttpHeader;
+import org.restexpress.http.HttpDateTimeFormat;
+import org.restexpress.http.HttpMethods;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
 
@@ -47,7 +47,7 @@ public class LastModifiedHeaderPostprocessor implements Postprocessor {
             Object body = response.getBody();
             if (TimeStamped.class.isAssignableFrom(body.getClass())) {
                 response.addHeader(HttpHeader.LAST_MODIFIED,
-                        HttpHeaderDateTimeFormat.RFC_1123.format(((TimeStamped) body).updateAt()));
+                        HttpDateTimeFormat.RFC_1123.format(((TimeStamped) body).updateAt()));
             }
         }
 

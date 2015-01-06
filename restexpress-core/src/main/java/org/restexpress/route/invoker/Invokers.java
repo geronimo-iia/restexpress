@@ -31,10 +31,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.exception.ConfigurationException;
+import org.restexpress.exception.HttpRuntimeException;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.route.invoker.ParamMappers.ArrayParamMapper;
 import org.restexpress.route.invoker.ParamMappers.HeaderParamMapper;

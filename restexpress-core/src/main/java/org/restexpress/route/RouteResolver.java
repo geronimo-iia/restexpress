@@ -34,9 +34,9 @@
  */
 package org.restexpress.route;
 
-import org.intelligentsia.commons.http.exception.MethodNotAllowedException;
-import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.exception.MethodNotAllowedException;
+import org.restexpress.exception.NotFoundException;
 import org.restexpress.pipeline.MessageContext;
 
 /**

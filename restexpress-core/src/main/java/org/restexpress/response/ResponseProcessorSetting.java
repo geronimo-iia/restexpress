@@ -31,11 +31,11 @@
  */
 package org.restexpress.response;
 
-import org.intelligentsia.commons.http.HttpHeader;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.exception.DeserializationException;
 import org.restexpress.exception.SerializationException;
+import org.restexpress.http.HttpHeader;
 
 /**
  * {@link ResponseProcessorSetting} represent a selection of a specific media

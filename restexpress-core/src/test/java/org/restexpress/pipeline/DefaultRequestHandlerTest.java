@@ -39,7 +39,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.Before;
@@ -49,6 +48,7 @@ import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
+import org.restexpress.exception.BadRequestException;
 import org.restexpress.pipeline.handler.RestExpressRequestHandler;
 import org.restexpress.pipeline.handler.RestExpressRequestHandlerBuilder;
 import org.restexpress.response.Wrapper;

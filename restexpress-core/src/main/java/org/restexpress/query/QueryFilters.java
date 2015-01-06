@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.restexpress.Request;
 import org.restexpress.common.StringUtils;
+import org.restexpress.exception.BadRequestException;
 import org.restexpress.query.FilterComponent;
 import org.restexpress.query.FilterOperator;
 import org.restexpress.query.QueryFilter;

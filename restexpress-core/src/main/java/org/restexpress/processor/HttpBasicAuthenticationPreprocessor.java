@@ -36,11 +36,11 @@ package org.restexpress.processor;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.intelligentsia.commons.http.HttpHeader;
-import org.intelligentsia.commons.http.exception.UnauthorizedException;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.restexpress.Flags;
 import org.restexpress.Request;
+import org.restexpress.exception.UnauthorizedException;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Preprocessor;
 import org.restexpress.route.Route;

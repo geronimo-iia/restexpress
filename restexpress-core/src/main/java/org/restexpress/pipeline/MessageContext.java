@@ -23,11 +23,11 @@ import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import org.intelligentsia.commons.http.HttpHeader;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.response.ResponseProcessorSetting;
 import org.restexpress.route.Action;
 

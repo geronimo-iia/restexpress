@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
@@ -37,6 +36,7 @@ import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
+import org.restexpress.exception.NotFoundException;
 import org.restexpress.route.RouteBuilder;
 
 import com.google.common.collect.Maps;

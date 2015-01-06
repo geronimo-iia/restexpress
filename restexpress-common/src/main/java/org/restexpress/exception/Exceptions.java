@@ -19,6 +19,16 @@
  */
 package org.restexpress.exception;
 
+import org.restexpress.http.status.HttpResponseStandardStatus;
+
+/**
+ * Exceptions.
+ * 
+ * methods {@link Exceptions#getExceptionFor(int, String, Throwable)} return
+ * associated {@link HttpRuntimeException} with code.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ */
 public enum Exceptions {
 	;
 	public static Throwable findRootCause(final Throwable throwable) {
@@ -29,5 +39,60 @@ public enum Exceptions {
 			cause = cause.getCause();
 		}
 		return rootCause;
+	}
+
+	/**
+	 * @param code
+	 *            http response code
+	 * @param message
+	 *            message
+	 * @param cause
+	 *            error cause
+	 * @return a {@link HttpRuntimeException} instance associated with http
+	 *         error code.
+	 */
+	public static HttpRuntimeException getExceptionFor(final int code, final String message, final Throwable cause) {
+		switch (code) {
+		case 502:
+			return new BadGatewayException(message, cause);
+		case 400:
+			return new BadRequestException(message, cause);
+		case 409:
+			return new ConflictException(message, cause);
+		case 417:
+			return new ExpectationFailedException(message, cause);
+		case 403:
+			return new ForbiddenException(message, cause);
+		case 504:
+			return new GatewayTimeoutException(message, cause);
+		case 505:
+			return new HttpVersionNotSupportedException(message, cause);
+		case 500:
+			return new InternalServerErrorException(message, cause);
+		case 405:
+			return new MethodNotAllowedException(message, cause);
+		case 406:
+			return new NotAcceptableException(message, cause);
+		case 404:
+			return new NotFoundException(message, cause);
+		case 412:
+			return new PreconditionFailedException(message, cause);
+		case 413:
+			return new RequestEntityTooLargeException(message, cause);
+		case 408:
+			return new RequestTimeoutException(message, cause);
+		case 414:
+			return new RequestUriTooLongException(message, cause);
+		case 503:
+			return new ServiceUnavailableException(message, cause);
+		case 401:
+			return new UnauthorizedException(message, cause);
+		case 422:
+			return new UnprocessableEntityException(message, cause);
+		case 415:
+			return new UnsupportedMediaTypeException(message, cause);
+		default:
+			return new HttpRuntimeException(HttpResponseStandardStatus.valueOf(code), message, cause);
+		}
 	}
 }

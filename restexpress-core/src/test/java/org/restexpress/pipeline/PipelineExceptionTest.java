@@ -33,8 +33,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
-import org.intelligentsia.commons.http.status.HttpResponseStandardStatus;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.After;
 import org.junit.Before;
@@ -45,6 +43,8 @@ import org.restexpress.RestExpressService;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
 import org.restexpress.domain.response.ErrorResult;
+import org.restexpress.exception.HttpRuntimeException;
+import org.restexpress.http.status.HttpResponseStandardStatus;
 import org.restexpress.response.ResponseWrapper;
 
 import com.google.common.io.Files;

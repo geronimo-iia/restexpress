@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.intelligentsia.commons.http.exception.BadRequestException;
-import org.intelligentsia.commons.http.exception.NotAcceptableException;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.restexpress.Request;
 import org.restexpress.Response;
@@ -35,6 +33,8 @@ import org.restexpress.common.StringUtils;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaRange;
 import org.restexpress.domain.MediaRanges;
+import org.restexpress.exception.BadRequestException;
+import org.restexpress.exception.NotAcceptableException;
 import org.restexpress.serialization.Processor;
 
 /**

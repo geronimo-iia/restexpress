@@ -19,8 +19,7 @@
  */
 package org.restexpress.exception;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
-import org.intelligentsia.commons.http.status.HttpResponseStatus;
+import org.restexpress.http.status.HttpResponseStatus;
 
 public class HttpSpecificationException extends HttpRuntimeException {
 

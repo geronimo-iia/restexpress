@@ -19,12 +19,12 @@
  */
 package org.restexpress.response;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.restexpress.Response;
 import org.restexpress.domain.response.ErrorResult;
 import org.restexpress.domain.response.JsendResult;
 import org.restexpress.domain.response.JsendResult.State;
 import org.restexpress.exception.Exceptions;
+import org.restexpress.exception.HttpRuntimeException;
 
 /**
  * {@link Wrapper} utility class to define instance of {@link ResponseWrapper}.

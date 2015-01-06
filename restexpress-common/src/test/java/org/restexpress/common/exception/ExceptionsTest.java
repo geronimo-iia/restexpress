@@ -22,9 +22,9 @@ package org.restexpress.common.exception;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.junit.Test;
 import org.restexpress.exception.Exceptions;
+import org.restexpress.exception.HttpRuntimeException;
 
 /**
  * @author toddf
