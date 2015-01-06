@@ -24,7 +24,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
-import org.intelligentsia.commons.http.ResponseHeader;
+import org.intelligentsia.commons.http.HttpHeader;
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.intelligentsia.commons.http.status.HttpResponseStandardStatus;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -79,7 +79,8 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 				// it.
 				Class<?> bodyClass = response.getBody().getClass();
 				if (ChannelBuffer.class.isAssignableFrom(bodyClass)) {
-					//httpResponse.setContent(ChannelBuffers.wrappedBuffer((ChannelBuffer) response.getBody()));
+					// httpResponse.setContent(ChannelBuffers.wrappedBuffer((ChannelBuffer)
+					// response.getBody()));
 					httpResponse.setContent((ChannelBuffer) response.getBody());
 				} else if (File.class.isAssignableFrom(bodyClass)) {
 					resource = (File) response.getBody();
@@ -125,16 +126,16 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 		ChannelFutureListener channelFutureListener;
 		if (request.isKeepAlive()) {
 			// Add 'Content-Length' header only for a keep-alive connection.
-			if (HttpSpecification.isContentLengthAllowed(response) && !httpResponse.headers().contains(ResponseHeader.CONTENT_LENGTH.getHeader())) {
-				httpResponse.headers().set(ResponseHeader.CONTENT_LENGTH.getHeader(), String.valueOf(httpResponse.getContent().readableBytes()));
+			if (HttpSpecification.isContentLengthAllowed(response) && !httpResponse.headers().contains(HttpHeader.CONTENT_LENGTH.toString())) {
+				httpResponse.headers().set(HttpHeader.CONTENT_LENGTH.toString(), String.valueOf(httpResponse.getContent().readableBytes()));
 			}
 			// Support "Connection: Keep-Alive" for HTTP 1.0 requests.
 			if (request.isHttpVersion1_0()) {
-				httpResponse.headers().add(ResponseHeader.CONNECTION.getHeader(), "Keep-Alive");
+				httpResponse.headers().add(HttpHeader.CONNECTION.toString(), "Keep-Alive");
 			}
 			channelFutureListener = ChannelFutureListener.CLOSE_ON_FAILURE;
 		} else {
-			httpResponse.headers().set(ResponseHeader.CONNECTION.getHeader(), "close");
+			httpResponse.headers().set(HttpHeader.CONNECTION.toString(), "close");
 			// Close the connection as soon as the message is sent.
 			channelFutureListener = ChannelFutureListener.CLOSE;
 		}

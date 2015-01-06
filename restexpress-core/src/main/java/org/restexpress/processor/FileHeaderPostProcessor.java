@@ -25,9 +25,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.intelligentsia.commons.http.HttpHeader;
 import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
-import org.intelligentsia.commons.http.RequestHeader;
-import org.intelligentsia.commons.http.ResponseHeader;
 import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.intelligentsia.commons.http.status.HttpResponseStandardStatus;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
@@ -72,19 +71,19 @@ public final class FileHeaderPostProcessor implements Postprocessor {
 		if (!isModifiedSince(request, resource)) {
 			response.setResponseStatus(HttpResponseStatus.NOT_MODIFIED);
 			final Calendar time = new GregorianCalendar();
-			response.addHeader(ResponseHeader.DATE.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(time.getTime()));
+			response.addHeader(HttpHeader.DATE, HttpHeaderDateTimeFormat.RFC_1123.format(time.getTime()));
 		} else {
 			// we have little thing to do
 			final Calendar time = new GregorianCalendar();
 			final Date currentTime = time.getTime();
 			// date header
-			response.addHeader(ResponseHeader.DATE.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(currentTime));
+			response.addHeader(HttpHeader.DATE, HttpHeaderDateTimeFormat.RFC_1123.format(currentTime));
 			// last modified header
 			final Date lastModified = new Date(resource.lastModified());
 			if (lastModified.after(currentTime)) {
-				response.addHeader(ResponseHeader.LAST_MODIFIED.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(currentTime));
+				response.addHeader(HttpHeader.LAST_MODIFIED, HttpHeaderDateTimeFormat.RFC_1123.format(currentTime));
 			} else {
-				response.addHeader(ResponseHeader.LAST_MODIFIED.getHeader(), HttpHeaderDateTimeFormat.RFC_1123.format(lastModified));
+				response.addHeader(HttpHeader.LAST_MODIFIED, HttpHeaderDateTimeFormat.RFC_1123.format(lastModified));
 			}
 			// content type
 			String mediaType = Format.BIN.getMediaType();
@@ -94,10 +93,10 @@ public final class FileHeaderPostProcessor implements Postprocessor {
 				final String extension = resourceName.substring(index + 1);
 				mediaType = Format.asMap().get(extension);
 			}
-			response.addHeader(ResponseHeader.CONTENT_TYPE.getHeader(), mediaType);
+			response.addHeader(HttpHeader.CONTENT_TYPE, mediaType);
 
 			// we can now add content length header
-			response.addHeader(ResponseHeader.CONTENT_LENGTH.getHeader(), Long.toString(resource.length()));
+			response.addHeader(HttpHeader.CONTENT_LENGTH, Long.toString(resource.length()));
 		}
 	}
 
@@ -111,7 +110,7 @@ public final class FileHeaderPostProcessor implements Postprocessor {
 	 *             {@link RequestHeader#IF_MODIFIED_SINCE} cannot be parsed.
 	 */
 	protected static boolean isModifiedSince(final Request request, final File resource) throws HttpRuntimeException {
-		final String ifModifiedSince = request.getHeader(RequestHeader.IF_MODIFIED_SINCE.getHeader());
+		final String ifModifiedSince = request.getHeader(HttpHeader.IF_MODIFIED_SINCE);
 		if ((ifModifiedSince != null) && !ifModifiedSince.isEmpty()) {
 			try {
 				final Date ifModifiedSinceDate = HttpHeaderDateTimeFormat.parseAny(ifModifiedSince);

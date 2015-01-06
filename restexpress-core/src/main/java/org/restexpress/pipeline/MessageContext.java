@@ -23,7 +23,7 @@ import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import org.intelligentsia.commons.http.ResponseHeader;
+import org.intelligentsia.commons.http.HttpHeader;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.Request;
 import org.restexpress.Response;
@@ -109,8 +109,8 @@ public final class MessageContext {
 	 */
 	public void setException(final Throwable throwable) {
 		response.setException(throwable);
-		response.headers().remove(ResponseHeader.CONTENT_TYPE.getHeader());
-		response.headers().remove(ResponseHeader.CONTENT_LENGTH.getHeader());
+		response.headers().remove(HttpHeader.CONTENT_TYPE);
+		response.headers().remove(HttpHeader.CONTENT_LENGTH);
 	}
 
 	/**

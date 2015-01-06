@@ -19,6 +19,7 @@
 			<groupId>org.intelligents-ia.restexpress</groupId>
 			<artifactId>restexpress-http</artifactId>
 		</dependency>
+		<!-- JAXRS API -->
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>

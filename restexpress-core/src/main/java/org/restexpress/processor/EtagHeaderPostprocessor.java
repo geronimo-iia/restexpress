@@ -19,7 +19,7 @@
  */
 package org.restexpress.processor;
 
-import org.intelligentsia.commons.http.ResponseHeader;
+import org.intelligentsia.commons.http.HttpHeader;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
 import org.restexpress.Response;
@@ -45,9 +45,9 @@ public class EtagHeaderPostprocessor implements Postprocessor {
         if (!response.hasBody())
             return;
 
-        if (!response.hasHeader(ResponseHeader.ETAG.getHeader())) {
+        if (!response.hasHeader(HttpHeader.ETAG)) {
             final Object body = response.getBody();
-            response.addHeader(ResponseHeader.ETAG.getHeader(), String.format("\"%d\"", body.hashCode()));
+            response.addHeader(HttpHeader.ETAG, String.format("\"%d\"", body.hashCode()));
         }
     }
 }

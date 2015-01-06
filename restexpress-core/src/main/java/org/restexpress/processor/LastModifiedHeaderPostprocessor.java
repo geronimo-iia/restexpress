@@ -19,9 +19,9 @@
  */
 package org.restexpress.processor;
 
+import org.intelligentsia.commons.http.HttpHeader;
 import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
 import org.intelligentsia.commons.http.HttpMethods;
-import org.intelligentsia.commons.http.ResponseHeader;
 import org.restexpress.Response;
 import org.restexpress.domain.TimeStamped;
 import org.restexpress.pipeline.MessageContext;
@@ -43,10 +43,10 @@ public class LastModifiedHeaderPostprocessor implements Postprocessor {
         if (!response.hasBody())
             return;
 
-        if (!response.hasHeader(ResponseHeader.LAST_MODIFIED.getHeader())) {
+        if (!response.hasHeader(HttpHeader.LAST_MODIFIED)) {
             Object body = response.getBody();
             if (TimeStamped.class.isAssignableFrom(body.getClass())) {
-                response.addHeader(ResponseHeader.LAST_MODIFIED.getHeader(),
+                response.addHeader(HttpHeader.LAST_MODIFIED,
                         HttpHeaderDateTimeFormat.RFC_1123.format(((TimeStamped) body).updateAt()));
             }
         }

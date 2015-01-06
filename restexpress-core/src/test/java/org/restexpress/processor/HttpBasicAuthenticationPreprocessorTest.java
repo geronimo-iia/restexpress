@@ -37,7 +37,7 @@ package org.restexpress.processor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.intelligentsia.commons.http.RequestHeader;
+import org.intelligentsia.commons.http.HttpHeader;
 import org.intelligentsia.commons.http.exception.UnauthorizedException;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
@@ -48,7 +48,6 @@ import org.restexpress.Response;
 import org.restexpress.TestToolKit;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Preprocessor;
-import org.restexpress.processor.HttpBasicAuthenticationPreprocessor;
 
 /**
  * @author toddf
@@ -67,8 +66,8 @@ public class HttpBasicAuthenticationPreprocessorTest {
 	public void shouldSetRequestHeadersOnSuccess() {
 		context.getRequest().addHeader(HttpHeaders.Names.AUTHORIZATION, "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==");
 		p.process(context);
-		assertEquals("Aladdin", context.getRequest().getHeader(RequestHeader.X_AUTHENTICATED_USER.getHeader()));
-		assertEquals("open sesame", context.getRequest().getHeader(RequestHeader.X_AUTHENTICATED_PASSWORD.getHeader()));
+		assertEquals("Aladdin", context.getRequest().getHeader(HttpHeader.X_AUTHENTICATED_USER));
+		assertEquals("open sesame", context.getRequest().getHeader(HttpHeader.X_AUTHENTICATED_PASSWORD));
 	}
 
 	@Test

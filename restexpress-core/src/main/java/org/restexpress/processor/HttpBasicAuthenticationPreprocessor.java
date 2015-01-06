@@ -36,8 +36,7 @@ package org.restexpress.processor;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.intelligentsia.commons.http.RequestHeader;
-import org.intelligentsia.commons.http.ResponseHeader;
+import org.intelligentsia.commons.http.HttpHeader;
 import org.intelligentsia.commons.http.exception.UnauthorizedException;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.restexpress.Flags;
@@ -112,8 +111,8 @@ public class HttpBasicAuthenticationPreprocessor implements Preprocessor {
 			throw newUnauthorizedException(context);
 		}
 
-		request.addHeader(RequestHeader.X_AUTHENTICATED_USER.getHeader(), parts[0]);
-		request.addHeader(RequestHeader.X_AUTHENTICATED_PASSWORD.getHeader(), parts[1]);
+		request.addHeader(HttpHeader.X_AUTHENTICATED_USER, parts[0]);
+		request.addHeader(HttpHeader.X_AUTHENTICATED_PASSWORD, parts[1]);
 	}
 
 	/**
@@ -123,7 +122,7 @@ public class HttpBasicAuthenticationPreprocessor implements Preprocessor {
 	 * @return {@link UnauthorizedException} instance.
 	 */
 	private UnauthorizedException newUnauthorizedException(final MessageContext context) {
-		context.getResponse().addHeader(ResponseHeader.WWW_AUTHENTICATE.getHeader(), "Basic realm=\"" + realm + "\"");
+		context.getResponse().addHeader(HttpHeader.WWW_AUTHENTICATE, "Basic realm=\"" + realm + "\"");
 		return new UnauthorizedException("Authentication required");
 	}
 }

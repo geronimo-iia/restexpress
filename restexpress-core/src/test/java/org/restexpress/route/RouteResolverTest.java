@@ -40,8 +40,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.intelligentsia.commons.http.HttpHeader;
 import org.intelligentsia.commons.http.HttpMethods;
-import org.intelligentsia.commons.http.ResponseHeader;
 import org.intelligentsia.commons.http.exception.MethodNotAllowedException;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -224,7 +224,7 @@ public class RouteResolverTest {
         try {
             resolver.resolve(context);
         } catch (MethodNotAllowedException e) {
-            List<String> allowed = context.getResponse().getHeaders(ResponseHeader.ALLOW.getHeader());
+            List<String> allowed = context.getResponse().getHeaders(HttpHeader.ALLOW);
             assertEquals(4, allowed.size());
             assertTrue(allowed.contains(HttpMethods.GET.toString()));
             assertTrue(allowed.contains(HttpMethods.PUT.toString()));
@@ -243,7 +243,7 @@ public class RouteResolverTest {
             resolver.resolve(context);
         } catch (MethodNotAllowedException e) {
 
-            List<String> allowed = context.getResponse().getHeaders(ResponseHeader.ALLOW.getHeader());
+            List<String> allowed = context.getResponse().getHeaders(HttpHeader.ALLOW);
             assertEquals(1, allowed.size());
             assertTrue(allowed.contains(HttpMethods.POST.toString()));
         }
@@ -258,7 +258,7 @@ public class RouteResolverTest {
         try {
             resolver.resolve(context);
         } catch (MethodNotAllowedException e) {
-            List<String> allowed = context.getResponse().getHeaders(ResponseHeader.ALLOW.getHeader());
+            List<String> allowed = context.getResponse().getHeaders(HttpHeader.ALLOW);
             assertEquals(1, allowed.size());
             assertTrue(allowed.contains(HttpMethods.GET.toString()));
         }

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.intelligentsia.commons.http.ResponseHeader;
+import org.intelligentsia.commons.http.HttpHeader;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.query.QueryRange;
@@ -83,6 +83,10 @@ public class Response {
 		return headers;
 	}
 
+	public String getHeader(final HttpHeader name) {
+		return getHeader(name.toString());
+	}
+
 	public String getHeader(final String name) {
 		final List<String> list = headers.get(name);
 
@@ -93,8 +97,16 @@ public class Response {
 		return null;
 	}
 
+	public List<String> getHeaders(final HttpHeader name) {
+		return getHeaders(name.toString());
+	}
+
 	public List<String> getHeaders(final String name) {
 		return headers.get(name);
+	}
+
+	public boolean hasHeader(final HttpHeader name) {
+		return hasHeader(name.toString());
 	}
 
 	public boolean hasHeader(final String name) {
@@ -115,6 +127,10 @@ public class Response {
 	 * @param name
 	 * @param value
 	 */
+	public void addHeader(final HttpHeader name, final String value) {
+		addHeader(name.toString(), value);
+	}
+
 	public void addHeader(final String name, final String value) {
 		List<String> list = headers.get(name);
 
@@ -136,7 +152,7 @@ public class Response {
 	 * @param size
 	 */
 	public void addRangeHeader(final QueryRange range, final long count) {
-		addHeader(ResponseHeader.CONTENT_RANGE.getHeader(), range.asContentRange(count));
+		addHeader(HttpHeader.CONTENT_RANGE, range.asContentRange(count));
 	}
 
 	/**
@@ -146,7 +162,7 @@ public class Response {
 	 *            URL location
 	 */
 	public void addLocationHeader(final String url) {
-		addHeader(ResponseHeader.LOCATION.getHeader(), url);
+		addHeader(HttpHeader.LOCATION, url);
 	}
 
 	/**
@@ -256,7 +272,7 @@ public class Response {
 			responseCode = HttpResponseStatus.FOUND;
 		}
 		// add location header
-		addHeader(ResponseHeader.LOCATION.getHeader(), location);
+		addHeader(HttpHeader.LOCATION, location);
 	}
 
 	public boolean isSerialized() {

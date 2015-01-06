@@ -41,7 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.intelligentsia.commons.http.ResponseHeader;
+import org.intelligentsia.commons.http.HttpHeader;
 import org.intelligentsia.commons.http.exception.MethodNotAllowedException;
 import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -212,7 +212,7 @@ public final class RouteMapping implements RouteResolver {
 		if (allowedMethods != null && !allowedMethods.isEmpty()) {
 			final Response response = context.getResponse();
 			for (final HttpMethod httpMethod : allowedMethods)
-				response.addHeader(ResponseHeader.ALLOW.getHeader(), httpMethod.getName());
+				response.addHeader(HttpHeader.ALLOW, httpMethod.getName());
 			throw new MethodNotAllowedException(request.getUrl());
 		}
 

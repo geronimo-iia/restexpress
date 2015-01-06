@@ -31,7 +31,7 @@
  */
 package org.restexpress.response;
 
-import org.intelligentsia.commons.http.ResponseHeader;
+import org.intelligentsia.commons.http.HttpHeader;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.exception.DeserializationException;
@@ -113,7 +113,7 @@ public final class ResponseProcessorSetting implements Serializer {
 		}
 		responseProcessor.serialize(response);
 		// serialized way: don't override
-		if (response.isSerialized() && !response.hasHeader(ResponseHeader.CONTENT_TYPE.getHeader())) {
+		if (response.isSerialized() && !response.hasHeader(HttpHeader.CONTENT_TYPE)) {
 			response.setContentType(mediaType);
 		} else if (response.hasException()) {
 			// in case of exception we must set right content type
