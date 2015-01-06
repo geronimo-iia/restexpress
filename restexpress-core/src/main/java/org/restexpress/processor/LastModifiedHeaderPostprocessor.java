@@ -19,16 +19,16 @@
  */
 package org.restexpress.processor;
 
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Response;
 import org.restexpress.domain.TimeStamped;
-import org.restexpress.http.HttpHeader;
 import org.restexpress.http.HttpDateTimeFormat;
-import org.restexpress.http.HttpMethods;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
 
 /**
- * {@link LastModifiedHeaderPostprocessor} add header {@link ResponseHeader#LAST_MODIFIED} for {@link HttpMethods#GET} if not present.
+ * {@link LastModifiedHeaderPostprocessor} add header {@link ResponseHeader#LAST_MODIFIED} for {@link HttpMethod#GET} if not present.
  * Time come from {@link Response#getBody()} if the {@link Object} implement {@link TimeStamped}.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
