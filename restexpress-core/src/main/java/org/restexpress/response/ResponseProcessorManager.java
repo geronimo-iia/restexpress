@@ -27,9 +27,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.restexpress.Exceptions;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.common.StringUtils;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaRange;
 import org.restexpress.domain.MediaRanges;
@@ -117,7 +117,7 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
                 bestMatch = processor.processor().mediaType();
             } else if (!shouldForce) {
                 throw new BadRequestException("Requested representation format not supported: " + format + ". Supported Media Types: "
-                        + StringUtils.join(", ", supportedMediaRanges));
+                		+ Exceptions.join(", ", supportedMediaRanges));
             }
         }
         if (processor == null) {
@@ -126,7 +126,7 @@ public class ResponseProcessorManager implements ResponseProcessorSettingResolve
             if (bestMatch != null) {
                 processor = processorsByMediaType.get(bestMatch);
             } else if (!shouldForce && !requestedMediaRanges.isEmpty()) {
-                throw new NotAcceptableException("Supported Media Types: " + StringUtils.join(", ", supportedMediaRanges));
+                throw new NotAcceptableException("Supported Media Types: " + Exceptions.join(", ", supportedMediaRanges));
             }
         }
         if (processor == null) {

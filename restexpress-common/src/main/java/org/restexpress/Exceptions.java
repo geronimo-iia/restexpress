@@ -19,6 +19,10 @@
  */
 package org.restexpress;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.restexpress.http.BadGatewayException;
 import org.restexpress.http.BadRequestException;
 import org.restexpress.http.ConflictException;
@@ -114,5 +118,32 @@ public enum Exceptions {
 		default:
 			return new HttpRuntimeException(HttpStatus.valueOf(code), message, cause);
 		}
+	}
+	
+
+	/**
+	 * Join a collection of string with a delimiter.
+	 * @param delimiter
+	 * @param objects
+	 * @return a String.
+	 */
+	public static String join(final String delimiter, final Collection<? extends Object> objects) {
+		if ((objects == null) || objects.isEmpty()) {
+			return "";
+		}
+
+		final Iterator<? extends Object> iterator = objects.iterator();
+		final StringBuilder builder = new StringBuilder();
+		builder.append(iterator.next());
+
+		while (iterator.hasNext()) {
+			builder.append(delimiter).append(iterator.next());
+		}
+
+		return builder.toString();
+	}
+
+	public static String join(final String delimiter, final Object... objects) {
+		return join(delimiter, Arrays.asList(objects));
 	}
 }
