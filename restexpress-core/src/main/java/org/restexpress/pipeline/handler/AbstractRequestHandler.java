@@ -21,16 +21,16 @@ package org.restexpress.pipeline.handler;
 
 import java.util.List;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.restexpress.Exceptions;
 import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.exception.Exceptions;
+import org.restexpress.http.HttpRuntimeException;
+import org.restexpress.http.HttpStatus;
 import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.MessageObserver;
@@ -100,7 +100,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 			// invoke controller
 			final Object result = context.getAction().invoke(context);
 			if (result != null) {
-				context.getResponse().setBody(result);
+				context.getResponse().setEntity(result);
 			}
 			invokePostprocessors(context);
 			handleResponseContent(context, false);
@@ -113,10 +113,10 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 			Throwable rootCause = cause;
 			if (HttpRuntimeException.class.isAssignableFrom(cause.getClass())) {
 				final HttpRuntimeException httpRuntimeException = (HttpRuntimeException) cause;
-				context.setHttpStatus(HttpResponseStatus.valueOf(httpRuntimeException.getHttpResponseStatus().getCode()));
+				context.setStatusInfo(httpRuntimeException.getHttpResponseStatus());
 			} else {
 				rootCause = Exceptions.findRootCause(cause);
-				context.setHttpStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+				context.setStatusInfo(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			context.setException(rootCause);
 			notifyException(context);
@@ -239,8 +239,8 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 		for (Preprocessor preprocessor : preprocessors) {
 			preprocessor.process(context);
 		}
-		if (context.getRequest().getBody() != null)
-			context.getRequest().getBody().resetReaderIndex();
+		if (context.getRequest().getEntity() != null)
+			context.getRequest().getEntity().resetReaderIndex();
 	}
 
 	/**

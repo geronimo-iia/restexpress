@@ -22,10 +22,9 @@ package org.restexpress.query;
 import java.util.Arrays;
 import java.util.List;
 
-import org.intelligentsia.commons.http.exception.BadRequestException;
+import org.restexpress.Exceptions;
 import org.restexpress.Request;
-import org.restexpress.common.StringUtils;
-import org.restexpress.query.QueryOrder;
+import org.restexpress.http.BadRequestException;
 
 /**
  * A factory for RestExpress-Common QueryOrder instances, parsing them from a
@@ -106,7 +105,7 @@ public abstract class QueryOrders {
 					}
 				}
 
-				throw new BadRequestException(requested + " is not a supported sort field. Supported sort fields are: " + StringUtils.join(", ", allowedProperties));
+				throw new BadRequestException(requested + " is not a supported sort field. Supported sort fields are: " + Exceptions.join(", ", allowedProperties));
 			}
 		}
 	}

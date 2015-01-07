@@ -33,8 +33,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
-import org.intelligentsia.commons.http.status.HttpResponseStandardStatus;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.After;
 import org.junit.Before;
@@ -45,6 +43,8 @@ import org.restexpress.RestExpressService;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
 import org.restexpress.domain.response.ErrorResult;
+import org.restexpress.http.HttpRuntimeException;
+import org.restexpress.http.HttpStatus;
 import org.restexpress.response.ResponseWrapper;
 
 import com.google.common.io.Files;
@@ -79,7 +79,7 @@ public class PipelineExceptionTest {
 
 		failurePostprocessor.setMustFail(Boolean.FALSE);
 		HttpResponse response = (HttpResponse) client.execute(request);
-		assertEquals(200, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.OK.getStatusCode(), response.getStatusLine().getStatusCode());
 		HttpEntity entity = response.getEntity();
 		assertEquals(JSON, entity.getContentType().getValue());
 		assertEquals("{\"message\":\"A simple content\"}", EntityUtils.toString(entity));
@@ -89,7 +89,7 @@ public class PipelineExceptionTest {
 		response = (HttpResponse) client.execute(request);
 		entity = response.getEntity();
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals(417, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.EXPECTATION_FAILED.getStatusCode(), response.getStatusLine().getStatusCode());
 		assertEquals("{\"httpStatus\":417,\"message\":\"oups\",\"errorType\":\"HttpRuntimeException\"}", EntityUtils.toString(entity));
 		request.releaseConnection();
 	}
@@ -111,7 +111,7 @@ public class PipelineExceptionTest {
 
 		failurePostprocessor.setMustFail(Boolean.FALSE);
 		HttpResponse response = (HttpResponse) client.execute(request);
-		assertEquals(200, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.OK.getStatusCode(), response.getStatusLine().getStatusCode());
 		HttpEntity entity = response.getEntity();
 		// here we did not manage content type without exception
 		// text plain is the default content type
@@ -127,7 +127,7 @@ public class PipelineExceptionTest {
 		// here we manage content type
 		assertNotEquals(TEXT_PLAIN, entity.getContentType().getValue());
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals(417, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.EXPECTATION_FAILED.getStatusCode(), response.getStatusLine().getStatusCode());
 		// here error handling according requested format
 		assertEquals("{\"httpStatus\":417,\"message\":\"oups\",\"errorType\":\"HttpRuntimeException\"}", EntityUtils.toString(entity));
 
@@ -147,7 +147,7 @@ public class PipelineExceptionTest {
 
 		failurePostprocessor.setMustFail(Boolean.FALSE);
 		HttpResponse response = (HttpResponse) client.execute(request);
-		assertEquals(200, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.OK.getStatusCode(), response.getStatusLine().getStatusCode());
 		HttpEntity entity = response.getEntity();
 		// here we did not manage content type without exception
 		// text plain is the default content type when none is set
@@ -162,9 +162,9 @@ public class PipelineExceptionTest {
 		// here we manage content type
 		// text all came from default media type
 		assertEquals(TEXT_ALL, entity.getContentType().getValue());
-		assertEquals(417, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.EXPECTATION_FAILED.getStatusCode(), response.getStatusLine().getStatusCode());
 		// here error handling according requested format
-		ErrorResult errorResult = new ErrorResult(417, "oups", "HttpRuntimeException");
+		ErrorResult errorResult = new ErrorResult(HttpStatus.EXPECTATION_FAILED.getStatusCode(), "oups", "HttpRuntimeException");
 		assertEquals(errorResult.toString(), EntityUtils.toString(entity));
 
 		request.releaseConnection();
@@ -184,7 +184,7 @@ public class PipelineExceptionTest {
 
 		failurePostprocessor.setMustFail(Boolean.FALSE);
 		HttpResponse response = (HttpResponse) client.execute(request);
-		assertEquals(200, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.OK.getStatusCode(), response.getStatusLine().getStatusCode());
 		HttpEntity entity = response.getEntity();
 		// here we did not manage content type without exception
 		// text plain is the content type from controller
@@ -199,9 +199,9 @@ public class PipelineExceptionTest {
 		// here we manage content type
 		// text all came from default media type
 		assertEquals(TEXT_ALL, entity.getContentType().getValue());
-		assertEquals(417, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.EXPECTATION_FAILED.getStatusCode(), response.getStatusLine().getStatusCode());
 		// here error handling according requested format
-		ErrorResult errorResult = new ErrorResult(417, "oups", "HttpRuntimeException");
+		ErrorResult errorResult = new ErrorResult(HttpStatus.EXPECTATION_FAILED.getStatusCode(), "oups", "HttpRuntimeException");
 		assertEquals(errorResult.toString(), EntityUtils.toString(entity));
 
 		request.releaseConnection();
@@ -213,7 +213,7 @@ public class PipelineExceptionTest {
 
 		failurePostprocessor.setMustFail(Boolean.FALSE);
 		HttpResponse response = (HttpResponse) client.execute(request);
-		assertEquals(200, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.OK.getStatusCode(), response.getStatusLine().getStatusCode());
 		HttpEntity entity = response.getEntity();
 		// No way to guest correct encoding. 
 		//assertEquals(TEXT_PLAIN, entity.getContentType().getValue());
@@ -227,9 +227,9 @@ public class PipelineExceptionTest {
 		entity = response.getEntity();
 
 		assertEquals(TEXT_ALL, entity.getContentType().getValue());
-		assertEquals(417, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.EXPECTATION_FAILED.getStatusCode(), response.getStatusLine().getStatusCode());
 		// here error handling according requested format
-		ErrorResult errorResult = new ErrorResult(417, "oups", "HttpRuntimeException");
+		ErrorResult errorResult = new ErrorResult(HttpStatus.EXPECTATION_FAILED.getStatusCode(), "oups", "HttpRuntimeException");
 		assertEquals(errorResult.toString(), EntityUtils.toString(entity));
 	}
 
@@ -252,7 +252,7 @@ public class PipelineExceptionTest {
 		// here we manage content type
 		// text all came from default media type
 		assertEquals(JSON, entity.getContentType().getValue());
-		assertEquals(417, response.getStatusLine().getStatusCode());
+		assertEquals(HttpStatus.EXPECTATION_FAILED.getStatusCode(), response.getStatusLine().getStatusCode());
 		// here error handling according default processor format
 		assertEquals("{\"httpStatus\":417,\"message\":\"oups\",\"errorType\":\"HttpRuntimeException\"}", EntityUtils.toString(entity));
 	}
@@ -319,7 +319,7 @@ public class PipelineExceptionTest {
 		@Override
 		public void process(MessageContext context) {
 			if (mustFail)
-				throw new HttpRuntimeException(HttpResponseStandardStatus.EXPECTATION_FAILED, "oups");
+				throw new HttpRuntimeException(HttpStatus.EXPECTATION_FAILED, "oups");
 		}
 	}
 
@@ -338,15 +338,15 @@ public class PipelineExceptionTest {
 			hello.createNewFile();
 		}
 		public void serializationEnabled(Request request, Response response) {
-			response.setBody(new DummyDto("A simple content"));
+			response.setEntity(new DummyDto("A simple content"));
 		}
 
 		public void serializationDisabled(Request request, Response response) {
-			response.setBody("A simple content");
+			response.setEntity("A simple content");
 		}
 
 		public void serializationDisabledWithContentType(Request request, Response response) {
-			response.setBody("A simple content");
+			response.setEntity("A simple content");
 			response.setContentType(TEXT_ALL);
 		}
 

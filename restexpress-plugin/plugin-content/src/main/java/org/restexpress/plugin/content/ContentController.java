@@ -26,10 +26,10 @@ import java.net.URLDecoder;
 import java.text.ParseException;
 import java.util.regex.Pattern;
 
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.Parameters;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.http.HttpStatus;
 import org.restexpress.processor.CacheHeaderPostprocessor;
 
 import com.google.common.base.Preconditions;
@@ -39,7 +39,9 @@ import com.google.common.base.Preconditions;
  * 
  * Recommended usage with {@link CacheHeaderPostprocessor}.
  * 
- * URI management are minded from {@link https ://github.com/netty/netty/blob/master /example/src/main/java/io/netty/example/http
+ * URI management are minded from {@link https 
+ * ://github.com/netty/netty/blob/master
+ * /example/src/main/java/io/netty/example/http
  * /file/HttpStaticFileServerHandler.java}
  * 
  * 
@@ -47,96 +49,97 @@ import com.google.common.base.Preconditions;
  */
 public class ContentController {
 
-    private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\"].*");
+	private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\"].*");
 
-    /**
-     * Context service to retrieve resource.
-     */
-    protected final ContentService contentService;
+	/**
+	 * Context service to retrieve resource.
+	 */
+	protected final ContentService contentService;
 
-    /**
-     * Build a new instance of ContentController.
-     * 
-     * @param contentService instance of {@link ContentService}.
-     * @throws NullPointerException if {@link ContextAdapter} is null
-     */
-    public ContentController(final ContentService contentService) throws NullPointerException {
-        super();
-        this.contentService = Preconditions.checkNotNull(contentService);
-    }
+	/**
+	 * Build a new instance of ContentController.
+	 * 
+	 * @param contentService
+	 *            instance of {@link ContentService}.
+	 * @throws NullPointerException
+	 *             if {@link ContextAdapter} is null
+	 */
+	public ContentController(final ContentService contentService) throws NullPointerException {
+		super();
+		this.contentService = Preconditions.checkNotNull(contentService);
+	}
 
-    /**
-     * Main method.
-     * 
-     * @param request
-     * @param response
-     * @return a {@link File} instance if something match.
-     * @throws IOException
-     * @throws ParseException
-     */
-    public File read(final Request request, final Response response) throws IOException, ParseException {
-        final String uri = request.getPath();
-        final String path = sanitizeUri(uri);
-        File resource = null;
-        if (path == null) {
-            response.setResponseStatus(HttpResponseStatus.BAD_REQUEST);
-            return resource;
-        }
-        if (!contentService.match(path)) {
-            response.setResponseStatus(HttpResponseStatus.NOT_FOUND);
-            return resource;
-        }
-        resource = contentService.retrieve(path);
-        if (resource == null) {
-            response.setResponseStatus(HttpResponseStatus.NOT_FOUND);
-            return resource;
-        }
-        response.setResponseStatus(HttpResponseStatus.OK);
-        // add cache information that could be used by CacheHeaderPostprocessor.
-        if (contentService.isCacheEnabled()) {
-            request.putAttachment(Parameters.Cache.MAX_AGE, contentService.expireAfterWrite() * 60);
-        }
-        return resource;
-    }
+	/**
+	 * Main method.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return a {@link File} instance if something match.
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public File read(final Request request, final Response response) throws IOException, ParseException {
+		final String uri = request.getPath();
+		final String path = sanitizeUri(uri);
+		File resource = null;
+		if (path == null) {
+			response.setStatusInfo(HttpStatus.BAD_REQUEST);
+			return resource;
+		}
+		if (!contentService.match(path)) {
+			response.setStatusInfo(HttpStatus.NOT_FOUND);
+			return resource;
+		}
+		resource = contentService.retrieve(path);
+		if (resource == null) {
+			response.setStatusInfo(HttpStatus.NOT_FOUND);
+			return resource;
+		}
+		response.setStatusInfo(HttpStatus.OK);
+		// add cache information that could be used by CacheHeaderPostprocessor.
+		if (contentService.isCacheEnabled()) {
+			request.putAttachment(Parameters.Cache.MAX_AGE, contentService.expireAfterWrite() * 60);
+		}
+		return resource;
+	}
 
-    public void delete(final Request request, final Response response) {
-        response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
-    }
+	public void delete(final Request request, final Response response) {
+		response.setStatusInfo(HttpStatus.FORBIDDEN);
+	}
 
-    public void create(final Request request, final Response response) {
-        response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
-    }
+	public void create(final Request request, final Response response) {
+		response.setStatusInfo(HttpStatus.FORBIDDEN);
+	}
 
-    public void update(final Request request, final Response response) {
-        response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
-    }
+	public void update(final Request request, final Response response) {
+		response.setStatusInfo(HttpStatus.FORBIDDEN);
+	}
 
-    public void headers(final Request request, final Response response) {
-        response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
-    }
+	public void headers(final Request request, final Response response) {
+		response.setStatusInfo(HttpStatus.FORBIDDEN);
+	}
 
-    public void options(final Request request, final Response response) {
-        response.setResponseStatus(HttpResponseStatus.FORBIDDEN);
-    }
+	public void options(final Request request, final Response response) {
+		response.setStatusInfo(HttpStatus.FORBIDDEN);
+	}
 
-    /**
-     * Sanitize URI.
-     * 
-     * @param uri
-     * @return
-     */
-    private static String sanitizeUri(String uri) {
-        try {
-            uri = URLDecoder.decode(uri, "UTF-8");
-        } catch (final UnsupportedEncodingException e) {
-            throw new Error(e);
-        }
-        if (uri.isEmpty() || uri.charAt(0) != '/')
-            return null;
-        if (uri.contains("/.") || uri.contains("./") || uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.'
-                || INSECURE_URI.matcher(uri).matches())
-            return null;
-        return uri;
-    }
+	/**
+	 * Sanitize URI.
+	 * 
+	 * @param uri
+	 * @return
+	 */
+	private static String sanitizeUri(String uri) {
+		try {
+			uri = URLDecoder.decode(uri, "UTF-8");
+		} catch (final UnsupportedEncodingException e) {
+			throw new Error(e);
+		}
+		if (uri.isEmpty() || uri.charAt(0) != '/')
+			return null;
+		if (uri.contains("/.") || uri.contains("./") || uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' || INSECURE_URI.matcher(uri).matches())
+			return null;
+		return uri;
+	}
 
 }

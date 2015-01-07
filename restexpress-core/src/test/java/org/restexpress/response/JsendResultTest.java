@@ -25,11 +25,11 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.junit.Test;
 import org.restexpress.Response;
 import org.restexpress.domain.response.JsendResult;
 import org.restexpress.domain.response.JsendResult.State;
+import org.restexpress.http.HttpRuntimeException;
 
 
 /**
@@ -44,7 +44,7 @@ public class JsendResultTest
 	public void shouldHandleCheckedException()
 	{
 		response.setException(new IOException("An IOException was thrown"));
-		response.setResponseCode(1);
+		response.setStatus(1);
 		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
 		assertEquals(State.FAIL.toString(), w.getStatus());
@@ -56,7 +56,7 @@ public class JsendResultTest
 	public void shouldHandleUncheckedException()
 	{
 		response.setException(new ArrayIndexOutOfBoundsException("An ArrayIndexOutOfBoundsException was thrown"));
-		response.setResponseCode(2);
+		response.setStatus(2);
 		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
 		assertEquals(State.FAIL.toString(), w.getStatus());
@@ -68,7 +68,7 @@ public class JsendResultTest
 	public void shouldHandleHttpRuntimeException()
 	{
 		response.setException(new HttpRuntimeException("A ServiceException was thrown"));
-		response.setResponseCode(3);
+		response.setStatus(3);
 		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
 		assertEquals(State.ERROR.toString(), w.getStatus());
@@ -79,8 +79,8 @@ public class JsendResultTest
 	@Test
 	public void shouldHandleRaw100Code()
 	{
-		response.setResponseCode(100);
-		response.setBody("Success Body");
+		response.setStatus(100);
+		response.setEntity("Success Body");
 		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
 		assertEquals(State.SUCCESS.toString(), w.getStatus());
@@ -91,8 +91,8 @@ public class JsendResultTest
 	@Test
 	public void shouldHandleRaw400Code()
 	{
-		response.setResponseCode(400);
-		response.setBody("Error Body");
+		response.setStatus(400);
+		response.setEntity("Error Body");
 		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
 		assertEquals(State.ERROR.toString(), w.getStatus());
@@ -103,8 +103,8 @@ public class JsendResultTest
 	@Test
 	public void shouldHandleRaw500Code()
 	{
-		response.setResponseCode(500);
-		response.setBody("Fail Body");
+		response.setStatus(500);
+		response.setEntity("Fail Body");
 		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
 		assertEquals(State.FAIL.toString(), w.getStatus());
@@ -115,7 +115,7 @@ public class JsendResultTest
 	@Test
 	public void shouldHandleSuccess()
 	{
-		response.setBody("Success Body");
+		response.setEntity("Success Body");
 		JsendResult  w = (JsendResult) Wrapper.newJsendResponseWrapper().wrap(response);
 		assertNotNull(w);
 		assertEquals(State.SUCCESS.toString(), w.getStatus());

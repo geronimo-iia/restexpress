@@ -39,7 +39,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.junit.Before;
@@ -49,6 +48,7 @@ import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
+import org.restexpress.http.BadRequestException;
 import org.restexpress.pipeline.handler.RestExpressRequestHandler;
 import org.restexpress.pipeline.handler.RestExpressRequestHandlerBuilder;
 import org.restexpress.response.Wrapper;
@@ -373,7 +373,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
         }
 
         public Object dateAction(Request request, Response response) {
-            return request.getBodyAs(Dated.class);
+            return request.getEntity(Dated.class);
         }
 
         public String unserializedDefault(Request request, Response response) {
@@ -400,7 +400,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
         public void setBodyAction(Request request, Response response) {
             response.setContentType(MediaType.TEXT_HTML.withCharset(CharacterSet.UTF_8.getCharsetName()));
             response.noSerialization();
-            response.setBody("<html><body>Arbitrarily set HTML body...</body></html>");
+            response.setEntity("<html><body>Arbitrarily set HTML body...</body></html>");
         }
     }
 

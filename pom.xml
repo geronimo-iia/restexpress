@@ -48,7 +48,6 @@
 	<!-- MODULE -->
 	<!-- ******************************************************************* -->
 	<modules>
-		<module>restexpress-http</module>
 		<module>restexpress-common</module>
 		<module>restexpress-core</module>
 		<module>restexpress-plugin</module>
@@ -132,11 +131,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<!-- RESTEXPRESS -->
-			<dependency>
-				<groupId>org.intelligents-ia.restexpress</groupId>
-				<artifactId>restexpress-http</artifactId>
-				<version>${project.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.intelligents-ia.restexpress</groupId>
 				<artifactId>restexpress-common</artifactId>

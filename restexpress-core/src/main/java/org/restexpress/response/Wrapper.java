@@ -19,12 +19,12 @@
  */
 package org.restexpress.response;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
+import org.restexpress.Exceptions;
 import org.restexpress.Response;
 import org.restexpress.domain.response.ErrorResult;
 import org.restexpress.domain.response.JsendResult;
 import org.restexpress.domain.response.JsendResult.State;
-import org.restexpress.exception.Exceptions;
+import org.restexpress.http.HttpRuntimeException;
 
 /**
  * {@link Wrapper} utility class to define instance of {@link ResponseWrapper}.
@@ -80,14 +80,14 @@ public enum Wrapper {
 
 				return new JsendResult(State.FAIL, message, causeName);
 			}
-			final int code = response.getResponseStatus().getCode();
+			final int code = response.getStatus();
 			if ((code >= 400) && (code < 500)) {
-				return new JsendResult(State.ERROR, null, response.getBody());
+				return new JsendResult(State.ERROR, null, response.getEntity());
 			}
 			if ((code >= 500) && (code < 600)) {
-				return new JsendResult(State.FAIL, null, response.getBody());
+				return new JsendResult(State.FAIL, null, response.getEntity());
 			}
-			return new JsendResult(State.SUCCESS, null, response.getBody());
+			return new JsendResult(State.SUCCESS, null, response.getEntity());
 		}
 
 		@Override
@@ -118,18 +118,18 @@ public enum Wrapper {
 					final String message = (rootCause != null ? rootCause.getMessage() : exception.getMessage());
 					String causeName = null;
 					causeName = (rootCause != null ? rootCause.getClass().getSimpleName() : exception.getClass().getSimpleName());
-					return new ErrorResult(response.getResponseStatus().getCode(), message, causeName);
+					return new ErrorResult(response.getStatus(), message, causeName);
 				}
-				return new ErrorResult(response.getResponseStatus().getCode(), null, null);
+				return new ErrorResult(response.getStatus(), null, null);
 			}
-			return response.getBody();
+			return response.getEntity();
 		}
 
 		public static boolean addsBodyContent(final Response response) {
 			if (response.hasException()) {
 				return true;
 			}
-			final int code = response.getResponseStatus().getCode();
+			final int code = response.getStatus();
 			return ((code >= 400) && (code < 600));
 		}
 
@@ -158,7 +158,7 @@ public enum Wrapper {
 		@Override
 		public Object wrap(final Response response) {
 			if (!response.hasException()) {
-				return response.getBody();
+				return response.getEntity();
 			}
 			response.setIsSerialized(false);
 			return response.getException().getMessage();

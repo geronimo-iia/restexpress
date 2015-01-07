@@ -19,10 +19,10 @@
  */
 package org.restexpress.pipeline;
 
-import org.intelligentsia.commons.http.exception.NotAcceptableException;
-import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.http.NotAcceptableException;
+import org.restexpress.http.NotFoundException;
 
 /**
  * {@link WrappedResponseController} is a dummy controller for test case.
@@ -52,7 +52,7 @@ public class WrappedResponseController {
     }
 
     public void noContentWithBodyDeleteAction(Request request, Response response) {
-        response.setBody("Body with no content response");
+        response.setEntity("Body with no content response");
         response.setResponseNoContent();
     }
 

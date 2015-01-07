@@ -30,7 +30,7 @@ import java.util.Map;
 import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 
-import org.restexpress.exception.ConfigurationException;
+import org.restexpress.ConfigurationException;
 import org.restexpress.route.invoker.param.BigDecimalParamConverter;
 import org.restexpress.route.invoker.param.BooleanParamConverter;
 import org.restexpress.route.invoker.param.ByteParamConverter;

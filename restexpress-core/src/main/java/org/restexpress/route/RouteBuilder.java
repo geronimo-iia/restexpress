@@ -42,12 +42,12 @@ import java.util.Set;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.ConfigurationException;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.RestExpress;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.UriMetadata;
-import org.restexpress.exception.ConfigurationException;
 import org.restexpress.route.invoker.Invoker;
 import org.restexpress.route.invoker.Invokers;
 import org.slf4j.Logger;

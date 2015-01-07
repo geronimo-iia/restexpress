@@ -19,17 +19,17 @@
  */
 package org.restexpress.processor;
 
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
-import org.intelligentsia.commons.http.HttpMethods;
-import org.intelligentsia.commons.http.ResponseHeader;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Response;
 import org.restexpress.domain.TimeStamped;
+import org.restexpress.http.HttpDateTimeFormat;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
 
 /**
- * {@link LastModifiedHeaderPostprocessor} add header {@link ResponseHeader#LAST_MODIFIED} for {@link HttpMethods#GET} if not present.
- * Time come from {@link Response#getBody()} if the {@link Object} implement {@link TimeStamped}.
+ * {@link LastModifiedHeaderPostprocessor} add header {@link ResponseHeader#LAST_MODIFIED} for {@link HttpMethod#GET} if not present.
+ * Time come from {@link Response#getEntity()} if the {@link Object} implement {@link TimeStamped}.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
@@ -40,14 +40,14 @@ public class LastModifiedHeaderPostprocessor implements Postprocessor {
         if (!context.getRequest().isMethodGet())
             return;
         Response response = context.getResponse();
-        if (!response.hasBody())
+        if (!response.hasEntity())
             return;
 
-        if (!response.hasHeader(ResponseHeader.LAST_MODIFIED.getHeader())) {
-            Object body = response.getBody();
+        if (!response.hasHeader(HttpHeader.LAST_MODIFIED)) {
+            Object body = response.getEntity();
             if (TimeStamped.class.isAssignableFrom(body.getClass())) {
-                response.addHeader(ResponseHeader.LAST_MODIFIED.getHeader(),
-                        HttpHeaderDateTimeFormat.RFC_1123.format(((TimeStamped) body).updateAt()));
+                response.addHeader(HttpHeader.LAST_MODIFIED,
+                        HttpDateTimeFormat.RFC_1123.format(((TimeStamped) body).updateAt()));
             }
         }
 
