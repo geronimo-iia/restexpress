@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.restexpress.Response;
 import org.restexpress.domain.response.JsendResult;
 import org.restexpress.domain.response.JsendResult.State;
-import org.restexpress.exception.HttpRuntimeException;
+import org.restexpress.http.HttpRuntimeException;
 
 
 /**

@@ -17,37 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
+
 
 /**
- * @author toddf
- * @since Nov 20, 2009
+ * NotAcceptableException.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ * 
  */
-public class SerializationException extends RuntimeException {
-	private static final long serialVersionUID = -5208426797622464550L;
+public class NotAcceptableException extends HttpRuntimeException {
 
-	public SerializationException() {
+	private static final long serialVersionUID = 5094190116049133911L;
+
+	public NotAcceptableException() {
+		super(HttpStatus.NOT_ACCEPTABLE);
 	}
 
-	/**
-	 * @param message
-	 */
-	public SerializationException(final String message) {
-		super(message);
+	public NotAcceptableException(final String message) {
+		super(HttpStatus.NOT_ACCEPTABLE, message);
 	}
 
-	/**
-	 * @param cause
-	 */
-	public SerializationException(final Throwable cause) {
-		super(cause);
+	public NotAcceptableException(final Throwable cause) {
+		super(HttpStatus.NOT_ACCEPTABLE, cause);
 	}
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public SerializationException(final String message, final Throwable cause) {
-		super(message, cause);
+	public NotAcceptableException(final String message, final Throwable cause) {
+		super(HttpStatus.NOT_ACCEPTABLE, message, cause);
 	}
 }

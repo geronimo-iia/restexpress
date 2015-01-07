@@ -17,9 +17,29 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress;
 
+import org.restexpress.http.BadGatewayException;
+import org.restexpress.http.BadRequestException;
+import org.restexpress.http.ConflictException;
+import org.restexpress.http.ExpectationFailedException;
+import org.restexpress.http.ForbiddenException;
+import org.restexpress.http.GatewayTimeoutException;
+import org.restexpress.http.HttpRuntimeException;
 import org.restexpress.http.HttpStatus;
+import org.restexpress.http.HttpVersionNotSupportedException;
+import org.restexpress.http.InternalServerErrorException;
+import org.restexpress.http.MethodNotAllowedException;
+import org.restexpress.http.NotAcceptableException;
+import org.restexpress.http.NotFoundException;
+import org.restexpress.http.PreconditionFailedException;
+import org.restexpress.http.RequestEntityTooLargeException;
+import org.restexpress.http.RequestTimeoutException;
+import org.restexpress.http.RequestUriTooLongException;
+import org.restexpress.http.ServiceUnavailableException;
+import org.restexpress.http.UnauthorizedException;
+import org.restexpress.http.UnprocessableEntityException;
+import org.restexpress.http.UnsupportedMediaTypeException;
 
 /**
  * Exceptions.

@@ -17,9 +17,8 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
  * ExpectationFailedException.

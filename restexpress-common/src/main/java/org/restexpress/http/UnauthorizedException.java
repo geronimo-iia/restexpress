@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * UnprocessableEntityException.
+ * UnauthorizedException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class UnprocessableEntityException extends HttpRuntimeException {
+public class UnauthorizedException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = -4617071830987345303L;
+	private static final long serialVersionUID = 7935920301143675954L;
 
-	public UnprocessableEntityException() {
-		super(HttpStatus.UNPROCESSABLE_ENTITY);
+	public UnauthorizedException() {
+		super(HttpStatus.UNAUTHORIZED);
 	}
 
-	public UnprocessableEntityException(final String message) {
-		super(HttpStatus.UNPROCESSABLE_ENTITY, message);
+	public UnauthorizedException(final String message) {
+		super(HttpStatus.UNAUTHORIZED, message);
 	}
 
-	public UnprocessableEntityException(final Throwable cause) {
-		super(HttpStatus.UNPROCESSABLE_ENTITY, cause);
+	public UnauthorizedException(final Throwable cause) {
+		super(HttpStatus.UNAUTHORIZED, cause);
 	}
 
-	public UnprocessableEntityException(final String message, final Throwable cause) {
-		super(HttpStatus.UNPROCESSABLE_ENTITY, message, cause);
+	public UnauthorizedException(final String message, final Throwable cause) {
+		super(HttpStatus.UNAUTHORIZED, message, cause);
 	}
 }

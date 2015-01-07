@@ -40,7 +40,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.restexpress.domain.CharacterSet;
-import org.restexpress.exception.BadRequestException;
+import org.restexpress.http.BadRequestException;
 import org.restexpress.http.HttpHeader;
 import org.restexpress.response.ResponseProcessorSettingResolver;
 import org.restexpress.route.Route;

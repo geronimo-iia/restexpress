@@ -17,33 +17,38 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
-
-import org.restexpress.http.HttpStatus;
+package org.restexpress;
 
 /**
- * NotFoundException.
- * 
- * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- * 
+ * @author toddf
+ * @since Nov 20, 2009
  */
-public class NotFoundException extends HttpRuntimeException {
+public class DeserializationException extends RuntimeException {
+	private static final long serialVersionUID = 4563135167976559696L;
 
-	private static final long serialVersionUID = -1574740789203900506L;
-
-	public NotFoundException() {
-		super(HttpStatus.NOT_FOUND);
+	public DeserializationException() {
+		super();
 	}
 
-	public NotFoundException(final String message) {
-		super(HttpStatus.NOT_FOUND, message);
+	/**
+	 * @param message
+	 */
+	public DeserializationException(final String message) {
+		super(message);
 	}
 
-	public NotFoundException(final Throwable cause) {
-		super(HttpStatus.NOT_FOUND, cause);
+	/**
+	 * @param cause
+	 */
+	public DeserializationException(final Throwable cause) {
+		super(cause);
 	}
 
-	public NotFoundException(final String message, final Throwable cause) {
-		super(HttpStatus.NOT_FOUND, message, cause);
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public DeserializationException(final String message, final Throwable cause) {
+		super(message, cause);
 	}
 }

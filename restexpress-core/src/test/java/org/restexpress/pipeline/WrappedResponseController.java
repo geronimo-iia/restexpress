@@ -21,8 +21,8 @@ package org.restexpress.pipeline;
 
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.exception.NotAcceptableException;
-import org.restexpress.exception.NotFoundException;
+import org.restexpress.http.NotAcceptableException;
+import org.restexpress.http.NotFoundException;
 
 /**
  * {@link WrappedResponseController} is a dummy controller for test case.

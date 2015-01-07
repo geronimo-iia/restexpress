@@ -19,10 +19,10 @@
  */
 package org.restexpress.response;
 
+import org.restexpress.DeserializationException;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.exception.DeserializationException;
-import org.restexpress.exception.SerializationException;
+import org.restexpress.SerializationException;
 
 /**
  * {@link Serializer} define methods to serialize and deserialize data from/to

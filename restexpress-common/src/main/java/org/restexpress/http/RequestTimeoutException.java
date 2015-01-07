@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * GatewayTimeoutException.
+ * RequestTimeoutException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class GatewayTimeoutException extends HttpRuntimeException {
+public class RequestTimeoutException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = -2113715167053813305L;
+	private static final long serialVersionUID = -6180723103106429008L;
 
-	public GatewayTimeoutException() {
-		super(HttpStatus.GATEWAY_TIMEOUT);
+	public RequestTimeoutException() {
+		super(HttpStatus.REQUEST_TIMEOUT);
 	}
 
-	public GatewayTimeoutException(final String message) {
-		super(HttpStatus.GATEWAY_TIMEOUT, message);
+	public RequestTimeoutException(final String message) {
+		super(HttpStatus.REQUEST_TIMEOUT, message);
 	}
 
-	public GatewayTimeoutException(final Throwable cause) {
-		super(HttpStatus.GATEWAY_TIMEOUT, cause);
+	public RequestTimeoutException(final Throwable cause) {
+		super(HttpStatus.REQUEST_TIMEOUT, cause);
 	}
 
-	public GatewayTimeoutException(final String message, final Throwable cause) {
-		super(HttpStatus.GATEWAY_TIMEOUT, message, cause);
+	public RequestTimeoutException(final String message, final Throwable cause) {
+		super(HttpStatus.REQUEST_TIMEOUT, message, cause);
 	}
 }

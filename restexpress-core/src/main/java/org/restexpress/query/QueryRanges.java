@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.restexpress.Request;
-import org.restexpress.exception.BadRequestException;
+import org.restexpress.http.BadRequestException;
 import org.restexpress.query.QueryRange;
 
 /**

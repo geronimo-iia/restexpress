@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * HttpVersionNotSupportedException.
+ * UnprocessableEntityException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class HttpVersionNotSupportedException extends HttpRuntimeException {
+public class UnprocessableEntityException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = -4193585922038440936L;
+	private static final long serialVersionUID = -4617071830987345303L;
 
-	public HttpVersionNotSupportedException() {
-		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED);
+	public UnprocessableEntityException() {
+		super(HttpStatus.UNPROCESSABLE_ENTITY);
 	}
 
-	public HttpVersionNotSupportedException(final String message) {
-		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, message);
+	public UnprocessableEntityException(final String message) {
+		super(HttpStatus.UNPROCESSABLE_ENTITY, message);
 	}
 
-	public HttpVersionNotSupportedException(final Throwable cause) {
-		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, cause);
+	public UnprocessableEntityException(final Throwable cause) {
+		super(HttpStatus.UNPROCESSABLE_ENTITY, cause);
 	}
 
-	public HttpVersionNotSupportedException(final String message, final Throwable cause) {
-		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, message, cause);
+	public UnprocessableEntityException(final String message, final Throwable cause) {
+		super(HttpStatus.UNPROCESSABLE_ENTITY, message, cause);
 	}
 }

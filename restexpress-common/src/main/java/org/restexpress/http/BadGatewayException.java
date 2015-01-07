@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * RequestUriTooLongException.
+ * BadGatewayException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class RequestUriTooLongException extends HttpRuntimeException {
+public class BadGatewayException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = 4463345798955463381L;
+	private static final long serialVersionUID = -7616759496703759227L;
 
-	public RequestUriTooLongException() {
-		super(HttpStatus.REQUEST_URI_TOO_LONG);
+	public BadGatewayException() {
+		super(HttpStatus.BAD_GATEWAY);
 	}
 
-	public RequestUriTooLongException(final String message) {
-		super(HttpStatus.REQUEST_URI_TOO_LONG, message);
+	public BadGatewayException(final String message) {
+		super(HttpStatus.BAD_GATEWAY, message);
 	}
 
-	public RequestUriTooLongException(final Throwable cause) {
-		super(HttpStatus.REQUEST_URI_TOO_LONG, cause);
+	public BadGatewayException(final Throwable cause) {
+		super(HttpStatus.BAD_GATEWAY, cause);
 	}
 
-	public RequestUriTooLongException(final String message, final Throwable cause) {
-		super(HttpStatus.REQUEST_URI_TOO_LONG, message, cause);
+	public BadGatewayException(final String message, final Throwable cause) {
+		super(HttpStatus.BAD_GATEWAY, message, cause);
 	}
 }

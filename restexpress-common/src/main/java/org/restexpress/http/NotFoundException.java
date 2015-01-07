@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * UnauthorizedException.
+ * NotFoundException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class UnauthorizedException extends HttpRuntimeException {
+public class NotFoundException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = 7935920301143675954L;
+	private static final long serialVersionUID = -1574740789203900506L;
 
-	public UnauthorizedException() {
-		super(HttpStatus.UNAUTHORIZED);
+	public NotFoundException() {
+		super(HttpStatus.NOT_FOUND);
 	}
 
-	public UnauthorizedException(final String message) {
-		super(HttpStatus.UNAUTHORIZED, message);
+	public NotFoundException(final String message) {
+		super(HttpStatus.NOT_FOUND, message);
 	}
 
-	public UnauthorizedException(final Throwable cause) {
-		super(HttpStatus.UNAUTHORIZED, cause);
+	public NotFoundException(final Throwable cause) {
+		super(HttpStatus.NOT_FOUND, cause);
 	}
 
-	public UnauthorizedException(final String message, final Throwable cause) {
-		super(HttpStatus.UNAUTHORIZED, message, cause);
+	public NotFoundException(final String message, final Throwable cause) {
+		super(HttpStatus.NOT_FOUND, message, cause);
 	}
 }

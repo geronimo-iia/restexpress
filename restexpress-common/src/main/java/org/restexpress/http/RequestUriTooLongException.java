@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * ServiceUnavailableException.
+ * RequestUriTooLongException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class ServiceUnavailableException extends HttpRuntimeException {
+public class RequestUriTooLongException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = 3732813253500357763L;
+	private static final long serialVersionUID = 4463345798955463381L;
 
-	public ServiceUnavailableException() {
-		super(HttpStatus.SERVICE_UNAVAILABLE);
+	public RequestUriTooLongException() {
+		super(HttpStatus.REQUEST_URI_TOO_LONG);
 	}
 
-	public ServiceUnavailableException(final String message) {
-		super(HttpStatus.SERVICE_UNAVAILABLE, message);
+	public RequestUriTooLongException(final String message) {
+		super(HttpStatus.REQUEST_URI_TOO_LONG, message);
 	}
 
-	public ServiceUnavailableException(final Throwable cause) {
-		super(HttpStatus.SERVICE_UNAVAILABLE, cause);
+	public RequestUriTooLongException(final Throwable cause) {
+		super(HttpStatus.REQUEST_URI_TOO_LONG, cause);
 	}
 
-	public ServiceUnavailableException(final String message, final Throwable cause) {
-		super(HttpStatus.SERVICE_UNAVAILABLE, message, cause);
+	public RequestUriTooLongException(final String message, final Throwable cause) {
+		super(HttpStatus.REQUEST_URI_TOO_LONG, message, cause);
 	}
 }

@@ -23,8 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.restexpress.exception.Exceptions;
-import org.restexpress.exception.HttpRuntimeException;
+import org.restexpress.Exceptions;
+import org.restexpress.http.HttpRuntimeException;
 
 /**
  * @author toddf

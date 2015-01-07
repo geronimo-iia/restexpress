@@ -17,38 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
+
 
 /**
- * @author toddf
- * @since Nov 20, 2009
+ * HttpVersionNotSupportedException.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ * 
  */
-public class DeserializationException extends RuntimeException {
-	private static final long serialVersionUID = 4563135167976559696L;
+public class HttpVersionNotSupportedException extends HttpRuntimeException {
 
-	public DeserializationException() {
-		super();
+	private static final long serialVersionUID = -4193585922038440936L;
+
+	public HttpVersionNotSupportedException() {
+		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED);
 	}
 
-	/**
-	 * @param message
-	 */
-	public DeserializationException(final String message) {
-		super(message);
+	public HttpVersionNotSupportedException(final String message) {
+		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, message);
 	}
 
-	/**
-	 * @param cause
-	 */
-	public DeserializationException(final Throwable cause) {
-		super(cause);
+	public HttpVersionNotSupportedException(final Throwable cause) {
+		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, cause);
 	}
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public DeserializationException(final String message, final Throwable cause) {
-		super(message, cause);
+	public HttpVersionNotSupportedException(final String message, final Throwable cause) {
+		super(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, message, cause);
 	}
 }

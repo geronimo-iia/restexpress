@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * UnsupportedMediaTypeException.
+ * InternalServerErrorException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class UnsupportedMediaTypeException extends HttpRuntimeException {
+public class InternalServerErrorException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = 2044388736406021134L;
+	private static final long serialVersionUID = 1504044651590300989L;
 
-	public UnsupportedMediaTypeException() {
-		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+	public InternalServerErrorException() {
+		super(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	public UnsupportedMediaTypeException(final String message) {
-		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message);
+	public InternalServerErrorException(final String message) {
+		super(HttpStatus.INTERNAL_SERVER_ERROR, message);
 	}
 
-	public UnsupportedMediaTypeException(final Throwable cause) {
-		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE, cause);
+	public InternalServerErrorException(final Throwable cause) {
+		super(HttpStatus.INTERNAL_SERVER_ERROR, cause);
 	}
 
-	public UnsupportedMediaTypeException(final String message, final Throwable cause) {
-		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message, cause);
+	public InternalServerErrorException(final String message, final Throwable cause) {
+		super(HttpStatus.INTERNAL_SERVER_ERROR, message, cause);
 	}
 }

@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * ForbiddenException.
+ * PreconditionFailedException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class ForbiddenException extends HttpRuntimeException {
+public class PreconditionFailedException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = 374182124797822729L;
+	private static final long serialVersionUID = -1991232020269814812L;
 
-	public ForbiddenException() {
-		super(HttpStatus.FORBIDDEN);
+	public PreconditionFailedException() {
+		super(HttpStatus.PRECONDITION_FAILED);
 	}
 
-	public ForbiddenException(final String message) {
-		super(HttpStatus.FORBIDDEN, message);
+	public PreconditionFailedException(final String message) {
+		super(HttpStatus.PRECONDITION_FAILED, message);
 	}
 
-	public ForbiddenException(final Throwable cause) {
-		super(HttpStatus.FORBIDDEN, cause);
+	public PreconditionFailedException(final Throwable cause) {
+		super(HttpStatus.PRECONDITION_FAILED, cause);
 	}
 
-	public ForbiddenException(final String message, final Throwable cause) {
-		super(HttpStatus.FORBIDDEN, message, cause);
+	public PreconditionFailedException(final String message, final Throwable cause) {
+		super(HttpStatus.PRECONDITION_FAILED, message, cause);
 	}
 }

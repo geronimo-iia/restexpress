@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * NotAcceptableException.
+ * BadRequestException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class NotAcceptableException extends HttpRuntimeException {
+public class BadRequestException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = 5094190116049133911L;
+	private static final long serialVersionUID = -2463282880896905448L;
 
-	public NotAcceptableException() {
-		super(HttpStatus.NOT_ACCEPTABLE);
+	public BadRequestException() {
+		super(HttpStatus.BAD_REQUEST);
 	}
 
-	public NotAcceptableException(final String message) {
-		super(HttpStatus.NOT_ACCEPTABLE, message);
+	public BadRequestException(final String message) {
+		super(HttpStatus.BAD_REQUEST, message);
 	}
 
-	public NotAcceptableException(final Throwable cause) {
-		super(HttpStatus.NOT_ACCEPTABLE, cause);
+	public BadRequestException(final Throwable cause) {
+		super(HttpStatus.BAD_REQUEST, cause);
 	}
 
-	public NotAcceptableException(final String message, final Throwable cause) {
-		super(HttpStatus.NOT_ACCEPTABLE, message, cause);
+	public BadRequestException(final String message, final Throwable cause) {
+		super(HttpStatus.BAD_REQUEST, message, cause);
 	}
 }

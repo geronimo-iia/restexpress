@@ -43,7 +43,6 @@ import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.restexpress.context.ServerContext;
 import org.restexpress.domain.metadata.ServerMetadata;
 import org.restexpress.domain.response.ErrorResult;
-import org.restexpress.exception.ConfigurationException;
 import org.restexpress.pipeline.MessageObserver;
 import org.restexpress.pipeline.Postprocessor;
 import org.restexpress.pipeline.Preprocessor;

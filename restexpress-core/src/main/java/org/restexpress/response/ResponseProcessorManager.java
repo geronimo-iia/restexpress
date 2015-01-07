@@ -33,8 +33,8 @@ import org.restexpress.common.StringUtils;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaRange;
 import org.restexpress.domain.MediaRanges;
-import org.restexpress.exception.BadRequestException;
-import org.restexpress.exception.NotAcceptableException;
+import org.restexpress.http.BadRequestException;
+import org.restexpress.http.NotAcceptableException;
 import org.restexpress.serialization.Processor;
 
 /**

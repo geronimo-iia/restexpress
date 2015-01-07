@@ -44,8 +44,8 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.restexpress.Response;
 import org.restexpress.TestToolKit;
-import org.restexpress.exception.UnauthorizedException;
 import org.restexpress.http.HttpHeader;
+import org.restexpress.http.UnauthorizedException;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Preprocessor;
 

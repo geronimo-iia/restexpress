@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * RequestEntityTooLargeException.
+ * MethodNotAllowedException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class RequestEntityTooLargeException extends HttpRuntimeException {
+public class MethodNotAllowedException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = 698643750843281248L;
+	private static final long serialVersionUID = -167593829219516789L;
 
-	public RequestEntityTooLargeException() {
-		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE);
+	public MethodNotAllowedException() {
+		super(HttpStatus.METHOD_NOT_ALLOWED);
 	}
 
-	public RequestEntityTooLargeException(final String message) {
-		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE, message);
+	public MethodNotAllowedException(final String message) {
+		super(HttpStatus.METHOD_NOT_ALLOWED, message);
 	}
 
-	public RequestEntityTooLargeException(final Throwable cause) {
-		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE, cause);
+	public MethodNotAllowedException(final Throwable cause) {
+		super(HttpStatus.METHOD_NOT_ALLOWED, cause);
 	}
 
-	public RequestEntityTooLargeException(final String message, final Throwable cause) {
-		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE, message, cause);
+	public MethodNotAllowedException(final String message, final Throwable cause) {
+		super(HttpStatus.METHOD_NOT_ALLOWED, message, cause);
 	}
 }

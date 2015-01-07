@@ -17,37 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
+
 
 /**
- * @author toddf
- * @since Nov 20, 2009
+ * GatewayTimeoutException.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
+ * 
  */
-public class ConfigurationException extends RuntimeException {
-	private static final long serialVersionUID = -4891898485346985591L;
+public class GatewayTimeoutException extends HttpRuntimeException {
 
-	public ConfigurationException() {
+	private static final long serialVersionUID = -2113715167053813305L;
+
+	public GatewayTimeoutException() {
+		super(HttpStatus.GATEWAY_TIMEOUT);
 	}
 
-	/**
-	 * @param message
-	 */
-	public ConfigurationException(final String message) {
-		super(message);
+	public GatewayTimeoutException(final String message) {
+		super(HttpStatus.GATEWAY_TIMEOUT, message);
 	}
 
-	/**
-	 * @param cause
-	 */
-	public ConfigurationException(final Throwable cause) {
-		super(cause);
+	public GatewayTimeoutException(final Throwable cause) {
+		super(HttpStatus.GATEWAY_TIMEOUT, cause);
 	}
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public ConfigurationException(final String message, final Throwable cause) {
-		super(message, cause);
+	public GatewayTimeoutException(final String message, final Throwable cause) {
+		super(HttpStatus.GATEWAY_TIMEOUT, message, cause);
 	}
 }

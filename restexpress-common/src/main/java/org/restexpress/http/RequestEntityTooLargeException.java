@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * RequestTimeoutException.
+ * RequestEntityTooLargeException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class RequestTimeoutException extends HttpRuntimeException {
+public class RequestEntityTooLargeException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = -6180723103106429008L;
+	private static final long serialVersionUID = 698643750843281248L;
 
-	public RequestTimeoutException() {
-		super(HttpStatus.REQUEST_TIMEOUT);
+	public RequestEntityTooLargeException() {
+		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE);
 	}
 
-	public RequestTimeoutException(final String message) {
-		super(HttpStatus.REQUEST_TIMEOUT, message);
+	public RequestEntityTooLargeException(final String message) {
+		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE, message);
 	}
 
-	public RequestTimeoutException(final Throwable cause) {
-		super(HttpStatus.REQUEST_TIMEOUT, cause);
+	public RequestEntityTooLargeException(final Throwable cause) {
+		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE, cause);
 	}
 
-	public RequestTimeoutException(final String message, final Throwable cause) {
-		super(HttpStatus.REQUEST_TIMEOUT, message, cause);
+	public RequestEntityTooLargeException(final String message, final Throwable cause) {
+		super(HttpStatus.REQUEST_ENTITY_TOO_LARGE, message, cause);
 	}
 }

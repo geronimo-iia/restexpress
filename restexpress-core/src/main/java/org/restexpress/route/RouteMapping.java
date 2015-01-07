@@ -45,9 +45,9 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.metadata.RouteMetadata;
-import org.restexpress.exception.MethodNotAllowedException;
-import org.restexpress.exception.NotFoundException;
 import org.restexpress.http.HttpHeader;
+import org.restexpress.http.MethodNotAllowedException;
+import org.restexpress.http.NotFoundException;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.url.UrlMatch;
 

@@ -19,12 +19,12 @@
  */
 package org.restexpress.response;
 
+import org.restexpress.Exceptions;
 import org.restexpress.Response;
 import org.restexpress.domain.response.ErrorResult;
 import org.restexpress.domain.response.JsendResult;
 import org.restexpress.domain.response.JsendResult.State;
-import org.restexpress.exception.Exceptions;
-import org.restexpress.exception.HttpRuntimeException;
+import org.restexpress.http.HttpRuntimeException;
 
 /**
  * {@link Wrapper} utility class to define instance of {@link ResponseWrapper}.

@@ -17,7 +17,7 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
 import javax.ws.rs.core.Response.StatusType;
 

@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * BadRequestException.
+ * ServiceUnavailableException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class BadRequestException extends HttpRuntimeException {
+public class ServiceUnavailableException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = -2463282880896905448L;
+	private static final long serialVersionUID = 3732813253500357763L;
 
-	public BadRequestException() {
-		super(HttpStatus.BAD_REQUEST);
+	public ServiceUnavailableException() {
+		super(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
-	public BadRequestException(final String message) {
-		super(HttpStatus.BAD_REQUEST, message);
+	public ServiceUnavailableException(final String message) {
+		super(HttpStatus.SERVICE_UNAVAILABLE, message);
 	}
 
-	public BadRequestException(final Throwable cause) {
-		super(HttpStatus.BAD_REQUEST, cause);
+	public ServiceUnavailableException(final Throwable cause) {
+		super(HttpStatus.SERVICE_UNAVAILABLE, cause);
 	}
 
-	public BadRequestException(final String message, final Throwable cause) {
-		super(HttpStatus.BAD_REQUEST, message, cause);
+	public ServiceUnavailableException(final String message, final Throwable cause) {
+		super(HttpStatus.SERVICE_UNAVAILABLE, message, cause);
 	}
 }

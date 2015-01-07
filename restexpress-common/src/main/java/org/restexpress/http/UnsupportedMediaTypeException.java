@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * BadGatewayException.
+ * UnsupportedMediaTypeException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class BadGatewayException extends HttpRuntimeException {
+public class UnsupportedMediaTypeException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = -7616759496703759227L;
+	private static final long serialVersionUID = 2044388736406021134L;
 
-	public BadGatewayException() {
-		super(HttpStatus.BAD_GATEWAY);
+	public UnsupportedMediaTypeException() {
+		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 	}
 
-	public BadGatewayException(final String message) {
-		super(HttpStatus.BAD_GATEWAY, message);
+	public UnsupportedMediaTypeException(final String message) {
+		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message);
 	}
 
-	public BadGatewayException(final Throwable cause) {
-		super(HttpStatus.BAD_GATEWAY, cause);
+	public UnsupportedMediaTypeException(final Throwable cause) {
+		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE, cause);
 	}
 
-	public BadGatewayException(final String message, final Throwable cause) {
-		super(HttpStatus.BAD_GATEWAY, message, cause);
+	public UnsupportedMediaTypeException(final String message, final Throwable cause) {
+		super(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message, cause);
 	}
 }

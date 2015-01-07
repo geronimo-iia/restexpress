@@ -29,7 +29,7 @@ import org.restexpress.HttpSpecification;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
-import org.restexpress.exception.HttpSpecificationException;
+import org.restexpress.http.HttpSpecificationException;
 import org.restexpress.http.HttpStatus;
 
 /**

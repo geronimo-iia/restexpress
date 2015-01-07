@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
 
 import javax.ws.rs.ext.ParamConverter;
 
-import org.restexpress.exception.ConfigurationException;
+import org.restexpress.ConfigurationException;
 
 import com.google.common.base.Throwables;
 

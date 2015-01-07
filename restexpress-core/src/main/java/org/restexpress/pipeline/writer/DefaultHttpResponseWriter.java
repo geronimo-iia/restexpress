@@ -36,8 +36,8 @@ import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
-import org.restexpress.exception.HttpRuntimeException;
 import org.restexpress.http.HttpHeader;
+import org.restexpress.http.HttpRuntimeException;
 import org.restexpress.http.HttpStatus;
 import org.restexpress.pipeline.HttpResponseWriter;
 

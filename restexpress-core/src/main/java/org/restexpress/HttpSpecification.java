@@ -21,8 +21,8 @@ package org.restexpress;
 
 import javax.ws.rs.core.Response.StatusType;
 
-import org.restexpress.exception.HttpSpecificationException;
 import org.restexpress.http.HttpHeader;
+import org.restexpress.http.HttpSpecificationException;
 import org.restexpress.http.HttpStatus;
 
 /**

@@ -31,10 +31,10 @@
  */
 package org.restexpress.response;
 
+import org.restexpress.DeserializationException;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.exception.DeserializationException;
-import org.restexpress.exception.SerializationException;
+import org.restexpress.SerializationException;
 import org.restexpress.http.HttpHeader;
 
 /**

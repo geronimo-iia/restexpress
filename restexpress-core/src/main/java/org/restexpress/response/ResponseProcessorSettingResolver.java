@@ -21,8 +21,8 @@ package org.restexpress.response;
 
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.exception.BadRequestException;
-import org.restexpress.exception.NotAcceptableException;
+import org.restexpress.http.BadRequestException;
+import org.restexpress.http.NotAcceptableException;
 
 /**
  * {@link ResponseProcessorSettingResolver} define methods to resolve:

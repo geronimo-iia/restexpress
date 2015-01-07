@@ -48,7 +48,7 @@ import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.Format;
 import org.restexpress.domain.MediaType;
-import org.restexpress.exception.BadRequestException;
+import org.restexpress.http.BadRequestException;
 import org.restexpress.pipeline.handler.RestExpressRequestHandler;
 import org.restexpress.pipeline.handler.RestExpressRequestHandlerBuilder;
 import org.restexpress.response.Wrapper;

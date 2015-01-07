@@ -43,7 +43,7 @@ import org.restexpress.RestExpressService;
 import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
 import org.restexpress.domain.response.ErrorResult;
-import org.restexpress.exception.HttpRuntimeException;
+import org.restexpress.http.HttpRuntimeException;
 import org.restexpress.http.HttpStatus;
 import org.restexpress.response.ResponseWrapper;
 

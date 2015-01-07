@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * ConflictException.
+ * ForbiddenException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class ConflictException extends HttpRuntimeException {
+public class ForbiddenException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = -115043137781833730L;
+	private static final long serialVersionUID = 374182124797822729L;
 
-	public ConflictException() {
-		super(HttpStatus.CONFLICT);
+	public ForbiddenException() {
+		super(HttpStatus.FORBIDDEN);
 	}
 
-	public ConflictException(final String message) {
-		super(HttpStatus.CONFLICT, message);
+	public ForbiddenException(final String message) {
+		super(HttpStatus.FORBIDDEN, message);
 	}
 
-	public ConflictException(final Throwable cause) {
-		super(HttpStatus.CONFLICT, cause);
+	public ForbiddenException(final Throwable cause) {
+		super(HttpStatus.FORBIDDEN, cause);
 	}
 
-	public ConflictException(final String message, final Throwable cause) {
-		super(HttpStatus.CONFLICT, message, cause);
+	public ForbiddenException(final String message, final Throwable cause) {
+		super(HttpStatus.FORBIDDEN, message, cause);
 	}
 }

@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.restexpress.exception.DeserializationException;
+import org.restexpress.DeserializationException;
 import org.restexpress.http.HttpDateTimeFormat;
 
 import com.fasterxml.jackson.core.JsonParser;

@@ -17,33 +17,32 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
+package org.restexpress.http;
 
-import org.restexpress.http.HttpStatus;
 
 /**
- * MethodNotAllowedException.
+ * ConflictException.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * 
  */
-public class MethodNotAllowedException extends HttpRuntimeException {
+public class ConflictException extends HttpRuntimeException {
 
-	private static final long serialVersionUID = -167593829219516789L;
+	private static final long serialVersionUID = -115043137781833730L;
 
-	public MethodNotAllowedException() {
-		super(HttpStatus.METHOD_NOT_ALLOWED);
+	public ConflictException() {
+		super(HttpStatus.CONFLICT);
 	}
 
-	public MethodNotAllowedException(final String message) {
-		super(HttpStatus.METHOD_NOT_ALLOWED, message);
+	public ConflictException(final String message) {
+		super(HttpStatus.CONFLICT, message);
 	}
 
-	public MethodNotAllowedException(final Throwable cause) {
-		super(HttpStatus.METHOD_NOT_ALLOWED, cause);
+	public ConflictException(final Throwable cause) {
+		super(HttpStatus.CONFLICT, cause);
 	}
 
-	public MethodNotAllowedException(final String message, final Throwable cause) {
-		super(HttpStatus.METHOD_NOT_ALLOWED, message, cause);
+	public ConflictException(final String message, final Throwable cause) {
+		super(HttpStatus.CONFLICT, message, cause);
 	}
 }

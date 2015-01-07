@@ -51,8 +51,8 @@ import org.restexpress.Response;
 import org.restexpress.RestExpress;
 import org.restexpress.RestExpressService;
 import org.restexpress.TestToolKit;
-import org.restexpress.exception.MethodNotAllowedException;
 import org.restexpress.http.HttpHeader;
+import org.restexpress.http.MethodNotAllowedException;
 import org.restexpress.pipeline.MessageContext;
 
 /**

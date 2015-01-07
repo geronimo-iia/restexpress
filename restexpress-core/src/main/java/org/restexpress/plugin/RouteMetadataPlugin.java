@@ -36,7 +36,7 @@ import org.restexpress.domain.CharacterSet;
 import org.restexpress.domain.MediaType;
 import org.restexpress.domain.metadata.RouteMetadata;
 import org.restexpress.domain.metadata.ServerMetadata;
-import org.restexpress.exception.NotFoundException;
+import org.restexpress.http.NotFoundException;
 import org.restexpress.route.RouteBuilder;
 
 import com.google.common.collect.Maps;

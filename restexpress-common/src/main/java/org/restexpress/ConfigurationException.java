@@ -17,33 +17,37 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
-
-import org.restexpress.http.HttpStatus;
+package org.restexpress;
 
 /**
- * PreconditionFailedException.
- * 
- * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- * 
+ * @author toddf
+ * @since Nov 20, 2009
  */
-public class PreconditionFailedException extends HttpRuntimeException {
+public class ConfigurationException extends RuntimeException {
+	private static final long serialVersionUID = -4891898485346985591L;
 
-	private static final long serialVersionUID = -1991232020269814812L;
-
-	public PreconditionFailedException() {
-		super(HttpStatus.PRECONDITION_FAILED);
+	public ConfigurationException() {
 	}
 
-	public PreconditionFailedException(final String message) {
-		super(HttpStatus.PRECONDITION_FAILED, message);
+	/**
+	 * @param message
+	 */
+	public ConfigurationException(final String message) {
+		super(message);
 	}
 
-	public PreconditionFailedException(final Throwable cause) {
-		super(HttpStatus.PRECONDITION_FAILED, cause);
+	/**
+	 * @param cause
+	 */
+	public ConfigurationException(final Throwable cause) {
+		super(cause);
 	}
 
-	public PreconditionFailedException(final String message, final Throwable cause) {
-		super(HttpStatus.PRECONDITION_FAILED, message, cause);
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public ConfigurationException(final String message, final Throwable cause) {
+		super(message, cause);
 	}
 }

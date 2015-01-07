@@ -35,7 +35,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.domain.CharacterSet;
-import org.restexpress.exception.BadRequestException;
+import org.restexpress.http.BadRequestException;
 
 /**
  * @author toddf

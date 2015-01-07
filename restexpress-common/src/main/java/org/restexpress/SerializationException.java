@@ -17,33 +17,37 @@
  *        under the License.
  *
  */
-package org.restexpress.exception;
-
-import org.restexpress.http.HttpStatus;
+package org.restexpress;
 
 /**
- * InternalServerErrorException.
- * 
- * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
- * 
+ * @author toddf
+ * @since Nov 20, 2009
  */
-public class InternalServerErrorException extends HttpRuntimeException {
+public class SerializationException extends RuntimeException {
+	private static final long serialVersionUID = -5208426797622464550L;
 
-	private static final long serialVersionUID = 1504044651590300989L;
-
-	public InternalServerErrorException() {
-		super(HttpStatus.INTERNAL_SERVER_ERROR);
+	public SerializationException() {
 	}
 
-	public InternalServerErrorException(final String message) {
-		super(HttpStatus.INTERNAL_SERVER_ERROR, message);
+	/**
+	 * @param message
+	 */
+	public SerializationException(final String message) {
+		super(message);
 	}
 
-	public InternalServerErrorException(final Throwable cause) {
-		super(HttpStatus.INTERNAL_SERVER_ERROR, cause);
+	/**
+	 * @param cause
+	 */
+	public SerializationException(final Throwable cause) {
+		super(cause);
 	}
 
-	public InternalServerErrorException(final String message, final Throwable cause) {
-		super(HttpStatus.INTERNAL_SERVER_ERROR, message, cause);
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public SerializationException(final String message, final Throwable cause) {
+		super(message, cause);
 	}
 }
