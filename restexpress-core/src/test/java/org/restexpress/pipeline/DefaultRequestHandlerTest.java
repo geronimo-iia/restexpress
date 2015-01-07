@@ -373,7 +373,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
         }
 
         public Object dateAction(Request request, Response response) {
-            return request.getBodyAs(Dated.class);
+            return request.getEntity(Dated.class);
         }
 
         public String unserializedDefault(Request request, Response response) {

@@ -239,8 +239,8 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 		for (Preprocessor preprocessor : preprocessors) {
 			preprocessor.process(context);
 		}
-		if (context.getRequest().getBody() != null)
-			context.getRequest().getBody().resetReaderIndex();
+		if (context.getRequest().getEntity() != null)
+			context.getRequest().getEntity().resetReaderIndex();
 	}
 
 	/**

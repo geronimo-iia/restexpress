@@ -140,6 +140,16 @@ public class Request {
 	}
 
 	/**
+	 * Get the request method, e.g. GET, POST, etc.
+	 *
+	 * @return the request method.
+	 * @see javax.ws.rs.HttpMethod
+	 */
+	public String getMethod() {
+		return httpRequest.getMethod().getName();
+	}
+
+	/**
 	 * Return the HTTP method of the request.
 	 * 
 	 * @return HttpMethod of the request.
@@ -189,7 +199,7 @@ public class Request {
 	/**
 	 * @return {@link ChannelBuffer} of request body.
 	 */
-	public ChannelBuffer getBody() {
+	public ChannelBuffer getEntity() {
 		return httpRequest.getContent();
 	}
 
@@ -203,7 +213,7 @@ public class Request {
 	 * @throws BadRequestException
 	 *             if the deserialization fails.
 	 */
-	public <T> T getBodyAs(final Class<T> type) throws BadRequestException {
+	public <T> T getEntity(final Class<T> type) throws BadRequestException {
 		return responseProcessorSettingResolver.resolve(this).deserialize(this, type);
 	}
 
@@ -221,8 +231,8 @@ public class Request {
 	 * @throws BadRequestException
 	 *             if serialization fails.
 	 */
-	public <T> T getBodyAs(final Class<T> type, final String message) throws BadRequestException {
-		final T instance = getBodyAs(type);
+	public <T> T getEntity(final Class<T> type, final String message) throws BadRequestException {
+		final T instance = getEntity(type);
 		if (instance == null) {
 			throw new BadRequestException(message);
 		}
@@ -234,8 +244,8 @@ public class Request {
 	 * 
 	 * @return an InputStream
 	 */
-	public InputStream getBodyAsStream() {
-		return new ChannelBufferInputStream(getBody());
+	public InputStream getEntityAsStream() {
+		return new ChannelBufferInputStream(getEntity());
 	}
 
 	/**
@@ -244,8 +254,8 @@ public class Request {
 	 * 
 	 * @return a ByteBuffer.
 	 */
-	public ByteBuffer getBodyAsByteBuffer() {
-		return getBody().toByteBuffer();
+	public ByteBuffer getEntityAsByteBuffer() {
+		return getEntity().toByteBuffer();
 	}
 
 	/**
@@ -256,8 +266,8 @@ public class Request {
 	 * @return an array of byte, or null, if the ChannelBuffer is not backed by
 	 *         a byte array.
 	 */
-	public byte[] getBodyAsBytes() {
-		return (getBody().hasArray() ? getBody().array() : null);
+	public byte[] getEntityAsBytes() {
+		return (getEntity().hasArray() ? getEntity().array() : null);
 	}
 
 	/**
@@ -266,8 +276,8 @@ public class Request {
 	 * 
 	 * @return
 	 */
-	public Map<String, List<String>> getBodyFromUrlFormEncoded() {
-		return getBodyFromUrlFormEncoded(true);
+	public Map<String, List<String>> getEntityFromUrlFormEncoded() {
+		return getEntityFromUrlFormEncoded(true);
 	}
 
 	/**
@@ -279,13 +289,13 @@ public class Request {
 	 *            true if the returned values should be URL-decoded
 	 * @return
 	 */
-	public Map<String, List<String>> getBodyFromUrlFormEncoded(final boolean shouldDecode) {
+	public Map<String, List<String>> getEntityFromUrlFormEncoded(final boolean shouldDecode) {
 		Charset charset = CharacterSet.UTF_8.getCharset();
 		if (shouldDecode) {
-			final QueryStringDecoder qsd = new QueryStringDecoder(getBody().toString(charset), charset, false);
+			final QueryStringDecoder qsd = new QueryStringDecoder(getEntity().toString(charset), charset, false);
 			return qsd.getParameters();
 		}
-		final QueryStringParser qsp = new QueryStringParser(getBody().toString(charset), false);
+		final QueryStringParser qsp = new QueryStringParser(getEntity().toString(charset), false);
 		return qsp.getParameters();
 	}
 
@@ -295,7 +305,7 @@ public class Request {
 	 * @param body
 	 *            {@link ChannelBuffer}.
 	 */
-	public void setBody(final ChannelBuffer body) {
+	public void setEntity(final ChannelBuffer body) {
 		httpRequest.setContent(body);
 	}
 

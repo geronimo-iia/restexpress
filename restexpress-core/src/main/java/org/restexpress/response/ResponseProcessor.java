@@ -82,7 +82,7 @@ public final class ResponseProcessor implements Serializer {
 
 	@Override
 	public <T> T deserialize(final Request request, final Class<T> type) throws DeserializationException {
-		return processor.read(request.getBody(), type);
+		return processor.read(request.getEntity(), type);
 	}
 
 	/**
