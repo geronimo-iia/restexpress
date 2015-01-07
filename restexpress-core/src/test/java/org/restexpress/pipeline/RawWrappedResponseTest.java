@@ -43,8 +43,7 @@ public class RawWrappedResponseTest extends AbstractWrapperResponse {
 
     @Before
     public void initialize() throws Exception {
-        DummyRoutes routes = new DummyRoutes();
-        routes.defineRoutes();
+        defineRoutes(routes);
         initialize(routes);
         jacksonJsonProcessor = new JacksonJsonProcessor();
         jacksonXmlProcessor = new JacksonXmlProcessor();

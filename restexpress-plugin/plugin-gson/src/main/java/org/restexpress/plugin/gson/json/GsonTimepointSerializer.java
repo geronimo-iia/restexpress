@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
+import org.restexpress.http.HttpDateTimeFormat;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -43,7 +43,7 @@ public class GsonTimepointSerializer implements GsonSerializer<Date> {
     public Date deserialize(final JsonElement json, final Type typeOf, final JsonDeserializationContext context)
             throws JsonParseException {
         try {
-            return HttpHeaderDateTimeFormat.parseAny(json.getAsJsonPrimitive().getAsString());
+            return HttpDateTimeFormat.parseAny(json.getAsJsonPrimitive().getAsString());
         } catch (final ParseException e) {
             throw new JsonParseException(e);
         }
@@ -51,7 +51,7 @@ public class GsonTimepointSerializer implements GsonSerializer<Date> {
 
     @Override
     public JsonElement serialize(final Date date, final Type typeOf, final JsonSerializationContext context) {
-        return new JsonPrimitive(HttpHeaderDateTimeFormat.ISO_8601.format(date));
+        return new JsonPrimitive(HttpDateTimeFormat.ISO_8601.format(date));
     }
 
     @Override

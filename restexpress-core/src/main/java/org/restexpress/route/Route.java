@@ -34,123 +34,120 @@
  */
 package org.restexpress.route;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Flags;
-import org.restexpress.Request;
-import org.restexpress.Response;
+import org.restexpress.pipeline.MessageContext;
+import org.restexpress.route.invoker.Invoker;
 import org.restexpress.url.UrlMatch;
 import org.restexpress.url.UrlMatcher;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 /**
- * A Route is an immutable relationship between a URL pattern and a REST
- * service.
+ * A {@link Route} is an immutable relationship between a URL pattern and a REST service.
  * 
  * @author toddf
  * @since May 4, 2010
  */
-public abstract class Route {
+public abstract class Route implements Invoker {
 
-	private final UrlMatcher urlMatcher;
-	private final Object controller;
-	private final Method action;
-	private final HttpMethod method;
-	private boolean shouldSerializeResponse = true;
-	private final String name;
-	private final Set<String> flags = new HashSet<>();
-	private final Map<String, Object> parameters = new HashMap<String, Object>();
+    private final UrlMatcher urlMatcher;
+    private final Invoker invoker;
+    private final HttpMethod method;
+    private boolean shouldSerializeResponse = true;
+    private final String name;
+    private final Set<String> flags = Sets.newHashSet();
+    private final Map<String, Object> parameters = Maps.newHashMap();
 
-	public Route(final UrlMatcher urlMatcher, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
-		super();
-		this.urlMatcher = urlMatcher;
-		this.controller = controller;
-		this.action = action;
-		this.method = method;
-		this.shouldSerializeResponse = shouldSerializeResponse;
-		this.name = name;
-		this.flags.addAll(flags);
-		this.parameters.putAll(parameters);
-	}
+    public Route(final UrlMatcher urlMatcher, final Invoker invoker, final HttpMethod method, final boolean shouldSerializeResponse,
+            final String name, final Set<String> flags, final Map<String, Object> parameters) {
+        super();
+        this.urlMatcher = urlMatcher;
+        this.invoker = invoker;
+        this.method = method;
+        this.shouldSerializeResponse = shouldSerializeResponse;
+        this.name = name;
+        this.flags.addAll(flags);
+        this.parameters.putAll(parameters);
+    }
 
-	public boolean isFlagged(final String flag) {
-		return flags.contains(flag);
-	}
+    /**
+     * @return {@link Invoker} instance.
+     */
+    @VisibleForTesting
+    public final Invoker invoker() {
+        return invoker;
+    }
 
-	public boolean isFlagged(final Flags flag) {
-		return isFlagged(flag.toString());
-	}
+    @Override
+    public final Object invoke(final MessageContext context) {
+        return invoker.invoke(context);
+    }
 
-	public boolean hasParameter(final String name) {
-		return (getParameter(name) != null);
-	}
+    @Override
+    public final Object controller() {
+        return invoker.controller();
+    }
 
-	public Object getParameter(final String name) {
-		return parameters.get(name);
-	}
+    @Override
+    public final Method action() {
+        return invoker.action();
+    }
 
-	public Method getAction() {
-		return action;
-	}
+    public boolean isFlagged(final String flag) {
+        return flags.contains(flag);
+    }
 
-	public Object getController() {
-		return controller;
-	}
+    public final boolean isFlagged(final Flags flag) {
+        return isFlagged(flag.toString());
+    }
 
-	public HttpMethod getMethod() {
-		return method;
-	}
+    public final boolean hasParameter(final String name) {
+        return (getParameter(name) != null);
+    }
 
-	public String getName() {
-		return name;
-	}
+    public final Object getParameter(final String name) {
+        return parameters.get(name);
+    }
 
-	public boolean hasName() {
-		return ((getName() != null) && !getName().trim().isEmpty());
-	}
+    public final HttpMethod getMethod() {
+        return method;
+    }
 
-	/**
-	 * Returns the URL pattern without any '.{format}' at the end. In essence, a
-	 * 'short' URL pattern.
-	 * 
-	 * @return a URL pattern
-	 */
-	public String getPattern() {
-		return urlMatcher.getPattern();
-	}
+    public final String getName() {
+        return name;
+    }
 
-	public boolean shouldSerializeResponse() {
-		return shouldSerializeResponse;
-	}
+    public final boolean hasName() {
+        return ((getName() != null) && !getName().trim().isEmpty());
+    }
 
-	public UrlMatch match(final String url) {
-		return urlMatcher.match(url);
-	}
+    /**
+     * Returns the URL pattern without any '.{format}' at the end. In essence, a 'short' URL pattern.
+     * 
+     * @return a URL pattern
+     */
+    public final String getPattern() {
+        return urlMatcher.getPattern();
+    }
 
-	public List<String> getUrlParameters() {
-		return urlMatcher.getParameterNames();
-	}
+    public final boolean shouldSerializeResponse() {
+        return shouldSerializeResponse;
+    }
 
-	public Object invoke(final Request request, final Response response) {
-		try {
-			return action.invoke(controller, request, response);
-		} catch (final InvocationTargetException e) {
-			final Throwable cause = e.getCause();
+    public UrlMatch match(final String url) {
+        return urlMatcher.match(url);
+    }
 
-			if (RuntimeException.class.isAssignableFrom(cause.getClass())) {
-				throw (RuntimeException) e.getCause();
-			} else {
-				throw new RuntimeException(cause);
-			}
-		} catch (final Exception e) {
-			throw new HttpRuntimeException(e);
-		}
-	}
+    public final List<String> getUrlParameters() {
+        return urlMatcher.getParameterNames();
+    }
+
 }

@@ -32,6 +32,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.RestExpress;
+import org.restexpress.RestExpressService;
 
 /**
  * @author toddf
@@ -41,12 +43,19 @@ public class RouteDeclarationTest {
 	private static final String RAH_ROUTE_NAME = "POST_ONLY";
 	private static RouteDeclaration routeDeclarations;
 	private static RouteMapping routeMapping;
+	private static RestExpress restExpress;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		routeDeclarations = new Routes();
-		((Routes) routeDeclarations).defineRoutes();
-		routeMapping = routeDeclarations.createRouteMapping("http://localhost:8081");
+		routeDeclarations = new RouteDeclaration();
+		defineRoutes(routeDeclarations);
+		restExpress = RestExpressService.newBuilder();
+    	restExpress.settings().serverSettings().setBaseUrl("http://localhost:8081");
+    	routeMapping = routeDeclarations.createRouteMapping(restExpress);
+	}
+
+	private String findInvokeMethodName(Route r) {
+		return r.invoker().action().getName();
 	}
 
 	@Test
@@ -110,7 +119,7 @@ public class RouteDeclarationTest {
 		Route r = routeMapping.getNamedRoute(RAH_ROUTE_NAME, HttpMethod.POST);
 		assertNotNull(r);
 		assertEquals(RAH_ROUTE_NAME, r.getName());
-		assertEquals("createRah", r.getAction().getName());
+		assertEquals("createRah", findInvokeMethodName(r));
 	}
 
 	@Test
@@ -118,7 +127,7 @@ public class RouteDeclarationTest {
 		Route r = routeMapping.getNamedRoute("CRUD_ROUTE", HttpMethod.GET);
 		assertNotNull(r);
 		assertEquals("CRUD_ROUTE", r.getName());
-		assertEquals("read", r.getAction().getName());
+		assertEquals("read",findInvokeMethodName(r));
 	}
 
 	@Test
@@ -126,7 +135,7 @@ public class RouteDeclarationTest {
 		Route r = routeMapping.getNamedRoute("CRUD_ROUTE", HttpMethod.POST);
 		assertNotNull(r);
 		assertEquals("CRUD_ROUTE", r.getName());
-		assertEquals("create", r.getAction().getName());
+		assertEquals("create",findInvokeMethodName(r));
 	}
 
 	@Test
@@ -134,7 +143,7 @@ public class RouteDeclarationTest {
 		Route r = routeMapping.getNamedRoute("CRUD_ROUTE", HttpMethod.PUT);
 		assertNotNull(r);
 		assertEquals("CRUD_ROUTE", r.getName());
-		assertEquals("update", r.getAction().getName());
+		assertEquals("update",findInvokeMethodName(r));
 	}
 
 	@Test
@@ -142,7 +151,7 @@ public class RouteDeclarationTest {
 		Route r = routeMapping.getNamedRoute("CRUD_ROUTE", HttpMethod.DELETE);
 		assertNotNull(r);
 		assertEquals("CRUD_ROUTE", r.getName());
-		assertEquals("delete", r.getAction().getName());
+		assertEquals("delete",findInvokeMethodName(r));
 	}
 
 	@Test
@@ -172,27 +181,15 @@ public class RouteDeclarationTest {
 		assertTrue(methods.contains(HttpMethod.DELETE));
 	}
 
-	private static class Routes extends RouteDeclaration {
-		private InnerService service;
-
-		public Routes() {
-			super();
-			service = new InnerService();
-		}
-
-		public void defineRoutes() {
-			uri("/foo/bar/{barId}.{format}", service).action("readBar", HttpMethod.GET);
-
-			uri("/foo/bat/{batId}.{format}", service).action("readBat", HttpMethod.GET);
-
-			uri("/foo.{format}", service).method(HttpMethod.POST);
-
-			uri("/foo/{fooId}.{format}", service).name("CRUD_ROUTE");
-
-			uri("/foo/rah/{rahId}.{format}", service).action("createRah", HttpMethod.POST).name(RAH_ROUTE_NAME);
-
-			uri("/foo/yada/{yadaId}.{format}", service).action("readYada", HttpMethod.GET);
-		}
+	public static RouteDeclaration defineRoutes(RouteDeclaration routeDeclaration) {
+		InnerService service = new InnerService();
+		routeDeclaration.uri("/foo/bar/{barId}.{format}", service).action("readBar", HttpMethod.GET);
+		routeDeclaration.uri("/foo/bat/{batId}.{format}", service).action("readBat", HttpMethod.GET);
+		routeDeclaration.uri("/foo.{format}", service).method(HttpMethod.POST);
+		routeDeclaration.uri("/foo/{fooId}.{format}", service).name("CRUD_ROUTE");
+		routeDeclaration.uri("/foo/rah/{rahId}.{format}", service).action("createRah", HttpMethod.POST).name(RAH_ROUTE_NAME);
+		routeDeclaration.uri("/foo/yada/{yadaId}.{format}", service).action("readYada", HttpMethod.GET);
+		return routeDeclaration;
 	}
 
 	public static class InnerService {

@@ -50,105 +50,101 @@ import org.restexpress.serialization.Processor;
  */
 public class AbstractWrapperResponse {
 
-	protected RestExpressRequestHandler messageHandler;
-	protected CounterMessageObserver observer;
-	protected Channel channel;
-	protected ChannelPipeline pl;
-	protected StringBuffer responseBody;
-	protected Map<String, List<String>> responseHeaders;
-	protected RestExpressRequestHandlerBuilder builder;
+    protected RestExpressRequestHandler messageHandler;
+    protected CounterMessageObserver observer;
+    protected Channel channel;
+    protected ChannelPipeline pl;
+    protected StringBuffer responseBody;
+    protected Map<String, List<String>> responseHeaders;
+    protected RestExpressRequestHandlerBuilder builder;
+    protected RouteDeclaration routes = new RouteDeclaration();
 
-	/**
-	 * Utility to read result.
-	 * 
-	 * @param processor
-	 * @param valueType
-	 * @return
-	 */
-	protected <T> T read(Processor processor, Class<T> valueType) {
-		return processor.read(ChannelBuffers.copiedBuffer(responseBody.toString(), CharacterSet.UTF_8.getCharset()), valueType);
-	}
+    /**
+     * Utility to read result.
+     * 
+     * @param processor
+     * @param valueType
+     * @return
+     */
+    protected <T> T read(Processor processor, Class<T> valueType) {
+        return processor.read(ChannelBuffers.copiedBuffer(responseBody.toString(), CharacterSet.UTF_8.getCharset()), valueType);
+    }
 
-	/**
-	 * Initialize route and pipeline.
-	 * 
-	 * @param routes
-	 * @throws Exception
-	 */
-	protected void initialize(RouteDeclaration routes) throws Exception {
-		preInitialize(routes);
-		messageHandler = build(builder);
-		postInitialize();
-	}
+    /**
+     * Initialize route and pipeline.
+     * 
+     * @param routes
+     * @throws Exception
+     */
+    protected void initialize(RouteDeclaration routes) throws Exception {
+        preInitialize(routes);
+        messageHandler = build(builder);
+        postInitialize();
+    }
 
-	protected void postInitialize() throws Exception {
-		messageHandler = build(builder);
-		RestExpressPipelineFactory pipelineFactory = new RestExpressPipelineFactory().addRequestHandler(messageHandler);
-		pl = pipelineFactory.getPipeline();
-		ChannelFactory channelFactory = new DefaultLocalServerChannelFactory();
-		channel = channelFactory.newChannel(pl);
-	}
+    protected void postInitialize() throws Exception {
+        messageHandler = build(builder);
+        RestExpressPipelineFactory pipelineFactory = new RestExpressPipelineFactory().addRequestHandler(messageHandler);
+        pl = pipelineFactory.getPipeline();
+        ChannelFactory channelFactory = new DefaultLocalServerChannelFactory();
+        channel = channelFactory.newChannel(pl);
+    }
 
-	protected void preInitialize(RouteDeclaration routes) {
-		responseBody = new StringBuffer();
-		responseHeaders = new HashMap<String, List<String>>();
-		observer = new CounterMessageObserver();
-		builder = TestToolKit.newBuilder(routes)//
-				.setHttpResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody))//
-				.addMessageObserver(observer);
-	}
+    protected void preInitialize(RouteDeclaration routes) {
+        responseBody = new StringBuffer();
+        responseHeaders = new HashMap<String, List<String>>();
+        observer = new CounterMessageObserver();
+        builder = TestToolKit.newBuilder(routes)//
+                .setHttpResponseWriter(new StringBufferHttpResponseWriter(responseHeaders, responseBody))//
+                .addMessageObserver(observer);
+    }
 
-	protected RestExpressRequestHandler build(RestExpressRequestHandlerBuilder builder) throws Exception {
-		return builder.build();
-	}
+    protected RestExpressRequestHandler build(RestExpressRequestHandlerBuilder builder) throws Exception {
+        return builder.build();
+    }
 
-	/**
-	 * Utility to send an event.
-	 * 
-	 * @param method
-	 * @param path
-	 * @param body
-	 */
-	protected void sendEvent(HttpMethod method, String path, String body) {
-		HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1, method, path);
-		if (body != null) {
-			request.setContent(ChannelBuffers.copiedBuffer(body, CharacterSet.UTF_8.getCharset()));
-		}
-		pl.sendUpstream(new UpstreamMessageEvent(channel, request, new InetSocketAddress(1)));
-	}
+    /**
+     * Utility to send an event.
+     * 
+     * @param method
+     * @param path
+     * @param body
+     */
+    protected void sendEvent(HttpMethod method, String path, String body) {
+        HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1, method, path);
+        if (body != null) {
+            request.setContent(ChannelBuffers.copiedBuffer(body, CharacterSet.UTF_8.getCharset()));
+        }
+        pl.sendUpstream(new UpstreamMessageEvent(channel, request, new InetSocketAddress(1)));
+    }
 
-	protected void sendGetEvent(String path, String body) {
-		sendEvent(HttpMethod.GET, path, body);
-	}
+    protected void sendGetEvent(String path, String body) {
+        sendEvent(HttpMethod.GET, path, body);
+    }
 
-	protected void sendGetEvent(String path) {
-		sendEvent(HttpMethod.GET, path, null);
-	}
+    protected void sendGetEvent(String path) {
+        sendEvent(HttpMethod.GET, path, null);
+    }
 
-	/**
-	 * Route Declaration for JSendResult and {@link RawWrappedResponseTest}
-	 * test.
-	 */
-	public class DummyRoutes extends RouteDeclaration {
+    public RouteDeclaration defineRoutes(RouteDeclaration routeDeclaration) {
+        WrappedResponseController controller = new WrappedResponseController();
 
-		private Object controller = new WrappedResponseController();
+        routeDeclaration.uri("/normal_get.{format}", controller).action("normalGetAction", HttpMethod.GET);
 
-		public DummyRoutes defineRoutes() {
-			uri("/normal_get.{format}", controller).action("normalGetAction", HttpMethod.GET);
+        routeDeclaration.uri("/normal_put.{format}", controller).action("normalPutAction", HttpMethod.PUT);
 
-			uri("/normal_put.{format}", controller).action("normalPutAction", HttpMethod.PUT);
+        routeDeclaration.uri("/normal_post.{format}", controller).action("normalPostAction", HttpMethod.POST);
 
-			uri("/normal_post.{format}", controller).action("normalPostAction", HttpMethod.POST);
+        routeDeclaration.uri("/normal_delete.{format}", controller).action("normalDeleteAction", HttpMethod.DELETE);
 
-			uri("/normal_delete.{format}", controller).action("normalDeleteAction", HttpMethod.DELETE);
+        routeDeclaration.uri("/no_content_delete.{format}", controller).action("noContentDeleteAction", HttpMethod.DELETE);
 
-			uri("/no_content_delete.{format}", controller).action("noContentDeleteAction", HttpMethod.DELETE);
+        routeDeclaration.uri("/no_content_with_body_delete.{format}", controller).action(
+                "noContentWithBodyDeleteActionThrowException", HttpMethod.DELETE);
+        routeDeclaration.uri("/not_found.{format}", controller).action("notFoundAction", HttpMethod.GET);
 
-			uri("/no_content_with_body_delete.{format}", controller).action("noContentWithBodyDeleteActionThrowException", HttpMethod.DELETE);
-			uri("/not_found.{format}", controller).action("notFoundAction", HttpMethod.GET);
+        routeDeclaration.uri("/null_pointer.{format}", controller).action("nullPointerAction", HttpMethod.GET);
+        return routeDeclaration;
+    }
 
-			uri("/null_pointer.{format}", controller).action("nullPointerAction", HttpMethod.GET);
-			return this;
-		}
-	}
 }

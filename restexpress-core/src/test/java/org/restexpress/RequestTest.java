@@ -27,7 +27,6 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
-import org.intelligentsia.commons.http.exception.BadRequestException;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -36,6 +35,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Before;
 import org.junit.Test;
 import org.restexpress.domain.CharacterSet;
+import org.restexpress.http.BadRequestException;
 
 /**
  * @author toddf
@@ -244,7 +244,7 @@ public class RequestTest
 			+ "&openid.identity=" + URLEncoder.encode(formValue2, charset)
 			+ "&openid.claimed_id=" + URLEncoder.encode(formValue3,charset)).getBytes()));
 		Request formPost = new Request(httpRequest, null);
-		Map<String, List<String>> form = formPost.getBodyFromUrlFormEncoded();
+		Map<String, List<String>> form = formPost.getEntityFromUrlFormEncoded();
 		assertEquals(3, form.size());
 		assertNotNull(form.get("openid.return_to"));
 		assertNotNull(form.get("openid.identity"));

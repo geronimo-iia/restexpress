@@ -18,19 +18,19 @@
  *
  */
 /*
-    Copyright 2012, Strategic Gains, Inc.
+ Copyright 2012, Strategic Gains, Inc.
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 package org.restexpress.route;
 
@@ -40,9 +40,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.intelligentsia.commons.http.HttpMethods;
-import org.intelligentsia.commons.http.ResponseHeader;
-import org.intelligentsia.commons.http.exception.MethodNotAllowedException;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
@@ -51,7 +48,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.RestExpress;
+import org.restexpress.RestExpressService;
 import org.restexpress.TestToolKit;
+import org.restexpress.http.HttpHeader;
+import org.restexpress.http.MethodNotAllowedException;
 import org.restexpress.pipeline.MessageContext;
 
 /**
@@ -61,14 +62,15 @@ import org.restexpress.pipeline.MessageContext;
 public class RouteResolverTest {
 	private static RouteResolver resolver;
 	private static RouteDeclaration routeDeclarations;
-	private static RouteMapping routeMapping;
+	private static RestExpress restExpress;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		routeDeclarations = new Routes();
-		((Routes) routeDeclarations).defineRoutes();
-		routeMapping = routeDeclarations.createRouteMapping("http://localhost:8081");
-		resolver = new RouteResolver(routeMapping);
+		routeDeclarations = new RouteDeclaration();
+		defineRoutes(routeDeclarations);
+		restExpress = RestExpressService.newBuilder();
+		restExpress.settings().serverSettings().setBaseUrl("http://localhost:8081");
+		resolver = routeDeclarations.createRouteMapping(restExpress);
 	}
 
 	@Test
@@ -78,8 +80,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.GET, action.getRoute().getMethod());
-		assertEquals("/foo/bar/{barId}", action.getRoute().getPattern());
+		assertEquals(HttpMethod.GET, action.resolvedRoute().getMethod());
+		assertEquals("/foo/bar/{barId}", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -89,8 +91,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.GET, action.getRoute().getMethod());
-		assertEquals("/foo/bar/{barId}", action.getRoute().getPattern());
+		assertEquals(HttpMethod.GET, action.resolvedRoute().getMethod());
+		assertEquals("/foo/bar/{barId}", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -100,8 +102,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.POST, action.getRoute().getMethod());
-		assertEquals("/foo", action.getRoute().getPattern());
+		assertEquals(HttpMethod.POST, action.resolvedRoute().getMethod());
+		assertEquals("/foo", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -111,8 +113,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.POST, action.getRoute().getMethod());
-		assertEquals("/foo", action.getRoute().getPattern());
+		assertEquals(HttpMethod.POST, action.resolvedRoute().getMethod());
+		assertEquals("/foo", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -122,8 +124,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.GET, action.getRoute().getMethod());
-		assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+		assertEquals(HttpMethod.GET, action.resolvedRoute().getMethod());
+		assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -133,8 +135,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.GET, action.getRoute().getMethod());
-		assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+		assertEquals(HttpMethod.GET, action.resolvedRoute().getMethod());
+		assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -144,8 +146,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.PUT, action.getRoute().getMethod());
-		assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+		assertEquals(HttpMethod.PUT, action.resolvedRoute().getMethod());
+		assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -155,8 +157,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.PUT, action.getRoute().getMethod());
-		assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+		assertEquals(HttpMethod.PUT, action.resolvedRoute().getMethod());
+		assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -166,8 +168,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.POST, action.getRoute().getMethod());
-		assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+		assertEquals(HttpMethod.POST, action.resolvedRoute().getMethod());
+		assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -177,8 +179,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.POST, action.getRoute().getMethod());
-		assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+		assertEquals(HttpMethod.POST, action.resolvedRoute().getMethod());
+		assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -188,8 +190,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.DELETE, action.getRoute().getMethod());
-		assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+		assertEquals(HttpMethod.DELETE, action.resolvedRoute().getMethod());
+		assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
 	}
 
 	@Test
@@ -199,8 +201,8 @@ public class RouteResolverTest {
 		Request request = TestToolKit.newRequest(httpRequest);
 		Action action = resolver.resolve(new MessageContext(request, new Response()));
 		assertNotNull(action);
-		assertEquals(HttpMethod.DELETE, action.getRoute().getMethod());
-		assertEquals("/foo/{fooId}", action.getRoute().getPattern());
+		assertEquals(HttpMethod.DELETE, action.resolvedRoute().getMethod());
+		assertEquals("/foo/{fooId}", action.resolvedRoute().getPattern());
 	}
 
 	@Test(expected = MethodNotAllowedException.class)
@@ -220,12 +222,12 @@ public class RouteResolverTest {
 		try {
 			resolver.resolve(context);
 		} catch (MethodNotAllowedException e) {
-			List<String> allowed = context.getResponse().getHeaders(ResponseHeader.ALLOW.getHeader());
+			List<String> allowed = context.getResponse().getHeaders(HttpHeader.ALLOW);
 			assertEquals(4, allowed.size());
-			assertTrue(allowed.contains(HttpMethods.GET.toString()));
-			assertTrue(allowed.contains(HttpMethods.PUT.toString()));
-			assertTrue(allowed.contains(HttpMethods.POST.toString()));
-			assertTrue(allowed.contains(HttpMethods.DELETE.toString()));
+			assertTrue(allowed.contains(HttpMethod.GET.getName()));
+			assertTrue(allowed.contains(HttpMethod.PUT.getName()));
+			assertTrue(allowed.contains(HttpMethod.POST.getName()));
+			assertTrue(allowed.contains(HttpMethod.DELETE.getName()));
 		}
 	}
 
@@ -239,9 +241,9 @@ public class RouteResolverTest {
 			resolver.resolve(context);
 		} catch (MethodNotAllowedException e) {
 
-			List<String> allowed = context.getResponse().getHeaders(ResponseHeader.ALLOW.getHeader());
+			List<String> allowed = context.getResponse().getHeaders(HttpHeader.ALLOW);
 			assertEquals(1, allowed.size());
-			assertTrue(allowed.contains(HttpMethods.POST.toString()));
+			assertTrue(allowed.contains(HttpMethod.POST.getName()));
 		}
 	}
 
@@ -254,27 +256,18 @@ public class RouteResolverTest {
 		try {
 			resolver.resolve(context);
 		} catch (MethodNotAllowedException e) {
-			List<String> allowed = context.getResponse().getHeaders(ResponseHeader.ALLOW.getHeader());
+			List<String> allowed = context.getResponse().getHeaders(HttpHeader.ALLOW);
 			assertEquals(1, allowed.size());
-			assertTrue(allowed.contains(HttpMethods.GET.toString()));
+			assertTrue(allowed.contains(HttpMethod.GET.getName()));
 		}
 	}
 
-	private static class Routes extends RouteDeclaration {
-		private InnerService service;
-
-		public Routes() {
-			super();
-			service = new InnerService();
-		}
-
-		public void defineRoutes() {
-			uri("/foo/bar/{barId}.{format}", service).alias("/bar/{barId}.{format}").name("BAR_CRUD_ROUTE").action("readBar", HttpMethod.GET);
-
-			uri("/foo.{format}", service).alias("/yada/yada.{format}").method(HttpMethod.POST);
-
-			uri("/foo/{fooId}.{format}", service).alias("/blah/foo/{fooId}.{format}").name("CRUD_ROUTE");
-		}
+	public static RouteDeclaration defineRoutes(RouteDeclaration routeDeclaration) {
+		InnerService service = new InnerService();
+		routeDeclaration.uri("/foo/bar/{barId}.{format}", service).alias("/bar/{barId}.{format}").name("BAR_CRUD_ROUTE").action("readBar", HttpMethod.GET);
+		routeDeclaration.uri("/foo.{format}", service).alias("/yada/yada.{format}").method(HttpMethod.POST);
+		routeDeclaration.uri("/foo/{fooId}.{format}", service).alias("/blah/foo/{fooId}.{format}").name("CRUD_ROUTE");
+		return routeDeclaration;
 	}
 
 	public static class InnerService {

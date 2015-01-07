@@ -21,10 +21,10 @@ package org.restexpress.response;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.restexpress.DeserializationException;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.exception.DeserializationException;
-import org.restexpress.exception.SerializationException;
+import org.restexpress.SerializationException;
 import org.restexpress.serialization.Processor;
 
 import com.google.common.base.Preconditions;
@@ -82,7 +82,7 @@ public final class ResponseProcessor implements Serializer {
 
 	@Override
 	public <T> T deserialize(final Request request, final Class<T> type) throws DeserializationException {
-		return processor.read(request.getBody(), type);
+		return processor.read(request.getEntity(), type);
 	}
 
 	/**
@@ -94,8 +94,8 @@ public final class ResponseProcessor implements Serializer {
 	public void serialize(final Response response) throws SerializationException {
 		if (response.isSerialized()) {
 			ChannelBuffer content = ChannelBuffers.dynamicBuffer();
-			processor.write(response.getBody(), content);
-			response.setBody(content);
+			processor.write(response.getEntity(), content);
+			response.setEntity(content);
 		}
 	}
 

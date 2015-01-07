@@ -42,17 +42,26 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.restexpress.Request;
+import org.restexpress.Response;
+import org.restexpress.domain.metadata.RouteMetadata;
+import org.restexpress.http.HttpHeader;
+import org.restexpress.http.MethodNotAllowedException;
+import org.restexpress.http.NotFoundException;
+import org.restexpress.pipeline.MessageContext;
 import org.restexpress.url.UrlMatch;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 /**
- * Contains the routes for a given service implementation. Sub-classes will
- * implement the initialize() method which calls map() to specify how URL
- * request will be routed to the underlying controllers.
+ * Contains the routes for a given service implementation.
  * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since May 21, 2010
  */
-public class RouteMapping {
+public final class RouteMapping implements RouteResolver {
 
 	private final String baseUrl;
 	private final Map<HttpMethod, List<Route>> routes;
@@ -66,9 +75,15 @@ public class RouteMapping {
 	private final Map<String, Map<HttpMethod, Route>> routesByName = new HashMap<String, Map<HttpMethod, Route>>();
 	private final Map<String, List<Route>> routesByPattern = new LinkedHashMap<String, List<Route>>();
 
-	// SECTION: CONSTRUCTOR
+	private final List<RouteMetadata> routeMetadata = Lists.newArrayList();
 
-	public RouteMapping(String baseUrl) {
+	/**
+	 * Build a new instance of {@link RouteMapping} with specified base url.
+	 * 
+	 * @param baseUrl
+	 *            base URL
+	 */
+	public RouteMapping(final String baseUrl) {
 		super();
 		this.baseUrl = baseUrl;
 		routes = new HashMap<HttpMethod, List<Route>>();
@@ -98,9 +113,8 @@ public class RouteMapping {
 	public List<Route> getRoutesFor(final HttpMethod method) {
 		final List<Route> routesFor = routes.get(method);
 
-		if (routesFor == null) {
+		if (routesFor == null)
 			return Collections.emptyList();
-		}
 
 		return Collections.unmodifiableList(routesFor);
 	}
@@ -121,9 +135,8 @@ public class RouteMapping {
 		for (final Route route : routes.get(method)) {
 			final UrlMatch match = route.match(path);
 
-			if (match != null) {
+			if (match != null)
 				return new Action(route, match);
-			}
 		}
 
 		return null;
@@ -137,11 +150,9 @@ public class RouteMapping {
 	 * @return A list of Route instances matching the given path. Never null.
 	 */
 	public List<Route> getMatchingRoutes(final String path) {
-		for (final List<Route> patternRoutes : routesByPattern.values()) {
-			if (patternRoutes.get(0).match(path) != null) {
+		for (final List<Route> patternRoutes : routesByPattern.values())
+			if (patternRoutes.get(0).match(path) != null)
 				return Collections.unmodifiableList(patternRoutes);
-			}
-		}
 
 		return Collections.emptyList();
 	}
@@ -157,15 +168,13 @@ public class RouteMapping {
 	public List<HttpMethod> getAllowedMethods(final String path) {
 		final List<Route> matchingRoutes = getMatchingRoutes(path);
 
-		if (matchingRoutes.isEmpty()) {
+		if (matchingRoutes.isEmpty())
 			return Collections.emptyList();
-		}
 
 		final List<HttpMethod> methods = new ArrayList<HttpMethod>();
 
-		for (final Route route : matchingRoutes) {
+		for (final Route route : matchingRoutes)
 			methods.add(route.getMethod());
-		}
 
 		return methods;
 	}
@@ -177,52 +186,105 @@ public class RouteMapping {
 	 * @param name
 	 * @return
 	 */
+	@Override
 	public Route getNamedRoute(final String name, final HttpMethod method) {
 		final Map<HttpMethod, Route> routesByMethod = routesByName.get(name);
-
-		if (routesByMethod == null) {
+		if (routesByMethod == null)
 			return null;
-		}
-
 		return routesByMethod.get(method);
 	}
 
-	// SECTION: UTILITY
+	@Override
+	public String getNamedUrl(final String name, final HttpMethod method) {
+		final Route route = getNamedRoute(name, method);
+		return route != null ? getBaseUrl() + route.getPattern() : null;
+	}
+
+	@Override
+	public Action resolve(final MessageContext context) {
+		final Request request = context.getRequest();
+		final Action action = getActionFor(request.getEffectiveHttpMethod(), request.getPath());
+
+		if (action != null)
+			return action;
+
+		final List<HttpMethod> allowedMethods = getAllowedMethods(request.getPath());
+		if (allowedMethods != null && !allowedMethods.isEmpty()) {
+			final Response response = context.getResponse();
+			for (final HttpMethod httpMethod : allowedMethods)
+				response.addHeader(HttpHeader.ALLOW, httpMethod.getName());
+			throw new MethodNotAllowedException(request.getUrl());
+		}
+
+		throw new NotFoundException("Unresolvable URL: " + request.getUrl());
+	}
 
 	/**
-	 * @param method
+	 * Add given route
+	 * 
 	 * @param route
+	 *            {@link Route} to add
 	 */
 	public void addRoute(final Route route) {
 		routes.get(route.getMethod()).add(route);
 		addByPattern(route);
-
-		if (route.hasName()) {
+		if (route.hasName())
 			addNamedRoute(route);
-		}
 	}
-
-	// SECTION: UTILITY - PRIVATE
 
 	private void addNamedRoute(final Route route) {
 		Map<HttpMethod, Route> routesByMethod = routesByName.get(route.getName());
-
 		if (routesByMethod == null) {
 			routesByMethod = new HashMap<HttpMethod, Route>();
 			routesByName.put(route.getName(), routesByMethod);
 		}
-
 		routesByMethod.put(route.getMethod(), route);
 	}
 
 	private void addByPattern(final Route route) {
 		List<Route> urlRoutes = routesByPattern.get(route.getPattern());
-
 		if (urlRoutes == null) {
 			urlRoutes = new ArrayList<Route>();
 			routesByPattern.put(route.getPattern(), urlRoutes);
 		}
-
 		urlRoutes.add(route);
 	}
+
+	/**
+	 * Add a {@link RouteMetadata}.
+	 * 
+	 * @param metadata
+	 */
+	public void add(RouteMetadata metadata) {
+		routeMetadata.add(metadata);
+	}
+
+	/**
+	 * @return a {@link List} of declared {@link RouteMetadata}.
+	 */
+	public List<RouteMetadata> routeMetadata() {
+		return routeMetadata;
+	}
+
+	/**
+	 * Retrieve the named routes in this RestExpress server, creating a Map of
+	 * them by name, with the value portion being populated with the URL
+	 * pattern. Any '.{format}' portion of the URL pattern is omitted. Only
+	 * named routes are included in the output.
+	 * 
+	 * @param baseUrl
+	 *            the Base URL is included in the URL pattern
+	 * 
+	 * @return a Map of Route Name/URL pairs.
+	 */
+	public Map<String, String> getRouteUrlsByName(final String baseUrl) {
+		final Map<String, String> urlsByName = Maps.newHashMap();
+		for (RouteMetadata route : routeMetadata()) {
+			if (route.getName() != null) {
+				urlsByName.put(route.getName(), baseUrl + route.getUri().getPattern().replace(".{format}", ""));
+			}
+		}
+		return urlsByName;
+	}
+
 }

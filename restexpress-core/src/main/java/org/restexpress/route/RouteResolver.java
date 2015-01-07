@@ -34,80 +34,42 @@
  */
 package org.restexpress.route;
 
-import java.util.List;
-
-import org.intelligentsia.commons.http.ResponseHeader;
-import org.intelligentsia.commons.http.exception.MethodNotAllowedException;
-import org.intelligentsia.commons.http.exception.NotFoundException;
 import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.restexpress.Request;
-import org.restexpress.Response;
+import org.restexpress.http.MethodNotAllowedException;
+import org.restexpress.http.NotFoundException;
 import org.restexpress.pipeline.MessageContext;
 
 /**
+ * {@link RouteResolver} declare method to resolve {@link Route}.
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since May 4, 2010
  */
-public class RouteResolver implements Resolver<Action> {
+public interface RouteResolver {
+    /**
+     * Return a Route by the name and HttpMethod provided in DSL. Returns null if no route found.
+     * 
+     * @param name route name
+     * @param method the HTTP method
+     * @return {@link Route} for specified name and {@link HttpMethod} or null if none as found
+     */
+    public Route getNamedRoute(final String name, final HttpMethod method);
 
-	/**
-	 * {@link RouteMapping} instance.
-	 */
-	private final RouteMapping routeMapping;
+    /**
+     * Get the named URL for the given HTTP method
+     * 
+     * @param method the HTTP method
+     * @param resourceName the name of the route
+     * @return the URL pattern, or null if the name/method does not exist.
+     */
+    public String getNamedUrl(final String name, final HttpMethod method);
 
-	/**
-	 * Build a new instance of {@link RouteResolver}.
-	 * 
-	 * @param routes
-	 */
-	public RouteResolver(final RouteMapping routes) {
-		super();
-		this.routeMapping = routes;
-	}
-
-	/**
-	 * 
-	 * @param name
-	 * @param method
-	 * @return {@link Route} for specified name and {@link HttpMethod} or null
-	 *         if none as found
-	 */
-	public Route getNamedRoute(final String name, final HttpMethod method) {
-		return routeMapping.getNamedRoute(name, method);
-	}
-
-	/**
-	 * Get the named URL for the given HTTP method
-	 * 
-	 * @param method
-	 *            the HTTP method
-	 * @param resourceName
-	 *            the name of the route
-	 * @return the URL pattern, or null if the name/method does not exist.
-	 */
-	public String getNamedUrl(final String name, final HttpMethod method) {
-		final Route route = getNamedRoute(name, method);
-		return route != null ? routeMapping.getBaseUrl() + route.getPattern() : null;
-	}
-
-	@Override
-	public Action resolve(final MessageContext context) {
-		final Request request = context.getRequest();
-		final Action action = routeMapping.getActionFor(request.getEffectiveHttpMethod(), request.getPath());
-
-		if (action != null) {
-			return action;
-		}
-
-		final List<HttpMethod> allowedMethods = routeMapping.getAllowedMethods(request.getPath());
-		if ((allowedMethods != null) && !allowedMethods.isEmpty()) {
-			final Response response = context.getResponse();
-			for (final HttpMethod httpMethod : allowedMethods) {
-				response.addHeader(ResponseHeader.ALLOW.getHeader(), httpMethod.getName());
-			}
-			throw new MethodNotAllowedException(request.getUrl());
-		}
-
-		throw new NotFoundException("Unresolvable URL: " + request.getUrl());
-	}
+    /**
+     * Finds which action is appropriate for the given request.
+     * 
+     * @param context {@link MessageContext} instance
+     * @return {@link Action}
+     */
+    public Action resolve(MessageContext context) throws MethodNotAllowedException, NotFoundException;
 }

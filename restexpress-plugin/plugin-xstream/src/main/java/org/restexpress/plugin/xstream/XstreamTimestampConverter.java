@@ -34,7 +34,7 @@ package org.restexpress.plugin.xstream;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
+import org.restexpress.http.HttpDateTimeFormat;
 
 import com.thoughtworks.xstream.converters.SingleValueConverter;
 
@@ -57,7 +57,7 @@ public class XstreamTimestampConverter implements SingleValueConverter {
     @Override
     public Object fromString(final String value) {
         try {
-            return HttpHeaderDateTimeFormat.parseAny(value);
+            return HttpDateTimeFormat.parseAny(value);
         } catch (final ParseException e) {
             e.printStackTrace();
         }
@@ -67,6 +67,6 @@ public class XstreamTimestampConverter implements SingleValueConverter {
 
     @Override
     public String toString(final Object date) {
-        return HttpHeaderDateTimeFormat.ISO_8601.format((Date) date);
+        return HttpDateTimeFormat.ISO_8601.format((Date) date);
     }
 }

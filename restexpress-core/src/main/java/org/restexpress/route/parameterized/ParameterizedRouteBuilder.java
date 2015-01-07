@@ -19,19 +19,21 @@
  */
 package org.restexpress.route.parameterized;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.route.Route;
 import org.restexpress.route.RouteBuilder;
+import org.restexpress.route.invoker.Invoker;
 
 /**
+ * 
+ * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  * @author toddf
  * @since Jan 13, 2011
  */
-public class ParameterizedRouteBuilder extends RouteBuilder {
+public final class ParameterizedRouteBuilder extends RouteBuilder {
 
 	/**
 	 * @param uri
@@ -43,8 +45,8 @@ public class ParameterizedRouteBuilder extends RouteBuilder {
 	}
 
 	@Override
-	protected Route newRoute(final String pattern, final Object controller, final Method action, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
-		final ParameterizedRoute parameterizedRoute = new ParameterizedRoute(pattern, controller, action, method, shouldSerializeResponse, name, flags, parameters);
+	protected Route newRoute(final String pattern, final Invoker invoker, final HttpMethod method, final boolean shouldSerializeResponse, final String name, final Set<String> flags, final Map<String, Object> parameters) {
+		final ParameterizedRoute parameterizedRoute = new ParameterizedRoute(pattern, invoker, method, shouldSerializeResponse, name, flags, parameters);
 		parameterizedRoute.addAliases(aliases);
 		return parameterizedRoute;
 	}

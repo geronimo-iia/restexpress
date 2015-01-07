@@ -19,10 +19,10 @@
  */
 package org.restexpress.processor;
 
-import org.intelligentsia.commons.http.ResponseHeader;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
 
@@ -42,12 +42,12 @@ public class EtagHeaderPostprocessor implements Postprocessor {
         if (!request.isMethodGet() && !HttpMethod.HEAD.equals(request.getHttpMethod()))
             return;
 
-        if (!response.hasBody())
+        if (!response.hasEntity())
             return;
 
-        if (!response.hasHeader(ResponseHeader.ETAG.getHeader())) {
-            final Object body = response.getBody();
-            response.addHeader(ResponseHeader.ETAG.getHeader(), String.format("\"%d\"", body.hashCode()));
+        if (!response.hasHeader(HttpHeader.ETAG)) {
+            final Object body = response.getEntity();
+            response.addHeader(HttpHeader.ETAG, String.format("\"%d\"", body.hashCode()));
         }
     }
 }

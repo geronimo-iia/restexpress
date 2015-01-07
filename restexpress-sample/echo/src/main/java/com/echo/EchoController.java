@@ -29,7 +29,7 @@ public class EchoController {
 
 	public ChannelBuffer create(Request request, Response response) {
 		response.setResponseCreated();
-		return request.getBody();
+		return request.getEntity();
 	}
 
 	public String delete(Request request, Response response) {
@@ -45,6 +45,6 @@ public class EchoController {
 	}
 
 	public ChannelBuffer update(Request request, Response response) {
-		return request.getBody();
+		return request.getEntity();
 	}
 }

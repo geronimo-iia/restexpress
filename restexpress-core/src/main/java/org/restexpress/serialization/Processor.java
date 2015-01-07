@@ -22,8 +22,8 @@ package org.restexpress.serialization;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.restexpress.exception.DeserializationException;
-import org.restexpress.exception.SerializationException;
+import org.restexpress.DeserializationException;
+import org.restexpress.SerializationException;
 
 /**
  * Processor define methods to manage:
