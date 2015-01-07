@@ -29,7 +29,7 @@ import org.restexpress.pipeline.Postprocessor;
 
 /**
  * {@link LastModifiedHeaderPostprocessor} add header {@link ResponseHeader#LAST_MODIFIED} for {@link HttpMethod#GET} if not present.
- * Time come from {@link Response#getBody()} if the {@link Object} implement {@link TimeStamped}.
+ * Time come from {@link Response#getEntity()} if the {@link Object} implement {@link TimeStamped}.
  * 
  * @author <a href="mailto:jguibert@intelligents-ia.com" >Jerome Guibert</a>
  */
@@ -40,11 +40,11 @@ public class LastModifiedHeaderPostprocessor implements Postprocessor {
         if (!context.getRequest().isMethodGet())
             return;
         Response response = context.getResponse();
-        if (!response.hasBody())
+        if (!response.hasEntity())
             return;
 
         if (!response.hasHeader(HttpHeader.LAST_MODIFIED)) {
-            Object body = response.getBody();
+            Object body = response.getEntity();
             if (TimeStamped.class.isAssignableFrom(body.getClass())) {
                 response.addHeader(HttpHeader.LAST_MODIFIED,
                         HttpDateTimeFormat.RFC_1123.format(((TimeStamped) body).updateAt()));

@@ -52,7 +52,7 @@ public class WrappedResponseController {
     }
 
     public void noContentWithBodyDeleteAction(Request request, Response response) {
-        response.setBody("Body with no content response");
+        response.setEntity("Body with no content response");
         response.setResponseNoContent();
     }
 

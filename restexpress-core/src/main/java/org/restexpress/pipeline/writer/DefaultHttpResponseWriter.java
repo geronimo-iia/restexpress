@@ -31,6 +31,7 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
@@ -66,7 +67,7 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 
 	@Override
 	public void write(final ChannelHandlerContext ctx, final Request request, final Response response) {
-		final HttpResponse httpResponse = new DefaultHttpResponse(request.getHttpVersion(), response.getResponseStatus());
+		final HttpResponse httpResponse = new DefaultHttpResponse(request.getHttpVersion(), HttpResponseStatus.valueOf(response.getStatus()));
 
 		// add all header
 		addHeaders(response, httpResponse);
@@ -74,18 +75,18 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 		File resource = null;
 		try {
 			// set content
-			if (response.hasBody() && HttpSpecification.isContentAllowed(response)) {
+			if (response.hasEntity() && HttpSpecification.isContentAllowed(response)) {
 				// If the response body already contains a ChannelBuffer, use
 				// it.
-				Class<?> bodyClass = response.getBody().getClass();
+				Class<?> bodyClass = response.getEntity().getClass();
 				if (ChannelBuffer.class.isAssignableFrom(bodyClass)) {
 					// httpResponse.setContent(ChannelBuffers.wrappedBuffer((ChannelBuffer)
 					// response.getBody()));
-					httpResponse.setContent((ChannelBuffer) response.getBody());
+					httpResponse.setContent((ChannelBuffer) response.getEntity());
 				} else if (File.class.isAssignableFrom(bodyClass)) {
-					resource = (File) response.getBody();
+					resource = (File) response.getEntity();
 				} else { // response body is assumed to be a string
-					httpResponse.setContent(ChannelBuffers.copiedBuffer(response.getBody().toString(), CharacterSet.UTF_8.getCharset()));
+					httpResponse.setContent(ChannelBuffers.copiedBuffer(response.getEntity().toString(), CharacterSet.UTF_8.getCharset()));
 				}
 			}
 

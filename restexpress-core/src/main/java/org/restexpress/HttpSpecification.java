@@ -19,12 +19,11 @@
  */
 package org.restexpress;
 
-import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.ALLOW;
-import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
-import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import javax.ws.rs.core.Response.StatusType;
 
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.exception.HttpSpecificationException;
+import org.restexpress.http.HttpHeader;
+import org.restexpress.http.HttpStatus;
 
 /**
  * Verifies the response contents prior to writing it to the output stream to
@@ -38,7 +37,7 @@ public enum HttpSpecification {
 	// SECTION: SPECIFICATION ENFORCEMENT
 
 	public static void enforce(final Response response) {
-		final int status = response.getResponseStatus().getCode();
+		final int status = response.getStatus();
 
 		if (is1xx(status)) {
 			enforce1xx(response);
@@ -83,8 +82,8 @@ public enum HttpSpecification {
 	}
 
 	public static boolean isContentAllowed(final Response response) {
-		final HttpResponseStatus status = response.getResponseStatus();
-		return !(HttpResponseStatus.NO_CONTENT.equals(status) || HttpResponseStatus.NOT_MODIFIED.equals(status) || is1xx(status.getCode()));
+		final StatusType status = response.getStatusInfo();
+		return !(HttpStatus.NO_CONTENT.equals(status) || HttpStatus.NOT_MODIFIED.equals(status) || is1xx(status.getStatusCode()));
 	}
 
 	// SECTION: UTILITY - PRIVATE
@@ -134,8 +133,8 @@ public enum HttpSpecification {
 	}
 
 	private static void ensureNoBody(final Response response) {
-		if (response.hasBody()) {
-			throw new HttpSpecificationException("HTTP 1.1 specification: must not contain response body with status: " + response.getResponseStatus());
+		if (response.hasEntity()) {
+			throw new HttpSpecificationException("HTTP 1.1 specification: must not contain response body with status: " + response.getStatusInfo());
 		}
 	}
 
@@ -143,8 +142,8 @@ public enum HttpSpecification {
 	 * @param response
 	 */
 	private static void ensureNoContentLength(final Response response) {
-		if (response.getHeader(CONTENT_LENGTH) != null) {
-			throw new HttpSpecificationException("HTTP 1.1 specification: must not contain Content-Length header for status: " + response.getResponseStatus());
+		if (response.getHeader(HttpHeader.CONTENT_LENGTH) != null) {
+			throw new HttpSpecificationException("HTTP 1.1 specification: must not contain Content-Length header for status: " + response.getStatusInfo());
 		}
 	}
 
@@ -152,14 +151,14 @@ public enum HttpSpecification {
 	 * @param response
 	 */
 	private static void ensureNoContentType(final Response response) {
-		if (response.getHeader(CONTENT_TYPE) != null) {
-			throw new HttpSpecificationException("HTTP 1.1 specification: must not contain Content-Type header for status: " + response.getResponseStatus());
+		if (response.getHeader(HttpHeader.CONTENT_TYPE) != null) {
+			throw new HttpSpecificationException("HTTP 1.1 specification: must not contain Content-Type header for status: " + response.getStatusInfo());
 		}
 	}
 
 	private static void ensureAllowHeader(final Response response) {
-		if (response.getHeader(ALLOW) == null) {
-			throw new HttpSpecificationException("HTTP 1.1 specification: must contain Allow header for status: " + response.getResponseStatus());
+		if (response.getHeader(HttpHeader.ALLOW) == null) {
+			throw new HttpSpecificationException("HTTP 1.1 specification: must contain Allow header for status: " + response.getStatusInfo());
 		}
 	}
 }

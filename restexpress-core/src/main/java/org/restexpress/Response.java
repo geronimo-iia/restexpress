@@ -19,16 +19,17 @@
  */
 package org.restexpress;
 
-import static org.jboss.netty.handler.codec.http.HttpResponseStatus.OK;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.core.Response.StatusType;
+
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.http.HttpHeader;
+import org.restexpress.http.HttpStatus;
 import org.restexpress.query.QueryRange;
 
 import com.google.common.collect.Maps;
@@ -41,7 +42,7 @@ import com.google.common.collect.Maps;
  */
 public class Response {
 
-	private HttpResponseStatus responseCode = OK;
+	private StatusType statusInfo = HttpStatus.OK;
 	private Object body;
 	private final Map<String, List<String>> headers = Maps.newHashMap();
 	private boolean isSerialized = true;
@@ -54,15 +55,15 @@ public class Response {
 	/**
 	 * @return response body as {@link Object}
 	 */
-	public Object getBody() {
+	public Object getEntity() {
 		return body;
 	}
 
 	/**
 	 * @return True if body member is not null
 	 */
-	public boolean hasBody() {
-		return (getBody() != null);
+	public boolean hasEntity() {
+		return (getEntity() != null);
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class Response {
 	 * @param body
 	 *            response body
 	 */
-	public void setBody(final Object body) {
+	public void setEntity(final Object body) {
 		this.body = body;
 	}
 
@@ -177,45 +178,53 @@ public class Response {
 		final QueryRange range = queryRange.clone();
 
 		if (range.isOutside(size, count)) {
-			setResponseCode(416);
+			setStatusInfo(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 			range.setOffset(0);
 			range.setLimitViaEnd(Math.min(count - 1, range.getLimit()));
 		} else if (range.extendsBeyond(size, count)) {
 			range.setLimitViaEnd((count > 1 ? count - 1 : 0));
 
 			if ((count > 0) && !range.spans(size, count)) {
-				setResponseStatus(HttpResponseStatus.PARTIAL_CONTENT);
+				setStatusInfo(HttpStatus.PARTIAL_CONTENT);
 			}
 		} else if (range.isInside(size, count)) {
-			setResponseStatus(HttpResponseStatus.PARTIAL_CONTENT);
+			setStatusInfo(HttpStatus.PARTIAL_CONTENT);
 		}
 
 		addRangeHeader(range, count);
 	}
 
+	
+	public int getStatus() {
+		return statusInfo.getStatusCode();
+	}
+	public StatusType getStatusInfo() {
+		return statusInfo;
+	}
+	
 	/**
 	 * Set the HTTP response status code.
 	 * 
-	 * @param value
+	 * @param statusCode
 	 */
-	public void setResponseCode(final int value) {
-		setResponseStatus(HttpResponseStatus.valueOf(value));
+	public void setStatus(final int statusCode) {
+		setStatusInfo(HttpStatus.valueOf(statusCode));
 	}
 
 	/**
 	 * Set the HTTP response status.
 	 * 
-	 * @param status
+	 * @param statusInfo
 	 */
-	public void setResponseStatus(final HttpResponseStatus status) {
-		this.responseCode = status;
+	public void setStatusInfo(final StatusType statusInfo) {
+		this.statusInfo = statusInfo;
 	}
 
 	/**
 	 * Sets the HTTP response status code to 201 - created.
 	 */
 	public void setResponseCreated() {
-		setResponseStatus(HttpResponseStatus.CREATED);
+		setStatusInfo(HttpStatus.CREATED);
 	}
 
 	/**
@@ -224,17 +233,10 @@ public class Response {
 	 * body will contain content).
 	 */
 	public void setResponseNoContent() {
-		setResponseStatus(HttpResponseStatus.NO_CONTENT);
+		setStatusInfo(HttpStatus.NO_CONTENT);
 	}
-
-	/**
-	 * Get the HTTP Response Status.
-	 * 
-	 * @return
-	 */
-	public HttpResponseStatus getResponseStatus() {
-		return responseCode;
-	}
+	
+	
 
 	public String getContentType() {
 		return getHeader(HttpHeaders.Names.CONTENT_TYPE);
@@ -267,9 +269,9 @@ public class Response {
 	public void redirect(String location, boolean permanent) {
 		// set response code
 		if (permanent) {
-			responseCode = HttpResponseStatus.MOVED_PERMANENTLY;
+			statusInfo = HttpStatus.MOVED_PERMANENTLY;
 		} else {
-			responseCode = HttpResponseStatus.FOUND;
+			statusInfo = HttpStatus.FOUND;
 		}
 		// add location header
 		addHeader(HttpHeader.LOCATION, location);

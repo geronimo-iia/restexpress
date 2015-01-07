@@ -109,7 +109,7 @@ public final class ResponseProcessorSetting implements Serializer {
 		if (response.hasException() || response.isSerialized()) {
 			// serialization configuration can change
 			final Object wrapped = responseProcessor.wrapper().wrap(response);
-			response.setBody(wrapped);
+			response.setEntity(wrapped);
 		}
 		responseProcessor.serialize(response);
 		// serialized way: don't override

@@ -37,17 +37,17 @@ public class ResponseTest
 	{
 		Response r = new Response();
 		r.setCollectionResponse(new QueryRange(0l, 5), 3, 3);
-		assertEquals(200, r.getResponseStatus().getCode());
+		assertEquals(200, r.getStatus());
 		assertEquals("items 0-2/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 
 		r = new Response();
 		r.setCollectionResponse(new QueryRange(0l, 3), 3, 3);
-		assertEquals(200, r.getResponseStatus().getCode());
+		assertEquals(200, r.getStatus());
 		assertEquals("items 0-2/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 
 		r = new Response();
 		r.setCollectionResponse(new QueryRange(0l, 10), 0, 0);
-		assertEquals(200, r.getResponseStatus().getCode());
+		assertEquals(200, r.getStatus());
 		assertEquals("items 0-0/0", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 	}
 
@@ -56,32 +56,32 @@ public class ResponseTest
 	{
 		Response r = new Response();
 		r.setCollectionResponse(new QueryRange(1l, 1), 1, 3);
-		assertEquals(206, r.getResponseStatus().getCode());
+		assertEquals(206, r.getStatus());
 		assertEquals("items 1-1/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 
 		r = new Response();
 		r.setCollectionResponse(new QueryRange(0l, 1), 1, 3);
-		assertEquals(206, r.getResponseStatus().getCode());
+		assertEquals(206, r.getStatus());
 		assertEquals("items 0-0/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 
 		r = new Response();
 		r.setCollectionResponse(new QueryRange(1l, 3), 2, 3);
-		assertEquals(206, r.getResponseStatus().getCode());
+		assertEquals(206, r.getStatus());
 		assertEquals("items 1-2/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 
 		r = new Response();
 		r.setCollectionResponse(new QueryRange(2l, 3), 2, 3);
-		assertEquals(206, r.getResponseStatus().getCode());
+		assertEquals(206, r.getStatus());
 		assertEquals("items 2-2/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 
 		r = new Response();
 		r.setCollectionResponse(new QueryRange(1l, 5), 2, 3);
-		assertEquals(206, r.getResponseStatus().getCode());
+		assertEquals(206, r.getStatus());
 		assertEquals("items 1-2/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 
 		r = new Response();
 		r.setCollectionResponse(new QueryRange(2l, 75), 2, 3);
-		assertEquals(206, r.getResponseStatus().getCode());
+		assertEquals(206, r.getStatus());
 		assertEquals("items 2-2/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 	}
 
@@ -90,17 +90,17 @@ public class ResponseTest
 	{
 		Response r = new Response();
 		r.setCollectionResponse(new QueryRange(0l, 5), 0, 3);
-		assertEquals(416, r.getResponseStatus().getCode());
+		assertEquals(416, r.getStatus());
 		assertEquals("items 0-2/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 
 		r = new Response();
 		r.setCollectionResponse(new QueryRange(3l, 5), 0, 3);
-		assertEquals(416, r.getResponseStatus().getCode());
+		assertEquals(416, r.getStatus());
 		assertEquals("items 0-2/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 
 		r = new Response();
 		r.setCollectionResponse(new QueryRange(75l, 100), 0, 3);
-		assertEquals(416, r.getResponseStatus().getCode());
+		assertEquals(416, r.getStatus());
 		assertEquals("items 0-2/3", r.getHeader(HttpHeaders.Names.CONTENT_RANGE));
 	}
 }

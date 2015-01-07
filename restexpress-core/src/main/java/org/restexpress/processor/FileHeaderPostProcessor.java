@@ -25,14 +25,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.Format;
 import org.restexpress.exception.HttpRuntimeException;
-import org.restexpress.http.HttpHeader;
 import org.restexpress.http.HttpDateTimeFormat;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.http.HttpStatus;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
@@ -56,10 +55,10 @@ public final class FileHeaderPostProcessor implements Postprocessor {
 	public void process(MessageContext context) {
 		final Response response = context.getResponse();
 		if (HttpSpecification.isContentTypeAllowed(response)) {
-			final Object body = response.getBody();
+			final Object body = response.getEntity();
 			if (body != null) {
 				if (File.class.isAssignableFrom(body.getClass())) {
-					final File resource = (File) response.getBody();
+					final File resource = (File) response.getEntity();
 					processFileResponseHeader(context.getRequest(), response, resource);
 				}
 			}
@@ -69,7 +68,7 @@ public final class FileHeaderPostProcessor implements Postprocessor {
 	protected static void processFileResponseHeader(final Request request, final Response response, final File resource) {
 		// check for is Modified Since
 		if (!isModifiedSince(request, resource)) {
-			response.setResponseStatus(HttpResponseStatus.NOT_MODIFIED);
+			response.setStatusInfo(HttpStatus.NOT_MODIFIED);
 			final Calendar time = new GregorianCalendar();
 			response.addHeader(HttpHeader.DATE, HttpDateTimeFormat.RFC_1123.format(time.getTime()));
 		} else {

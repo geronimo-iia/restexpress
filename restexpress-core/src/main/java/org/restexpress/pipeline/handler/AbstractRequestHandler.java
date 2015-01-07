@@ -25,12 +25,12 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.exception.Exceptions;
 import org.restexpress.exception.HttpRuntimeException;
+import org.restexpress.http.HttpStatus;
 import org.restexpress.pipeline.HttpResponseWriter;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.MessageObserver;
@@ -100,7 +100,7 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 			// invoke controller
 			final Object result = context.getAction().invoke(context);
 			if (result != null) {
-				context.getResponse().setBody(result);
+				context.getResponse().setEntity(result);
 			}
 			invokePostprocessors(context);
 			handleResponseContent(context, false);
@@ -113,10 +113,10 @@ public abstract class AbstractRequestHandler extends SimpleChannelUpstreamHandle
 			Throwable rootCause = cause;
 			if (HttpRuntimeException.class.isAssignableFrom(cause.getClass())) {
 				final HttpRuntimeException httpRuntimeException = (HttpRuntimeException) cause;
-				context.setHttpStatus(HttpResponseStatus.valueOf(httpRuntimeException.getHttpResponseStatus().getStatusCode()));
+				context.setStatusInfo(httpRuntimeException.getHttpResponseStatus());
 			} else {
 				rootCause = Exceptions.findRootCause(cause);
-				context.setHttpStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+				context.setStatusInfo(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			context.setException(rootCause);
 			notifyException(context);

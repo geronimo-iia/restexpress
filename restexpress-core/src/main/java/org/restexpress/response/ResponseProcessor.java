@@ -94,8 +94,8 @@ public final class ResponseProcessor implements Serializer {
 	public void serialize(final Response response) throws SerializationException {
 		if (response.isSerialized()) {
 			ChannelBuffer content = ChannelBuffers.dynamicBuffer();
-			processor.write(response.getBody(), content);
-			response.setBody(content);
+			processor.write(response.getEntity(), content);
+			response.setEntity(content);
 		}
 	}
 

@@ -23,7 +23,8 @@ import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import javax.ws.rs.core.Response.StatusType;
+
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
@@ -109,17 +110,18 @@ public final class MessageContext {
 	 */
 	public void setException(final Throwable throwable) {
 		response.setException(throwable);
-		response.headers().remove(HttpHeader.CONTENT_TYPE);
-		response.headers().remove(HttpHeader.CONTENT_LENGTH);
+		response.headers().remove(HttpHeader.CONTENT_TYPE.toString());
+		response.headers().remove(HttpHeader.CONTENT_LENGTH.toString());
 	}
 
 	/**
 	 * Set the HTTP response status.
+	 * @see Response#setStatusInfo(StatusType)
 	 * 
-	 * @param httpStatus
+	 * @param statusInfo
 	 */
-	public void setHttpStatus(final HttpResponseStatus httpStatus) {
-		getResponse().setResponseStatus(httpStatus);
+	public void setStatusInfo(final StatusType statusInfo) {
+		getResponse().setStatusInfo(statusInfo);
 	}
 
 	public ResponseProcessorSetting getResponseProcessorSetting() {

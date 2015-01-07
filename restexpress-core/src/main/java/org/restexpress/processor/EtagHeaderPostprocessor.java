@@ -42,11 +42,11 @@ public class EtagHeaderPostprocessor implements Postprocessor {
         if (!request.isMethodGet() && !HttpMethod.HEAD.equals(request.getHttpMethod()))
             return;
 
-        if (!response.hasBody())
+        if (!response.hasEntity())
             return;
 
         if (!response.hasHeader(HttpHeader.ETAG)) {
-            final Object body = response.getBody();
+            final Object body = response.getEntity();
             response.addHeader(HttpHeader.ETAG, String.format("\"%d\"", body.hashCode()));
         }
     }

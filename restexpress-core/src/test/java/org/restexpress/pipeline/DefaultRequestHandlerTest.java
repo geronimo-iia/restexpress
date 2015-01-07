@@ -400,7 +400,7 @@ public class DefaultRequestHandlerTest extends AbstractWrapperResponse {
         public void setBodyAction(Request request, Response response) {
             response.setContentType(MediaType.TEXT_HTML.withCharset(CharacterSet.UTF_8.getCharsetName()));
             response.noSerialization();
-            response.setBody("<html><body>Arbitrarily set HTML body...</body></html>");
+            response.setEntity("<html><body>Arbitrarily set HTML body...</body></html>");
         }
     }
 
