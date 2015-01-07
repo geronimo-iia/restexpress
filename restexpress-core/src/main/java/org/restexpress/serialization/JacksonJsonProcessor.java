@@ -26,9 +26,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.restexpress.DeserializationException;
+import org.restexpress.SerializationException;
 import org.restexpress.domain.MediaType;
-import org.restexpress.exception.DeserializationException;
-import org.restexpress.exception.SerializationException;
 import org.restexpress.serialization.jackson.Jackson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

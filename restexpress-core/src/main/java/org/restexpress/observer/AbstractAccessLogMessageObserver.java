@@ -47,7 +47,7 @@ public abstract class AbstractAccessLogMessageObserver extends BaseMessageObserv
 	public final void onComplete(Request request, Response response) {
 		final Long stop = System.currentTimeMillis();
 		final Long start = timers.remove(request.getCorrelationId());
-		access(request.getEffectiveHttpMethod().toString(), request.getUrl(), response.getResponseStatus().toString(), start != null ? stop - start : -1);
+		access(request.getEffectiveHttpMethod().toString(), request.getUrl(), response.getStatusInfo().toString(), start != null ? stop - start : -1);
 	}
 
 	protected abstract void access(String method, String url, String status, long duration);

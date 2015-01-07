@@ -23,12 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.intelligentsia.commons.http.exception.BadRequestException;
+import org.restexpress.Exceptions;
 import org.restexpress.Request;
-import org.restexpress.common.StringUtils;
-import org.restexpress.query.FilterComponent;
-import org.restexpress.query.FilterOperator;
-import org.restexpress.query.QueryFilter;
+import org.restexpress.http.BadRequestException;
 
 /**
  * A factory for RestExpress-Common QueryFilter instance, parsing from a
@@ -112,7 +109,7 @@ public abstract class QueryFilters {
 
 	private static void enforceSupportedProperties(final List<String> allowedProperties, final String requested) {
 		if ((allowedProperties != null) && !allowedProperties.contains(requested)) {
-			throw new BadRequestException(requested + " is not a supported filter. Supported filter names are: " + StringUtils.join(", ", allowedProperties));
+			throw new BadRequestException(requested + " is not a supported filter. Supported filter names are: " + Exceptions.join(", ", allowedProperties));
 		}
 	}
 }

@@ -19,10 +19,10 @@
  */
 package org.restexpress.response;
 
-import org.intelligentsia.commons.http.exception.BadRequestException;
-import org.intelligentsia.commons.http.exception.NotAcceptableException;
 import org.restexpress.Request;
 import org.restexpress.Response;
+import org.restexpress.http.BadRequestException;
+import org.restexpress.http.NotAcceptableException;
 
 /**
  * {@link ResponseProcessorSettingResolver} define methods to resolve:

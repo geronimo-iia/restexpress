@@ -31,11 +31,11 @@
  */
 package org.restexpress.response;
 
-import org.intelligentsia.commons.http.ResponseHeader;
+import org.restexpress.DeserializationException;
 import org.restexpress.Request;
 import org.restexpress.Response;
-import org.restexpress.exception.DeserializationException;
-import org.restexpress.exception.SerializationException;
+import org.restexpress.SerializationException;
+import org.restexpress.http.HttpHeader;
 
 /**
  * {@link ResponseProcessorSetting} represent a selection of a specific media
@@ -109,11 +109,11 @@ public final class ResponseProcessorSetting implements Serializer {
 		if (response.hasException() || response.isSerialized()) {
 			// serialization configuration can change
 			final Object wrapped = responseProcessor.wrapper().wrap(response);
-			response.setBody(wrapped);
+			response.setEntity(wrapped);
 		}
 		responseProcessor.serialize(response);
 		// serialized way: don't override
-		if (response.isSerialized() && !response.hasHeader(ResponseHeader.CONTENT_TYPE.getHeader())) {
+		if (response.isSerialized() && !response.hasHeader(HttpHeader.CONTENT_TYPE)) {
 			response.setContentType(mediaType);
 		} else if (response.hasException()) {
 			// in case of exception we must set right content type

@@ -31,7 +31,6 @@ import org.restexpress.processor.FileHeaderPostProcessor;
 import org.restexpress.response.ResponseProcessorManager;
 import org.restexpress.response.SerializationProvider;
 import org.restexpress.route.RouteDeclaration;
-import org.restexpress.route.RouteResolver;
 import org.restexpress.serialization.Processor;
 
 /**
@@ -41,7 +40,6 @@ import org.restexpress.serialization.Processor;
  * 
  */
 public final class TestToolKit {
-	
 
 	public static final String BASE_URL = "http://localhost:8081";
 
@@ -71,7 +69,9 @@ public final class TestToolKit {
 		RestExpressRequestHandlerBuilder builder = RestExpressRequestHandlerBuilder.newBuilder()//
 				.addFinallyProcessor(new DefaultContentTypeFinallyProcessor())//
 				.addPostprocessor(new FileHeaderPostProcessor());
-		return builder.setRouteResolver(new RouteResolver(routeDeclaration.createRouteMapping(BASE_URL)))//
+		RestExpress restExpress = RestExpressService.newBuilder();
+		restExpress.settings().serverSettings().setBaseUrl(BASE_URL);
+		return builder.setRouteResolver(routeDeclaration.createRouteMapping(restExpress))//
 				.setShouldEnforceHttpSpec(false);
 	}
 

@@ -19,7 +19,8 @@
  */
 package org.restexpress;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -31,10 +32,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.intelligentsia.commons.http.ResponseHeader;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.junit.Test;
 import org.restexpress.domain.Format;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.plugin.DummyPluginInterface;
 import org.restexpress.plugin.PluginA;
 import org.restexpress.plugin.PluginB;
@@ -153,28 +154,28 @@ public class RestExpressTest {
 			post.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
 			HttpResponse response = (HttpResponse) client.execute(post);
 			assertEquals(201, response.getStatusLine().getStatusCode());
-			assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
+			assertEquals("application/json; charset=UTF-8", response.getFirstHeader(HttpHeader.CONTENT_TYPE.toString()).getValue());
 			post.releaseConnection();
 
 			HttpGet get = new HttpGet(TEST_URL);
 			get.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
 			response = (HttpResponse) client.execute(get);
 			assertEquals(200, response.getStatusLine().getStatusCode());
-			assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
+			assertEquals("application/json; charset=UTF-8", response.getFirstHeader(HttpHeader.CONTENT_TYPE.toString()).getValue());
 			get.releaseConnection();
 
 			HttpPut put = new HttpPut(TEST_URL);
 			put.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
 			response = (HttpResponse) client.execute(put);
 			assertEquals(200, response.getStatusLine().getStatusCode());
-			assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
+			assertEquals("application/json; charset=UTF-8", response.getFirstHeader(HttpHeader.CONTENT_TYPE.toString()).getValue());
 			put.releaseConnection();
 
 			HttpDelete delete = new HttpDelete(TEST_URL);
 			delete.addHeader(HttpHeaders.Names.ACCEPT, "application/json");
 			response = (HttpResponse) client.execute(delete);
 			assertEquals(200, response.getStatusLine().getStatusCode());
-			assertEquals("application/json; charset=UTF-8", response.getFirstHeader(ResponseHeader.CONTENT_TYPE.getHeader()).getValue());
+			assertEquals("application/json; charset=UTF-8", response.getFirstHeader(HttpHeader.CONTENT_TYPE.toString()).getValue());
 			delete.releaseConnection();
 
 		} finally {

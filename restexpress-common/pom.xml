@@ -15,9 +15,10 @@
 		<license.header.path>../header.txt</license.header.path>
 	</properties>
 	<dependencies>
+		<!-- JAXRS API -->
 		<dependency>
-			<groupId>org.intelligents-ia.restexpress</groupId>
-			<artifactId>restexpress-http</artifactId>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
 		</dependency>
 		<!-- Jackson Serialization -->
 		<dependency>
@@ -35,6 +36,10 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
 		</dependency>
 		<!-- Encoder -->
 		<dependency>

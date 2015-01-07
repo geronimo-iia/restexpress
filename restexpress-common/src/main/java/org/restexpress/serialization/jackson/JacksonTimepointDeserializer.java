@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
-import org.restexpress.exception.DeserializationException;
+import org.restexpress.DeserializationException;
+import org.restexpress.http.HttpDateTimeFormat;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,7 +45,7 @@ public class JacksonTimepointDeserializer extends JsonDeserializer<Date> {
     @Override
     public Date deserialize(final JsonParser parser, final DeserializationContext context) throws IOException, JsonProcessingException {
         try {
-            return HttpHeaderDateTimeFormat.parseAny(parser.getText());
+            return HttpDateTimeFormat.parseAny(parser.getText());
         } catch (final ParseException e) {
             throw new DeserializationException(e);
         }

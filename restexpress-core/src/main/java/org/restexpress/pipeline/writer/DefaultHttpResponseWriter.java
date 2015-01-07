@@ -24,9 +24,6 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
-import org.intelligentsia.commons.http.ResponseHeader;
-import org.intelligentsia.commons.http.exception.HttpRuntimeException;
-import org.intelligentsia.commons.http.status.HttpResponseStandardStatus;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelFuture;
@@ -34,10 +31,14 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.restexpress.HttpSpecification;
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
+import org.restexpress.http.HttpHeader;
+import org.restexpress.http.HttpRuntimeException;
+import org.restexpress.http.HttpStatus;
 import org.restexpress.pipeline.HttpResponseWriter;
 
 /**
@@ -66,7 +67,7 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 
 	@Override
 	public void write(final ChannelHandlerContext ctx, final Request request, final Response response) {
-		final HttpResponse httpResponse = new DefaultHttpResponse(request.getHttpVersion(), response.getResponseStatus());
+		final HttpResponse httpResponse = new DefaultHttpResponse(request.getHttpVersion(), HttpResponseStatus.valueOf(response.getStatus()));
 
 		// add all header
 		addHeaders(response, httpResponse);
@@ -74,17 +75,18 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 		File resource = null;
 		try {
 			// set content
-			if (response.hasBody() && HttpSpecification.isContentAllowed(response)) {
+			if (response.hasEntity() && HttpSpecification.isContentAllowed(response)) {
 				// If the response body already contains a ChannelBuffer, use
 				// it.
-				Class<?> bodyClass = response.getBody().getClass();
+				Class<?> bodyClass = response.getEntity().getClass();
 				if (ChannelBuffer.class.isAssignableFrom(bodyClass)) {
-					//httpResponse.setContent(ChannelBuffers.wrappedBuffer((ChannelBuffer) response.getBody()));
-					httpResponse.setContent((ChannelBuffer) response.getBody());
+					// httpResponse.setContent(ChannelBuffers.wrappedBuffer((ChannelBuffer)
+					// response.getBody()));
+					httpResponse.setContent((ChannelBuffer) response.getEntity());
 				} else if (File.class.isAssignableFrom(bodyClass)) {
-					resource = (File) response.getBody();
+					resource = (File) response.getEntity();
 				} else { // response body is assumed to be a string
-					httpResponse.setContent(ChannelBuffers.copiedBuffer(response.getBody().toString(), CharacterSet.UTF_8.getCharset()));
+					httpResponse.setContent(ChannelBuffers.copiedBuffer(response.getEntity().toString(), CharacterSet.UTF_8.getCharset()));
 				}
 			}
 
@@ -95,7 +97,7 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 			writeContent(ctx, httpResponse, resource, channelFutureListener);
 
 		} catch (FileNotFoundException e) {
-			throw new HttpRuntimeException(HttpResponseStandardStatus.NOT_FOUND, e);
+			throw new HttpRuntimeException(HttpStatus.NOT_FOUND, e);
 		}
 	}
 
@@ -125,16 +127,16 @@ public final class DefaultHttpResponseWriter implements HttpResponseWriter {
 		ChannelFutureListener channelFutureListener;
 		if (request.isKeepAlive()) {
 			// Add 'Content-Length' header only for a keep-alive connection.
-			if (HttpSpecification.isContentLengthAllowed(response) && !httpResponse.headers().contains(ResponseHeader.CONTENT_LENGTH.getHeader())) {
-				httpResponse.headers().set(ResponseHeader.CONTENT_LENGTH.getHeader(), String.valueOf(httpResponse.getContent().readableBytes()));
+			if (HttpSpecification.isContentLengthAllowed(response) && !httpResponse.headers().contains(HttpHeader.CONTENT_LENGTH.toString())) {
+				httpResponse.headers().set(HttpHeader.CONTENT_LENGTH.toString(), String.valueOf(httpResponse.getContent().readableBytes()));
 			}
 			// Support "Connection: Keep-Alive" for HTTP 1.0 requests.
 			if (request.isHttpVersion1_0()) {
-				httpResponse.headers().add(ResponseHeader.CONNECTION.getHeader(), "Keep-Alive");
+				httpResponse.headers().add(HttpHeader.CONNECTION.toString(), "Keep-Alive");
 			}
 			channelFutureListener = ChannelFutureListener.CLOSE_ON_FAILURE;
 		} else {
-			httpResponse.headers().set(ResponseHeader.CONNECTION.getHeader(), "close");
+			httpResponse.headers().set(HttpHeader.CONNECTION.toString(), "close");
 			// Close the connection as soon as the message is sent.
 			channelFutureListener = ChannelFutureListener.CLOSE;
 		}

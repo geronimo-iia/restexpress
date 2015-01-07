@@ -23,11 +23,12 @@ import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import org.intelligentsia.commons.http.ResponseHeader;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import javax.ws.rs.core.Response.StatusType;
+
 import org.restexpress.Request;
 import org.restexpress.Response;
 import org.restexpress.domain.CharacterSet;
+import org.restexpress.http.HttpHeader;
 import org.restexpress.response.ResponseProcessorSetting;
 import org.restexpress.route.Action;
 
@@ -87,8 +88,8 @@ public final class MessageContext {
 
 	public void setAction(final Action action) {
 		this.action = action;
-		addUrlParametersAsHeaders(getRequest(), action.getParameters());
-		getRequest().setResolvedRoute(action.getRoute());
+		addUrlParametersAsHeaders(getRequest(), action.parameters());
+		getRequest().setResolvedRoute(action.resolvedRoute());
 		getResponse().setIsSerialized(action.shouldSerializeResponse());
 	}
 
@@ -109,17 +110,18 @@ public final class MessageContext {
 	 */
 	public void setException(final Throwable throwable) {
 		response.setException(throwable);
-		response.headers().remove(ResponseHeader.CONTENT_TYPE.getHeader());
-		response.headers().remove(ResponseHeader.CONTENT_LENGTH.getHeader());
+		response.headers().remove(HttpHeader.CONTENT_TYPE.toString());
+		response.headers().remove(HttpHeader.CONTENT_LENGTH.toString());
 	}
 
 	/**
 	 * Set the HTTP response status.
+	 * @see Response#setStatusInfo(StatusType)
 	 * 
-	 * @param httpStatus
+	 * @param statusInfo
 	 */
-	public void setHttpStatus(final HttpResponseStatus httpStatus) {
-		getResponse().setResponseStatus(httpStatus);
+	public void setStatusInfo(final StatusType statusInfo) {
+		getResponse().setStatusInfo(statusInfo);
 	}
 
 	public ResponseProcessorSetting getResponseProcessorSetting() {

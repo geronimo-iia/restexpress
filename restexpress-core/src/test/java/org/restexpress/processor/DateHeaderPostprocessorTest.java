@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.intelligentsia.commons.http.HttpHeaderDateTimeFormat;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -35,6 +34,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.restexpress.Response;
 import org.restexpress.TestToolKit;
+import org.restexpress.http.HttpDateTimeFormat;
 import org.restexpress.pipeline.MessageContext;
 import org.restexpress.pipeline.Postprocessor;
 
@@ -56,7 +56,7 @@ public class DateHeaderPostprocessorTest {
         assertTrue(response.hasHeaders());
         String dateHeader = response.getHeader(HttpHeaders.Names.DATE);
         assertNotNull(dateHeader);
-        Date dateValue = HttpHeaderDateTimeFormat.parseAny(dateHeader);
+        Date dateValue = HttpDateTimeFormat.parseAny(dateHeader);
         assertNotNull(dateValue);
     }
 
@@ -69,7 +69,7 @@ public class DateHeaderPostprocessorTest {
         assertTrue(response.hasHeaders());
         String dateHeader = response.getHeader(HttpHeaders.Names.DATE);
         assertNotNull(dateHeader);
-        Date dateValue = HttpHeaderDateTimeFormat.parseAny(dateHeader);
+        Date dateValue = HttpDateTimeFormat.parseAny(dateHeader);
         assertNotNull(dateValue);
     }
 

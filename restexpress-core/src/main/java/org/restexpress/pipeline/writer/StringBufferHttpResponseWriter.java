@@ -62,12 +62,12 @@ public class StringBufferHttpResponseWriter implements HttpResponseWriter {
                 headers.put(headerName, headerValues);
             }
         }
-        if (response.hasBody() && HttpSpecification.isContentAllowed(response)) {
-            if (ChannelBuffer.class.isAssignableFrom(response.getBody().getClass())) {
-                ChannelBuffer channelBuffer = (ChannelBuffer) response.getBody();
+        if (response.hasEntity() && HttpSpecification.isContentAllowed(response)) {
+            if (ChannelBuffer.class.isAssignableFrom(response.getEntity().getClass())) {
+                ChannelBuffer channelBuffer = (ChannelBuffer) response.getEntity();
                 body.append(channelBuffer.toString(CharacterSet.UTF_8.getCharset()));
             } else {
-                body.append(response.getBody().toString());
+                body.append(response.getEntity().toString());
             }
         } else {
             // no content is null
